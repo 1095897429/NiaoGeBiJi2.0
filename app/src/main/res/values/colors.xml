@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <!-- 分割line-->
+    <color name="divider_line">#E3E5E8</color>
+    <!-- 首页颜色 -->
+    <color name="text_default_color">#C0C0C0</color>
+    <!-- 首级颜色 -->
+    <color name="text_news_title_color">#242629</color>
+    <!-- 次级颜色 -->
+    <color name="text_tablayout_default">#BFC1C3</color>
+    <!-- 次级颜色 -->
+    <color name="text_news_tag_color">#BFC1C3</color>
+
+
+    <!-- 首级颜色 -->
+    <color name="text_first_color">#242629</color>
+    <!-- 次级颜色 -->
+    <color name="text_second_color">#818386</color>
+    <!-- 三级颜色 -->
+    <color name="text_three_color">#BFC1C3</color>
+    <!-- 底色 -->
+    <color name="bg_color">#F6F7F9</color>
+
+    <!-- 点赞颜色  -->
+    <color name="zan_select">#FFBA20</color>
+    <color name="zan_select_no">#555962</color>
+</resources>

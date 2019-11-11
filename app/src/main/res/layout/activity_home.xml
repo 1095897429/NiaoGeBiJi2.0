@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/oldguide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+
+        <ImageView
+            android:id="@+id/guide_img"
+            android:src="@mipmap/bg_oldguide_1"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/size_28"
+            android:layout_marginRight="@dimen/size_15"
+            android:paddingLeft="@dimen/size_16"
+            android:paddingTop="@dimen/size_3"
+            android:paddingRight="@dimen/size_16"
+            android:paddingBottom="@dimen/size_3"
+            android:text="跳过"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_14" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/fragmentLayout"
+            android:layout_width="match_parent"
+            android:layout_above="@+id/part1111"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/part1111"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:background="@color/divider_line"
+                android:layout_width="match_parent"
+                android:layout_height="1px"></View>
+
+            <LinearLayout
+                android:id="@+id/bottom_ll"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="49dp">
+
+
+                <LinearLayout
+                    android:id="@+id/index_first"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/index_first_icon"
+                        android:src="@mipmap/icon_index_01"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp" />
+
+                    <TextView
+                        android:id="@+id/index_first_text"
+                        style="@style/index_text"
+                        android:textColor="@color/text_news_title_color"
+                        android:text="首页" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/index_tool"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/index_news_icon"
+                        android:src="@mipmap/icon_index_10"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp" />
+
+                    <TextView
+                        android:id="@+id/index_news_text"
+                        style="@style/index_text"
+                        android:text="快讯" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/index_circle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/index_activity_icon"
+                        android:src="@mipmap/icon_index_20"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp" />
+
+                    <TextView
+                        android:id="@+id/index_activity_text"
+                        style="@style/index_text"
+                        android:text="活动" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/index_my"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/index_my_icon"
+                        android:src="@mipmap/icon_index_30"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp" />
+
+                    <TextView
+                        android:id="@+id/index_my_text"
+                        style="@style/index_text"
+                        android:text="我的" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</LinearLayout>

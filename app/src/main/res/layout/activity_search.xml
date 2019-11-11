@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <com.qmkj.niaogebiji.module.widget.ClearableEditText
+            android:background="@drawable/bg_corners_8_gray"
+            android:paddingLeft="9dp"
+            android:id="@+id/et_input"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:drawableLeft="@mipmap/icon_sousou"
+            android:drawablePadding="10dp"
+            android:focusable="true"
+            android:imeOptions="actionSearch"
+            android:cursorVisible="true"
+            android:hint="什么渠道没假量"
+            android:text=""
+            android:singleLine="true"
+            android:textColorHint="@color/text_second_color"
+            android:focusableInTouchMode="true"
+            android:gravity="left|center"
+            android:textColor="@color/text_first_color"
+            android:textSize="@dimen/sp_13" />
+
+        <Space
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/cancel"
+            android:text="取消"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/text_news_title_color"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/part1111"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="热门搜索"
+            android:textSize="13sp"
+            android:textColor="@color/text_second_color"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/flowlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+        </com.zhy.view.flowlayout.TagFlowLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+
+        <RelativeLayout
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="搜索历史"
+                android:textSize="13sp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/text_second_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/delete_history"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/icon_history_delete"
+                android:layout_width="28dp"
+                android:layout_height="28dp" />
+
+        </RelativeLayout>
+
+
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/flowlayout_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+        </com.zhy.view.flowlayout.TagFlowLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

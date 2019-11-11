@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_marginLeft="@dimen/size_15"
+    android:layout_gravity="center"
+    android:layout_marginRight="@dimen/size_15"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="205dp"
+        android:layout_height="169dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/size_30"
+        android:src="@mipmap/icon_first" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_25"
+        android:text="小鸟看看需要获得以上权限\n才可以正常使用"
+        android:textSize="@dimen/sp_18" />
+
+    <TextView
+        android:id="@+id/permisstext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_25"
+        android:layout_marginTop="@dimen/size_8"
+        android:text="获取权限后小鸟看看不会读取您的个人信息\n请在 权限管理 中设置开启"
+        android:textColor="#ff939393"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/doit"
+        android:layout_width="234dp"
+        android:layout_height="@dimen/size_40"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/size_20"
+        android:layout_marginBottom="@dimen/size_31"
+        android:gravity="center"
+        android:text="立即开启"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_15" />
+</LinearLayout>

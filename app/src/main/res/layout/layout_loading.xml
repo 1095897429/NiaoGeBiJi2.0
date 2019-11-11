@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+
+    <TextView
+        android:id="@+id/loding"
+        android:text="正在加载…"
+        android:textColor="#AAAEB3"
+        android:textSize="13sp"
+        android:visibility="invisible"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/loding_fail"
+        android:visibility="invisible"
+        android:textColor="#AAAEB3"
+        android:textSize="13sp"
+        android:text="加载失败…"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/loding_complete"
+        android:visibility="invisible"
+        android:textColor="#AAAEB3"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:text="没有更多结果了"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

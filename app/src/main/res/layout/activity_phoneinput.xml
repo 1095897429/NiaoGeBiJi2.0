@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.qmkj.niaogebiji.module.widget.ClearableEditText
+        android:padding="10dp"
+        android:id="@+id/phone_et"
+        android:layout_centerVertical="true"
+        android:inputType="number"
+        android:hint="请输入手机号"
+        android:textSize="14sp"
+        android:maxLength="11"
+        android:text="18616541823"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:padding="20dp"
+        android:id="@+id/toGetVertifyCode"
+        android:text="获取验证码"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

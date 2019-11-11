@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@mipmap/icon_news_bg"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:layout_height="148dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:src="@mipmap/icon_news"
+                android:layout_width="86dp"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:text="查看更多"
+                android:textSize="13sp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/text_three_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_corners_10"
+            android:paddingTop="16dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+          <LinearLayout
+              android:id="@+id/part1"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+              <TextView
+                  android:text="12:30"
+                  android:background="@drawable/bg_corners_18_yellow"
+                  android:textSize="20sp"
+                  android:gravity="center"
+                  android:layout_centerVertical="true"
+                  android:textColor="@color/white"
+                  android:layout_width="68dp"
+                  android:layout_height="30dp" />
+
+              <TextView
+                  android:text="Today news"
+                  android:textSize="10sp"
+                  android:layout_centerVertical="true"
+                  android:textColor="#FFBA20"
+                  android:gravity="center"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content" />
+
+          </LinearLayout>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_marginLeft="12dp"
+                android:layout_toRightOf="@+id/part1"
+                android:layout_alignTop="@+id/part1"
+                android:layout_alignBottom="@+id/part1"
+                android:layout_centerVertical="true"
+                android:visibility="visible"
+                android:lineSpacingExtra="4dp"
+                android:text="四通一达首次承诺双11时效：长三角72小时达，超时赔付"
+                android:textSize="14sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

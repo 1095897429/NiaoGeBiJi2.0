@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/fl_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/part_audio"
+        android:visibility="gone"
+        android:background="@drawable/bg_corners_8_darkgary"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="34dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="16dp"
+        android:paddingTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <RelativeLayout
+            android:layout_toRightOf="@+id/close"
+            android:layout_toLeftOf="@+id/toDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/audio_title"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:text="每日早报 | 贾跃亭破每日早报 | 贾跃亭破"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <LinearLayout
+                android:layout_below="@+id/audio_title"
+                android:layout_alignLeft="@+id/audio_title"
+                android:layout_alignRight="@+id/audio_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+
+                <!--    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" -->
+                <SeekBar
+                    android:id="@+id/seekbar"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:layout_marginRight="@dimen/dp_10"
+                    android:layout_width="157dp"
+                    android:layout_gravity="left|center"
+                    android:progress="0"
+                    style="@style/CustomSeekbarStyle"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:textSize="14sp"
+                    android:textColor="#AAAEB3"
+                    android:text="00:50"
+                    android:gravity="center|left"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/part1111"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/pause"
+                android:src="@mipmap/icon_audio_pause"
+                android:visibility="gone"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+
+            <ImageView
+                android:id="@+id/play"
+                android:src="@mipmap/icon_audio_play"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:visibility="visible"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+
+
+        </LinearLayout>
+
+
+
+
+        <ImageView
+            android:id="@+id/toDetail"
+            android:src="@mipmap/icon_audio_todetail"
+            android:layout_toLeftOf="@+id/part1111"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+        <ImageView
+            android:id="@+id/close"
+            android:src="@mipmap/icon_audio_close"
+            android:layout_marginRight="10dp"
+            android:visibility="visible"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

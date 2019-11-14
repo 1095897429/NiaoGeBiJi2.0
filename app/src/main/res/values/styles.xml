@@ -45,4 +45,16 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+
+
+    <!--自定义seekbarstyle-->
+    <style name="CustomSeekbarStyle" >
+        <item name="android:maxHeight">2dp</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">@color/white</item>
+        <item name="android:progressDrawable">@drawable/seekbar_progress_drawable</item>
+        <item name="android:minHeight">2dp</item>
+        <item name="android:thumb">@drawable/seekbar_thumb_bg</item>
+    </style>
+
 </resources>

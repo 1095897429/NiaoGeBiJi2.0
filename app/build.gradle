@@ -153,4 +153,12 @@ dependencies {
     implementation 'com.uber.autodispose:autodispose-android-archcomponents:0.8.0'
     //分包
     implementation 'androidx.multidex:multidex:2.0.1'
+    //SmartRefreshLayout
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-20'
+    //zxing
+    implementation 'com.google.zxing:core:3.3.0'
+    //图片预览控件
+    implementation 'com.bm.photoview:library:1.4.1'
+    //圆形头像
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }

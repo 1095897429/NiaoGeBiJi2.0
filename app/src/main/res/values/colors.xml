@@ -30,4 +30,6 @@
     <!-- 点赞颜色  -->
     <color name="zan_select">#FFBA20</color>
     <color name="zan_select_no">#555962</color>
+    <!-- 黄色 -->
+    <color name="yellow">#FFDC00</color>
 </resources>

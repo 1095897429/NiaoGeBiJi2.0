@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.common.net.api;
 
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
+import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -23,5 +24,31 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/item/getBulletinList")
     Observable<HttpResponse<FlashBulltinBean>> getBulletinList(@Field("params") String param);
+
+
+    /* 快讯 1 || 评论 2 点赞接口  */
+    @FormUrlEncoded
+    @POST("app/my/goodBulletin")
+    Observable<HttpResponse> goodBulletin(@Field("params") String param);
+
+
+    /* 快讯 1 || 评论 2 取消点赞接口  */
+    @FormUrlEncoded
+    @POST("app/my/cancleGoodBulletin")
+    Observable<HttpResponse> cancleGoodBulletin(@Field("params") String param);
+
+
+    /* 2019.8.27   快讯分享接口   */
+    @FormUrlEncoded
+    @POST("app/item/bulletinShare")
+    Observable<HttpResponse<FlashBulltinBean>> bulletinShare(@Field("params") String param);
+
+
+    /* 2019.8.25 首页【关注】接口 */
+    @FormUrlEncoded
+    @POST("app/item/getIndexArticle")
+    Observable<HttpResponse<IndexFocusBean>> getIndexArticle(@Field("params") String param);
+
+
 
 }

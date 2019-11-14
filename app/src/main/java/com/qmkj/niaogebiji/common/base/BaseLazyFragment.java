@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.module.event.MyEvent;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -96,6 +97,7 @@ public abstract class BaseLazyFragment extends Fragment {
     }
 
 
+
     @Override
     public void onDestroy() {
         KLog.e(TAG,getClass().getSimpleName() + " -- onDestroy");
@@ -109,6 +111,12 @@ public abstract class BaseLazyFragment extends Fragment {
         if (regEvent()) {
             EventBus.getDefault().unregister(this);
         }
+    }
+
+    /** 子类接受事件 重写该方法 */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventThread(MyEvent event){
+        KLog.d("tag","envent");
     }
 
 

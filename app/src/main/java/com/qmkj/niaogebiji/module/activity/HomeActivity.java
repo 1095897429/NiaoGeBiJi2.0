@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
@@ -84,12 +86,20 @@ public class HomeActivity extends BaseActivity {
     Fragment mCurrentFragment;
 
     @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_home;
     }
 
     @Override
     protected void initView() {
+
+        Gson gson = new Gson();
+        RegisterLoginBean registerLoginBean  = gson.fromJson("", RegisterLoginBean.class);
 
         boolean firstGuide = SPUtils.getInstance().getBoolean("isFirstHomeGuide",false);
         if(!firstGuide){

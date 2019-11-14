@@ -1,58 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/flash_222"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <!-- Header布局 -->
-        <LinearLayout
-            android:id="@+id/sticky_header"
-            android:visibility="visible"
+
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/smartRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:background="#F6F7F9"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </com.scwang.smartrefresh.layout.header.ClassicsHeader>
 
-            <TextView
-                android:id="@+id/header_textview"
-                android:layout_width="wrap_content"
-                android:gravity="center"
-                android:layout_height="match_parent"
-                android:paddingLeft="16dp"
-                android:textColor="#818386"
-                android:textSize="13sp"
-                tools:text="2017年09月27日"/>
-        </LinearLayout>
-
-
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/flash_222"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            <!-- Header布局 -->
+            <LinearLayout
+                android:id="@+id/sticky_header"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="#F6F7F9"
                 android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/header_textview"
+                    android:layout_width="wrap_content"
+                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="16dp"
+                    android:textColor="#818386"
+                    android:textSize="13sp"
+                    tools:text=""/>
+            </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:overScrollMode="never"
-                    android:scrollbars="none"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:scrollbars="none"/>
+
+            </LinearLayout>
 
 
-            </RelativeLayout>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 
-    </LinearLayout>
+
+
 
 
 

@@ -1,177 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/status_bar_height"
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:orientation="vertical"
+android:paddingTop="@dimen/status_bar_height"
+android:background="@color/white"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+<!-- AppBarLayout控件便具备顶部固定的功能 -->
+<com.google.android.material.appbar.AppBarLayout
+    android:background="@color/white"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="15dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/search_part"
+                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_corners_8_gray"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_marginLeft="9dp"
+                    android:src="@mipmap/icon_sousou"
+                    android:layout_gravity="center|left"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="什么渠道没假量"
+                    android:textSize="13sp"
+                    android:textColor="#AAAEB3"
+                    android:layout_gravity="center|left"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="match_parent" />
+
+            <RelativeLayout
+                android:layout_width="28dp"
+                android:layout_height="28dp">
+
+                <ImageView
+                    android:id="@+id/icon_sign"
+                    android:src="@mipmap/icon_sign"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp" />
+
+
+                <TextView
+                    android:id="@+id/red_point"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/bg_red_point"
+                    android:padding="0dp"
+                    android:textSize="12dp"
+                    android:visibility="visible" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/icon_shadows"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:background="@drawable/bg_corners_12"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="16dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="5dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                    <ImageView
+                        android:src="@mipmap/icon_moring"
+                        android:layout_width="94dp"
+                        android:layout_height="18dp" />
+
+                    <TextView
+                        android:id="@+id/toMoreMoring"
+                        android:text="查看更多"
+                        android:textSize="11sp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/text_three_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/moring_content"
+                    android:layout_marginTop="9dp"
+                    android:text="贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:text="2019/01/01"
+                        android:textSize="11sp"
+                        android:layout_centerVertical="true"
+                        android:textColor="#AAAEB3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                    <ImageView
+                        android:id="@+id/listenMoring"
+                        android:src="@mipmap/icon_listen_moring"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_width="108dp"
+                        android:layout_height="50dp" />
+
+
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal">
+
+        <com.qmkj.niaogebiji.module.widget.ViewPagerTitle
+            android:id="@+id/pager_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+        </com.qmkj.niaogebiji.module.widget.ViewPagerTitle>
+
+        <ImageView
+            android:id="@+id/icon_catogory"
+            android:src="@mipmap/icon_catogory"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+    </LinearLayout>
+
+
+</com.google.android.material.appbar.AppBarLayout>
+
+
+
+<com.qmkj.niaogebiji.module.widget.CustomViewPager
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:id="@+id/viewpager"
+    android:overScrollMode="never"
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+</com.qmkj.niaogebiji.module.widget.CustomViewPager>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginTop="15dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        <LinearLayout
-            android:id="@+id/search_part"
-            android:layout_height="40dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_corners_8_gray"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_marginLeft="9dp"
-                android:src="@mipmap/icon_sousou"
-                android:layout_gravity="center|left"
-                android:layout_width="14dp"
-                android:layout_height="14dp" />
-
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="什么渠道没假量"
-                android:textSize="13sp"
-                android:textColor="#AAAEB3"
-                android:layout_gravity="center|left"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-
-        <Space
-            android:layout_width="16dp"
-            android:layout_height="match_parent" />
-
-        <RelativeLayout
-            android:layout_width="28dp"
-            android:layout_height="28dp">
-
-            <ImageView
-                android:id="@+id/icon_sign"
-                android:src="@mipmap/icon_sign"
-                android:layout_width="28dp"
-                android:layout_height="28dp" />
-
-
-            <TextView
-                android:id="@+id/red_point"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="2dp"
-                android:layout_marginRight="2dp"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_red_point"
-                android:padding="0dp"
-                android:textSize="12dp"
-                android:visibility="visible" />
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@mipmap/icon_shadows"
-        android:padding="16dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:background="@drawable/bg_corners_12"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="16dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="5dp"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                
-                
-                <ImageView
-                    android:src="@mipmap/icon_moring"
-                    android:layout_width="94dp"
-                    android:layout_height="18dp" />
-
-                <TextView
-                    android:text="查看更多"
-                    android:textSize="11sp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:textColor="@color/text_three_color"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                
-            </RelativeLayout>
-
-
-            <TextView
-                android:layout_marginTop="9dp"
-                android:text="贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元"
-                android:textSize="14sp"
-                android:textColor="@color/text_first_color"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
-                <TextView
-                    android:text="2019/01/01"
-                    android:textSize="11sp"
-                    android:layout_centerVertical="true"
-                    android:textColor="#AAAEB3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-
-                <ImageView
-                    android:src="@mipmap/icon_listen_moring"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_width="108dp"
-                    android:layout_height="50dp" />
-
-
-
-            </RelativeLayout>
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:background="@color/colorPrimary"
-        android:orientation="vertical">
-
-    </LinearLayout>
-
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewpager"
-        android:overScrollMode="never"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </androidx.viewpager.widget.ViewPager>
-
-</LinearLayout>

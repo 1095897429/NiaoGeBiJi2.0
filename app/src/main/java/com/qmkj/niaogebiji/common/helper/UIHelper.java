@@ -3,9 +3,13 @@ package com.qmkj.niaogebiji.common.helper;
 import android.content.Context;
 import android.content.Intent;
 
+import com.qmkj.niaogebiji.module.activity.CategoryActivity;
+import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
+import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
+import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
@@ -58,11 +62,40 @@ public class UIHelper {
 //        ctx.startActivity(intent);
 //    }
 
-    /** 打开搜索界面 */
+      /** 打开搜索界面 */
     public static void toSearchActivity(Context ctx) {
         Intent intent = new Intent(ctx, SearchActivity.class);
         ctx.startActivity(intent);
     }
+
+    /** 打开早报界面 */
+    public static void toMoringActivity(Context ctx) {
+        Intent intent = new Intent(ctx, MoringNewsListActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开分类界面 */
+    public static void toCategoryActivity(Context ctx) {
+        Intent intent = new Intent(ctx, CategoryActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开资料详情界面 */
+    public static void toDataInfoActivity(Context ctx) {
+        Intent intent = new Intent(ctx, DataInfomationActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开图片预览界面 */
+    public static void toPicPreViewActivity(Context ctx) {
+        Intent intent = new Intent(ctx, PicPreviewActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+
+
 
 
 }

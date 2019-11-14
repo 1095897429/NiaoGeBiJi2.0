@@ -24,13 +24,10 @@ import java.util.List;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-11
- * 描述:
+ * 描述:recyclerView顶部固定
  */
 public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.BuilltinBean, BaseViewHolder> {
 
-    public static final int FIRST_STICKY_VIEW = 1;
-    public static final int HAS_STICKY_VIEW = 2;
-    public static final int NONE_STICKY_VIEW = 3;
 
     public FlashItemAdapter(@Nullable List<FlashBulltinBean.BuilltinBean> data) {
         super(R.layout.item_flash,data);
@@ -42,61 +39,23 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         helper.addOnClickListener(R.id.flash_priase)
                 .addOnClickListener(R.id.flash_share).addOnClickListener(R.id.content_des);
 
+        helper.addOnClickListener(R.id.part1111).addOnClickListener(R.id.part2222).addOnClickListener(R.id.part3333);
+
         if(helper.getAdapterPosition() == 0){
             helper.setVisible(R.id.sticky_header,false);
-            if(!TextUtils.isEmpty(mBean.getDay_dec())){
-                helper.setText(R.id.title_tag,mBean.getDay_dec() + "   " + mBean.getShow_time());
-            }else{
-                helper.setText(R.id.title_tag, mBean.getShow_time());
-            }
-
-            if(!TextUtils.isEmpty(mBean.getDay_dec())){
-                (helper.itemView).setContentDescription(mBean.getDay_dec() + "   " +mBean.getShow_time());
-            }else{
-                (helper.itemView).setContentDescription(mBean.getShow_time());
-            }
-
-            helper.itemView.setTag(FIRST_STICKY_VIEW);
         }else{
+            //比较当前和之前一个item的展示时间 一样则不显示
             if(mData.get(helper.getAdapterPosition() - 1).getShow_time().equals(mBean.getShow_time())){
                 helper.setVisible(R.id.sticky_header,false);
-                if(!TextUtils.isEmpty(mBean.getDay_dec())){
-                    helper.setText(R.id.title_tag,mBean.getDay_dec() + "   " + mBean.getShow_time());
-                }else{
-                    helper.setText(R.id.title_tag, mBean.getShow_time());
-                }
-
-                if(!TextUtils.isEmpty(mBean.getDay_dec())){
-                    (helper.itemView).setContentDescription(mBean.getDay_dec() + "   " +mBean.getShow_time());
-                }else{
-                    (helper.itemView).setContentDescription(mBean.getShow_time());
-                }
-                helper.itemView.setTag(NONE_STICKY_VIEW);
             }else{
                 helper.setVisible(R.id.sticky_header,true);
-                if(!TextUtils.isEmpty(mBean.getDay_dec())){
-                    helper.setText(R.id.title_tag,mBean.getDay_dec() + "   " + mBean.getShow_time());
-                }else{
-                    helper.setText(R.id.title_tag, mBean.getShow_time());
-                }
-
-                if(!TextUtils.isEmpty(mBean.getDay_dec())){
-                    (helper.itemView).setContentDescription(mBean.getDay_dec() + "   " +mBean.getShow_time());
-                }else{
-                    (helper.itemView).setContentDescription(mBean.getShow_time());
-                }
-                (helper.itemView).setContentDescription(mBean.getShow_time());
-                helper.itemView.setTag(HAS_STICKY_VIEW);
             }
         }
-
-        //文本
         helper.setText(R.id.content_des,mBean.getContent());
 
         //时间
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
-        ((TextView)helper.getView(R.id.title_tag)).setTypeface(typeface);
-
+        ((TextView)helper.getView(R.id.time)).setTypeface(typeface);
 
 
 
@@ -127,7 +86,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         ((TextView)helper.getView(R.id.zan_num)).setTypeface(typeface2);
 
         if(!TextUtils.isEmpty(mBean.getPub_time())){
-            helper.setText(R.id.title_tag, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
+            helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
         }
 
         if(1 == mBean.getIs_good()){

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
+    android:background="#FFFFFF"
+    android:paddingLeft="16dp"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <ImageView
+            android:id="@+id/toDown"
+            android:src="@mipmap/icon_todown"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:textSize="22sp"
+        android:text="全部文章分类"
+        android:textColor="@color/text_first_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:textSize="11sp"
+        android:text="点击进入对应分类"
+        android:paddingTop="8dp"
+        android:paddingBottom="32dp"
+        android:textColor="#818386"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:visibility="visible"
+        android:overScrollMode="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

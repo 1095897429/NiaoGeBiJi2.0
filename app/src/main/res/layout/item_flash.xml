@@ -7,7 +7,26 @@
 
     <LinearLayout
         android:id="@+id/sticky_header"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="#F6F7F9"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/header_textview"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:textColor="#818386"
+            android:textSize="13sp"
+            android:text=""/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:layout_width="75dp"
         android:layout_height="35dp"
         android:orientation="vertical">
@@ -19,7 +38,7 @@
 
             <View
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/title_tag"
+                app:layout_constraintBottom_toBottomOf="@id/time"
                 android:background="#FFDC00"
                 android:layout_width="match_parent"
                 android:layout_height="11dp">
@@ -27,7 +46,7 @@
             </View>
 
             <TextView
-                android:id="@+id/title_tag"
+                android:id="@+id/time"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -73,6 +92,7 @@
             <LinearLayout
                 android:id="@+id/part1111"
                 android:layout_marginTop="8dp"
+                android:visibility="visible"
                 android:layout_below="@+id/content_des"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,11 +101,108 @@
                 <com.qmkj.niaogebiji.module.widget.RCImageView
                     android:id="@+id/flash_img"
                     android:visibility="gone"
+                    android:background="@color/bg_color"
                     android:layout_width="match_parent"
                     android:layout_height="215dp"
                     android:scaleType="fitXY"
                     app:round_as_circle="false"
                     app:round_corner="8dp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/part2222"
+                android:visibility="gone"
+                android:layout_marginTop="8dp"
+                android:layout_below="@+id/content_des"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/flash_img1"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="110dp"
+                    android:scaleType="fitXY"
+                    app:round_as_circle="false"
+                    app:round_corner="8dp" />
+                
+                <Space
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent" />
+
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/flash_img2"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="110dp"
+                    android:scaleType="fitXY"
+                    app:round_as_circle="false"
+                    app:round_corner="8dp" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/part3333"
+                android:visibility="gone"
+                android:layout_marginTop="8dp"
+                android:layout_below="@+id/content_des"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/flash_img11"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="110dp"
+                    android:scaleType="fitXY"
+                    app:round_as_circle="false"
+                    app:round_corner="8dp" />
+
+                <Space
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent" />
+
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/flash_img22"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="110dp"
+                    android:scaleType="fitXY"
+                    app:round_as_circle="false"
+                    app:round_corner="8dp" />
+
+                <Space
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent" />
+
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/flash_img33"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="110dp"
+                    android:scaleType="fitXY"
+                    app:round_as_circle="false"
+                    app:round_corner="8dp" />
+
 
             </LinearLayout>
 
@@ -120,8 +237,8 @@
                 android:text="99+"
                 android:textSize="13sp"
                 android:textColor="#555962"
-                android:gravity="center"
-                android:layout_width="wrap_content"
+                android:gravity="bottom|left"
+                android:layout_width="25dp"
                 android:layout_height="match_parent" />
 
         </LinearLayout>

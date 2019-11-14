@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:background="@drawable/bg_corners_12"
+        android:layout_width="match_parent"
+        android:layout_height="138dp"
+        android:paddingTop="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="5dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:id="@+id/image"
+                android:src="@mipmap/icon_book"
+                android:layout_centerVertical="true"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:id="@+id/toMoreMoring"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/image"
+                android:text="2019/11/01"
+                android:textSize="17sp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_marginTop="8dp"
+            android:text="贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="@color/text_first_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:src="@mipmap/icon_listen_moring"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="108dp"
+                android:layout_height="50dp" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+</LinearLayout>

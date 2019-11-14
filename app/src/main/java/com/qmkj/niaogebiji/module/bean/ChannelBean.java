@@ -19,6 +19,9 @@ public class ChannelBean extends BaseBean {
     private String chaname;
     private String status;
 
+    public ChannelBean() {
+    }
+
     public ChannelBean(String chaid, String chaname) {
         this.chaid = chaid;
         this.chaname = chaname;

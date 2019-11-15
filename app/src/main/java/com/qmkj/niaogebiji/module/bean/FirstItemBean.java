@@ -6,7 +6,7 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-11
- * 描述:
+ * 描述:实时快讯Bean
  */
 public class FirstItemBean extends BaseBean {
 

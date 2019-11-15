@@ -3,11 +3,14 @@ package com.qmkj.niaogebiji.common.helper;
 import android.content.Context;
 import android.content.Intent;
 
+import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
+import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
 import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
+import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
@@ -93,9 +96,25 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+    /** 打开关注/推荐 作者列表界面 */
+    public static void toAuthorListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, AuthorListActivity.class);
+        ctx.startActivity(intent);
+    }
 
 
+    /** 打开分类列表 界面 */
+    public static void toCategoryListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, CategoryListActivity.class);
+        ctx.startActivity(intent);
+    }
 
+    /** 打开新闻界面 */
+    public static void toNewsDetailActivity(Context ctx,String newsId) {
+        Intent intent = new Intent(ctx, NewsDetailActivity.class);
+        intent.putExtra("newsId",newsId);
+        ctx.startActivity(intent);
+    }
 
 
 }

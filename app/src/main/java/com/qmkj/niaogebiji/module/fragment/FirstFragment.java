@@ -39,10 +39,15 @@ import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.MyEvent;
+import com.qmkj.niaogebiji.module.event.toActionEvent;
+import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.widget.ViewPagerTitle;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -77,7 +82,6 @@ public class FirstFragment extends BaseLazyFragment {
     ViewPagerTitle pager_title;
 
 
-
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<String> mTitls = new ArrayList<>();
@@ -106,14 +110,16 @@ public class FirstFragment extends BaseLazyFragment {
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
-        String [] titile = new String[]{"关注","干货","活动","快讯下载","热榜"};
+        String [] titile = new String[]{"关注","干货","活动","快讯","热榜"};
 
         pager_title.initData(titile,mViewPager,0);
 
-
+        initEvent();
     }
 
+    private void initEvent() {
 
+    }
 
 
     //点击切换fragement会调用
@@ -254,6 +260,17 @@ public class FirstFragment extends BaseLazyFragment {
 
 
 
+    /** --------------------------------- EventBus 事件  ---------------------------------*/
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onActionThread(toActionEvent event){
+        mViewPager.setCurrentItem(2);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFlashThread(toFlashEvent event){
+        mViewPager.setCurrentItem(3);
+    }
 
 
 

@@ -26,13 +26,13 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.dialog.ShareFlashDialog;
-import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.ZXingUtils;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
+import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.MyLoadMoreView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -41,6 +41,9 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,6 +94,11 @@ public class FlashFragment extends BaseLazyFragment  {
         return newsItemFragment;
     }
 
+
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -176,20 +184,24 @@ public class FlashFragment extends BaseLazyFragment  {
                     showShareDialog();
                     break;
                 case R.id.part1111:
-
                     ArrayList<String> photos = new ArrayList<>();
-                    photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
-                    photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWV1BA0uIJD2cACgyyOBAl4YAAMP0gOPNF0AKDLg887.jpg");
-                    photos.add("https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg");
-                    photos.add("https://b.zol-img.com.cn/desk/bizhi/image/8/4096x2160/1563934008198.png");
-                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWV03v-eIOEWoAC0lpucbl_sAAMC8AFTL9QALSW-183.jpg");
-                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03wq6IbWwqAA-IxrPijHEAAMDAwJ0cR8AD4je242.jpg");
-                    //错误图片url
-                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03v_aISd7vABOqKe2IAXEAAMC8QJgIh4AE6pB2971212.jpg");
+
+                    String pic = mTempBuilltinBean.getPic();
+                    if(!TextUtils.isEmpty(pic)){
+                        photos.add(pic);
+                    }
+//                    photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
+//                    photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWV1BA0uIJD2cACgyyOBAl4YAAMP0gOPNF0AKDLg887.jpg");
+//                    photos.add("https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg");
+//                    photos.add("https://b.zol-img.com.cn/desk/bizhi/image/8/4096x2160/1563934008198.png");
+//                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWV03v-eIOEWoAC0lpucbl_sAAMC8AFTL9QALSW-183.jpg");
+//                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03wq6IbWwqAA-IxrPijHEAAMDAwJ0cR8AD4je242.jpg");
+//                    //错误图片url
+//                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03v_aISd7vABOqKe2IAXEAAMC8QJgIh4AE6pB2971212.jpg");
                     Bundle bundle = new Bundle ();
                     bundle.putStringArrayList ("imageList", photos);
                     bundle.putBoolean("fromNet",true);
-                    bundle.putInt("index",1);
+                    bundle.putInt("index",0);
                     Intent intent = new Intent(getActivity(), PicPreviewActivity.class);
                     intent.putExtras(bundle);
                     startActivity(intent);
@@ -249,6 +261,8 @@ public class FlashFragment extends BaseLazyFragment  {
                 LinearLayoutManager linearManager = (LinearLayoutManager) layoutManager;
                 //获取第一个可见view的位置
                 int firstItemPosition = linearManager.findFirstVisibleItemPosition();
+                //获取最后一个可见view的位置
+                int lastItemPosition = linearManager.findLastVisibleItemPosition();
 
                 if(null != mBuilltinBeans){
                     FlashBulltinBean.BuilltinBean temmp = mFlashItemAdapter.getData().get(firstItemPosition);
@@ -426,64 +440,61 @@ public class FlashFragment extends BaseLazyFragment  {
 
         flash_ll.setDrawingCacheEnabled(true);
         flash_ll.buildDrawingCache();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // 要在运行在子线程中
-                // 获取图片
-                bitmap = flash_ll.getDrawingCache();
-                if (bitmap == null) {//处理华为meta9等手机出现的问题
+        new Handler().postDelayed(() -> {
+            // 要在运行在子线程中
+            // 获取图片
+            bitmap = flash_ll.getDrawingCache();
+            if (bitmap == null) {//处理华为meta9等手机出现的问题
 
-                    if(flash_ll.getWidth() == 0){
-                        int width = ScreenUtils.getScreenWidth();
-                        int height = ScreenUtils.getScreenHeight();
-                        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                        Canvas canvas = new Canvas(bitmap);
-                        if (Build.VERSION.SDK_INT >= 11) {
-                            flash_ll.measure(View.MeasureSpec.makeMeasureSpec(width,
-                                    View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
-                            flash_ll.layout((int) flash_ll.getX(),
-                                    (int) flash_ll.getY(),
-                                    (int) flash_ll.getX() + width,
-                                    (int) flash_ll.getY() + height);
-                        } else {
-                            flash_ll.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                            flash_ll.layout(0, 0, width,
-                                    height);
-                        }
-                        flash_ll.draw(canvas);
-
-
-                    }else{
-
-                        bitmap = Bitmap.createBitmap(flash_ll.getWidth(),
-                                flash_ll.getHeight(), Bitmap.Config.ARGB_8888);
-                        Canvas canvas = new Canvas(bitmap);
-                        if (Build.VERSION.SDK_INT >= 11) {
-                            flash_ll.measure(View.MeasureSpec.makeMeasureSpec(flash_ll.getWidth(),
-                                    View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(flash_ll.getHeight(), View.MeasureSpec.EXACTLY));
-                            flash_ll.layout((int) flash_ll.getX(),
-                                    (int) flash_ll.getY(),
-                                    (int) flash_ll.getX() + flash_ll.getMeasuredWidth(),
-                                    (int) flash_ll.getY() + flash_ll.getMeasuredHeight());
-                        } else {
-                            flash_ll.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                            flash_ll.layout(0, 0, flash_ll.getMeasuredWidth(),
-                                    flash_ll.getMeasuredHeight());
-                        }
-                        flash_ll.draw(canvas);
+                if(flash_ll.getWidth() == 0){
+                    int width = ScreenUtils.getScreenWidth();
+                    int height = ScreenUtils.getScreenHeight();
+                    bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    if (Build.VERSION.SDK_INT >= 11) {
+                        flash_ll.measure(View.MeasureSpec.makeMeasureSpec(width,
+                                View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+                        flash_ll.layout((int) flash_ll.getX(),
+                                (int) flash_ll.getY(),
+                                (int) flash_ll.getX() + width,
+                                (int) flash_ll.getY() + height);
+                    } else {
+                        flash_ll.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                        flash_ll.layout(0, 0, width,
+                                height);
                     }
-                }
+                    flash_ll.draw(canvas);
 
-                if(0 == sharePositon){
-                    shareWxCircleByPic();
-                }else if(1 == sharePositon){
-                    shareWxByPic();
-                }
 
+                }else{
+
+                    bitmap = Bitmap.createBitmap(flash_ll.getWidth(),
+                            flash_ll.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    if (Build.VERSION.SDK_INT >= 11) {
+                        flash_ll.measure(View.MeasureSpec.makeMeasureSpec(flash_ll.getWidth(),
+                                View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(flash_ll.getHeight(), View.MeasureSpec.EXACTLY));
+                        flash_ll.layout((int) flash_ll.getX(),
+                                (int) flash_ll.getY(),
+                                (int) flash_ll.getX() + flash_ll.getMeasuredWidth(),
+                                (int) flash_ll.getY() + flash_ll.getMeasuredHeight());
+                    } else {
+                        flash_ll.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                        flash_ll.layout(0, 0, flash_ll.getMeasuredWidth(),
+                                flash_ll.getMeasuredHeight());
+                    }
+                    flash_ll.draw(canvas);
+                }
             }
+
+            if(0 == sharePositon){
+                shareWxCircleByPic();
+            }else if(1 == sharePositon){
+                shareWxByPic();
+            }
+
         }, 0);
     }
 
@@ -528,7 +539,14 @@ public class FlashFragment extends BaseLazyFragment  {
     }
 
 
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshBus(toRefreshEvent event){
+        if(getUserVisibleHint()){
+            KLog.d("tag","我是快讯界面，我刷新了");
+            mRecyclerView.scrollToPosition(0);
+            smartRefreshLayout.autoRefresh();
+        }
+    }
 
 
 }

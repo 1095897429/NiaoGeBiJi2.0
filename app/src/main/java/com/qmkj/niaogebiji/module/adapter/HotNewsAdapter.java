@@ -1,6 +1,8 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -26,6 +28,9 @@ public class HotNewsAdapter extends BaseQuickAdapter<MultiNewsBean, BaseViewHold
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
         helper.setText(R.id.rank,item.getNewsItemBean().getRank());
+
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
+        ((TextView)helper.getView(R.id.rank)).setTypeface(typeface);
 
         //类型：排名显示颜色
         if("1".equals(item.getNewsItemBean().getRank()) ||

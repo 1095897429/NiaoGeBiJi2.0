@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
@@ -29,6 +30,7 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
     public static final int GUESSLOVE = 3;
     public static final int FLASH_TYPE = 4;
     public static final int ACTIVITY_TYPE = 5;
+    private AuthorCancleListener mAuthorCancleListener;
 
     public FocusAdapter(List<MultiNewsBean> data) {
         super(data);
@@ -74,6 +76,15 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
                 ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mFirstAuthorAdapter);
 
+                //事件
+                mFirstAuthorAdapter.setOnItemChildClickListener(new OnItemChildClickListener() {
+                    @Override
+                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                        if(null != mAuthorCancleListener){
+                            mAuthorCancleListener.canleOrFocus(position);
+                        }
+                    }
+                });
 
 
                 break;
@@ -83,5 +94,13 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
     }
 
 
+
+    public interface AuthorCancleListener{
+         void canleOrFocus(int position);
+    }
+
+    public void setAuthorCancleListener(AuthorCancleListener authorCancleListener) {
+        mAuthorCancleListener = authorCancleListener;
+    }
 
 }

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <RelativeLayout
         android:id="@+id/oldguide"
         android:layout_width="match_parent"
@@ -35,6 +36,9 @@
             android:textColor="@color/white"
             android:textSize="@dimen/sp_14" />
     </RelativeLayout>
+
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -159,5 +163,24 @@
         </LinearLayout>
 
 
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_above="@+id/part1111"
+            android:background="@color/bg_color"
+            android:id="@+id/toMoreLoveYou"
+            android:layout_width="match_parent"
+            android:layout_height="30dp">
+
+            <TextView
+                android:id="@+id/text"
+                android:text="想要内容更精确，点这里让我更懂你"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
+
     </RelativeLayout>
+
+
 </LinearLayout>

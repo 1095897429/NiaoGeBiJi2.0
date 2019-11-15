@@ -48,9 +48,6 @@ public class CategoryActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-
-
-
         ChannelBean channelBean;
         for (int i = 0; i < 10; i++) {
             channelBean = new ChannelBean();
@@ -80,12 +77,15 @@ public class CategoryActivity extends BaseActivity {
         //设置适配器
         mCategoryAdapter = new CategoryAdapter(mList);
         mRecyclerView.setAdapter(mCategoryAdapter);
-        //点击事件
+        initEvent();
+
+    }
+
+    private void initEvent() {
         mCategoryAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的索引 " + position);
-
+            UIHelper.toCategoryListActivity(this);
         });
-
     }
 
 

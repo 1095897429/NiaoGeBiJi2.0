@@ -72,6 +72,18 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".module.activity.AuthorListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.CategoryListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+
+        <activity android:name=".module.activity.NewsDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

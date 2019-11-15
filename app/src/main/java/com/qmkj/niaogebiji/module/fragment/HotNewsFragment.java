@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
@@ -12,6 +13,12 @@ import com.qmkj.niaogebiji.module.adapter.HotNewsAdapter;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.socks.library.KLog;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +33,13 @@ import butterknife.BindView;
  */
 public class HotNewsFragment extends BaseLazyFragment {
 
+    @BindView(R.id.smartRefreshLayout)
+    SmartRefreshLayout smartRefreshLayout;
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
+
+    private int page = 1;
     //适配器 -- 需手动排序
     HotNewsAdapter mHotNewsAdapter;
     //组合集合
@@ -54,9 +65,19 @@ public class HotNewsFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
-        getData();
-
+        initSamrtLayout();
         initLayout();
+    }
+
+
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+    @Override
+    protected void lazyLoadData() {
+        getData();
     }
 
     private void getData() {
@@ -70,6 +91,18 @@ public class HotNewsFragment extends BaseLazyFragment {
                 bean1.setNewsItemBean(itemBean);
             mAllList.add(bean1);
         }
+        mHotNewsAdapter.setNewData(mAllList);
+    }
+
+
+    private void initSamrtLayout() {
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mAllList.clear();
+            page = 1;
+            getData();
+        });
+
     }
 
 
@@ -86,8 +119,25 @@ public class HotNewsFragment extends BaseLazyFragment {
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
+        initEvent();
     }
 
+    private void initEvent() {
+        mHotNewsAdapter.setOnLoadMoreListener(() -> {
+           page ++;
+           getData();
+        }, mRecyclerView);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshBus(toRefreshEvent event){
+        if(getUserVisibleHint()){
+            KLog.d("tag","我是热搜界面，我刷新了");
+            mRecyclerView.scrollToPosition(0);
+            smartRefreshLayout.autoRefresh();
+        }
+    }
 
 
 }

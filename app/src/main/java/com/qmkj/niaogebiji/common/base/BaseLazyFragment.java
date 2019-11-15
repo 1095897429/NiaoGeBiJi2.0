@@ -28,8 +28,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-//import com.qmkj.niaogebiji.module.widget.XnClassicsHeader;
-
 /**
  * @author zhouliang
  * 版本 1.0

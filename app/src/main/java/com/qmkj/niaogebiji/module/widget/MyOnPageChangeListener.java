@@ -65,7 +65,7 @@ public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageSelected(int position) {
-        KLog.d("tag","onPageSelected");
+//        KLog.d("tag","onPageSelected");
         lastPosition = pager.getCurrentItem();
         viewPagerTitle.setCurrentItem(position);
 
@@ -81,7 +81,7 @@ public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
 
         int x =  textViews.get(position).getLeft() ;
-        KLog.d("tag",x + "");
+//        KLog.d("tag",x + "");
         dynamicLine.updateView(x, (int)getTextViewLength(textViews.get(position)) + x);
 
 //        if(lastPosition == 0){

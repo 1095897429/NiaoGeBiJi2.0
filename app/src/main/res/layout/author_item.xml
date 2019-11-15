@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="105dp">
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/part1111"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="105dp">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/head_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@mipmap/icon_fenxiang"/>
+
+
+        <TextView
+            android:id="@+id/author_name"
+            android:textSize="16sp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="2dp"
+            android:text="三木群"
+            app:layout_constraintTop_toTopOf="@id/head_icon"
+            app:layout_constraintLeft_toRightOf="@+id/head_icon"
+            android:textColor="@color/text_news_title_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/author_tag"
+            android:textSize="13sp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:text="欢迎在鸟哥笔记发布文章。投稿请添加微信（ngbjxym）"
+            app:layout_constraintLeft_toRightOf="@+id/head_icon"
+            app:layout_constraintTop_toBottomOf="@+id/author_name"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="#818386"
+            android:layout_width="189dp"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/focus"
+            android:textColor="@color/text_news_title_color"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:textSize="13sp"
+            android:visibility="gone"
+            android:text="关注"
+            android:textStyle="bold"
+            android:paddingLeft="21dp"
+            android:paddingRight="21dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@drawable/bg_corners_8_yellow"
+            android:layout_width="70dp"
+            android:layout_height="34dp" />
+
+        <TextView
+            android:id="@+id/focus_aleady"
+            android:textColor="#818386"
+            android:visibility="visible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:textSize="13sp"
+            android:text="已关注"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@drawable/bg_corners_8_gray"
+            android:layout_width="70dp"
+            android:layout_height="34dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <View
+        android:layout_below="@+id/part1111"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_line"/>
+
+</RelativeLayout>

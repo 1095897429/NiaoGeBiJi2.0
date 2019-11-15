@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,10 +19,14 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolFragment;
+import com.socks.library.KLog;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.concurrent.TimeUnit;
 
@@ -156,11 +161,14 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-
-    @OnClick({R.id.index_first,R.id.index_tool,R.id.index_circle,R.id.index_my})
+    @OnClick({R.id.index_first,R.id.index_tool,R.id.index_circle,R.id.index_my,R.id.toMoreLoveYou})
     public void bottomClick(android.view.View layout){
         switch (layout.getId()){
+            case R.id.toMoreLoveYou:
+                //TODO 11.14
+                break;
             case R.id.index_first:
+
                 hideImageStatus();
                 if(null == mFirstFragment){
                     mFirstFragment = FirstFragment.getInstance();
@@ -168,6 +176,17 @@ public class HomeActivity extends BaseActivity {
                 index_first_icon.setImageResource(R.mipmap.icon_index_01);
                 index_first_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mFirstFragment);
+
+
+                //TODO 11.14 在搜索栏不见的情况下，点击可刷新界面
+                LinearLayout part =  mFirstFragment.getView().findViewById(R.id.search_part);
+                Rect localRect = new Rect();
+                boolean isVisible = part.getLocalVisibleRect(localRect);
+                KLog.d("tag","搜索栏的状态 " + isVisible );
+                if(!isVisible){
+                    EventBus.getDefault().post(new toRefreshEvent("去刷新呈现的界面"));
+                }
+
                 break;
             case R.id.index_tool:
                 hideImageStatus();
@@ -188,8 +207,6 @@ public class HomeActivity extends BaseActivity {
                 switchFragment(mCircleFragment);
                 break;
             case R.id.index_my:
-
-
                 hideImageStatus();
                 if(null == mMyFragment){
                     mMyFragment = MyFragment.getInstance();
@@ -197,8 +214,6 @@ public class HomeActivity extends BaseActivity {
                 index_my_icon.setImageResource(R.mipmap.icon_index_31);
                 index_my_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mMyFragment);
-
-
                 break;
             default:
                 break;
@@ -251,6 +266,7 @@ public class HomeActivity extends BaseActivity {
             firstPressedTime = System.currentTimeMillis();
         }
     }
+
 
 
 }

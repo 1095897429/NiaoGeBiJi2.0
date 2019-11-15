@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp"
+    android:minHeight="308dp"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/head_icon"
+            android:layout_centerVertical="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/icon_fenxiang"/>
+
+        <LinearLayout
+            android:layout_marginLeft="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignTop="@+id/head_icon"
+            android:layout_alignBottom="@+id/head_icon"
+            android:layout_toRightOf="@+id/head_icon"
+            android:orientation="vertical">
+
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <LinearLayout
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal">
+
+                   <TextView
+                       android:id="@+id/sender_name"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:ellipsize="end"
+                       android:lineSpacingExtra="2dp"
+                       android:maxLines="1"
+                       android:text="张俊杰"
+                       android:textColor="@color/text_first_color"
+                       android:textSize="16sp" />
+
+                   <Space
+                       android:layout_width="8dp"
+                       android:layout_height="match_parent" />
+
+                   <ImageView
+                       android:background="#D8D8D8"
+                       android:layout_width="28dp"
+                       android:layout_height="20dp" />
+
+                   <Space
+                       android:layout_width="4dp"
+                       android:layout_height="match_parent" />
+
+                   <ImageView
+                       android:background="#D8D8D8"
+                       android:layout_width="28dp"
+                       android:layout_height="20dp" />
+
+               </LinearLayout>
+
+               <LinearLayout
+                   android:gravity="center"
+                   android:layout_alignParentRight="true"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal">
+
+                   <TextView
+                       android:id="@+id/publish_time"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:ellipsize="end"
+                       android:lineSpacingExtra="2dp"
+                       android:maxLines="1"
+                       android:text="15分钟前"
+                       android:textColor="#AAAEB3"
+                       android:textSize="11sp" />
+
+                   <Space
+                       android:layout_width="8dp"
+                       android:layout_height="match_parent" />
+
+
+                   <ImageView
+                       android:src="@mipmap/icon_circle_report"
+                       android:layout_width="16dp"
+                       android:layout_height="16dp" />
+
+               </LinearLayout>
+
+           </RelativeLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="4dp" />
+
+
+            <TextView
+                android:id="@+id/sender_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="1"
+                android:text="上海青墨网络科技有限公司产品经理"
+                android:textColor="#AAAEB3"
+                android:textSize="13sp" />
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+
+
+
+</RelativeLayout>

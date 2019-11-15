@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ratingbar="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/bottom_part"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="49dp">
+
+        <LinearLayout
+            android:layout_toLeftOf="@+id/comment"
+            android:layout_marginRight="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_corners_4_gray"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/toTalk"
+                    android:textSize="13sp"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/text_second_color"
+                    android:gravity="center|left"
+                    android:text="想说就说，不吐不快"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/comment"
+            android:layout_gravity="center"
+            android:src="@mipmap/icon_news_talk"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/love"
+            android:layout_marginRight="23dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+        <ImageView
+            android:id="@+id/love"
+            android:layout_toLeftOf="@+id/share"
+            android:src="@mipmap/icon_news_love_1"
+            android:layout_marginRight="23dp"
+            android:layout_centerVertical="true"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+        <ImageView
+            android:id="@+id/share"
+            android:src="@mipmap/icon_news_share"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+    </RelativeLayout>
+
+
+
+    <View
+        android:id="@+id/line1"
+        android:layout_above="@+id/bottom_part"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_line"></View>
+
+    <RelativeLayout
+        android:id="@+id/part000"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="44dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_common_left"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+
+
+        <LinearLayout
+            android:id="@+id/part_small_head"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/head_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="4dp"
+                android:src="@mipmap/icon_fenxiang"/>
+
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="公关之家"
+                android:maxLength="10"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="13sp"
+                android:textColor="@color/text_news_title_color"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+
+            <TextView
+                android:id="@+id/focus"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:text="关注"
+                android:background="@drawable/bg_corners_4_yellow"
+                android:layout_width="42dp"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+
+
+
+        <ImageView
+            android:id="@+id/iv_right"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_news_top_share"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+
+
+    </RelativeLayout>
+
+    <com.qmkj.niaogebiji.module.widget.ObservableScrollView
+        android:id="@+id/scrollView"
+        android:overScrollMode="never"
+        android:layout_below="@+id/part000"
+        android:layout_above="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:transitionGroup="true">
+
+        <LinearLayout
+            android:focusable="true"
+            android:paddingTop="4dp"
+            android:focusableInTouchMode="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:id="@+id/solid_part"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:id="@+id/title"
+                    android:textSize="22sp"
+                    android:textColor="@color/text_news_title_color"
+                    android:text="IP营销从内部打破小众圈层的壁垒,“内容+社交”必不可少"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <RelativeLayout
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/head_icon1111"
+                        android:layout_centerVertical="true"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@mipmap/icon_fenxiang"/>
+
+                    <LinearLayout
+                        android:layout_marginLeft="8dp"
+                        android:layout_toRightOf="@+id/head_icon1111"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_title1111"
+                            android:layout_gravity="center|left"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="公关之家"
+                            android:maxLength="10"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_first_color"
+                            android:visibility="visible" />
+
+
+                        <TextView
+                            android:id="@+id/tv_tag1111"
+                            android:layout_gravity="center|left"
+                            android:layout_marginTop="2dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="2019/07/19"
+                            android:maxLength="10"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textSize="11sp"
+                            android:textColor="@color/text_three_color"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/focus11111"
+                        android:layout_alignParentRight="true"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:text="关注"
+                        android:background="@drawable/bg_corners_8_yellow"
+                        android:layout_width="64dp"
+                        android:layout_height="32dp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+
+
+            <com.qmkj.niaogebiji.module.widget.MyWebView
+                android:id="@+id/webview"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </com.qmkj.niaogebiji.module.widget.MyWebView>
+
+            <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="综合评分"
+                    android:layout_marginTop="24dp"
+                    android:textColor="@color/text_second_color"
+                    android:gravity="center"
+                    android:textSize="11sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/acticle_point"
+                    android:layout_marginTop="4dp"
+                    android:text="4"
+                    android:textColor="#515357"
+                    android:gravity="center"
+                    android:textSize="40sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <!--<com.qmkj.niaogebiji.module.widget.StarBar-->
+                    <!--android:id="@+id/starBar"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_marginTop="2dp"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_toRightOf="@+id/part1111"-->
+                    <!--ratingbar:starEmpty="@mipmap/icon_news_rating_flase"-->
+                    <!--ratingbar:starFill="@mipmap/icon_news_rating_true"-->
+                    <!--ratingbar:starDistance="4dp"-->
+                    <!--ratingbar:starCount="5"-->
+                    <!--ratingbar:starSize="16dp"/>-->
+
+                <!--<com.example.xlhratingbar_lib.XLHRatingBar-->
+                    <!--android:id="@+id/xlhRatingBar"-->
+                    <!--android:visibility="visible"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--app:numStars="5"-->
+                    <!--app:rating="5"-->
+                    <!--app:ratingViewClass="com.qmkj.niaogebiji.module.widget.SimpleRatingView"-->
+                    <!--/>-->
+
+
+
+                <TextView
+                    android:text="评分"
+                    android:id="@+id/toRating"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:textColor="@color/text_first_color"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:background="@drawable/bg_corners_8_gray"
+                    android:textSize="13sp"
+                    android:layout_width="80dp"
+                    android:layout_height="34dp" />
+
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="#F6F7F9"></View>
+
+            <!-- 测一测 -->
+            <LinearLayout
+                android:id="@+id/part_test"
+                android:visibility="visible"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/icon_test"
+                        android:src="@mipmap/icon_news_test"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp" />
+
+                    <TextView
+                        android:id="@+id/text_test"
+                        android:layout_toRightOf="@+id/icon_test"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="4dp"
+                        android:text="测一测"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/text_tag"
+                        android:layout_toRightOf="@+id/text_test"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="8dp"
+                        android:text="答对获得5羽毛"
+                        android:textColor="@color/text_second_color"
+                        android:textSize="11sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:paddingLeft="12dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="24dp"
+                    android:paddingRight="12dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_corners_8_gray"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/question_title"
+                        android:text="为什么说做增长前要先做留存？"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_news_title_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <RadioGroup
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/answer_rg"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+                            android:layout_height="58dp">
+
+                            <RadioButton
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="A. 留存和利润有直接关系留存和利润有直接关系"
+                                android:button="@null"
+                                android:textSize="16sp"
+                                android:background="@android:color/transparent"
+                                android:drawableRight="@mipmap/icon_answer_default"
+                                android:id="@+id/a_rb"/>
+
+                            <ImageView
+                                android:id="@+id/right_1"
+                                android:visibility="gone"
+                                android:layout_gravity="left"
+                                android:src="@mipmap/icon_right_answer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+                            android:layout_height="58dp">
+
+                            <RadioButton
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="B. 留存和利润有直接关系"
+                                android:button="@null"
+                                android:textSize="16sp"
+                                android:background="@android:color/transparent"
+                                android:drawableRight="@mipmap/icon_answer_default"
+                                android:id="@+id/b_rb"/>
+
+                            <ImageView
+                                android:id="@+id/right_2"
+                                android:visibility="gone"
+                                android:layout_gravity="left"
+                                android:src="@mipmap/icon_right_answer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/answer_part3"
+                            android:visibility="gone"
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+                            android:layout_height="58dp">
+
+
+                            <RadioButton
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="C. 留存和利润有直接关系"
+                                android:textSize="16sp"
+                                android:button="@null"
+                                android:background="@android:color/transparent"
+                                android:drawableRight="@mipmap/icon_answer_default"
+                                android:id="@+id/c_rb"/>
+                            <ImageView
+                                android:id="@+id/right_3"
+                                android:visibility="gone"
+                                android:layout_gravity="left"
+                                android:src="@mipmap/icon_right_answer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/answer_part4"
+                            android:visibility="gone"
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:gravity="center"
+                            android:layout_height="58dp">
+
+                            <RadioButton
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="D. 留存和利润有直接关系"
+                                android:textSize="16sp"
+                                android:button="@null"
+                                android:background="@android:color/transparent"
+                                android:drawableRight="@mipmap/icon_answer_default"
+                                android:id="@+id/d_rb"/>
+                            <ImageView
+                                android:id="@+id/right_4"
+                                android:visibility="gone"
+                                android:layout_gravity="left"
+                                android:src="@mipmap/icon_right_answer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+
+                    </RadioGroup>
+
+
+                    <TextView
+                        android:id="@+id/test_submit"
+                        android:gravity="center"
+                        android:layout_marginTop="12dp"
+                        android:text="提交"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_corners_8_light_yellow"
+                        android:textColor="@color/text_second_color"
+                        android:layout_width="160dp"
+                        android:layout_height="44dp" />
+
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="#F6F7F9"/>
+
+
+            <!-- 延伸阅读 -->
+            <LinearLayout
+                android:id="@+id/part1111_reading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/more_read"
+                    android:gravity="center"
+                    android:visibility="visible"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/icon_moreread"
+                            android:src="@mipmap/icon_news_moreread"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp" />
+
+                        <TextView
+                            android:layout_toRightOf="@+id/icon_moreread"
+                            android:layout_marginLeft="4dp"
+                            android:text="延伸阅读"
+                            android:textColor="@color/text_news_title_color"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="16dp"
+                        android:layout_height="1px"
+                        android:background="@color/divider_line"/>
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/more_read_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:visibility="visible"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:scrollbars="none"/>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_height="8dp"
+                    android:background="#F6F7F9"></View>
+
+
+            </LinearLayout>
+
+            <!-- 评论 -->
+            <LinearLayout
+                android:id="@+id/comment_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/icon_newscomment"
+                        android:src="@mipmap/icon_news_comment"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp" />
+
+                    <TextView
+                        android:layout_toRightOf="@+id/icon_newscomment"
+                        android:text="评论"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="4dp"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_height="1px"
+                    android:background="@color/divider_line"/>
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/more_comment_list"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:scrollbars="none"/>
+
+            <include
+                android:visibility="gone"
+                layout="@layout/empty_layout"></include>
+
+        </LinearLayout>
+
+    </com.qmkj.niaogebiji.module.widget.ObservableScrollView>
+
+
+
+    <ImageView
+        android:id="@+id/backtop"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:scaleType="centerCrop"
+        android:layout_marginRight="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/bottom_part"
+        android:layout_marginBottom="16dp"
+        android:src="@mipmap/icon_back_top"
+        android:visibility="gone" />
+
+
+</RelativeLayout>

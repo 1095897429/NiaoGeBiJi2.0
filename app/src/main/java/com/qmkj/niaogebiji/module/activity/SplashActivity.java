@@ -40,7 +40,6 @@ public class SplashActivity extends BaseActivity {
     boolean continuerequest = true;
     //跳转到设置界面，然后返回时onResume检查权限
     boolean isJumpSet = false;
-
     String permissions[] = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE};
@@ -52,7 +51,6 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
@@ -129,14 +127,12 @@ public class SplashActivity extends BaseActivity {
         mPermissForbidDialog.setCallBack(new PermissForbidDialog.CallBack() {
             @Override
             public void forward() {
-
                 //引导用户至设置页手动授权
                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
                 intent.setData(uri);
                 startActivity(intent);
                 isJumpSet = true;
-
                 mPermissForbidDialog.dismiss();
             }
 
@@ -159,7 +155,6 @@ public class SplashActivity extends BaseActivity {
         for (int i = 0; i < grantResults.length; ++i) {
 
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-
                 //用户勾选了不再提示，函数返回false
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     //解释原因，并且引导用户至设置页手动授权

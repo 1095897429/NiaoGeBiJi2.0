@@ -65,6 +65,7 @@ android:layout_height="match_parent">
                 android:layout_height="match_parent" />
 
             <RelativeLayout
+                android:id="@+id/rl_sign"
                 android:layout_width="28dp"
                 android:layout_height="28dp">
 

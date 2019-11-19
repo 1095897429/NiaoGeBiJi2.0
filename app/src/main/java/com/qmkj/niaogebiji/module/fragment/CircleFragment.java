@@ -1,10 +1,14 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.view.View;
+
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
@@ -15,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * @author zhouliang
@@ -56,6 +61,7 @@ public class CircleFragment extends BaseLazyFragment {
         String [] titile = new String[]{"关注","推荐"};
 
         pager_title.initData(titile,mViewPager,0);
+
 
     }
 
@@ -133,5 +139,19 @@ public class CircleFragment extends BaseLazyFragment {
         });
     }
 
+
+
+    @OnClick({R.id.icon_send_msg})
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.icon_send_msg:
+                UIHelper.toCircleMakeActivity(getActivity());
+                //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                break;
+
+            default:
+        }
+    }
 
 }

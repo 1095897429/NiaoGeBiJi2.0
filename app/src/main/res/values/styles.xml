@@ -57,4 +57,10 @@
         <item name="android:thumb">@drawable/seekbar_thumb_bg</item>
     </style>
 
+
+    <!-- 自定义checkbox -->
+    <style name="CustomCheckBoxTheme" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/check_box_selector</item>
+    </style>
+
 </resources>

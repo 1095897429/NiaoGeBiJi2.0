@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -99,6 +102,15 @@ public class FirstItemFragment extends BaseLazyFragment {
         initLayout();
         getData();
 
+
+    }
+
+    private void initAnimate() {
+//        ObjectAnimator objectAnimatorY = ObjectAnimator.ofFloat(flash_title,"translationY",0f,200f);
+//        AnimatorSet animatorSet = new AnimatorSet();
+//        animatorSet.play(objectAnimatorY);
+//        animatorSet.setDuration(3000);
+//        animatorSet.start();
     }
 
     private void initSamrtLayout() {
@@ -129,6 +141,8 @@ public class FirstItemFragment extends BaseLazyFragment {
                   bean1.setItemType(2);
               }else if(i == 5){
                   bean1.setItemType(3);
+              }else if(i == 7){
+                  bean1.setItemType(5);
               }else{
                   bean1.setItemType(1);
               }
@@ -140,6 +154,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
         mFirstItemAdapter.setNewData(mAllList);
 
+        initAnimate();
     }
 
 
@@ -211,6 +226,9 @@ public class FirstItemFragment extends BaseLazyFragment {
                                     UIHelper.toNewsDetailActivity(getActivity(),aid);
                                 }
                                 break;
+                                case FirstItemNewAdapter.ACTIVITY_TYPE:
+                                    KLog.d("tag","开启网页去打开");
+                                    break;
                             default:
                         }
                     });

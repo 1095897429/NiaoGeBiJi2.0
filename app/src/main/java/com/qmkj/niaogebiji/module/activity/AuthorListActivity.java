@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -237,6 +239,18 @@ public class AuthorListActivity extends BaseActivity {
                     }
 
                 });
+    }
+
+
+    @OnClick({R.id.iv_back})
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.iv_back:
+                finish();
+                break;
+
+            default:
+        }
     }
 
 

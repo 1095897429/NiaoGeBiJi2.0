@@ -24,11 +24,7 @@
 
 
         <activity android:name=".module.activity.SplashActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
@@ -39,10 +35,17 @@
 
         <activity android:name=".module.activity.LoginActivity"
             android:screenOrientation="portrait">
+
         </activity>
 
         <activity android:name=".module.activity.PhoneInputActivity"
             android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
 
@@ -82,6 +85,23 @@
 
 
         <activity android:name=".module.activity.NewsDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+
+        <activity android:name=".module.activity.PersonActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.CircleMakeActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.SecretActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.UserAgreeActivity"
             android:screenOrientation="portrait">
         </activity>
     </application>

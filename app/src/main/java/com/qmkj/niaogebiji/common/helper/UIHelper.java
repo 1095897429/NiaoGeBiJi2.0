@@ -6,6 +6,7 @@ import android.content.Intent;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
+import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
@@ -14,6 +15,8 @@ import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
+import com.qmkj.niaogebiji.module.activity.SecretActivity;
+import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 
@@ -116,5 +119,25 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+
+    /** 打开圈子发布界面 */
+    public static void toCircleMakeActivity(Context ctx) {
+        Intent intent = new Intent(ctx, CircleMakeActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开隐私界面 */
+    public static void toSecretActivity(Context ctx) {
+        Intent intent = new Intent(ctx, SecretActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开用户协议界面 */
+    public static void toUserAgreeActivity(Context ctx) {
+        Intent intent = new Intent(ctx, UserAgreeActivity.class);
+        ctx.startActivity(intent);
+    }
 
 }

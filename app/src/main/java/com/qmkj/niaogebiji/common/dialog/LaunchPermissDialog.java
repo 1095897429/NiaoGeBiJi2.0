@@ -59,7 +59,6 @@ public class LaunchPermissDialog {
             Window dialogWindow = mDialog.getWindow();
             WindowManager.LayoutParams lp = dialogWindow.getAttributes();
             lp.width = (int) (mDisplay.getWidth() * 0.8);
-
             return this;
         }
 

@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.animation.ObjectAnimator;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -63,6 +67,8 @@ public class CategoryListActivity extends BaseActivity {
         initSamrtLayout();
         getData();
     }
+
+
 
 
     private void getData() {
@@ -138,6 +144,14 @@ public class CategoryListActivity extends BaseActivity {
             page = 1;
             getData();
         });
+    }
+
+
+    @OnClick({R.id.iv_back})
+    public void functions(View view){
+        if(view.getId() == R.id.iv_back){
+            finish();
+        }
     }
 
 

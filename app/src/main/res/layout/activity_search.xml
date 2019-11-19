@@ -84,41 +84,81 @@
             android:layout_height="1px"
             android:background="@color/divider_line"/>
 
-
-        <RelativeLayout
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:text="搜索历史"
-                android:textSize="13sp"
-                android:layout_centerVertical="true"
-                android:textColor="@color/text_second_color"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ImageView
-                android:id="@+id/delete_history"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@mipmap/icon_history_delete"
-                android:layout_width="28dp"
-                android:layout_height="28dp" />
-
-        </RelativeLayout>
-
-
-
-        <com.zhy.view.flowlayout.TagFlowLayout
-            android:id="@+id/flowlayout_history"
+        <LinearLayout
+            android:id="@+id/ll_history"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
-        </com.zhy.view.flowlayout.TagFlowLayout>
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/text_history"
+                    android:text="搜索历史"
+                    android:textSize="13sp"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/text_second_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/delete_history"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/icon_history_delete"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp" />
+
+
+            </RelativeLayout>
+
+
+            <com.zhy.view.flowlayout.TagFlowLayout
+                android:id="@+id/flowlayout_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+            </com.zhy.view.flowlayout.TagFlowLayout>
+
+
+
+        </LinearLayout>
+
+
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/part2222"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:orientation="vertical">
+
+        <TableLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+
+        <com.qmkj.niaogebiji.module.widget.CustomViewPager
+            android:id="@+id/viewpager"
+            android:overScrollMode="never"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </com.qmkj.niaogebiji.module.widget.CustomViewPager>
+
+    </LinearLayout>
 
 
 </LinearLayout>

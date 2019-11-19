@@ -41,7 +41,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
         addItemType(LONG_IMG_TYPE,R.layout.first_item6);
         //实时快讯
         addItemType(FLASH_TYPE,R.layout.first_item4);
-        //实时快讯
+        //推荐活动
         addItemType(ACTIVITY_TYPE,R.layout.first_item5);
     }
 

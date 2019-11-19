@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center|top"
+    android:background="@color/transparent">
+
+
+    <LinearLayout
+        android:id="@+id/part1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:src="@mipmap/icon_task_dialog"
+            android:layout_width="match_parent"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:background="@drawable/bg_left_14_right_white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/txt_title"
+                android:text="回答正确"
+                android:textStyle="bold"
+                android:textColor="#FF5040"
+                android:padding="10dp"
+                android:textSize="18sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+            <LinearLayout
+                android:id="@+id/part1111"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_msg"
+                    android:text="+5"
+                    android:textStyle="bold"
+                    android:textColor="#FA541C"
+                    android:textSize="40sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    />
+
+                <TextView
+                    android:text="羽毛"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="-2dp"
+                    android:textColor="#FF5040"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_width="239dp"
+                android:layout_height="wrap_content"
+                android:text="你成功领悟到了这篇文章的精髓，5个小羽毛作为奖励已经到你的账号啦，请继续努力哦~"
+                android:textColor="@color/text_second_color"
+                android:textSize="13sp"
+                android:gravity="left" />
+
+
+            <TextView
+                android:id="@+id/btn_neg"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:layout_gravity="center"
+                android:layout_width="239dp"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_corners_10_yellow"
+                android:text="知道了"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="13sp" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

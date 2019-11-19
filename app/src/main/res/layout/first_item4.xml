@@ -77,7 +77,7 @@
           </LinearLayout>
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/flash_title"
                 android:layout_marginLeft="12dp"
                 android:layout_toRightOf="@+id/part1"
                 android:layout_alignTop="@+id/part1"

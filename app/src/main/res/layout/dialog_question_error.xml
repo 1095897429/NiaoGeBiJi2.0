@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_corners_12"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:text="回答错误"
+            android:paddingTop="32dp"
+            android:textColor="@color/text_first_color"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            />
+
+
+        <TextView
+            android:id="@+id/txt_msg"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_width="239dp"
+            android:layout_height="wrap_content"
+            android:text="抱歉，你没有领悟这篇文章的精髓，下一次认真读哦"
+            android:textColor="@color/text_second_color"
+            android:textSize="12sp"
+            android:gravity="left" />
+
+
+        <TextView
+            android:id="@+id/btn_neg"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center"
+            android:layout_width="239dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_corners_10_yellow"
+            android:text="查看正确答案"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/text_first_color"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

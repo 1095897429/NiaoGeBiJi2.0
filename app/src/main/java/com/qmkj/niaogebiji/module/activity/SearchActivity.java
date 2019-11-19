@@ -2,29 +2,48 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
-import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringToolKit;
+import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
+import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.History;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.db.DBManager;
+import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.LookMoreEvent;
+import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
+import com.qmkj.niaogebiji.module.fragment.ActionFragment;
+import com.qmkj.niaogebiji.module.fragment.FirstItemFragment;
+import com.qmkj.niaogebiji.module.fragment.FlashFragment;
+import com.qmkj.niaogebiji.module.fragment.HotNewsFragment;
+import com.qmkj.niaogebiji.module.fragment.SearchAllFragment;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,9 +67,17 @@ public class SearchActivity extends BaseActivity {
     @BindView(R.id.part1111)
     LinearLayout part1111;
 
+    @BindView(R.id.part2222)
+    LinearLayout part2222;
+
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
+
     @BindView(R.id.et_input)
     EditText et_input;
 
+    @BindView(R.id.ll_history)
+    LinearLayout ll_history;
 
     @BindView(R.id.flowlayout_history)
     TagFlowLayout flowlayout_history;
@@ -60,9 +87,15 @@ public class SearchActivity extends BaseActivity {
     @BindView(R.id.flowlayout)
     TagFlowLayout mTagFlowLayout;
 
+    private String defaultHotKey;
+
     private String[] mVals = new String[]{"小程序","APP推广1","小程序","APP推广2","小程序","APP推广3","小程序","APP推广4"};
 
 
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -72,7 +105,6 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
         //显示弹框
         KeyboardUtils.showSoftInput(et_input);
 
@@ -82,32 +114,38 @@ public class SearchActivity extends BaseActivity {
        if(null != temps && !temps.isEmpty()){
            mList1.addAll(temps);
            initHistoryData();
+           ll_history.setVisibility(View.VISIBLE);
        }
 
-        et_input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH){
-                    //点击搜索的时候隐藏软键盘
-                    KeyboardUtils.hideSoftInput(et_input);
-                    //存储数据库
-                    String myKeyword = v.getEditableText().toString().trim();
-                    if(!TextUtils.isEmpty(myKeyword)){
-
-                        insertToDb(myKeyword);
-                        // 在这里写搜索的操作,一般都是网络请求数据
-                        toSearch(myKeyword);
-                        return true;
+        et_input.setOnEditorActionListener((v, actionId, event) -> {
+            if(actionId == EditorInfo.IME_ACTION_SEARCH){
+                //点击搜索的时候隐藏软键盘
+                KeyboardUtils.hideSoftInput(et_input);
+                //存储数据库
+                String myKeyword = v.getEditableText().toString().trim();
+                //如果输入文本框为空，则默认热搜第一个此
+                if(TextUtils.isEmpty(myKeyword)){
+                    if(mHot_searches != null && !mHot_searches.isEmpty()){
+                        myKeyword = defaultHotKey;
                     }
                 }
-                return false;
+                insertToDb(myKeyword);
+                // 在这里写搜索的操作,一般都是网络请求数据
+                toSearch(myKeyword);
+                return true;
             }
+            return false;
         });
     }
 
     private void toSearch(String keyword) {
-//        UIHelper.toSearchResultActivity(SearchActivity.this,keyword);
-        finish();
+        part2222.setVisibility(View.VISIBLE);
+        part1111.setVisibility(View.GONE);
+        et_input.setText(keyword);
+        et_input.setSelection(keyword.length());
+
+        //初始化tab数据
+        initPartData2();
     }
 
 
@@ -140,12 +178,9 @@ public class SearchActivity extends BaseActivity {
                 LinearLayout ll = (LinearLayout) LayoutInflater.from(SearchActivity.this).inflate(R.layout.tag_layout,mTagFlowLayout,false);
                 TextView textView = ll.findViewById(R.id.tag_name);
                 textView.setText(history.getName());
-                textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        KeyboardUtils.hideSoftInput(et_input);
-                        toSearch(textView.getText().toString());
-                    }
+                textView.setOnClickListener(v -> {
+                    KeyboardUtils.hideSoftInput(et_input);
+                    toSearch(textView.getText().toString());
                 });
                 return ll;
             }
@@ -164,17 +199,16 @@ public class SearchActivity extends BaseActivity {
     }
 
     public void showDeleteHistory(){
-
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("清理", v -> {
-
+            //清除历史，刷新界面
+            DBManager.getInstance().deleteHistory();
+            flowlayout_history.removeAllViews();
+            mList1.clear();
+            ll_history.setVisibility(View.GONE);
         }).setNegativeButton("取消", v -> {}).setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
-
-
-
-
 
 
     /** --------------------------------- 热搜  ---------------------------------*/
@@ -185,42 +219,38 @@ public class SearchActivity extends BaseActivity {
     private void searchIndex() {
 
         //测试
-        mHot_searches = new ArrayList<>();
-        for (int i = 0; i < mVals.length; i++) {
-            mHot_search = new SearchBean.Hot_search();
-            mHot_search.setSearch_string(mVals[i]);
-            mHot_searches.add(mHot_search);
-        }
-        initTagData();
+//        mHot_searches = new ArrayList<>();
+//        for (int i = 0; i < mVals.length; i++) {
+//            mHot_search = new SearchBean.Hot_search();
+//            mHot_search.setSearch_string(mVals[i]);
+//            mHot_searches.add(mHot_search);
+//        }
+//        initTagData();
 
 
-//        Map<String,String> map = new HashMap<>();
-//        String result = RetrofitHelper.commonParam(map);
-//
-//        RetrofitHelper.getApiService().searchIndex(result)
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-//                .subscribe(new BaseObserver<HttpResponse<SearchBean>>() {
-//                    @Override
-//                    public void onSuccess(HttpResponse<SearchBean> response) {
-//
-//                        KLog.e("tag",response.getReturn_code());
-//                        mSearchBean = response.getReturn_data();
-//                        if(null != mSearchBean){
-//                            mHot_searches = mSearchBean.getHot_search();
-//                            initTagData();
-//
-//                            //TODO 10.12设置第一个热搜此默认显示在文本上
-//                            if(null != mHot_searches && !mHot_searches.isEmpty()){
-//                                et_input.setHint(mHot_searches.get(0).getSearch_string());
-//                            }
-//
-//                        }
-//
-//                    }
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
 
-//                });
+        RetrofitHelper.getApiService().searchIndex(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<SearchBean> response) {
+
+                        mSearchBean = response.getReturn_data();
+                        if(null != mSearchBean){
+                            mHot_searches = mSearchBean.getHot_search();
+                            initTagData();
+                            //TODO 10.12设置第一个热搜此默认显示在文本上
+                            if(null != mHot_searches && !mHot_searches.isEmpty()){
+                                defaultHotKey = mHot_searches.get(0).getSearch_string();
+                                et_input.setHint(defaultHotKey);
+                            }
+                        }
+                    }
+                });
     }
 
     private void initTagData() {
@@ -261,6 +291,125 @@ public class SearchActivity extends BaseActivity {
         return super .onTouchEvent(event);
     }
 
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSearchBackEvent(SearchCleanEvent event) {
+        part1111.setVisibility(View.VISIBLE);
+        part2222.setVisibility(View.GONE);
+        et_input.setHint(defaultHotKey);
+        //① 更新历史记录
+        List<History> temps =  DBManager.getInstance().queryHistory();
+        if(null != temps && !temps.isEmpty()){
+            mList1.clear();
+            mList1.addAll(temps);
+            initHistoryData();
+            ll_history.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+
+    /** ---------------------------------  搜索结果  ---------------------------------*/
+    //Fragment 集合
+    private List<Fragment> mFragmentList = new ArrayList<>();
+    private List<String> mTitls = new ArrayList<>();
+    //存储频道集合
+    private List<ChannelBean> mChannelBeanList;
+    //适配器
+    private FirstFragmentAdapter mFirstFragmentAdapter;
+
+    String [] titile = new String[]{"全部","干货","人脉","动态","百科","资料","作者"};
+
+
+    private void initPartData2(){
+        mChannelBeanList = new ArrayList<>();
+        ChannelBean bean ;
+        bean = new ChannelBean("0","全部");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("1","干货");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("2","人脉");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("3","动态");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("4","百科");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("5","资料");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("6","作者");
+        mChannelBeanList.add(bean);
+
+
+        if(null != mChannelBeanList){
+            setUpAdater();
+        }
+    }
+
+
+
+    private void setUpAdater() {
+        mFragmentList.clear();
+        mTitls.clear();
+        for (int i = 0; i < mChannelBeanList.size(); i++) {
+            if(i == 0){
+                SearchAllFragment searchAllFragment = SearchAllFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(searchAllFragment);
+            }else if(i == 2){
+                ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(actionFragment);
+            }else if(i == 3){
+                FlashFragment flashFragment = FlashFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(flashFragment);
+            }else if(i == 4){
+                HotNewsFragment hotNewsFragment = HotNewsFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(hotNewsFragment);
+            }else{
+                FirstItemFragment newsItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(newsItemFragment);
+            }
+
+
+            mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
+        }
+
+        //设置适配器
+        mFirstFragmentAdapter = new FirstFragmentAdapter(this,getSupportFragmentManager(), mFragmentList, mTitls);
+        mViewPager.setAdapter(mFirstFragmentAdapter);
+        mViewPager.setOffscreenPageLimit(mFragmentList.size());
+        //设置当前显示标签页为第二页
+        mViewPager.setCurrentItem(0);
+
+        //设置事件
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                KLog.d("tag", "选中的位置 ：" + position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLookMoreEvent(LookMoreEvent event) {
+        int position = event.getCurrentPosition();
+        mViewPager.setCurrentItem(position);
+    }
 
 
 }

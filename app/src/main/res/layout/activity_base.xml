@@ -20,10 +20,10 @@
 
     <RelativeLayout
         android:id="@+id/part_audio"
-        android:visibility="gone"
+        android:visibility="visible"
         android:background="@drawable/bg_corners_8_darkgary"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="34dp"
+        android:layout_marginBottom="49dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:paddingLeft="10dp"
@@ -97,7 +97,7 @@
             <ImageView
                 android:id="@+id/pause"
                 android:src="@mipmap/icon_audio_pause"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
 
@@ -106,7 +106,7 @@
                 android:src="@mipmap/icon_audio_play"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
 
@@ -129,7 +129,7 @@
             android:id="@+id/close"
             android:src="@mipmap/icon_audio_close"
             android:layout_marginRight="10dp"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_width="20dp"

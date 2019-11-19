@@ -166,7 +166,10 @@ public class FocusFragment extends BaseLazyFragment {
                             }
                             mAuther_lists =  mIndexFocusBean.getAuther_list();
                             mArticle_lists = mIndexFocusBean.getArticle_list();
-                            listCommonLogic();
+                            if(!mAuther_lists.isEmpty() && !mArticle_lists.isEmpty()){
+                                listCommonLogic();
+                            }
+
                         }
                     }
 

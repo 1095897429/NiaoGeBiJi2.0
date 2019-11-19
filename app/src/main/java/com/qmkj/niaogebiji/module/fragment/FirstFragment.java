@@ -74,7 +74,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class FirstFragment extends BaseLazyFragment {
 
-
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
@@ -224,9 +223,12 @@ public class FirstFragment extends BaseLazyFragment {
 
 
 
-    @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content})
+    @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content,R.id.rl_sign})
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.rl_sign:
+                KLog.d("tag","去签到界面");
+                break;
             case R.id.search_part:
                 UIHelper.toSearchActivity(getActivity());
                 break;

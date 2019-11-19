@@ -9,6 +9,9 @@ import android.view.MotionEvent;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * @author zhouliang
@@ -62,6 +65,7 @@ public class ClearableEditText extends AppCompatEditText {
                 if (drawable != null && event.getX() <= (getWidth() - getPaddingRight())
                         && event.getX() >= (getWidth() - getPaddingRight() - drawable.getBounds().width())) {
                     setText("");
+                    EventBus.getDefault().post(new SearchCleanEvent());
                 }
                 break;
         }

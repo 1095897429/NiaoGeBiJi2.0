@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.common.base;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
@@ -84,20 +87,66 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         mContext = this;
-        //设置布局
-        setContentView(R.layout.activity_base);
-        ((ViewGroup)findViewById(R.id.fl_content)).addView(getLayoutInflater().inflate(getLayoutId(),null));
 
-
-        //初始化ButterKnife
-        mUnbinder = ButterKnife.bind(this);
         //加入Activity管理器中
         BaseApp.getApplication().getActivityManage().addActivity(this);
         //注册事件
         if(regEvent()){
             EventBus.getDefault().register(this);
         }
+        setContentView(R.layout.activity_base);
+
+        ((ViewGroup)findViewById(R.id.fl_content)).addView(getLayoutInflater().inflate(getLayoutId(),null));
+
+
+        //初始化ButterKnife
+        mUnbinder = ButterKnife.bind(this);
+
+        //设置布局
+        if(SPUtils.getInstance().getBoolean("audio_view_show",false)){
+            part_audio.setVisibility(View.VISIBLE);
+        }else{
+            part_audio.setVisibility(View.GONE);
+        }
+
+        initAudioEvent();
     }
+
+    @SuppressLint("CheckResult")
+    protected  void initAudioEvent(){
+
+        //之前是正在播放，现在是暂停
+        RxView.clicks(pause)
+                //每1秒中只处理第一个元素
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                    play(0);
+                });
+
+
+        //之前是暂停，现在是正在播放
+        RxView.clicks(play)
+                //每1秒中只处理第一个元素
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                    play(1);
+                });
+
+
+        RxView.clicks(close)
+                //每1秒中只处理第一个元素
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                    SPUtils.getInstance().put("audio_view_show",false);
+                    if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
+                        mMediaPlayer.reset();
+                    }
+                    part_audio.setVisibility(View.GONE);
+
+                });
+
+    }
+
 
     /**
      * 是否设置状态栏字体颜色light
@@ -158,24 +207,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     //*************************************** 普通方法 *************************************
-    public void initData() {
-
-    }
-
-
-    //*************************************** 普通方法 *************************************
-
-    //*************************************** 抽象方法 *************************************
-
-
+    public void initData() {}
     protected abstract int getLayoutId();
-
     protected abstract void initView();
-
-    //*************************************** 抽象方法 *************************************
-
-
-
     //*************************************** eventbus实现*************************************
 
     /** 需要接收事件 重写该方法 并返回true */
@@ -183,21 +217,32 @@ public abstract class BaseActivity extends AppCompatActivity {
         return false;
     }
 
-    /** 子类接受事件 重写该方法 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudioEvent(AudioEvent event){
-        KLog.d("tag","AudioEvent");
-        part_audio.setVisibility(View.VISIBLE);
-        initMediaPlayer();
-        initListener();
-        //加载音频资源
-        try {
-            mMediaPlayer.setDataSource(getAudioLocation);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if(null != mMediaPlayer){
+            play(1);
+        }else{
+            //播放音频的view已打开
+            //视频时间是后台返回的
+            SPUtils.getInstance().put("audio_view_show",true);
+            part_audio.setVisibility(View.VISIBLE);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) part_audio.getLayoutParams();
+            lp.setMargins(SizeUtils.dp2px(16f),0,SizeUtils.dp2px(16f), SizeUtils.dp2px(34f + 49f));
+            part_audio.setLayoutParams(lp);
+            initMediaPlayer();
+            //加载音频资源
+            try {
+                mMediaPlayer.setDataSource(getAudioLocation);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            initListener();
+
+            // 准备播放（异步）
+            mMediaPlayer.prepareAsync();
         }
-        // 准备播放（异步）
-        mMediaPlayer.prepareAsync();
+
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -215,57 +260,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //监听用户结束拖动进度条的时候
                 int dest = seekBar.getProgress();
                 mMediaPlayer.seekTo(dest);
-
             }
         });
 
-        RxView.clicks(pause)
-                //每1秒中只处理第一个元素
-                .throttleFirst(1000, TimeUnit.MILLISECONDS)
-                .subscribe(object -> {
-                    play.setVisibility(View.VISIBLE);
-                    pause.setVisibility(View.GONE);
-                    close.setVisibility(View.VISIBLE);
-
-                    play();
-                });
-
-
-        RxView.clicks(play)
-                //每1秒中只处理第一个元素
-                .throttleFirst(1000, TimeUnit.MILLISECONDS)
-                .subscribe(object -> {
-                    play.setVisibility(View.GONE);
-                    pause.setVisibility(View.VISIBLE);
-                    close.setVisibility(View.GONE);
-
-                    play();
-
-                });
-
-
-        RxView.clicks(close)
-                //每1秒中只处理第一个元素
-                .throttleFirst(1000, TimeUnit.MILLISECONDS)
-                .subscribe(object -> {
-
-                    if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
-                        mMediaPlayer.reset();
-                    }
-                    part_audio.setVisibility(View.GONE);
-
-                });
 
     }
 
     //*************************************** eventbus实现*************************************
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
 
     @Override
     protected void onPause() {
@@ -293,8 +295,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /** --------------------------------- 设置 app 字体不随系统字体设置改变  ---------------------------------*/
 
 
-    String getAudioLocation = "https://sharefs.yun.kugou.com/201911121833/b21ec0e226573a3056d3fed" +
-            "3ddc62f66/G001/M01/0D/17/QQ0DAFSOoouAWmrPADzKcq0p8H8687.mp3";
+    String getAudioLocation = "https://sharefs.yun.kugou.com/201911181637/1dd7d2442dacc7389e0c49b459adcfbc/G010/M05/1C/15/qoYBAFUJpaCAVEoIAEK3rlUikTE431.mp3";
 
 
     private MediaPlayer mMediaPlayer;
@@ -320,10 +321,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     @BindView(R.id.audio_title)
     TextView audio_title;
 
-
-
     @BindView(R.id.part_audio)
-    RelativeLayout part_audio;
+    public RelativeLayout part_audio;
 
     // 初始化MediaPlayer
     private void initMediaPlayer() {
@@ -362,6 +361,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             KLog.d("tag","获得音乐总时长 " + lengthoftime);
             seekbar.setMax(lengthoftime);
             time.setText(timeParse(lengthoftime));
+            play(1);
         });
 
         //进度调整完成SeekComplete监听，主要是配合seekTo(int)方法
@@ -408,7 +408,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    private void play() {
+    private void play(int position) {
+
+        if(position == 0){
+            play.setVisibility(View.VISIBLE);
+            pause.setVisibility(View.GONE);
+            close.setVisibility(View.VISIBLE);
+        }else if(position == 1){
+            play.setVisibility(View.GONE);
+            pause.setVisibility(View.VISIBLE);
+            close.setVisibility(View.GONE);
+        }
+
+
         if (mMediaPlayer.isPlaying()){
             isplay = false;
             mMediaPlayer.pause();
@@ -454,6 +466,16 @@ public abstract class BaseActivity extends AppCompatActivity {
             textView.setSelected(true);
             textView.setFocusable(true);
             textView.setFocusableInTouchMode(true);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        if(!SPUtils.getInstance().getBoolean("audio_view_show",false)){
+            part_audio.setVisibility(View.GONE);
         }
     }
 

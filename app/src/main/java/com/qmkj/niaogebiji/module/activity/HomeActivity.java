@@ -268,5 +268,11 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if(SPUtils.getInstance().getBoolean("audio_view_show",false)){
+//            part_audio.setVisibility(View.GONE);
+//        }
+//    }
 }

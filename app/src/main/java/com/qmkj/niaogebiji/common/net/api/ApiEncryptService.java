@@ -4,9 +4,13 @@ package com.qmkj.niaogebiji.common.net.api;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.SearchBean;
+import com.qmkj.niaogebiji.module.bean.SearchResultBean;
+import com.qmkj.niaogebiji.module.bean.TestOkBean;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -87,4 +91,37 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/item/activitiesList")
     Observable<HttpResponse<ActionBean>> activitiesList(@Field("params") String param);
+
+
+    /* 2019.8.26 热搜接口 */
+    @FormUrlEncoded
+    @POST("app/item/searchIndex")
+    Observable<HttpResponse<SearchBean>> searchIndex(@Field("params") String param);
+
+
+    /* 2019.8.25 搜索结果返回接口 */
+    @FormUrlEncoded
+    @POST("app/item/searchContent")
+    Observable<HttpResponse<SearchResultBean>> searchContent(@Field("params") String param);
+
+
+    /* 2019.8.29 文章评论列表接口 */
+    @FormUrlEncoded
+    @POST("app/article/commentList")
+    Observable<HttpResponse<CommentBean>> commentList(@Field("params") String param);
+
+
+    /* 2019.8.29 文章测一测回答*/
+    @FormUrlEncoded
+    @POST("app/my/answerArticleQa")
+    Observable<HttpResponse<TestOkBean>> answerArticleQa(@Field("params") String param);
+
+
+
+    /* 2019.8.29 文章资料下载*/
+    @FormUrlEncoded
+    @POST("app/my/dlArticle")
+    Observable<HttpResponse> dlArticle(@Field("params") String param);
+
+
 }

@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.bean;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.qmkj.niaogebiji.common.base.BaseBean;
+import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 
 import java.util.List;
 
@@ -13,16 +14,28 @@ import java.util.List;
  */
 public class MultSearchBean extends BaseBean implements MultiItemEntity {
 
-    //新闻
-    private NewsItemBean mNewsItemBean;
+    //干货
+    private List<NewsItemBean> mNewsItemBeanList;
     //快讯
-    private FirstItemBean mFirstItemBean;
-    //关注作者文章
-    private IndexFocusBean.Article_list mArticleList;
-
-    //新闻1
-    private SearchNewBean mSearchNewBean;
-
+    private List<FlashBulltinBean.BuilltinBean> mFlashBulltinBeanList;
+    //资料
+    private List<NewsItemBean> mDataItemBeanList;
+    //工具
+    private List<ToolBean> mToolBeanList;
+    //活动
+    private List<ActionBean.Act_list> mActionBeanList;
+    //动态
+    private List<CircleBean> mCircleBeanList;
+    //作者
+    private List<AuthorBean> mAuthorBeanList;
+    //人脉
+    private List<PersonConnectionBean> mPersonConnectionBeanList;
+    //课程
+    private List<CourseBean> mCourseBeanList;
+    //百科
+    private List<BaiduBean> mBaiduBeanList;
+    //测试
+    private List<TestBean> mTestBeanList;
     //类型
     private int itemType;
 
@@ -36,52 +49,91 @@ public class MultSearchBean extends BaseBean implements MultiItemEntity {
     }
 
 
-    public NewsItemBean getNewsItemBean() {
-        return mNewsItemBean;
+    public List<NewsItemBean> getNewsItemBeanList() {
+        return mNewsItemBeanList;
     }
 
-    public SearchNewBean getSearchNewBean() {
-        return mSearchNewBean;
+    public void setNewsItemBeanList(List<NewsItemBean> newsItemBeanList) {
+        mNewsItemBeanList = newsItemBeanList;
     }
 
-    public void setSearchNewBean(SearchNewBean searchNewBean) {
-        mSearchNewBean = searchNewBean;
+    public List<FlashBulltinBean.BuilltinBean> getFlashBulltinBeanList() {
+        return mFlashBulltinBeanList;
     }
 
-    public void setNewsItemBean(NewsItemBean newsItemBean) {
-        mNewsItemBean = newsItemBean;
+    public void setFlashBulltinBeanList(List<FlashBulltinBean.BuilltinBean> flashBulltinBeanList) {
+        mFlashBulltinBeanList = flashBulltinBeanList;
     }
 
-    public FirstItemBean getFirstItemBean() {
-        return mFirstItemBean;
+    public List<NewsItemBean> getDataItemBeanList() {
+        return mDataItemBeanList;
     }
 
-    public void setFirstItemBean(FirstItemBean firstItemBean) {
-        mFirstItemBean = firstItemBean;
+    public void setDataItemBeanList(List<NewsItemBean> dataItemBeanList) {
+        mDataItemBeanList = dataItemBeanList;
     }
 
-
-    public IndexFocusBean.Article_list getArticleList() {
-        return mArticleList;
+    public List<ToolBean> getToolBeanList() {
+        return mToolBeanList;
     }
 
-    public void setArticleList(IndexFocusBean.Article_list articleList) {
-        mArticleList = articleList;
+    public void setToolBeanList(List<ToolBean> toolBeanList) {
+        mToolBeanList = toolBeanList;
     }
 
+    public List<ActionBean.Act_list> getActionBeanList() {
+        return mActionBeanList;
+    }
 
+    public void setActionBeanList(List<ActionBean.Act_list> actionBeanList) {
+        mActionBeanList = actionBeanList;
+    }
 
+    public List<CircleBean> getCircleBeanList() {
+        return mCircleBeanList;
+    }
 
-    public static class SearchNewBean{
+    public void setCircleBeanList(List<CircleBean> circleBeanList) {
+        mCircleBeanList = circleBeanList;
+    }
 
-        private List<NewsItemBean> mNewsItemBeans;
+    public List<AuthorBean> getAuthorBeanList() {
+        return mAuthorBeanList;
+    }
 
-        public List<NewsItemBean> getNewsItemBeans() {
-            return mNewsItemBeans;
-        }
+    public void setAuthorBeanList(List<AuthorBean> authorBeanList) {
+        mAuthorBeanList = authorBeanList;
+    }
 
-        public void setNewsItemBeans(List<NewsItemBean> newsItemBeans) {
-            mNewsItemBeans = newsItemBeans;
-        }
+    public List<PersonConnectionBean> getPersonConnectionBeanList() {
+        return mPersonConnectionBeanList;
+    }
+
+    public void setPersonConnectionBeanList(List<PersonConnectionBean> personConnectionBeanList) {
+        mPersonConnectionBeanList = personConnectionBeanList;
+    }
+
+    public List<CourseBean> getCourseBeanList() {
+        return mCourseBeanList;
+    }
+
+    public void setCourseBeanList(List<CourseBean> courseBeanList) {
+        mCourseBeanList = courseBeanList;
+    }
+
+    public List<BaiduBean> getBaiduBeanList() {
+        return mBaiduBeanList;
+    }
+
+    public void setBaiduBeanList(List<BaiduBean> baiduBeanList) {
+        mBaiduBeanList = baiduBeanList;
+    }
+
+    public List<TestBean> getTestBeanList() {
+        return mTestBeanList;
+    }
+
+    public void setTestBeanList(List<TestBean> testBeanList) {
+        mTestBeanList = testBeanList;
     }
 }

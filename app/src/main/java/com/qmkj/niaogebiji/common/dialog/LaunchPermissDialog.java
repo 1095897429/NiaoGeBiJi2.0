@@ -2,12 +2,12 @@ package com.qmkj.niaogebiji.common.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qmkj.niaogebiji.R;
@@ -23,19 +23,30 @@ public class LaunchPermissDialog {
         private Context mContext;
         private Display mDisplay;
         private Dialog mDialog;
-        //标题
-        private TextView txt_title;
-        //内容
-        private TextView txt_msg;
         //按钮
         private TextView doit;
         //是否显示内容
         private boolean showMsg = false;
+        private ImageView icon1;
+        private ImageView icon2;
+
+        private boolean isSdcardOk;
+        private boolean isPhoneok;
+
+
+    public LaunchPermissDialog(Context context){
+        this.mContext = context;
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context
+                .WINDOW_SERVICE);
+        mDisplay = windowManager.getDefaultDisplay();
+    }
 
 
 
-        public LaunchPermissDialog(Context context){
+    public LaunchPermissDialog(Context context, boolean isSdcardOk, boolean isPhoneok){
             this.mContext = context;
+            this.isSdcardOk = isSdcardOk;
+            this.isPhoneok = isPhoneok;
             WindowManager windowManager = (WindowManager) context.getSystemService(Context
                     .WINDOW_SERVICE);
             mDisplay = windowManager.getDefaultDisplay();
@@ -46,10 +57,16 @@ public class LaunchPermissDialog {
             // 获取Dialog布局
             View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_launchpermiss, null);
             // 获取自定义Dialog布局中的控件
-            txt_title =  view.findViewById(R.id.title);
-            txt_msg =  view.findViewById(R.id.permisstext);
             doit = view.findViewById(R.id.doit);
+            icon1 = view.findViewById(R.id.icon1);
+            icon2 = view.findViewById(R.id.icon2);
+            if(isSdcardOk){
+                icon1.setImageResource(R.mipmap.icon_permission_ok);
+            }
 
+            if(isPhoneok){
+                icon2.setImageResource(R.mipmap.icon_permission_ok);
+            }
 
             // 定义Dialog布局和参数
             mDialog = new Dialog(mContext,R.style.MyDialog);
@@ -62,6 +79,16 @@ public class LaunchPermissDialog {
             return this;
         }
 
+    public LaunchPermissDialog setSdcardOK(){
+        icon1.setImageResource(R.mipmap.icon_permission_ok);
+        return this;
+    }
+
+
+    public LaunchPermissDialog setPhoneOK(){
+        icon2.setImageResource(R.mipmap.icon_permission_ok);
+        return this;
+    }
 
     //右边按钮
     public LaunchPermissDialog setPositionButton(String text, final View.OnClickListener listener) {
@@ -79,14 +106,6 @@ public class LaunchPermissDialog {
         return this;
     }
 
-
-        //设置标题
-        public LaunchPermissDialog setTitle(String title) {
-            txt_title.setText(title);
-            return this;
-        }
-
-
         //false 点击物理返回键不消失
         public LaunchPermissDialog setCancelable(boolean cancel) {
             mDialog.setCancelable(cancel);
@@ -103,11 +122,6 @@ public class LaunchPermissDialog {
 
         //设置填充内容
         private void setLayout() {
-
-            if (showMsg) {
-                txt_msg.setVisibility(View.VISIBLE);
-            }
-
         }
 
         public void show() {

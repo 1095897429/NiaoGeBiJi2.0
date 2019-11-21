@@ -66,21 +66,10 @@ public class PhoneInputActivity extends BaseActivity {
 
         KeyboardUtils.showSoftInput(phone_et);
 
-        toGetVertifyCode.setOnClickListener(view -> {
-            mMobile = phone_et.getText().toString().trim();
-            if(!RegexUtils.isMobileExact(mMobile)){
-                ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
-                ToastUtils.showShort("你输入的好像不是手机号");
-                return;
-            }
-            envelop(mMobile);
-        });
-
 
         RxTextView
                 .textChanges(phone_et)
                 .subscribe(charSequence -> {
-                    KLog.d("tag", "accept: " + charSequence.toString());
                     mMobile = charSequence.toString().trim();
                     if(!TextUtils.isEmpty(mMobile)) {
                         toGetVertifyCode.setBackgroundResource(R.drawable.bg_corners_12_yellow);
@@ -97,7 +86,7 @@ public class PhoneInputActivity extends BaseActivity {
     }
 
 
-    //是否封禁
+    //请求 是否封禁 b-1是 toUDesk b-2 不是 手机号今天是否已经获取超过5次验证码 c-1是 toUDesk c-2不是 发送 成功
     private void envelop(String mobile) {
 
         //1 是，弹窗提示用户联系客服
@@ -105,15 +94,25 @@ public class PhoneInputActivity extends BaseActivity {
 
         //2 否 手机号今天是否已经获取超过5次验证码 - 显示错误信息
 
-        UIHelper.toVertifyCodeActivity(PhoneInputActivity.this);
+        UIHelper.toVertifyCodeActivity(PhoneInputActivity.this,mobile);
     }
 
 
-    @OnClick({R.id.iv_back})
+    @OnClick({R.id.iv_back,R.id.toGetVertifyCode})
     public void clicks(View view){
+        KeyboardUtils.hideSoftInput(phone_et);
         switch (view.getId()){
             case R.id.iv_back:
                 finish();
+                break;
+            case R.id.toGetVertifyCode:
+                mMobile = phone_et.getText().toString().trim();
+                if(!RegexUtils.isMobileExact(mMobile)){
+                    ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                    ToastUtils.showShort("你输入的好像不是手机号");
+                    return;
+                }
+                envelop(mMobile);
                 break;
             default:
         }
@@ -121,41 +120,6 @@ public class PhoneInputActivity extends BaseActivity {
 
 
 
-    /** --------------------------------- 联系客服  ---------------------------------*/
-    //没有登录的时候，userinfo不传，登录，就传
-    private void toUDesk(){
-
-        UdeskConfig.Builder builder = new UdeskConfig.Builder();
-
-        //token为随机获取的，如 UUID.randomUUID().toString()
-        String sdktoken = UUID.randomUUID().toString();
-        KLog.d("tag",sdktoken + "");
-        Map<String, String> info = new HashMap<>();
-        info.put(UdeskConst.UdeskUserInfo.USER_SDK_TOKEN, sdktoken);
-        //以下信息是可选
-
-//        if(null != mUserInfo){
-//            info.put(UdeskConst.UdeskUserInfo.NICK_NAME,mUserInfo.getNickname());
-//            info.put(UdeskConst.UdeskUserInfo.CELLPHONE,mUserInfo.getMobile());
-//            builder.setCustomerUrl(mUserInfo.getAvatar());
-//        }
-        info.put(UdeskConst.UdeskUserInfo.DESCRIPTION,"描述信息");
-
-
-        builder.setUsephoto(true);
-        builder.setUseEmotion(true);
-        builder.setUseMore(true);
-        builder.setUserForm(true);
-        builder.setUserSDkPush(true);
-        builder.setFormCallBack(new IUdeskFormCallBack() {
-            @Override
-            public void toLuachForm(Context context) {
-                KLog.d("tag","jkkkk");
-            }
-        });
-        builder.setDefualtUserInfo(info);
-        UdeskSDKManager.getInstance().entryChat(BaseApp.getApplication(), builder.build(), sdktoken);
-    }
 
 
 

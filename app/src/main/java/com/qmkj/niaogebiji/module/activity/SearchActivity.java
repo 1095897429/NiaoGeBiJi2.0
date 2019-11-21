@@ -89,8 +89,6 @@ public class SearchActivity extends BaseActivity {
 
     private String defaultHotKey;
 
-    private String[] mVals = new String[]{"小程序","APP推广1","小程序","APP推广2","小程序","APP推广3","小程序","APP推广4"};
-
 
     @Override
     protected boolean regEvent() {
@@ -282,9 +280,6 @@ public class SearchActivity extends BaseActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(null != this.getCurrentFocus()){
-            /**
-             * 点击空白位置 隐藏软键盘
-             */
             InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             return mInputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
         }
@@ -295,18 +290,19 @@ public class SearchActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchBackEvent(SearchCleanEvent event) {
-        part1111.setVisibility(View.VISIBLE);
-        part2222.setVisibility(View.GONE);
-        et_input.setHint(defaultHotKey);
-        //① 更新历史记录
-        List<History> temps =  DBManager.getInstance().queryHistory();
-        if(null != temps && !temps.isEmpty()){
-            mList1.clear();
-            mList1.addAll(temps);
-            initHistoryData();
-            ll_history.setVisibility(View.VISIBLE);
+        if(null != this){
+            part1111.setVisibility(View.VISIBLE);
+            part2222.setVisibility(View.GONE);
+            et_input.setHint(defaultHotKey);
+            //① 更新历史记录
+            List<History> temps =  DBManager.getInstance().queryHistory();
+            if(null != temps && !temps.isEmpty()){
+                mList1.clear();
+                mList1.addAll(temps);
+                initHistoryData();
+                ll_history.setVisibility(View.VISIBLE);
+            }
         }
-
     }
 
 
@@ -388,9 +384,7 @@ public class SearchActivity extends BaseActivity {
         //设置事件
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
@@ -405,6 +399,7 @@ public class SearchActivity extends BaseActivity {
     }
 
 
+    //点击全部里的查看更多事件
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLookMoreEvent(LookMoreEvent event) {
         int position = event.getCurrentPosition();

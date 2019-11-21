@@ -1,7 +1,9 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.content.Intent;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import com.qmkj.niaogebiji.module.adapter.ImageBrowseAdapter;
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * @author zhouliang
@@ -22,6 +25,9 @@ import butterknife.BindView;
  * 描述:快讯图片预览界面
  */
 public class PicPreviewActivity extends BaseActivity {
+
+    @BindView(R.id.icon_preview_back)
+    ImageView icon_preview_back;
 
     @BindView(R.id.loading_progress)
     ProgressBar loading_progress;
@@ -74,11 +80,10 @@ public class PicPreviewActivity extends BaseActivity {
     }
 
     private void initEvents(){
-        imageBrowseViewPager .addOnPageChangeListener (new ViewPager.OnPageChangeListener () {
+        imageBrowseViewPager.addOnPageChangeListener (new ViewPager.OnPageChangeListener () {
             @Override
             public void onPageScrolled (int position, float positionOffset, int positionOffsetPixels) {
                 currentIndex = position;
-                updateBottomIndex(position + 1);
             }
             @Override
             public void onPageSelected (int position) {
@@ -112,5 +117,16 @@ public class PicPreviewActivity extends BaseActivity {
         overridePendingTransition(R.anim.fade_in_disappear,R.anim.fade_out_disappear);
     }
 
+
+    @OnClick({R.id.icon_preview_back})
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.icon_preview_back:
+                finish();
+                break;
+
+            default:
+        }
+    }
 
 }

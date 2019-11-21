@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.widget;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -16,7 +17,7 @@ import com.qmkj.niaogebiji.R;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-08
- * 描述:
+ * 描述:验证码输入框
  */
 public class SecurityCodeView extends RelativeLayout {
         private EditText editText;
@@ -24,6 +25,7 @@ public class SecurityCodeView extends RelativeLayout {
         private StringBuffer stringBuffer = new StringBuffer();
         private int count = 4;
         private String inputContent;
+        private Typeface typeface;
 
         public SecurityCodeView(Context context) {
             this(context, null);
@@ -36,6 +38,7 @@ public class SecurityCodeView extends RelativeLayout {
         public SecurityCodeView(Context context, AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
             TextViews = new TextView[4];
+            typeface = Typeface.createFromAsset(context.getAssets(), "fonts/DIN-Medium.otf");
             View.inflate(context, R.layout.view_security_code, this);
 
             editText = findViewById(R.id.et);
@@ -85,8 +88,10 @@ public class SecurityCodeView extends RelativeLayout {
                         }
 
                         for (int i = 0; i < stringBuffer.length(); i++) {
+                            TextViews[i].setTypeface(typeface);
                             TextViews[i].setText(String.valueOf(inputContent.charAt(i)));
-                            TextViews[i].setBackgroundResource(R.drawable.bg_user_verify_code_blue);
+                            //TODO 2019.11.19 按照设计图，不要四周边框，只有底部边框，注释掉
+//                            TextViews[i].setBackgroundResource(R.drawable.bg_user_verify_code_blue);
                         }
 
                     }
@@ -94,18 +99,15 @@ public class SecurityCodeView extends RelativeLayout {
             });
 
             //输入键盘中的删除键
-            editText.setOnKeyListener(new OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_DEL
-                            && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (onKeyDelete()) {
-                            return true;
-                        }
+            editText.setOnKeyListener((v, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_DEL
+                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (onKeyDelete()) {
                         return true;
                     }
-                    return false;
+                    return true;
                 }
+                return false;
             });
         }
 
@@ -121,9 +123,10 @@ public class SecurityCodeView extends RelativeLayout {
                 count--;
                 inputContent = stringBuffer.toString();
                 TextViews[stringBuffer.length()].setText("");
-                TextViews[stringBuffer.length()].setBackgroundResource(R.drawable.bg_user_verify_code_grey);
+//                TextViews[stringBuffer.length()].setBackgroundResource(R.drawable.bg_user_verify_code_grey);
                 if (inputCompleteListener != null){
-                    inputCompleteListener.deleteContent(true);//有删除就通知manger
+                     //有删除就通知manger
+                    inputCompleteListener.deleteContent(true);
                 }
 
             }
@@ -138,7 +141,7 @@ public class SecurityCodeView extends RelativeLayout {
             inputContent = stringBuffer.toString();
             for (int i = 0; i < TextViews.length; i++) {
                 TextViews[i].setText("");
-                TextViews[i].setBackgroundResource(R.drawable.bg_user_verify_code_grey);
+//                TextViews[i].setBackgroundResource(R.drawable.bg_user_verify_code_grey);
             }
         }
 

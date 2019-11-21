@@ -40,69 +40,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <RelativeLayout
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:layout_marginTop="62dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:orientation="vertical">
 
-
-        <com.qmkj.niaogebiji.module.widget.ClearableEditText
-            android:padding="10dp"
-            android:id="@+id/phone_et"
-            android:layout_centerVertical="true"
-            android:inputType="number"
-            android:hint="请输入手机号"
-            android:textSize="16sp"
-            android:maxLength="11"
-            android:text=""
-            android:cursorVisible="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:background="@null"
+        <com.qmkj.niaogebiji.module.widget.SecurityCodeView
+            android:id="@+id/edit_security_code"
             android:layout_width="match_parent"
-            android:layout_height="50dp" />
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" />
 
-    </RelativeLayout>
-
-    <View
-        android:layout_marginRight="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_below="@+id/phone_et"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/divider_line"/>
-
-
-
-
-
+    </LinearLayout>
 
     <TextView
-        android:layout_marginLeft="24dp"
+        android:id="@+id/reget_code"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:textSize="13sp"
+        android:textColor="#5675A7"
         android:layout_marginRight="24dp"
-        android:id="@+id/toGetVertifyCode"
         android:layout_marginTop="32dp"
-        android:text="获取验证码"
-        android:textSize="17sp"
-        android:background="@drawable/bg_corners_12_light_yellow"
-        android:textColor="@color/text_first_color"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:text="重新获取" />
 
 
     <TextView
-        android:layout_marginTop="12dp"
-        android:text="未注册用户验证后自动登录"
-        android:textSize="11sp"
-        android:textColor="#818386"
-        android:gravity="center"
+        android:id="@+id/noget_code"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:textSize="13sp"
+        android:textColor="#5675A7"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="32dp"
+        android:text="无法获取？试试语言验证码" />
 
 </LinearLayout>

@@ -98,7 +98,7 @@
 
                     <ImageView
                         android:id="@+id/icon2"
-                        android:src="@mipmap/icon_permission_sdcard"
+                        android:src="@mipmap/icon_permission_phone"
                         android:layout_width="18dp"
                         android:layout_height="18dp" />
 

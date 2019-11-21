@@ -163,4 +163,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     //lottie
     implementation 'com.airbnb.android:lottie:2.7.0'
+    //html解析器
+    implementation 'org.jsoup:jsoup:1.9.2'
+    compile project(path: ':imagepicker')
 }

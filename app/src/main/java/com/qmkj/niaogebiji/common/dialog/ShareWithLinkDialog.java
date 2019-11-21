@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.qmkj.niaogebiji.R;
 
@@ -25,6 +26,9 @@ public class ShareWithLinkDialog {
     private Dialog dialog;
     private Display display;
 
+    private TextView title;
+    private TextView cancel;
+    private LinearLayout share_dynamic;
     private LinearLayout share_circle;
     private LinearLayout share_friend;
     private LinearLayout share_copy_link;
@@ -55,9 +59,12 @@ public class ShareWithLinkDialog {
     public ShareWithLinkDialog builder(){
         // 获取Dialog布局
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_news,null);
+        share_dynamic = view.findViewById(R.id.share_dynamic);
         share_circle = view.findViewById(R.id.share_circle);
         share_friend = view.findViewById(R.id.share_friend);
         share_copy_link = view.findViewById(R.id.share_copy_link);
+        title = view.findViewById(R.id.title);
+        cancel = view.findViewById(R.id.cancel);
         // 获取自定义Dialog布局中的控件
         dialog = new Dialog(mContext, R.style.MyDialog);
         dialog.setContentView(view);
@@ -82,6 +89,21 @@ public class ShareWithLinkDialog {
         return this;
     }
 
+    public ShareWithLinkDialog setTitleGone() {
+        title.setVisibility(View.GONE);
+        return this;
+    }
+
+    public ShareWithLinkDialog setShareDynamicView() {
+        share_dynamic.setVisibility(View.VISIBLE);
+        return this;
+    }
+
+    public ShareWithLinkDialog setSharelinkView() {
+        share_copy_link.setVisibility(View.VISIBLE);
+        return this;
+    }
+
 
     public ShareWithLinkDialog setCancelable(boolean cancel) {
         dialog.setCancelable(cancel);
@@ -102,6 +124,15 @@ public class ShareWithLinkDialog {
     }
 
     private void setEvent() {
+
+        cancel.setOnClickListener(view -> dialog.dismiss());
+
+        share_dynamic.setOnClickListener(view -> {
+            if(null != mOnDialogItemClickListener){
+                mOnDialogItemClickListener.func(4);
+                dialog.dismiss();
+            }
+        });
 
         share_friend.setOnClickListener(view -> {
             if(null != mOnDialogItemClickListener){

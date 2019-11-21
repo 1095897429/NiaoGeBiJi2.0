@@ -34,9 +34,14 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.socks.library.KLog;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -477,6 +482,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         if(!SPUtils.getInstance().getBoolean("audio_view_show",false)){
             part_audio.setVisibility(View.GONE);
         }
+    }
+
+
+
+    /** --------------------------------- 动画  ---------------------------------*/
+    protected void finishWithAnim(int inAnim,int outAnim){
+        finish();
+        overridePendingTransition(inAnim,outAnim);
     }
 
 }

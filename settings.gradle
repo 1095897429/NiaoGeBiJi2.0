@@ -1,1 +1,1 @@
-include ':app', ':UdeskSDKUI'
+include ':app', ':UdeskSDKUI', ':imagepicker'

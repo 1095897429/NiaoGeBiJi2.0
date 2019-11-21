@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.common.helper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -7,6 +8,7 @@ import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
+import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
@@ -18,6 +20,7 @@ import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.SecretActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
+import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 
 /**
@@ -56,8 +59,9 @@ public class UIHelper {
     }
 
     /** 打开验证码界面 */
-    public static void toVertifyCodeActivity(Context ctx) {
+    public static void toVertifyCodeActivity(Context ctx,String phone) {
         Intent intent = new Intent(ctx, VertifyCodeActivity.class);
+        intent.putExtra("phone",phone);
         ctx.startActivity(intent);
     }
 
@@ -126,6 +130,11 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+    /** 打开圈子发布2界面 */
+    public static void toCircleMakeAddLinkActivity(Activity ctx,int reqCode) {
+        Intent intent = new Intent(ctx, CircleMakeAddLinkActivity.class);
+        ctx.startActivityForResult(intent,reqCode);
+    }
 
     /** 打开隐私界面 */
     public static void toSecretActivity(Context ctx) {
@@ -137,6 +146,13 @@ public class UIHelper {
     /** 打开用户协议界面 */
     public static void toUserAgreeActivity(Context ctx) {
         Intent intent = new Intent(ctx, UserAgreeActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开网页界面 */
+    public static void toWebViewActivity(Context ctx,String link) {
+        Intent intent = new Intent(ctx, WebViewActivity.class);
+        intent.putExtra("link",link);
         ctx.startActivity(intent);
     }
 

@@ -10,11 +10,13 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -23,6 +25,8 @@ import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -41,6 +45,9 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.user_text)
     TextView user_text;
 
+    @BindView(R.id.phoneLogin)
+    LinearLayout phoneLogin;
+
 
     @Override
     protected int getLayoutId() {
@@ -52,6 +59,17 @@ public class LoginActivity extends BaseActivity {
 
         KLog.d("tag",mCheckBox.isChecked() + "");
         initEvent();
+
+        RxView.clicks(phoneLogin)
+                            //每1秒中只处理第一个元素
+                            .throttleFirst(500, TimeUnit.MILLISECONDS)
+                            .subscribe(object -> {
+                                if(!mCheckBox.isChecked()){
+                                    Toast.makeText(this,"请先同意用户协议与隐私政策",Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                UIHelper.toPhoneInputActivity(LoginActivity.this);
+                            });
     }
 
     private void initEvent() {
@@ -98,7 +116,7 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.weixinLogin,R.id.phoneLogin,R.id.iv_back})
+    @OnClick({R.id.weixinLogin,R.id.iv_back})
     public void login(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -110,13 +128,6 @@ public class LoginActivity extends BaseActivity {
                     return;
                 }
                 weChatAuth();
-                break;
-            case R.id.phoneLogin:
-                if(!mCheckBox.isChecked()){
-                    Toast.makeText(this,"请先同意用户协议与隐私政策",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                UIHelper.toPhoneInputActivity(LoginActivity.this);
                 break;
             default:
         }

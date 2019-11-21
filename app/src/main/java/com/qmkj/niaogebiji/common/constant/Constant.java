@@ -13,6 +13,8 @@ public class Constant {
     public static final String IS_LOGIN = "is_login";
     //登录用户
     public static final String USER_INFO = "userInfo";
+    //草稿
+    public static final String TMEP_MSG_INFO = "tempMsg";
     //友盟账号
     public static final String UMAPPKEY = "5d64dd3e3fc1954178000034";
     public static final String UMSECRET = "ff3392be3d47d82329c43d3355265276";

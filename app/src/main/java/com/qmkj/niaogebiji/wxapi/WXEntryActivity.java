@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.module.event.FlashShareEvent;
+import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -67,7 +69,7 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
         String result ;
         //类型：分享还是登录
         int type = baseResp.getType();
-        KLog.d("tag", "type:------> 1 是登录 :  2是分享 " + type);
+        KLog.d("tag", "type:------> 1 是登录 :  2是分享       " + type);
         switch (baseResp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
 
@@ -87,6 +89,10 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
 
                 } else if (type == RETURN_MSG_TYPE_SHARE) {
                     KLog.d("tag","微信分享成功");
+                    //通过EventBus发送
+                    if(FlashFragment.isFlashShare){
+                        EventBus.getDefault().post(new FlashShareEvent("快讯分享"));
+                    }
                 }
 
                 finish();

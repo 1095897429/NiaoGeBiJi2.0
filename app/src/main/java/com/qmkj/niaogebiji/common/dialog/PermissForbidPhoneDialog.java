@@ -2,7 +2,6 @@ package com.qmkj.niaogebiji.common.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,13 +17,11 @@ import com.qmkj.niaogebiji.R;
  * 创建时间 2019-11-08
  * 描述:
  */
-public class PermissForbidDialog {
-    
+public class PermissForbidPhoneDialog {
+
         private Context mContext;
         private Display mDisplay;
         private Dialog mDialog;
-        //标题
-        private TextView txt_title;
         //内容
         private TextView txt_msg;
         //前往设置
@@ -33,6 +30,7 @@ public class PermissForbidDialog {
         private TextView exit;
         //是否显示内容
         private boolean showMsg = false;
+
 
         private CallBack callBack;
 
@@ -47,20 +45,18 @@ public class PermissForbidDialog {
         }
 
 
-        public PermissForbidDialog(Context context){
+        public PermissForbidPhoneDialog(Context context){
             this.mContext = context;
             WindowManager windowManager = (WindowManager) context.getSystemService(Context
                     .WINDOW_SERVICE);
             mDisplay = windowManager.getDefaultDisplay();
         }
 
-
-        public PermissForbidDialog builder(){
+        public PermissForbidPhoneDialog builder(){
             // 获取Dialog布局
-            View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_permissforbid, null);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_permissforbid_phone, null);
             // 获取自定义Dialog布局中的控件
-            txt_title =  view.findViewById(R.id.title);
-            txt_msg =  view.findViewById(R.id.permisstext);
+            txt_msg =  view.findViewById(R.id.txt_msg);
             gotoSetting = view.findViewById(R.id.gotoSetting);
             exit = view.findViewById(R.id.exit);
 
@@ -86,27 +82,20 @@ public class PermissForbidDialog {
             // 调整dialog背景大小
             Window dialogWindow = mDialog.getWindow();
             WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-            lp.width = (int) (mDisplay.getWidth() * 0.8);
+//            lp.width = (int) (mDisplay.getWidth() * 0.8);
 
-            return this;
-        }
-
-
-        //设置标题
-        public PermissForbidDialog setTitle(String title) {
-            txt_title.setText(title);
             return this;
         }
 
 
         //false 点击物理返回键不消失
-        public PermissForbidDialog setCancelable(boolean cancel) {
+        public PermissForbidPhoneDialog setCancelable(boolean cancel) {
             mDialog.setCancelable(cancel);
             return this;
         }
 
         //false 点击外部不消失
-        public PermissForbidDialog setCanceledOnTouchOutside(boolean b) {
+        public PermissForbidPhoneDialog setCanceledOnTouchOutside(boolean b) {
             mDialog.setCanceledOnTouchOutside(b);
             return this;
         }

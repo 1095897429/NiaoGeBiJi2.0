@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_marginBottom="15dp"
+    android:background="@drawable/bg_corners_8_transparent"
+    android:layout_marginRight="8dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            app:round_as_circle="false"
+            app:round_corner="8dp"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
+            android:id="@+id/pic_nomal"
+            android:layout_width="79dp"
+            android:layout_height="79dp" />
+
+        <ImageView
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/pic_nomal_delete"
+            android:src="@mipmap/icon_pic_delete"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
+
+
+</RelativeLayout>

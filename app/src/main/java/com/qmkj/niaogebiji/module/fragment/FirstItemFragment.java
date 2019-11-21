@@ -18,6 +18,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstAuthorAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
@@ -42,6 +43,9 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 import static com.blankj.utilcode.util.Utils.runOnUiThread;
 
@@ -49,7 +53,7 @@ import static com.blankj.utilcode.util.Utils.runOnUiThread;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-11
- * 描述:
+ * 描述:首页干货界面
  */
 public class FirstItemFragment extends BaseLazyFragment {
 
@@ -188,6 +192,7 @@ public class FirstItemFragment extends BaseLazyFragment {
         initEvent();
     }
 
+    @SuppressLint("CheckResult")
     private void initEvent() {
         mFirstItemAdapter.setOnLoadMoreListener(() -> {
             ++page;
@@ -210,29 +215,18 @@ public class FirstItemFragment extends BaseLazyFragment {
         });
 
 
-
         mFirstItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-
-            RxView.clicks(view)
-                    //每1秒中只处理第一个元素
-                    .throttleFirst(1000, TimeUnit.MILLISECONDS)
-                    .subscribe(object -> {
-                        int type = adapter.getItemViewType(position);
-                        switch (type) {
-                            case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                                String aid = mAllList.get(position).getNewsItemBean().getAid();
-                                aid = "24689";
-                                if(!TextUtils.isEmpty(aid)){
-                                    UIHelper.toNewsDetailActivity(getActivity(),aid);
-                                }
-                                break;
-                                case FirstItemNewAdapter.ACTIVITY_TYPE:
-                                    KLog.d("tag","开启网页去打开");
-                                    break;
-                            default:
-                        }
-                    });
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            KLog.d("tag", "ddddd");
+            String aid = mAllList.get(position).getNewsItemBean().getAid();
+            aid = "24689";
+            if (!TextUtils.isEmpty(aid)) {
+                UIHelper.toNewsDetailActivity(getActivity(), aid);
+            }
         });
+
     }
 
 

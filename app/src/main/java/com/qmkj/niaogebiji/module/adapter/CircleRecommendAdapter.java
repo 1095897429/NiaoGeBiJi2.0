@@ -34,7 +34,14 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
 
     @Override
     protected void convert(BaseViewHolder helper, MultiCircleNewsBean item) {
+
+        helper.addOnClickListener(R.id.part1111)
+                .addOnClickListener(R.id.part2222)
+                .addOnClickListener(R.id.circle_share)
+                .addOnClickListener(R.id.circle_comment)
+                .addOnClickListener(R.id.ll_report);
         switch (helper.getItemViewType()){
+
             case RIGHT_IMG_TYPE:
 
 

@@ -19,8 +19,9 @@ import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.LaunchPermissDialog;
-import com.qmkj.niaogebiji.common.dialog.PermissForbidDialog;
+import com.qmkj.niaogebiji.common.dialog.PermissForbidStorageDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.socks.library.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +30,12 @@ import java.util.List;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-08
- * 描述:权限管理
+ * 描述:权限管理 -- 弹框，然后弹出所有权限 -- 不采用了！！
  */
 public class SplashActivity extends BaseActivity {
 
     private LaunchPermissDialog mLaunchPermissDialog;
-    private PermissForbidDialog mPermissForbidDialog;
+    private PermissForbidStorageDialog mPermissForbidStorageDialog;
     private static final int INIT_PERMISSIONS = 100;
     //第二个弹框出现，就不需要onResume时检查权限
     boolean continuerequest = true;
@@ -61,6 +62,7 @@ public class SplashActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if(isJumpSet || continuerequest){
+            KLog.d("tag","检查权限");
             isJumpSet = false;
             continuerequest = true;
             checkAppPermission();
@@ -120,11 +122,11 @@ public class SplashActivity extends BaseActivity {
         if (isFinishing()) {
             return;
         }
-        if (mPermissForbidDialog != null && mPermissForbidDialog.isShowing()) {
-            mPermissForbidDialog.dismiss();
+        if (mPermissForbidStorageDialog != null && mPermissForbidStorageDialog.isShowing()) {
+            mPermissForbidStorageDialog.dismiss();
         }
-        mPermissForbidDialog = new PermissForbidDialog(this).builder();
-        mPermissForbidDialog.setCallBack(new PermissForbidDialog.CallBack() {
+        mPermissForbidStorageDialog = new PermissForbidStorageDialog(this).builder();
+        mPermissForbidStorageDialog.setCallBack(new PermissForbidStorageDialog.CallBack() {
             @Override
             public void forward() {
                 //引导用户至设置页手动授权
@@ -133,7 +135,7 @@ public class SplashActivity extends BaseActivity {
                 intent.setData(uri);
                 startActivity(intent);
                 isJumpSet = true;
-                mPermissForbidDialog.dismiss();
+                mPermissForbidStorageDialog.dismiss();
             }
 
 
@@ -143,7 +145,7 @@ public class SplashActivity extends BaseActivity {
 
             }
         });
-        mPermissForbidDialog.show();
+        mPermissForbidStorageDialog.show();
     }
 
 

@@ -1,4 +1,4 @@
-package com.qmkj.niaogebiji.module.fragment;
+package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -97,14 +97,14 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             helper.setImageResource(R.id.zan_img,R.mipmap.icon_flash_priase);
         }
 
-        if (Integer.parseInt(mBean.getGood_num()) > 0) {
-            helper.setText(R.id.zan_num,mBean.getGood_num() + "");
-            helper.setVisible(R.id.zan_num,true);
-        } else {
-            helper.setVisible(R.id.zan_num,true);
-            helper.setText(R.id.zan_num,"赞");
+        if(!TextUtils.isEmpty(mBean.getGood_num())){
+            if (Integer.parseInt(mBean.getGood_num()) > 0) {
+                helper.setText(R.id.zan_num,mBean.getGood_num() + "");
+                helper.setVisible(R.id.zan_num,true);
+            } else {
+                helper.setVisible(R.id.zan_num,true);
+                helper.setText(R.id.zan_num,"赞");
+            }
         }
-
-
     }
 }

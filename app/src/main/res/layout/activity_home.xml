@@ -6,183 +6,216 @@
 
 
     <RelativeLayout
-        android:id="@+id/oldguide"
-        android:background="#80000000"
-        android:layout_marginBottom="54dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-
-        <ImageView
-            android:layout_marginLeft="13dp"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/guide_img"
-            android:src="@mipmap/icon_guide_1"
-            android:scaleType="centerCrop"
-            android:layout_width="318dp"
-            android:layout_height="112dp" />
-
-        <TextView
-            android:id="@+id/skip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="@dimen/size_28"
-            android:layout_marginRight="@dimen/size_15"
-            android:paddingLeft="@dimen/size_16"
-            android:paddingTop="@dimen/size_3"
-            android:paddingRight="@dimen/size_16"
-            android:paddingBottom="@dimen/size_3"
-            android:text="跳过"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_14" />
-    </RelativeLayout>
-
-
-
-
-    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/fragmentLayout"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_above="@+id/part1111"
             android:layout_height="match_parent">
 
-        </FrameLayout>
-
-        <LinearLayout
-            android:id="@+id/part1111"
-            android:layout_alignParentBottom="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <View
-                android:background="@color/divider_line"
+            <FrameLayout
+                android:id="@+id/fragmentLayout"
                 android:layout_width="match_parent"
-                android:layout_height="1px"></View>
+                android:layout_above="@+id/part1111"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
 
             <LinearLayout
-                android:id="@+id/bottom_ll"
-                android:orientation="horizontal"
+                android:id="@+id/part1111"
+                android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
-                android:layout_height="49dp">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-
-                <LinearLayout
-                    android:id="@+id/index_first"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/index_first_icon"
-                        android:src="@mipmap/icon_index_01"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp" />
-
-                    <TextView
-                        android:id="@+id/index_first_text"
-                        style="@style/index_text"
-                        android:textColor="@color/text_news_title_color"
-                        android:text="首页" />
-
-                </LinearLayout>
-
+                <View
+                    android:background="@color/divider_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"></View>
 
                 <LinearLayout
-                    android:id="@+id/index_tool"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/index_news_icon"
-                        android:src="@mipmap/icon_index_10"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp" />
-
-                    <TextView
-                        android:id="@+id/index_news_text"
-                        style="@style/index_text"
-                        android:text="快讯" />
-
-                </LinearLayout>
+                    android:id="@+id/bottom_ll"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp">
 
 
-                <LinearLayout
-                    android:id="@+id/index_circle"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:id="@+id/index_first"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
 
-                    <ImageView
-                        android:id="@+id/index_activity_icon"
-                        android:src="@mipmap/icon_index_20"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp" />
+                        <ImageView
+                            android:id="@+id/index_first_icon"
+                            android:src="@mipmap/icon_index_01"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp" />
 
-                    <TextView
-                        android:id="@+id/index_activity_text"
-                        style="@style/index_text"
-                        android:text="活动" />
+                        <TextView
+                            android:id="@+id/index_first_text"
+                            style="@style/index_text"
+                            android:textColor="@color/text_news_title_color"
+                            android:text="首页" />
 
-                </LinearLayout>
+                    </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/index_my"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
 
-                    <ImageView
-                        android:id="@+id/index_my_icon"
-                        android:src="@mipmap/icon_index_30"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp" />
+                    <LinearLayout
+                        android:id="@+id/index_tool"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/index_my_text"
-                        style="@style/index_text"
-                        android:text="我的" />
+                        <ImageView
+                            android:id="@+id/index_news_icon"
+                            android:src="@mipmap/icon_index_10"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp" />
+
+                        <TextView
+                            android:id="@+id/index_news_text"
+                            style="@style/index_text"
+                            android:text="快讯" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/index_circle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/index_activity_icon"
+                            android:src="@mipmap/icon_index_20"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp" />
+
+                        <TextView
+                            android:id="@+id/index_activity_text"
+                            style="@style/index_text"
+                            android:text="活动" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/index_my"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/index_my_icon"
+                            android:src="@mipmap/icon_index_30"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp" />
+
+                        <TextView
+                            android:id="@+id/index_my_text"
+                            style="@style/index_text"
+                            android:text="我的" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
 
+            <RelativeLayout
+                android:visibility="gone"
+                android:layout_above="@+id/part1111"
+                android:background="@color/bg_color"
+                android:id="@+id/toMoreLoveYou"
+                android:layout_width="match_parent"
+                android:layout_height="30dp">
+
+                <TextView
+                    android:id="@+id/text"
+                    android:text="想要内容更精确，点这里让我更懂你"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+
+        </RelativeLayout>
 
         <RelativeLayout
-            android:visibility="gone"
-            android:layout_above="@+id/part1111"
-            android:background="@color/bg_color"
-            android:id="@+id/toMoreLoveYou"
+            android:id="@+id/oldguide"
+            android:background="#80000000"
+            android:paddingBottom="49dp"
             android:layout_width="match_parent"
-            android:layout_height="30dp">
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
-            <TextView
-                android:id="@+id/text"
-                android:text="想要内容更精确，点这里让我更懂你"
-                android:gravity="center"
+
+            <ImageView
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/guide_img"
+                android:src="@mipmap/icon_guide_1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_above="@+id/guide_img"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="@dimen/size_16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/guide_num"
+                    android:layout_above="@+id/guide_img"
+                    android:layout_toLeftOf="@+id/skip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/size_12"
+                    android:text="1/4"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_16" />
+
+
+                <TextView
+                    android:id="@+id/skip"
+                    android:background="@drawable/bg_corners_22_stroke"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/size_14"
+                    android:paddingTop="@dimen/size_5"
+                    android:paddingRight="@dimen/size_14"
+                    android:paddingBottom="@dimen/size_5"
+                    android:text="跳过"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_14" />
+
+
+
+
+            </LinearLayout>
+
+
         </RelativeLayout>
 
 
     </RelativeLayout>
+
+
 
 
 </LinearLayout>

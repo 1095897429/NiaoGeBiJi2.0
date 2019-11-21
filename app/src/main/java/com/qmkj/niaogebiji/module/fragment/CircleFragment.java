@@ -10,6 +10,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.widget.ViewPagerTitle;
@@ -141,10 +142,16 @@ public class CircleFragment extends BaseLazyFragment {
 
 
 
-    @OnClick({R.id.icon_send_msg})
+    @OnClick({R.id.icon_send_msg,R.id.rl_newmsg})
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.rl_newmsg:
+                KLog.d("tag","去消息界面");
+                break;
             case R.id.icon_send_msg:
+                if(StringUtil.isFastClick()){
+                    return;
+                }
                 UIHelper.toCircleMakeActivity(getActivity());
                 //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
                 getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ratingbar="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_share_bg"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="340dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_common_left"
+            android:layout_gravity="left|center"
+            android:visibility="gone" />
+
+        <TextView
+            android:text="为文章评分"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:textColor="@color/text_news_title_color"
+            android:paddingLeft="16dp"
+            android:paddingBottom="16dp"
+            android:paddingTop="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+
+    <com.qmkj.niaogebiji.module.widget.StarBar
+        android:id="@+id/starBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_centerVertical="true"
+        ratingbar:starEmpty="@mipmap/icon_rating_false"
+        ratingbar:starFill="@mipmap/icon_rating_true"
+        ratingbar:starDistance="5dp"
+        ratingbar:starCount="5"
+        ratingbar:starSize="44dp"/>
+
+
+
+    <TextView
+        android:id="@+id/submit"
+        android:layout_marginTop="40dp"
+        android:text="提交"
+        android:textSize="13sp"
+        android:background="@drawable/bg_corners_10_gradient"
+        android:textColor="@color/text_news_title_color"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="239dp"
+        android:layout_height="46dp" />
+
+
+
+</LinearLayout>

@@ -9,9 +9,9 @@
     <application
         android:name="com.qmkj.niaogebiji.common.BaseApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/logo_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:allowClearUserData="true"
@@ -20,11 +20,21 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".module.activity.HomeActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <activity android:name=".module.activity.SplashNewActivity">
+
         </activity>
 
 
         <activity android:name=".module.activity.SplashActivity">
-
         </activity>
 
 
@@ -36,16 +46,13 @@
         <activity android:name=".module.activity.LoginActivity"
             android:screenOrientation="portrait">
 
+
         </activity>
 
         <activity android:name=".module.activity.PhoneInputActivity"
             android:screenOrientation="portrait">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
@@ -94,6 +101,12 @@
         </activity>
 
         <activity android:name=".module.activity.CircleMakeActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.CircleMakeAddLinkActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
         </activity>
 
@@ -104,6 +117,22 @@
         <activity android:name=".module.activity.UserAgreeActivity"
             android:screenOrientation="portrait">
         </activity>
+
+        <activity android:name=".module.activity.WebViewActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+
+
+
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+
+
     </application>
 
 </manifest>

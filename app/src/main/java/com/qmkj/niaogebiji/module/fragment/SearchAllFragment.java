@@ -17,7 +17,9 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.SearchAllAdapter;
+import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
+import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultSearchBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
@@ -111,40 +113,47 @@ public class SearchAllFragment extends BaseLazyFragment {
     }
 
     private void getData() {
-        MultSearchBean.SearchNewBean searchBean;
+
         List<NewsItemBean>  list = new ArrayList<>();
         NewsItemBean newsItemBean;
         MultSearchBean bean1 ;
-        //模拟第1条数据
-        searchBean = new MultSearchBean.SearchNewBean();
+
+        //模拟第1条干货
         bean1 = new MultSearchBean();
         bean1.setItemType(1);
-
-        list.clear();
         for (int j = 0; j < 3; j++) {
             newsItemBean = new NewsItemBean();
             list.add(newsItemBean);
         }
-        searchBean.setNewsItemBeans(list);
-
-        bean1.setSearchNewBean(searchBean);
+        bean1.setNewsItemBeanList(list);
         mAllList.add(bean1);
 
-        //模拟第2条数据
+
+        //模拟第2条活动
         MultSearchBean bean2 ;
-        searchBean = new MultSearchBean.SearchNewBean();
+        ActionBean.Act_list actionBean;
+        List<ActionBean.Act_list>  list2 = new ArrayList<>();
         bean2 = new MultSearchBean();
-        bean2.setItemType(1);
-
-        list.clear();
+        bean2.setItemType(2);
         for (int j = 0; j < 2; j++) {
-            newsItemBean = new NewsItemBean();
-            list.add(newsItemBean);
+            actionBean = new ActionBean.Act_list();
+            list2.add(actionBean);
         }
-        searchBean.setNewsItemBeans(list);
-
-        bean2.setSearchNewBean(searchBean);
+        bean2.setActionBeanList(list2);
         mAllList.add(bean2);
+
+        //模拟第3条快讯
+        MultSearchBean bean3 ;
+        FlashBulltinBean.BuilltinBean flashBulltinBean;
+        List<FlashBulltinBean.BuilltinBean>  list3 = new ArrayList<>();
+        bean3 = new MultSearchBean();
+        bean3.setItemType(3);
+        for (int j = 0; j < 2; j++) {
+            flashBulltinBean = new FlashBulltinBean.BuilltinBean();
+            list3.add(flashBulltinBean);
+        }
+        bean3.setFlashBulltinBeanList(list3);
+        mAllList.add(bean3);
 
         mSearchAllAdapter.setNewData(mAllList);
     }
@@ -194,6 +203,12 @@ public class SearchAllFragment extends BaseLazyFragment {
             if(partPosition  == SearchAllAdapter.GANHUO){
                 KLog.d("tag","点击的干货查看更多 ");
                 EventBus.getDefault().post(new LookMoreEvent(1));
+            }else if(partPosition  == SearchAllAdapter.ACTION){
+                KLog.d("tag","点击的活动查看更多 ");
+                EventBus.getDefault().post(new LookMoreEvent(2));
+            }else if(partPosition  == SearchAllAdapter.FLASH){
+                KLog.d("tag","点击的快讯查看更多 ");
+                EventBus.getDefault().post(new LookMoreEvent(3));
             }
         });
     }

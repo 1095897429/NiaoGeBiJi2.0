@@ -80,8 +80,13 @@ public class HomeActivity extends BaseActivity {
     @BindView(R.id.skip)
     TextView skip;
 
+    @BindView(R.id.guide_num)
+    TextView guide_num;
+
+
+
     //点击引导图的次数
-    int count;
+    int count = 1;
 
 
     FirstFragment mFirstFragment;
@@ -103,14 +108,12 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        Gson gson = new Gson();
-        RegisterLoginBean registerLoginBean  = gson.fromJson("", RegisterLoginBean.class);
 
         boolean firstGuide = SPUtils.getInstance().getBoolean("isFirstHomeGuide",false);
         if(!firstGuide){
             oldguide.setVisibility(View.VISIBLE);
-            guideUser();
         }
+        guideUser();
     }
 
     @Override
@@ -133,28 +136,34 @@ public class HomeActivity extends BaseActivity {
 
     @SuppressLint("CheckResult")
     private void guideUser() {
-        RxView.clicks(guide_img)
+        RxView.clicks(oldguide)
                 //每1秒中只处理第一个元素
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    if(count == 0){
+                    ++count;
+                    KLog.d("tag","count = " + count);
+                    if(count == 2){
+                        guide_num.setText(count + "/4");
                         guide_img.setImageResource(R.mipmap.bg_oldguide_2);
-                    }else if(count == 1){
+                    }else if(count == 3){
+                        guide_num.setText(count + "/4");
                         guide_img.setImageResource(R.mipmap.bg_oldguide_3);
-                    }else if(count == 2){
-                        guide_img.setImageResource(R.mipmap.bg_oldguide_1);
+                    }else if(count == 4){
+                        //这里对应最后一页
+                        skip.setText("立即体验");
+                        guide_num.setVisibility(View.GONE);
+                        guide_img.setImageResource(R.mipmap.bg_oldguide_4);
                     }else{
                         oldguide.setVisibility(View.GONE);
+                        SPUtils.getInstance().put("isFirstHomeGuide",true);
                     }
-
-                    ++count;
-                    SPUtils.getInstance().put("isFirstHomeGuide",true);
                 });
 
         RxView.clicks(skip)
                 //每1秒中只处理第一个元素
                 .throttleFirst(1, TimeUnit.SECONDS)
                 .subscribe(object -> {
+                    SPUtils.getInstance().put("isFirstHomeGuide",true);
                     oldguide.setVisibility(View.GONE);
                 });
 

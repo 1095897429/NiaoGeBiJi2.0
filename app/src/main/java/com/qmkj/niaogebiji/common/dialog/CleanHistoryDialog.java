@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.common.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.text.TextPaint;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,12 @@ public class CleanHistoryDialog {
         } else {
             txt_title.setText(title);
         }
+        return this;
+    }
+
+    public CleanHistoryDialog setBold(){
+        TextPaint paint = txt_title.getPaint();
+        paint.setFakeBoldText(true);
         return this;
     }
 

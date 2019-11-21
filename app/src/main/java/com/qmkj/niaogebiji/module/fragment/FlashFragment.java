@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.dialog.ShareFlashDialog;
@@ -32,6 +34,9 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.ZXingUtils;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
+import com.qmkj.niaogebiji.module.adapter.FlashItemAdapter;
+import com.qmkj.niaogebiji.module.bean.FlashOkBean;
+import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.MyLoadMoreView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -517,6 +522,7 @@ public class FlashFragment extends BaseLazyFragment  {
                 .setPlatform(platform)
                 .withMedia(image)
                 .share();
+        isFlashShare = true;
     }
 
 
@@ -536,6 +542,8 @@ public class FlashFragment extends BaseLazyFragment  {
                 .setPlatform(platform)
                 .withMedia(image)
                 .share();
+
+        isFlashShare = true;
     }
 
 
@@ -549,4 +557,38 @@ public class FlashFragment extends BaseLazyFragment  {
     }
 
 
+    /** --------------------------------- 快讯微信请求分享  ---------------------------------*/
+
+    public static  boolean isFlashShare = false;
+
+    private void addBulletinSharePoint() {
+
+        Map<String,String> map = new HashMap<>();
+        map.put("kid",mTempBuilltinBean.getId() + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().addBulletinSharePoint(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<FlashOkBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<FlashOkBean>response) {
+                        FlashOkBean tem = response.getReturn_data();
+                        if("1".equals(tem.getIs_award())){
+                            ToastUtils.setGravity(Gravity.CENTER,0,0);
+                            ToastUtils.showShort("快讯分享成功，给与5羽毛奖励");
+                        }else{
+                            ToastUtils.setGravity(Gravity.CENTER,0,0);
+                            ToastUtils.showShort("快讯分享成功");
+                        }
+                    }
+                });
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventBus(FlashShareEvent event){
+        isFlashShare = false;
+        addBulletinSharePoint();
+    }
 }

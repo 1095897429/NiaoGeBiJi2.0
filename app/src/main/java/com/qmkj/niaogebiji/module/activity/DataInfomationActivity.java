@@ -20,12 +20,15 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.ThingDownAlertDialog;
+import com.qmkj.niaogebiji.common.dialog.ThingDownNotEnoughAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.ThingDownOkAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -82,6 +85,9 @@ public class DataInfomationActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        showDownNotEnoughDialog();
+
         //获取新闻id
         newsId = getIntent().getStringExtra("newsId");
         newsId = "23654";
@@ -185,7 +191,6 @@ public class DataInfomationActivity extends BaseActivity {
             iosAlertDialog.setPositiveButton("确认", v -> {
                 //先本地比较，在发送到后台
                 compareData();
-
             }).setNegativeButton("再想想", v -> {
             }).setMsg("确认消耗" + point + "羽毛下载").setCanceledOnTouchOutside(false);
             iosAlertDialog.show();
@@ -193,6 +198,24 @@ public class DataInfomationActivity extends BaseActivity {
     }
 
     private void compareData() {
+
+        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
+        if(null != userInfo){
+            String myPoint = userInfo.getPoint();
+            myPoint = "40";
+            String needPoint = mNewsDetailBean.getPointnum();
+
+            int result = myPoint.compareTo(needPoint);
+            if(result < 0){
+                //表明我的积分不够
+                showDownNotEnoughDialog();
+            }else{
+                toPayPoint();
+            }
+        }
+    }
+
+    private void toPayPoint() {
         Map<String,String> map = new HashMap<>();
         map.put("aid",newsId);
         String result = RetrofitHelper.commonParam(map);
@@ -229,8 +252,20 @@ public class DataInfomationActivity extends BaseActivity {
             }).setMsg(name).setTitle("下载链接").setCanceledOnTouchOutside(false);
             downOkAlertDialog.show();
         }
-
     }
+
+
+    private void showDownNotEnoughDialog() {
+        final ThingDownNotEnoughAlertDialog iosAlertDialog = new ThingDownNotEnoughAlertDialog(this).builder();
+        iosAlertDialog.setPositiveButton("赚羽毛", v -> {
+
+        }).setNegativeButton("再想想", v -> {
+
+        }).setMsg("您的羽毛余额不足哦").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
 
     /** --------------------------------- 进度动画  ---------------------------------*/
 

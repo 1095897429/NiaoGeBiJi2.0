@@ -28,6 +28,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.dialog.ActiclePointDialog;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.QuestionResultErrorDialog;
 import com.qmkj.niaogebiji.common.dialog.QuestionResultRightDialog;
@@ -37,6 +38,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -174,7 +176,7 @@ public class NewsDetailActivity extends BaseActivity {
             @Override
             public void onGlobalLayout() {
                 solid_title_height = solid_part.getHeight();
-                KLog.d("tag ", "标题 + 作者 固定高度为 " + solid_title_height);
+//                KLog.d("tag ", "标题 + 作者 固定高度为 " + solid_title_height);
                 solid_part.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -257,7 +259,13 @@ public class NewsDetailActivity extends BaseActivity {
                 }
                 break;
             case R.id.toRating:
-
+                if(null != mNewsDetailBean){
+                    if("0".equals(mNewsDetailBean.getIs_add_point())){
+                        showActiclePointDialog();
+                    }else{
+                        return;
+                    }
+                }
                 break;
             case R.id.toDown:
                 UIHelper.toDataInfoActivity(this);
@@ -813,6 +821,7 @@ public class NewsDetailActivity extends BaseActivity {
 
     private void showShareDialog() {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(this).builder();
+        alertDialog.setSharelinkView();
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
@@ -915,6 +924,79 @@ public class NewsDetailActivity extends BaseActivity {
         }
 
     }
+
+    /** --------------------------------- 评分  ---------------------------------*/
+    private void showActiclePointDialog() {
+        final ActiclePointDialog iosAlertDialog = new ActiclePointDialog(this).builder();
+        iosAlertDialog.setOnDialogItemClickListener((position, value) -> {
+            if (position == 1) {
+                KLog.d("tag","评分提交");
+                addArticlePoint(value);
+            }
+        });
+        iosAlertDialog.setCanceledOnTouchOutside(true);
+        iosAlertDialog.show();
+    }
+
+    private ActiclePointBean mActiclePointBean;
+
+    private void addArticlePoint(double value) {
+
+        Map<String,String> map = new HashMap<>();
+        if(null != mNewsDetailBean){
+            map.put("aid",mNewsDetailBean.getAid());
+        }
+        map.put("point",value + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().addArticlePoint(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<ActiclePointBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<ActiclePointBean> response) {
+                        mActiclePointBean = response.getReturn_data();
+                        if(null != mActiclePointBean){
+                            //改变状态
+                            mNewsDetailBean.setIs_add_point("1");
+
+                            int result = mActiclePointBean.getIs_show_tip();
+                            //1显示 0 不显示羽毛数）
+                            if("1".equals(result)){
+                                ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                                ToastUtils.showShort("评分成功，获取5羽毛奖励");
+                            }else{
+                                ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                                ToastUtils.showShort("评分成功");
+                            }
+                            //TODO 10.16 获取明细接口，给与平均分
+                            change_grade();
+                        }
+                    }
+                });
+    }
+
+
+    private void change_grade() {
+        Map<String,String> map = new HashMap<>();
+        map.put("aid",newsId);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().detail(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<NewsDetailBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<NewsDetailBean> response) {
+                        mNewsDetailBean = response.getReturn_data();
+                        if(null != mNewsDetailBean){
+                            acticle_point.setText(mNewsDetailBean.getArticle_point());
+                        }
+                    }
+                });
+    }
+
+
 
 
 

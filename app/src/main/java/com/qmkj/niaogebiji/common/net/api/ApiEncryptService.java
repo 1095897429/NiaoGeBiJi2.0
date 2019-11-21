@@ -2,10 +2,12 @@ package com.qmkj.niaogebiji.common.net.api;
 
 
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
+import com.qmkj.niaogebiji.module.bean.FlashOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
@@ -122,6 +124,23 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/dlArticle")
     Observable<HttpResponse> dlArticle(@Field("params") String param);
+
+
+
+    /* 2019.9.23 快讯分享加羽毛*/
+    @FormUrlEncoded
+    @POST("app/my/addBulletinSharePoint")
+    Observable<HttpResponse<FlashOkBean>> addBulletinSharePoint(@Field("params") String param);
+
+
+
+    /* 2019.9.2 文章评分*/
+    @FormUrlEncoded
+    @POST("app/my/addArticlePoint")
+    Observable<HttpResponse<ActiclePointBean>> addArticlePoint(@Field("params") String param);
+
+
+
 
 
 }

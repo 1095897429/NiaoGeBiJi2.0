@@ -6,6 +6,7 @@ import com.blankj.utilcode.util.SPUtils;
 import com.google.gson.Gson;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 
 /**
  * @author zhouliang
@@ -45,4 +46,24 @@ public class StringUtil {
         userInfoBean = null;
         SPUtils.getInstance().remove(Constant.USER_INFO);
     }
+
+
+
+    /** --------------------------------- 快速点击  ---------------------------------*/
+
+    // 两次点击间隔不能少于1000ms
+    private static final int FAST_CLICK_DELAY_TIME = 1000;
+    private static long lastClickTime;
+
+    public static boolean isFastClick() {
+        boolean flag = true;
+        long currentClickTime = System.currentTimeMillis();
+        //当点击时间 和 之前的时间对比，如果大于1秒，返回false ,表示不是快速点击
+        if ((currentClickTime - lastClickTime) >= FAST_CLICK_DELAY_TIME ) {
+            flag = false;
+        }
+        lastClickTime = currentClickTime;
+        return flag;
+    }
+
 }

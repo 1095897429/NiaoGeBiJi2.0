@@ -1,20 +1,35 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.module.widget.SecurityCodeView;
 import com.socks.library.KLog;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import butterknife.OnClick;
+import cn.udesk.UdeskSDKManager;
+import cn.udesk.config.UdeskConfig;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import udesk.core.UdeskConst;
 
 /**
  * @author zhouliang
@@ -24,8 +39,17 @@ import io.reactivex.disposables.Disposable;
  */
 public class VertifyCodeActivity extends BaseActivity {
 
-    @BindView(R.id.tv_text)
-    TextView tv_text;
+    @BindView(R.id.et)
+    EditText et;
+
+    @BindView(R.id.noget_code)
+    TextView noget_code;
+
+    @BindView(R.id.reget_code)
+    TextView reget_code;
+
+    @BindView(R.id.phone_text)
+    TextView phone_text;
 
     @BindView(R.id.edit_security_code)
     SecurityCodeView editText;
@@ -35,7 +59,10 @@ public class VertifyCodeActivity extends BaseActivity {
     Disposable disposable;
 
     //倒计时60秒
-    public static int COUNT = 10;
+    public static int COUNT = 2;
+
+    private String phone;
+
 
     @Override
     protected int getLayoutId() {
@@ -44,6 +71,13 @@ public class VertifyCodeActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        KeyboardUtils.showSoftInput(et);
+
+//        showFobbidUserDialog();
+
+        phone = getIntent().getStringExtra("phone");
+        phone_text.setText("已向" + phone +" 发送验证码");
 
         initRxTime();
 
@@ -60,45 +94,45 @@ public class VertifyCodeActivity extends BaseActivity {
             }
         });
 
-        tv_text.setOnClickListener(view -> {
+        reget_code.setOnClickListener(view -> {
             initRxTime();
         });
     }
 
 
     private void initRxTime() {
-
         int time = SPUtils.getInstance().getInt("lastTime");
         int count;
         if(time == -1){
             //第一次进入
             count = COUNT;
-            tv_text.setEnabled(true);
+            reget_code.setEnabled(true);
         }else if(time == 0){
             //倒计时完成了
             count = COUNT;
-            tv_text.setEnabled(true);
+            reget_code.setEnabled(true);
         }else{
             //倒计时没结束进入
             count = time;
-            tv_text.setEnabled(false);
+            reget_code.setEnabled(false);
         }
-
 
         //参数依次为：从0开始，发送次数是9次 ，0秒延时,每隔1秒发射,主线程中
         disposable = Observable.intervalRange(0,count + 1,0,1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                 .doOnNext(aLong -> {
                     //接收到消息，这里需要判空，因为3秒倒计时中间如果页面结束了，会造成找不到 tvAdCountDown
-                    if (tv_text != null) {
-                        tv_text.setText("重新发送 " + (count - aLong) +  " 秒");
+                    if (reget_code != null) {
+                        reget_code.setText("重新发送 " + (count - aLong) +  " 秒");
+                        reget_code.setTextColor(Color.parseColor("#AAAEB3"));
                         SPUtils.getInstance().put("lastTime",(int) (count - aLong));
-                        tv_text.setEnabled(false);
+                        reget_code.setEnabled(false);
                     }
                 }).doOnComplete(() -> {
-                    tv_text.setEnabled(true);
-                    KLog.d("tag","完成之后跳转到主页面");
+                    reget_code.setEnabled(true);
+//                    KLog.d("tag","完成之后跳转到主页面");
                     SPUtils.getInstance().put("lastTime",COUNT);
-                    tv_text.setText("获取验证码");
+                    reget_code.setText("获取验证码");
+                    reget_code.setTextColor(Color.parseColor("#5675A7"));
                 })
                 .subscribe();
     }
@@ -111,4 +145,75 @@ public class VertifyCodeActivity extends BaseActivity {
             disposable.dispose();
         }
     }
+
+
+    @OnClick({R.id.iv_back,R.id.noget_code})
+    public void clicks(View view){
+        KeyboardUtils.hideSoftInput(et);
+        switch (view.getId()){
+            case R.id.noget_code:
+
+                break;
+            case R.id.iv_back:
+                finish();
+                break;
+            default:
+        }
+    }
+
+
+
+    public void showFobbidUserDialog(){
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
+        iosAlertDialog.setPositiveButton("联系客服", v -> {
+            toUDesk();
+        }).setNegativeButton("取消", v -> {}).setMsg("你的账户已被封禁\n" +
+                "请联系客服处理").setBold().setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    public void showMesCountOverDialog(){
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
+        iosAlertDialog.setPositiveButton("联系客服", v -> {
+
+        }).setNegativeButton("取消", v -> {}).setMsg("验证码发送次数今日已达上限\n" +
+                "请联系客服处理").setBold().setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    // 点击空白区域 自动隐藏软键盘
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(null != this.getCurrentFocus()){
+            InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            return mInputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        }
+        return super .onTouchEvent(event);
+    }
+
+
+    /** --------------------------------- 联系客服  ---------------------------------*/
+    //没有登录的时候，userinfo不传，登录，就传
+    private void toUDesk(){
+        UdeskConfig.Builder builder = new UdeskConfig.Builder();
+        //token为随机获取的，如 UUID.randomUUID().toString()
+        String sdktoken = UUID.randomUUID().toString();
+        KLog.d("tag",sdktoken + "");
+        Map<String, String> info = new HashMap<>();
+        info.put(UdeskConst.UdeskUserInfo.USER_SDK_TOKEN, sdktoken);
+        info.put(UdeskConst.UdeskUserInfo.DESCRIPTION,"描述信息");
+        builder.setUsephoto(true);
+        builder.setUseEmotion(true);
+        builder.setUseMore(true);
+        builder.setUserForm(true);
+        builder.setUserSDkPush(true);
+        builder.setFormCallBack(context -> KLog.d("tag","jkkkk"));
+        builder.setDefualtUserInfo(info);
+        UdeskSDKManager.getInstance().entryChat(BaseApp.getApplication(), builder.build(), sdktoken);
+    }
+
+
+
 }

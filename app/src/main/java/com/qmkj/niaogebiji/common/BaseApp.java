@@ -29,15 +29,9 @@ import cn.udesk.UdeskSDKManager;
 public class BaseApp extends Application {
 
     public static final String TAG = "BaseApp";
-
     private static BaseApp myApp;
-
-
     //注册微信
     private IWXAPI mIWXAPI;
-
-
-
     //Activity管理器
     private ActivityManager mActivityManager;
 

@@ -32,6 +32,9 @@ public class CommentBean extends BaseBean {
     //一级评论
     public static class FirstComment {
 
+        //TODO 2019.11.21 集合内容
+
+
         private String cid;
         private String uid;
         private String username;

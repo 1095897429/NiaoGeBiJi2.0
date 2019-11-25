@@ -1,7 +1,28 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.view.View;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
+import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
+import com.qmkj.niaogebiji.module.bean.FirstItemBean;
+import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
+import com.qmkj.niaogebiji.module.bean.MultiToolNewsBean;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.socks.library.KLog;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
 
 /**
  * @author zhouliang
@@ -10,8 +31,17 @@ import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
  * 描述:
  */
 public class ToolFragment extends BaseLazyFragment {
-    public static final String TAG = "ToolFragment";
 
+
+    @BindView(R.id.recycler)
+    RecyclerView mRecyclerView;
+
+    //适配器
+    ToolItemAdapter mToolItemAdapter;
+    //组合集合
+    List<ToolBean> mAllList = new ArrayList<>();
+    //布局管理器
+    GridLayoutManager mGridLayoutManager;
 
 
     public static ToolFragment getInstance() {
@@ -27,9 +57,8 @@ public class ToolFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
-
-
-
+        initLayout();
+        getData();
     }
 
     //点击切换fragement会调用
@@ -45,16 +74,44 @@ public class ToolFragment extends BaseLazyFragment {
     }
 
 
+    private void getData() {
+
+        ToolBean bean1 ;
+        for (int i = 0; i < 12; i++) {
+            bean1 = new ToolBean();
+            mAllList.add(bean1);
+        }
+
+        mToolItemAdapter.setNewData(mAllList);
+    }
 
 
 
 
+    private void initLayout() {
+        mGridLayoutManager = new GridLayoutManager(getActivity(),3);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
+        //设置适配器
+        mToolItemAdapter = new ToolItemAdapter(mAllList);
+        mRecyclerView.setAdapter(mToolItemAdapter);
+        //解决数据加载不完
+        mRecyclerView.setNestedScrollingEnabled(true);
+        mRecyclerView.setHasFixedSize(true);
+        initEvent();
+    }
 
+    private void initEvent() {
+        mToolItemAdapter.setOnItemClickListener((adapter, view, position) -> {
 
+            if(position == adapter.getData().size() - 1){
+                KLog.d("tag","去更多");
+                return;
+            }
 
-
-
-
+            KLog.d("tag","去webview");
+        });
+    }
 
 
     @Override
@@ -62,34 +119,5 @@ public class ToolFragment extends BaseLazyFragment {
 
     }
 
-
-
-
-//    @OnClick({R.id.sousou, R.id.qiandao, R.id.news_part, R.id.home_news_flipper})
-//    public void clicks(View view){
-//        switch (view.getId()){
-//            case R.id.sousou:
-//                MobclickAgentUtils.onEvent(UmengEvent.index_search_icon);
-//                UIHelper.toSearchActivity(getActivity());
-//                break;
-//            case R.id.qiandao:
-//                //TODO 判断登录
-//                boolean is_login = SPUtils.getInstance().getBoolean(Constant.IS_LOGIN);
-//                if(is_login){
-//                    MobclickAgentUtils.onEvent(UmengEvent.index_point_in_nologin);
-//                    UIHelper.toFeatherNewActivity(getActivity());
-//                }else{
-//                    MobclickAgentUtils.onEvent(UmengEvent.index_point_in_login);
-//                    UIHelper.toLoginActivity(getActivity(),"");
-//                }
-//
-//                break;
-//            case R.id.news_part:
-//
-//                break;
-//
-//            default:
-//        }
-//    }
 
 }

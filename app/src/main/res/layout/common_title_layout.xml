@@ -6,9 +6,9 @@
     android:id="@+id/rl_common_title"
     android:layout_width="match_parent"
     android:layout_marginTop="@dimen/status_bar_height"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:layout_height="54dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:layout_height="44dp"
     android:visibility="visible">
 
     <ImageView
@@ -40,6 +40,7 @@
 
     <ImageView
         android:id="@+id/iv_right"
+        android:src="@mipmap/icon_test_detail_share"
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

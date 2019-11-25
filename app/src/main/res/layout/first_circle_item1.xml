@@ -215,7 +215,7 @@
             android:id="@+id/circle_share"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="20dp"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <ImageView
@@ -246,7 +246,7 @@
             android:id="@+id/circle_comment"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="20dp"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <ImageView
@@ -277,13 +277,14 @@
             android:id="@+id/circle_priase"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="20dp"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <ImageView
                 android:src="@mipmap/icon_flash_priase"
                 android:layout_width="20dp"
                 android:layout_height="20dp" />
+
 
             <Space
                 android:layout_width="8dp"

@@ -6,13 +6,16 @@ import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.bean.VersionBean;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -140,6 +143,23 @@ public interface ApiEncryptService{
     Observable<HttpResponse<ActiclePointBean>> addArticlePoint(@Field("params") String param);
 
 
+    /* 2019.8.29 评论回复*/
+    @FormUrlEncoded
+    @POST("app/my/createComment")
+    Observable<HttpResponse<CommentOkBean>> createComment(@Field("params") String param);
+
+
+
+    /* 2019.8.24 版本更新接口  */
+    @FormUrlEncoded
+    @POST("app/init/checkupd")
+    Observable<HttpResponse<VersionBean>> checkupd(@Field("params") String param);
+
+
+    /* 2019.9.6 更新用户信息*/
+    @FormUrlEncoded
+    @POST("app/my/alterinfo")
+    Observable<HttpResponse<RegisterLoginBean.UserInfo>> alterinfo(@Field("params") String param);
 
 
 

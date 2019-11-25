@@ -285,44 +285,9 @@ public class FlashFragment extends BaseLazyFragment  {
     }
 
 
-    //点赞
-    private void goodBulletin(String flash_id) {
-        Map<String,String> map = new HashMap<>();
-        map.put("type",1 +"");
-        map.put("id",flash_id);
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().goodBulletin(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        changePriaseStatus();
-                    }
-                });
-    }
 
-    //取赞
-    private void cancleGoodBulletin(String flash_id) {
-        Map<String,String> map = new HashMap<>();
-        map.put("type",1 +"");
-        map.put("id",flash_id);
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().cancleGoodBulletin(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        changePriaseStatus();
-                    }
-                });
-    }
-
-
-    private void changePriaseStatus() {
+    @Override
+    protected void changePriaseStatus() {
         if (1 != mTempBuilltinBean.getIs_good()) {
             mTempBuilltinBean.setIs_good(1);
             mTempBuilltinBean.setGood_num((Integer.parseInt(mTempBuilltinBean.getGood_num()) + 1 )+ "");

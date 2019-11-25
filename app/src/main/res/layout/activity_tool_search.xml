@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
+    android:background="#ccffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <com.qmkj.niaogebiji.module.widget.ClearableEditText
+            android:background="@drawable/bg_corners_8_gray"
+            android:paddingLeft="9dp"
+            android:id="@+id/et_input"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:drawableLeft="@mipmap/icon_sousou"
+            android:drawablePadding="10dp"
+            android:focusable="true"
+            android:imeOptions="actionSearch"
+            android:cursorVisible="true"
+            android:hint="什么渠道没假量"
+            android:text=""
+            android:singleLine="true"
+            android:textColorHint="@color/text_second_color"
+            android:focusableInTouchMode="true"
+            android:gravity="left|center"
+            android:textColor="@color/text_first_color"
+            android:textSize="@dimen/sp_13" />
+
+        <Space
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/cancel"
+            android:text="取消"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/text_news_title_color"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="#F6F7F9"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="visible"
+        android:overScrollMode="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

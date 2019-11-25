@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:overScrollMode="never"
+        android:background="@color/bg_color"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/part1111"
+            android:layout_width="match_parent"
+            android:layout_height="291dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:scaleType="centerCrop"
+                android:visibility="visible"
+                android:src="@mipmap/icon_test_detail_head"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <include layout="@layout/common_title_layout"/>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp" />
+
+                <ImageView
+                    android:src="@mipmap/icon_test_detail_icon1"
+                    android:id="@+id/test_grade"
+                    android:layout_width="126dp"
+                    android:layout_height="126dp" />
+
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="-69dp"
+                android:id="@+id/part2222"
+                android:paddingTop="24dp"
+                android:paddingLeft="22dp"
+                android:paddingRight="22dp"
+                android:gravity="center_horizontal"
+                android:background="@drawable/bg_corners_12"
+                android:layout_width="match_parent"
+                android:layout_height="217dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/test_name"
+                    android:text="初级ASO优化师"
+                    android:textSize="22sp"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <TextView
+                    android:id="@+id/test_des"
+                    android:text=" 鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧~"
+                    android:textSize="13sp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/text_second_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp" />
+
+                <TextView
+                    android:id="@+id/test_count"
+                    android:text="1.2w人已测"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_second_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+
+                <TextView
+                    android:id="@+id/toTest"
+                    android:text="开始测试"
+                    android:gravity="center"
+                    android:textSize="17sp"
+                    android:background="@drawable/bg_corners_10_yellow"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+
+
+            </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
+
+        <LinearLayout
+            android:id="@+id/part3333"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="测试须知"
+                android:textSize="14sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/part3333_ll"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

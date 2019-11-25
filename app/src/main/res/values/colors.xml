@@ -32,4 +32,8 @@
     <color name="zan_select_no">#555962</color>
     <!-- 黄色 -->
     <color name="yellow">#FFDC00</color>
+
+
+    <!-- 设置默认字体 -->
+    <color name="setting_text_default">#A6A6A6</color>
 </resources>

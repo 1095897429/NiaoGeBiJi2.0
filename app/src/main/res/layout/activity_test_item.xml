@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:background="@drawable/bg_corners_10_gray"
+                android:id="@+id/part1111"
+                android:layout_centerVertical="true"
+                android:layout_width="97dp"
+                android:layout_height="73dp">
+
+                <TextView
+                    android:background="@drawable/bg_corners_3_red"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/test_time"
+                    android:text="限时"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    android:layout_width="28dp"
+                    android:layout_height="16dp" />
+
+
+
+                <ImageView
+                    android:id="@+id/test_icon"
+                    android:layout_gravity="center"
+                    android:background="@color/bg_color"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/part1111"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/test_name"
+                    android:text="做8题送价值1988元VIP"
+                    android:textSize="17sp"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+
+                <TextView
+                    android:id="@+id/test_count"
+                    android:text="1.2w人已测"
+                    android:textSize="13sp"
+                    android:textColor="@color/setting_text_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+            
+            <ImageView
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:id="@+id/is_test_ok"
+                android:src="@mipmap/icon_test_already"
+                android:layout_width="73dp"
+                android:layout_height="66dp" />
+            
+        </RelativeLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="11dp" />
+
+        <View
+            android:layout_marginLeft="112dp"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+    </LinearLayout>
+
+</LinearLayout>

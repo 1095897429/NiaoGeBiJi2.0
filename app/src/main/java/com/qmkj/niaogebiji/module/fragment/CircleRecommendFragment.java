@@ -1,5 +1,8 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
@@ -8,16 +11,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +32,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
@@ -36,6 +43,8 @@ import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.SendCircleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -45,6 +54,8 @@ import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +71,14 @@ import butterknife.BindView;
  */
 public class CircleRecommendFragment extends BaseLazyFragment {
 
+    @BindView(R.id.allpart)
+    LinearLayout allpart;
+
+    @BindView(R.id.ll_show)
+    LinearLayout ll_show;
+
+    @BindView(R.id.showSendMsg)
+    TextView showSendMsg;
 
     @BindView(R.id.backtop)
     ImageView backtop;
@@ -81,6 +100,8 @@ public class CircleRecommendFragment extends BaseLazyFragment {
     //先用这个bean代替
     NewsDetailBean mNewsDetailBean;
 
+    private int myPosition;
+
 
     public static CircleRecommendFragment getInstance(String chainId, String chainName) {
         CircleRecommendFragment newsItemFragment = new CircleRecommendFragment();
@@ -89,6 +110,11 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         args.putString("chainName", chainName);
         newsItemFragment.setArguments(args);
         return newsItemFragment;
+    }
+
+    @Override
+    protected boolean regEvent() {
+        return true;
     }
 
     @Override
@@ -103,6 +129,8 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         getData();
     }
 
+
+
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         //设置默认垂直布局
@@ -115,6 +143,8 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
+        //添加动画
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         initEvent();
     }
 
@@ -132,21 +162,22 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
         NewsItemBean itemBean;
         FirstItemBean firstItemBean;
-        MultiCircleNewsBean bean1 ;
+        MultiCircleNewsBean bean1;
         for (int i = 0; i < 10; i++) {
-            if(i == 2){
+            if (i == 2) {
                 firstItemBean = new FirstItemBean();
                 bean1 = new MultiCircleNewsBean();
                 bean1.setItemType(4);
                 bean1.setFirstItemBean(firstItemBean);
-            }else {
+            } else {
                 itemBean = new NewsItemBean();
+                itemBean.setTitle("名称 " + i);
                 bean1 = new MultiCircleNewsBean();
-                if(i == 4){
+                if (i == 4) {
                     bean1.setItemType(2);
-                }else if(i == 5){
+                } else if (i == 5) {
                     bean1.setItemType(3);
-                }else{
+                } else {
                     bean1.setItemType(1);
                 }
 
@@ -165,30 +196,44 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
             ++page;
             getData();
-        },mRecyclerView);
+        }, mRecyclerView);
 
         mRecyclerView.addOnScrollListener(new RvScrollListener());
 
         mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            switch (view.getId()){
+            myPosition = position;
+            switch (view.getId()) {
+                case R.id.circle_remove:
+                    showRemoveDialog();
+                    break;
+                case R.id.circle_priase:
+//                    if(mTempBuilltinBean.getIs_good() == 0){
+////                        goodBulletin(mTempBuilltinBean.getId());
+////                    }else{
+////                        cancleGoodBulletin(mTempBuilltinBean.getId());
+////                    }
+
+                    goodBulletin("111");
+                    break;
                 case R.id.ll_report:
-                    KLog.d("tag","举报或分享");
-                    showPopupWindow(adapter.getViewByPosition(position,R.id.ll_report));
-                    setBackgroundAlpha(getActivity(),0.6f);
+                    KLog.d("tag", "举报或分享");
+                    showPopupWindow(adapter.getViewByPosition(position, R.id.ll_report));
+                    setBackgroundAlpha(getActivity(), 0.6f);
                     break;
                 case R.id.circle_comment:
-                    KLog.d("tag","评论去圈子详情");
+                    KLog.d("tag", "评论去圈子详情");
+                    UIHelper.toCommentDetailActivity(getActivity());
                     break;
                 case R.id.circle_share:
-                    KLog.d("tag","圈子分享");
+                    KLog.d("tag", "圈子分享");
                     showShareDialog();
                     break;
                 case R.id.part2222:
-                    KLog.d("tag","图片预览");
+                    KLog.d("tag", "图片预览");
                     toPicPrewView();
                     break;
                 case R.id.part1111:
-                    KLog.d("tag","去个人界面");
+                    KLog.d("tag", "去个人界面");
                     break;
                 case R.id.toMoreActivity:
                     EventBus.getDefault().post(new toActionEvent("去活动界面"));
@@ -203,24 +248,19 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
 
         mCircleRecommendAdapter.setOnItemClickListener((adapter, view, position) -> {
-            if(StringUtil.isFastClick()){
+            if (StringUtil.isFastClick()) {
                 return;
             }
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    String aid = mAllList.get(position).getNewsItemBean().getAid();
-                    aid = "24689";
-                    if(!TextUtils.isEmpty(aid)){
-                        UIHelper.toNewsDetailActivity(getActivity(),aid);
-                    }
+                    UIHelper.toCommentDetailActivity(getActivity());
                     break;
                 default:
             }
 
         });
     }
-
 
 
     private class RvScrollListener extends RecyclerView.OnScrollListener {
@@ -233,9 +273,9 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                 LinearLayoutManager linearManager = (LinearLayoutManager) layoutManager;
                 //获取最后一个可见view的位置
                 int lastItemPosition = linearManager.findLastVisibleItemPosition();
-                if(lastItemPosition > 6){
+                if (lastItemPosition > 6) {
                     backtop.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     backtop.setVisibility(View.GONE);
                 }
             }
@@ -243,7 +283,9 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         }
     }
 
-    /** --------------------------------- 图片预览  ---------------------------------*/
+    /**
+     * --------------------------------- 图片预览  ---------------------------------
+     */
     private void toPicPrewView() {
         ArrayList<String> photos = new ArrayList<>();
         photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
@@ -254,35 +296,39 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03wq6IbWwqAA-IxrPijHEAAMDAwJ0cR8AD4je242.jpg");
         //错误图片url
         photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03v_aISd7vABOqKe2IAXEAAMC8QJgIh4AE6pB2971212.jpg");
-        Bundle bundle = new Bundle ();
-        bundle.putStringArrayList ("imageList", photos);
-        bundle.putBoolean("fromNet",true);
-        bundle.putInt("index",0);
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("imageList", photos);
+        bundle.putBoolean("fromNet", true);
+        bundle.putInt("index", 0);
         Intent intent = new Intent(getActivity(), PicPreviewActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
 
-    /** --------------------------------- 分享  ---------------------------------*/
+    /**
+     * --------------------------------- 分享  ---------------------------------
+     */
 
     private void showShareDialog() {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(getActivity()).builder();
         alertDialog.setShareDynamicView().setTitleGone();
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
-            switch (position){
+            switch (position) {
                 case 0:
-                    KLog.d("tag","朋友圈 是张图片");
+                    KLog.d("tag", "朋友圈 是张图片");
                     shareWxCircleByWeb();
                     break;
                 case 1:
-                    KLog.d("tag","朋友 是链接");
+                    KLog.d("tag", "朋友 是链接");
                     shareWxByWeb();
                     break;
                 case 4:
-                    KLog.d("tag","转发到动态");
-
+                    KLog.d("tag", "转发到动态");
+                    UIHelper.toTranspondActivity(getActivity());
+                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                    getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                     break;
                 default:
             }
@@ -292,10 +338,10 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     // 分享微信（web）
     public void shareWxCircleByWeb() {
-        if (this == null){
+        if (this == null) {
             return;
         }
-        if(null != mNewsDetailBean){
+        if (null != mNewsDetailBean) {
             NewsDetailBean shareBean = mNewsDetailBean;
             String sharepic = shareBean.getPic();
             String shareurl = shareBean.getShare_url();
@@ -326,10 +372,10 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     //分享微信（web) 链接
     private void shareWxByWeb() {
-        if(null == this){
+        if (null == this) {
             return;
         }
-        if(null != mNewsDetailBean){
+        if (null != mNewsDetailBean) {
             NewsDetailBean shareBean = mNewsDetailBean;
             String sharepic = shareBean.getPic();
             String shareurl = shareBean.getShare_url();
@@ -360,9 +406,11 @@ public class CircleRecommendFragment extends BaseLazyFragment {
     }
 
 
-    /** --------------------------------- 浮层  ---------------------------------*/
+    /**
+     * --------------------------------- 浮层  ---------------------------------
+     */
 
-    private void showPopupWindow(View view){
+    private void showPopupWindow(View view) {
         //加载布局
         View inflate = LayoutInflater.from(getContext()).inflate(R.layout.popupwindow_report, null);
         PopupWindow mPopupWindow = new PopupWindow(inflate);
@@ -375,14 +423,14 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         mPopupWindow.setFocusable(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //以view的左下角为原点，xoff为正表示向x轴正方向偏移像素
-            mPopupWindow.showAsDropDown(view,-SizeUtils.dp2px(10f),SizeUtils.dp2px(10f));
+            mPopupWindow.showAsDropDown(view, -SizeUtils.dp2px(10f), SizeUtils.dp2px(10f));
         }
         //对popupWindow进行显示
         mPopupWindow.update();
         //消失时将透明度设置回来
         mPopupWindow.setOnDismissListener(() -> {
-            if(null != getActivity()){
-                setBackgroundAlpha(getActivity(),1f);
+            if (null != getActivity()) {
+                setBackgroundAlpha(getActivity(), 1f);
             }
         });
 
@@ -412,4 +460,98 @@ public class CircleRecommendFragment extends BaseLazyFragment {
     }
 
 
+    @Override
+    protected void changePriaseStatus() {
+
+    }
+
+
+    /** --------------------------------- 删除帖子  ---------------------------------v*/
+
+    private void showRemoveDialog() {
+
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(getActivity()).builder();
+        iosAlertDialog.setPositiveButton("删除", v -> {
+            mCircleRecommendAdapter.getData().remove(myPosition);
+            mCircleRecommendAdapter.notifyDataSetChanged();
+            Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+        }).setNegativeButton("取消", v -> {
+        }).setMsg("确定要删除这条动态？").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    /** --------------------------------- 发布帖子成功  ---------------------------------v*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioEvent(SendCircleEvent event) {
+        showSendMsg.setVisibility(View.VISIBLE);
+        initAnim();
+    }
+
+//    private void initExitAnim(){
+//        ObjectAnimator translationX = ObjectAnimator.ofFloat(ll_show, "translationY", 0f, SizeUtils.dp2px(-36f));
+//        ObjectAnimator translationXX = ObjectAnimator.ofFloat(allpart, "translationY", 0f, SizeUtils.dp2px(-36f));
+//        AnimatorSet animatorSet = new AnimatorSet();
+//        animatorSet.playTogether(translationX,translationXX);
+//        animatorSet.setDuration(1000);
+//        animatorSet.start();
+//        //动画的监听
+//        animatorSet.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animator) {
+//                KLog.d("动画开始","");
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animator) {
+//                showSendMsg.setVisibility(View.INVISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animator) {
+//                KLog.d("动画取消","");
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animator) {
+//                KLog.d("动画重复","");
+//            }
+//        });
+//    }
+
+    private void initAnim() {
+        ObjectAnimator translationX = ObjectAnimator.ofFloat(showSendMsg, "scaleX", 1f, 1.1f, 1f);
+        ObjectAnimator alphaX = ObjectAnimator.ofFloat(showSendMsg, "alpha", 0, 1f);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(translationX, alphaX);
+        animatorSet.setDuration(1000);
+        animatorSet.start();
+        //动画的监听
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+                KLog.d("动画开始","");
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                //动画结束跳转
+//               new Handler().postDelayed(() -> initExitAnim(),1000);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+                KLog.d("动画取消","");
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+                KLog.d("动画重复","");
+            }
+        });
+
+    }
+
 }
+
+

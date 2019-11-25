@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@color/transparent">
+
+
+    <LinearLayout
+        android:id="@+id/part1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:src="@mipmap/icon_update"
+            android:layout_width="match_parent"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:background="@drawable/bg_left_14_right_white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/title"
+                android:text="有新版本可以更新"
+                android:textStyle="bold"
+                android:textColor="@color/text_first_color"
+                android:padding="10dp"
+                android:textSize="18sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+            <LinearLayout
+                android:layout_marginLeft="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|left"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/txt_msg"
+                    android:text="本次更新内容：\n1.更新内容\n2.更新内容\n3.更新内容"
+                    android:layout_marginLeft="4dp"
+                    android:textColor="@color/text_second_color"
+                    android:textSize="13sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|left"
+                    />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/part1111"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btn_left"
+                    android:layout_gravity="center"
+                    android:layout_width="110dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_corners_12_gray"
+                    android:text="以后再说"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/btn_right"
+                    android:layout_marginLeft="19dp"
+                    android:layout_gravity="center"
+                    android:layout_width="110dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_corners_12_yellow"
+                    android:text="立即更新"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="13sp" />
+
+
+
+            </LinearLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/part2222"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/update_progress_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:max="100"/>
+
+                <TextView
+                    android:id="@+id/progressBar_text"
+                    android:layout_centerInParent="true"
+                    android:text="下载中 0%"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+
+            <TextView
+                android:id="@+id/btn_force"
+                android:visibility="gone"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="24dp"
+                android:layout_gravity="center"
+                android:layout_width="239dp"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_corners_12_yellow"
+                android:text="立即更新"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="13sp" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

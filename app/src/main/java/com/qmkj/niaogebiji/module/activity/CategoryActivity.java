@@ -89,12 +89,9 @@ public class CategoryActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.toDown,R.id.to_paste})
+    @OnClick({R.id.toDown})
     public void clicks(View view){
         switch (view.getId()){
-            case R.id.to_paste:
-
-                break;
             case R.id.toDown:
                 finish();
                 //参数一：Activity1进入动画，参数二：Activity2退出动画

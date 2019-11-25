@@ -51,14 +51,36 @@
                         <ImageView
                             android:id="@+id/index_first_icon"
                             android:src="@mipmap/icon_index_01"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp" />
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
 
                         <TextView
                             android:id="@+id/index_first_text"
                             style="@style/index_text"
                             android:textColor="@color/text_news_title_color"
                             android:text="首页" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/index_school"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/index_school_icon"
+                            android:src="@mipmap/icon_index_10"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
+                        <TextView
+                            android:id="@+id/index_school_text"
+                            style="@style/index_text"
+                            android:text="学院" />
 
                     </LinearLayout>
 
@@ -73,14 +95,14 @@
 
                         <ImageView
                             android:id="@+id/index_news_icon"
-                            android:src="@mipmap/icon_index_10"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp" />
+                            android:src="@mipmap/icon_index_20"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
 
                         <TextView
                             android:id="@+id/index_news_text"
                             style="@style/index_text"
-                            android:text="快讯" />
+                            android:text="工具" />
 
                     </LinearLayout>
 
@@ -95,14 +117,14 @@
 
                         <ImageView
                             android:id="@+id/index_activity_icon"
-                            android:src="@mipmap/icon_index_20"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp" />
+                            android:src="@mipmap/icon_index_30"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
 
                         <TextView
                             android:id="@+id/index_activity_text"
                             style="@style/index_text"
-                            android:text="活动" />
+                            android:text="圈子" />
 
                     </LinearLayout>
 
@@ -116,9 +138,9 @@
 
                         <ImageView
                             android:id="@+id/index_my_icon"
-                            android:src="@mipmap/icon_index_30"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp" />
+                            android:src="@mipmap/icon_index_40"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
 
                         <TextView
                             android:id="@+id/index_my_text"

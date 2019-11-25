@@ -1,13 +1,398 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:text="我的"
-        android:gravity="center"
+
+
+    <androidx.core.widget.NestedScrollView
+        android:paddingTop="@dimen/status_bar_height"
+        android:overScrollMode="never"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+                    <ImageView
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/toMsg"
+                        android:src="@mipmap/icon_my_msg"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp" />
+
+
+                    <ImageView
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/toMsg"
+                        android:layout_marginRight="24dp"
+                        android:id="@+id/toSet"
+                        android:src="@mipmap/icon_my_set"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp" />
+                </RelativeLayout>
+
+               <LinearLayout
+                   android:background="@drawable/bg_blue"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
+
+                   <LinearLayout
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginRight="16dp"
+                       android:layout_width="match_parent"
+                       android:layout_height="156dp"
+                       android:orientation="vertical">
+
+                       <RelativeLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="100dp">
+
+                           <de.hdodenhof.circleimageview.CircleImageView
+                               android:id="@+id/head_icon"
+                               android:layout_centerVertical="true"
+                               android:layout_width="72dp"
+                               android:layout_height="72dp"
+                               android:src="@mipmap/icon_fenxiang"/>
+
+                           <LinearLayout
+                               android:layout_marginLeft="16dp"
+                               android:layout_toRightOf="@+id/head_icon"
+                               android:layout_centerVertical="true"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:id="@+id/name"
+                                   android:text="小羽毛"
+                                   android:textSize="22sp"
+                                   android:textColor="@color/text_first_color"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+                               <Space
+                                   android:layout_width="match_parent"
+                                   android:layout_height="6dp" />
+
+                               <TextView
+                                   android:id="@+id/name_tag"
+                                   android:text="鸟哥笔记网络科技有限公司设计师"
+                                   android:textSize="13sp"
+                                   android:textColor="#AAAEB3"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+
+                           </LinearLayout>
+
+                       </RelativeLayout>
+
+                       <RelativeLayout
+                           android:layout_marginLeft="16dp"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <LinearLayout
+                               android:gravity="center"
+                               android:id="@+id/part1111_1"
+                               android:layout_centerVertical="true"
+                               android:layout_width="wrap_content"
+                               android:layout_height="match_parent"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:id="@+id/read_time"
+                                   android:text="3650"
+                                   android:layout_gravity="left"
+                                   android:textSize="18sp"
+                                   android:textColor="@color/text_first_color"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+                               <Space
+                                   android:layout_width="match_parent"
+                                   android:layout_height="2dp" />
+
+                               <TextView
+                                   android:text="累计阅读"
+                                   android:textSize="11sp"
+                                   android:textColor="#AAAEB3"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+
+                           </LinearLayout>
+
+                           <LinearLayout
+                               android:gravity="center"
+                               android:layout_marginLeft="28dp"
+                               android:id="@+id/part2222_2"
+                               android:layout_toRightOf="@+id/part1111_1"
+                               android:layout_centerVertical="true"
+                               android:layout_width="wrap_content"
+                               android:layout_height="match_parent"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:id="@+id/medal_count"
+                                   android:text="20"
+                                   android:layout_gravity="left"
+                                   android:textSize="18sp"
+                                   android:textColor="@color/text_first_color"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+                               <Space
+                                   android:layout_width="match_parent"
+                                   android:layout_height="2dp" />
+
+                               <TextView
+                                   android:text="获得勋章"
+                                   android:textSize="11sp"
+                                   android:textColor="#AAAEB3"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+
+                           </LinearLayout>
+
+                           <LinearLayout
+                               android:id="@+id/part3333_3"
+                               android:gravity="center"
+                               android:layout_marginLeft="28dp"
+                               android:layout_toRightOf="@+id/part2222_2"
+                               android:layout_centerVertical="true"
+                               android:layout_width="wrap_content"
+                               android:layout_height="match_parent"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:id="@+id/feather_count"
+                                   android:text="1400"
+                                   android:layout_gravity="left"
+                                   android:textSize="18sp"
+                                   android:textColor="@color/text_first_color"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+                               <Space
+                                   android:layout_width="match_parent"
+                                   android:layout_height="2dp" />
+
+                               <TextView
+                                   android:text="可用羽毛"
+                                   android:textSize="11sp"
+                                   android:textColor="#AAAEB3"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content" />
+
+
+                           </LinearLayout>
+
+                           <TextView
+                               android:background="@drawable/bg_corners_8_gray"
+                               android:layout_centerVertical="true"
+                               android:layout_alignParentRight="true"
+                               android:id="@+id/toExchange"
+                               android:text="兑换"
+                               android:gravity="center"
+                               android:textSize="14sp"
+                               android:textColor="#FFBA20"
+                               android:layout_width="79dp"
+                               android:layout_height="32dp" />
+
+                       </RelativeLayout>
+
+                   </LinearLayout>
+
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="16dp" />
+
+                   <ImageView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginRight="16dp"
+                       android:background="@drawable/bg_corners_8_white"
+                       android:id="@+id/toVip"
+                       android:scaleType="fitXY"
+                       android:src="@mipmap/icon_vip"
+                       android:layout_width="match_parent"
+                       android:layout_height="88dp" />
+
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="16dp" />
+
+                   <RelativeLayout
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginRight="16dp"
+                       android:id="@+id/rl_vip_time"
+                       android:layout_width="match_parent"
+                       android:layout_height="40dp"
+                       android:orientation="vertical">
+
+                       <ImageView
+                           android:scaleType="centerCrop"
+                           android:src="@mipmap/icon_my_vip_exprise"
+                           android:layout_width="match_parent"
+                           android:layout_height="match_parent" />
+
+                       <TextView
+                           android:id="@+id/vip_time"
+                           android:paddingLeft="40dp"
+                           android:text="鸟哥笔记VIP剩余6天"
+                           android:gravity="center"
+                           android:textSize="13sp"
+                           android:textColor="#F5DCAE"
+                           android:layout_width="wrap_content"
+                           android:layout_height="match_parent" />
+
+
+                   </RelativeLayout>
+               </LinearLayout>
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:paddingTop="24dp"
+                    android:overScrollMode="never"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="#F6F7F9"/>
+
+
+            <LinearLayout
+                android:id="@+id/part1"
+                android:paddingBottom="37dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:id="@+id/toQue"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/msg"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="常见问题"
+                        android:drawablePadding="8dp"
+                        android:gravity="center|left"
+                        android:drawableLeft="@mipmap/icon_my_que"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="16sp" />
+
+
+                    <ImageView
+                        android:id="@+id/msg_right"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@mipmap/icon_my_right" />
+
+                </RelativeLayout>
+
+
+
+                <LinearLayout
+                    android:id="@+id/advice_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|left"
+                        android:layout_weight="1"
+                        android:drawableLeft="@mipmap/icon_my_advice"
+                        android:drawablePadding="8dp"
+                        android:text="意见反馈"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="16sp" />
+
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@mipmap/icon_my_right" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/about_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|left"
+                        android:layout_weight="1"
+                        android:drawableLeft="@mipmap/icon_my_about"
+                        android:drawablePadding="8dp"
+                        android:text="关于我们"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="16sp" />
+
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@mipmap/icon_my_right" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+    </androidx.core.widget.NestedScrollView>
+
 
 </LinearLayout>

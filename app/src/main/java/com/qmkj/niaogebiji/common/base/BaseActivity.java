@@ -15,11 +15,13 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -34,9 +36,15 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -51,11 +59,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -486,10 +498,127 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
 
-    /** --------------------------------- 动画  ---------------------------------*/
+    /** --------------------------------- 退出动画  ---------------------------------*/
     protected void finishWithAnim(int inAnim,int outAnim){
         finish();
         overridePendingTransition(inAnim,outAnim);
     }
+
+
+
+    /** --------------------------------- 评论点赞  ---------------------------------*/
+    //点赞
+    private void goodBulletin(String flash_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("type",1 +"");
+        map.put("id",flash_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().goodBulletin(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        changePriaseStatus();
+                    }
+                });
+    }
+
+    //取赞
+    private void cancleGoodBulletin(String flash_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("type",1 +"");
+        map.put("id",flash_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().cancleGoodBulletin(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        changePriaseStatus();
+                    }
+                });
+    }
+
+
+    protected void changePriaseStatus() {
+
+    }
+
+
+
+    /** --------------------------------- 分享 链接  ---------------------------------*/
+    // 左边文字，右边图片 -- link形式
+    protected void shareWxCircleByWeb(WxShareBean bean) {
+        if (this == null){
+            return;
+        }
+        if(null != bean){
+            String sharepic = bean.getPic();
+            String shareurl = bean.getShare_url();
+            String title = bean.getShare_title();
+            String summary = bean.getShare_summary();
+            SHARE_MEDIA platform;
+            platform = SHARE_MEDIA.WEIXIN_CIRCLE;
+            UMImage thumb;
+            if (TextUtils.isEmpty(sharepic)) {
+                thumb = new UMImage(this, R.mipmap.icon_fenxiang);
+            } else {
+                thumb = new UMImage(this, sharepic);
+            }
+            UMWeb web = new UMWeb(shareurl);
+            //标题
+            web.setTitle(title);
+            //缩略图
+            web.setThumb(thumb);
+            //描述
+            web.setDescription(summary);
+            //传入平台
+            new ShareAction(this)
+                    .setPlatform(platform)
+                    .withMedia(web)
+                    .share();
+        }
+    }
+
+
+    //分享微信（web) 链接
+    protected void shareWxByWeb(WxShareBean bean) {
+        if(null == this){
+            return;
+        }
+        if(null != bean){
+            String sharepic = bean.getPic();
+            String shareurl = bean.getShare_url();
+            String title = bean.getShare_title();
+            String summary = bean.getShare_summary();
+            SHARE_MEDIA platform;
+            platform = SHARE_MEDIA.WEIXIN;
+            UMImage thumb;
+            if (TextUtils.isEmpty(sharepic)) {
+                thumb = new UMImage(this, R.mipmap.icon_fenxiang);
+            } else {
+                thumb = new UMImage(this, sharepic);
+            }
+            UMWeb web = new UMWeb(shareurl);
+            //标题
+            web.setTitle(title);
+            //缩略图
+            web.setThumb(thumb);
+            //描述
+            web.setDescription(summary);
+            //传入平台
+            new ShareAction(this)
+                    .setPlatform(platform)
+                    .withMedia(web)
+                    .share();
+        }
+
+    }
+
+
 
 }

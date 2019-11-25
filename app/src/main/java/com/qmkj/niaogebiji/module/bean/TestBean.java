@@ -9,4 +9,23 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  * 描述:测试bean
  */
 public class TestBean extends BaseBean {
+
+    private String answer;
+    private boolean isSelect;
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
+    }
 }

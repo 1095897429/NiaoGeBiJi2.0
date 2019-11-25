@@ -21,11 +21,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".module.activity.HomeActivity">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
 
@@ -123,7 +119,45 @@
         </activity>
 
 
+        <activity android:name=".module.activity.ToolSearchActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
+
+        <activity android:name=".module.activity.CommentDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.TranspondActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.SettingActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.AboutUsActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.TestListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.TestDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.TestLauchActivity"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".wxapi.WXEntryActivity"
@@ -132,6 +166,18 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
 
+
+        <!-- 7.0之后下载需要的provider name一般都固定 -->
+        <provider
+            android:authorities="com.qmkj.niaogebiji.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+
+        </provider>
 
     </application>
 

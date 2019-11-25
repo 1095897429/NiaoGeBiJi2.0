@@ -18,15 +18,25 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.event.MyEvent;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -164,6 +174,50 @@ public abstract class BaseLazyFragment extends Fragment {
 
     protected abstract void initView();
 
+
+
+
+    //点赞
+    protected void goodBulletin(String flash_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("type",1 +"");
+        map.put("id",flash_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().goodBulletin(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        changePriaseStatus();
+                    }
+                });
+    }
+
+    //取赞
+    protected void cancleGoodBulletin(String flash_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("type",1 +"");
+        map.put("id",flash_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().cancleGoodBulletin(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        changePriaseStatus();
+                    }
+                });
+    }
+
+
+    //子类可以重写
+    protected void changePriaseStatus() {
+
+    }
 
 
 }

@@ -23,6 +23,7 @@ import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
+import com.qmkj.niaogebiji.module.fragment.SchoolFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolFragment;
 import com.socks.library.KLog;
 
@@ -46,6 +47,11 @@ public class HomeActivity extends BaseActivity {
     ImageView index_news_icon;
     @BindView(R.id.index_news_text)
     TextView index_news_text;
+
+    @BindView(R.id.index_school_icon)
+    ImageView index_school_icon;
+    @BindView(R.id.index_school_text)
+    TextView index_school_text;
 
     @BindView(R.id.index_activity_icon)
     ImageView index_activity_icon;
@@ -88,8 +94,8 @@ public class HomeActivity extends BaseActivity {
     //点击引导图的次数
     int count = 1;
 
-
     FirstFragment mFirstFragment;
+    SchoolFragment mSchoolFragment;
     ToolFragment mToolFragment;
     CircleFragment mCircleFragment;
     MyFragment mMyFragment;
@@ -170,7 +176,7 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.index_first,R.id.index_tool,R.id.index_circle,R.id.index_my,R.id.toMoreLoveYou})
+    @OnClick({R.id.index_first,R.id.index_school,R.id.index_tool,R.id.index_circle,R.id.index_my,R.id.toMoreLoveYou})
     public void bottomClick(android.view.View layout){
         switch (layout.getId()){
             case R.id.toMoreLoveYou:
@@ -197,12 +203,21 @@ public class HomeActivity extends BaseActivity {
                 }
 
                 break;
+            case R.id.index_school:
+                hideImageStatus();
+                if(null == mSchoolFragment){
+                    mSchoolFragment = SchoolFragment.getInstance();
+                }
+                index_school_icon.setImageResource(R.mipmap.icon_index_11);
+                index_school_text.setTextColor(Color.parseColor("#333333"));
+                switchFragment(mSchoolFragment);
+                break;
             case R.id.index_tool:
                 hideImageStatus();
                 if(null == mToolFragment){
                     mToolFragment = ToolFragment.getInstance();
                 }
-                index_news_icon.setImageResource(R.mipmap.icon_index_11);
+                index_news_icon.setImageResource(R.mipmap.icon_index_21);
                 index_news_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mToolFragment);
                 break;
@@ -211,7 +226,7 @@ public class HomeActivity extends BaseActivity {
                 if(null == mCircleFragment){
                     mCircleFragment = CircleFragment.getInstance();
                 }
-                index_activity_icon.setImageResource(R.mipmap.icon_index_21);
+                index_activity_icon.setImageResource(R.mipmap.icon_index_31);
                 index_activity_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mCircleFragment);
                 break;
@@ -220,7 +235,7 @@ public class HomeActivity extends BaseActivity {
                 if(null == mMyFragment){
                     mMyFragment = MyFragment.getInstance();
                 }
-                index_my_icon.setImageResource(R.mipmap.icon_index_31);
+                index_my_icon.setImageResource(R.mipmap.icon_index_41);
                 index_my_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mMyFragment);
                 break;
@@ -250,15 +265,16 @@ public class HomeActivity extends BaseActivity {
     @SuppressLint("ResourceAsColor")
     private void hideImageStatus(){
         index_first_icon.setImageResource(R.mipmap.icon_index_00);
-        index_news_icon.setImageResource(R.mipmap.icon_index_10);
-        index_activity_icon.setImageResource(R.mipmap.icon_index_20);
-        index_my_icon.setImageResource(R.mipmap.icon_index_30);
+        index_school_icon.setImageResource(R.mipmap.icon_index_10);
+        index_news_icon.setImageResource(R.mipmap.icon_index_20);
+        index_activity_icon.setImageResource(R.mipmap.icon_index_30);
+        index_my_icon.setImageResource(R.mipmap.icon_index_40);
         index_first_text.setTextColor(Color.parseColor("#C0C0C0"));
+        index_school_text.setTextColor(Color.parseColor("#C0C0C0"));
         index_activity_text.setTextColor(Color.parseColor("#C0C0C0"));
         index_news_text.setTextColor(Color.parseColor("#C0C0C0"));
         index_my_text.setTextColor(Color.parseColor("#C0C0C0"));
     }
-
 
 
     /** --------------------------------- 退出两次提醒  ---------------------------------*/

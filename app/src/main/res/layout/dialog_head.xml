@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/take_pic"
+        android:text="拍照"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="12dp"
+        android:textColor="@color/text_news_title_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_line">
+
+    </View>
+
+
+    <TextView
+        android:id="@+id/open_pic"
+        android:text="手机相册"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="12dp"
+        android:textColor="@color/text_news_title_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/bg_color" />
+
+    <TextView
+        android:id="@+id/cancel"
+        android:text="取消"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="12dp"
+        android:textColor="@color/text_news_title_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

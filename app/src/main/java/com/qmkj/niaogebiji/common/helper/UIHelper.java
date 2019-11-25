@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.qmkj.niaogebiji.module.activity.AboutUsActivity;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
+import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
@@ -18,6 +20,11 @@ import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.SecretActivity;
+import com.qmkj.niaogebiji.module.activity.SettingActivity;
+import com.qmkj.niaogebiji.module.activity.TestDetailActivity;
+import com.qmkj.niaogebiji.module.activity.TestLauchActivity;
+import com.qmkj.niaogebiji.module.activity.TestListActivity;
+import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
@@ -153,6 +160,50 @@ public class UIHelper {
     public static void toWebViewActivity(Context ctx,String link) {
         Intent intent = new Intent(ctx, WebViewActivity.class);
         intent.putExtra("link",link);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开评论详情界面 */
+    public static void toCommentDetailActivity(Context ctx) {
+        Intent intent = new Intent(ctx, CommentDetailActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开转发界面 */
+    public static void toTranspondActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TranspondActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开设置界面 */
+    public static void toSettingActivity(Context ctx) {
+        Intent intent = new Intent(ctx, SettingActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开关注界面 */
+    public static void toAboutUsActivity(Context ctx) {
+        Intent intent = new Intent(ctx, AboutUsActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开测一测列表界面 */
+    public static void toTestListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TestListActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开测一测详情界面 */
+    public static void toTestDetailActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TestDetailActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开测一测开始界面 */
+    public static void toTestLauchActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TestLauchActivity.class);
         ctx.startActivity(intent);
     }
 

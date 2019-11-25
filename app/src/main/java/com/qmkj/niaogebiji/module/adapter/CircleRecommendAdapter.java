@@ -39,11 +39,22 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
                 .addOnClickListener(R.id.part2222)
                 .addOnClickListener(R.id.circle_share)
                 .addOnClickListener(R.id.circle_comment)
-                .addOnClickListener(R.id.ll_report);
+                .addOnClickListener(R.id.ll_report)
+                .addOnClickListener(R.id.circle_priase)
+                .addOnClickListener(R.id.circle_remove);
         switch (helper.getItemViewType()){
 
             case RIGHT_IMG_TYPE:
+                helper.setText(R.id.sender_name,item.getNewsItemBean().getTitle());
 
+                //测试
+                if(helper.getAdapterPosition() == 0){
+                    helper.setVisible(R.id.circle_remove,true);
+                    helper.setVisible(R.id.circle_report,false);
+                }else{
+                    helper.setVisible(R.id.circle_report,true);
+                    helper.setVisible(R.id.circle_remove,false);
+                }
 
                 break;
             case TRANSFER_IMG_TYPE:

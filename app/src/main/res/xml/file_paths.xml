@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- name 对应属性值，开发者可以自由定义 https://blog.csdn.net/Next_Second/article/details/78585745 -->
+
+    <!-- ① 外部存储路径 -->
+    <!-- 存放于 /storage/emulated/0/Download/-->
+    <external-path name="External_Download" path="Download/"></external-path>
+
+    <!-- ② 内部存储路径-->
+    <files-path name="app_file" path="/"></files-path><!-- 应用私有目录下files/目录 Context.getFilesDir() -->
+    <cache-path name="app_cache" path="/"></cache-path><!-- 应用私有目录下cache/目录 Context.getCacheDir() -->
+
+    <external-files-path
+        name="Download"
+        path="/"></external-files-path>
+
+</paths>

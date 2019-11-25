@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:paddingTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/left_part"
+            android:layout_alignBottom="@+id/right_part"
+            android:layout_alignTop="@+id/right_part"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/head_icon"
+                android:src="@mipmap/icon_fenxiang"
+                android:layout_width="32dp"
+                android:layout_height="32dp" />
+
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/right_part"
+            android:visibility="visible"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/left_part"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+             <RelativeLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content">
+
+                 <TextView
+                     android:id="@+id/nickname"
+                     android:text="我是二大王"
+                     android:textSize="16sp"
+                     android:textColor="@color/text_first_color"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" />
+                 
+                 <ImageView
+                     android:layout_alignParentRight="true"
+                     android:id="@+id/comment_delete"
+                     android:src="@mipmap/icon_comment_delete"
+                     android:layout_width="16dp"
+                     android:layout_height="16dp" />
+                 
+             </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/name_tag"
+                    android:textColor="#AAAEB3"
+                    android:layout_marginTop="2dp"
+                    android:textSize="16sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="2dp"
+                    android:text="上海青墨网络科技有限公司产品经理"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+
+                <TextView
+                    android:id="@+id/comment_text"
+                    android:textColor="@color/text_first_color"
+                    android:layout_below="@+id/nickname"
+                    android:layout_marginTop="2dp"
+                    android:textSize="16sp"
+                    android:maxLines="6"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="2dp"
+                    android:text="10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+                <RelativeLayout
+                    android:id="@+id/part4444"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp">
+
+                    <TextView
+                        android:layout_centerVertical="true"
+                        android:id="@+id/time"
+                        android:text="11分钟前"
+                        android:textSize="11sp"
+                        android:layout_marginTop="14dp"
+                        android:textColor="@color/text_three_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                    <LinearLayout
+                        android:layout_marginRight="10dp"
+                        android:layout_toLeftOf="@+id/toSecondComment"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:visibility="visible"
+                        android:id="@+id/comment_priase"
+                        android:layout_width="wrap_content"
+                        android:layout_height="28dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:src="@mipmap/icon_flash_priase"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+
+                        <Space
+                            android:layout_width="2dp"
+                            android:layout_height="match_parent" />
+
+
+                        <TextView
+                            android:id="@+id/zan_num"
+                            android:text="99+"
+                            android:textSize="13sp"
+                            android:textColor="#555962"
+                            android:gravity="center"
+                            android:layout_width="25dp"
+                            android:layout_height="match_parent" />
+
+
+                    </LinearLayout>
+
+
+                    <ImageView
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/toSecondComment"
+                        android:src="@mipmap/icon_comment_mes"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp" />
+
+
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:padding="16dp"
+                    android:background="@drawable/bg_corners_8_gray"
+                    android:id="@+id/ll_has_second_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/name1"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_first_color"
+                        android:text="旺财：且在距离大促8-15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp" />
+
+                    <TextView
+                        android:id="@+id/name2"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_first_color"
+                        android:text="周六回复旺财：三通一达、百世等中国主要快递公司承诺，从11月11日0点起， “长三角26个城市”互发的双11旺季快件，一…"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp" />
+
+                    <TextView
+                        android:id="@+id/all_comment"
+                        android:textSize="13sp"
+                        android:textColor="#5675A7"
+                        android:text="查看全部10条回复"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/divider_line"/>
+
+
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

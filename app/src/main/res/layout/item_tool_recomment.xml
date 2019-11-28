@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/left_part"
+            android:layout_alignBottom="@+id/right_part"
+            android:layout_alignTop="@+id/right_part"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/head_icon"
+                android:src="@mipmap/icon_fenxiang"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/right_part"
+            android:visibility="visible"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/left_part"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/nickname"
+                        android:text="App Store排行榜"
+                        android:textSize="17sp"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:background="@drawable/bg_corners_6_yellow"
+                        android:text="收藏"
+                        android:gravity="center"
+                        android:textColor="@color/text_first_color"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/tool_collect"
+                        android:layout_width="64dp"
+                        android:layout_height="26dp" />
+
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/name_tag"
+                    android:textColor="@color/text_second_color"
+                    android:layout_marginTop="2dp"
+                    android:textSize="13sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="2dp"
+                    android:text="80%的内容运营在用"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_show"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/comment_text"
+                        android:textColor="#FF818386"
+                        android:textSize="13sp"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="2dp"
+                        android:text="10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content" />
+
+                   <LinearLayout
+                       android:paddingLeft="28dp"
+                       android:layout_centerVertical="true"
+                       android:layout_alignParentRight="true"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:orientation="horizontal">
+
+                       <ImageView
+                           android:tag="可展开"
+                           android:layout_marginTop="4dp"
+                           android:id="@+id/toShowMore"
+                           android:src="@mipmap/icon_tool_down"
+                           android:layout_width="12dp"
+                           android:layout_height="7dp" />
+
+                   </LinearLayout>
+
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp" />
+
+                <com.zhy.view.flowlayout.TagFlowLayout
+                    android:id="@+id/flowlayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </com.zhy.view.flowlayout.TagFlowLayout>
+
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="#F6F7F9"/>
+
+</LinearLayout>

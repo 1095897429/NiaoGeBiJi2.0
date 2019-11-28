@@ -180,4 +180,11 @@ public interface ApiEncryptService{
     @POST("app/item/getCommentList")
     Observable<HttpResponse<CommentBean>> getCommentLis(@Field("params") String param);
 
+
+    /* 2019.11.28 文章阅读加积分*/
+    @FormUrlEncoded
+    @POST("app/my/readArticle")
+    Observable<HttpResponse<TestOkBean>> readArticle(@Field("params") String param);
+
+
 }

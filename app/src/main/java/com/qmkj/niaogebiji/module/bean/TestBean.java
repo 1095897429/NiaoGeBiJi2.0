@@ -12,6 +12,24 @@ public class TestBean extends BaseBean {
 
     private String answer;
     private boolean isSelect;
+    private boolean isError;
+    private boolean isClick;
+
+    public boolean isClick() {
+        return isClick;
+    }
+
+    public void setClick(boolean click) {
+        isClick = click;
+    }
+
+    public boolean isError() {
+        return isError;
+    }
+
+    public void setError(boolean error) {
+        isError = error;
+    }
 
     public String getAnswer() {
         return answer;

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
@@ -105,7 +106,7 @@ public class ToolFragment extends BaseLazyFragment {
         mToolItemAdapter.setOnItemClickListener((adapter, view, position) -> {
 
             if(position == adapter.getData().size() - 1){
-                KLog.d("tag","去更多");
+                UIHelper.toToolEditActivity(getActivity());
                 return;
             }
 

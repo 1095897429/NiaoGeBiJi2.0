@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.qmkj.niaogebiji.R;
+import com.socks.library.KLog;
 
 /**
  * @author zhouliang
@@ -75,7 +76,11 @@ public class StarBar extends View {
      */
     public void setStarMark(float mark){
         if (integerMark) {
-            starMark = (int)Math.ceil(mark);
+            //ceil 想上取整
+//            starMark = (int)Math.ceil(mark);
+            //floor向下取整
+            starMark = (float) Math.floor(mark);
+            KLog.d("tag","整数的值为 " + starMark);
         }else {
             starMark = Math.round(mark * 10) * 1.0f / 10;
         }

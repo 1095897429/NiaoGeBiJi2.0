@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:background="@mipmap/icon_news_coin_bg"
+        android:layout_width="134dp"
+        android:layout_height="134dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image"
+            android:src="@mipmap/icon_news_coin"
+            android:layout_gravity="center|top"
+            android:layout_width="110dp"
+            android:layout_height="110dp" />
+
+        <TextView
+            android:id="@+id/text"
+            android:text="+5羽毛"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tag"
+            android:text="阅读文章"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="8dp"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+</LinearLayout>

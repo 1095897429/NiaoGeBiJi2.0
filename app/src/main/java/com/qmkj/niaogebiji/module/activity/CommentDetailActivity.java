@@ -314,17 +314,6 @@ public class CommentDetailActivity extends BaseActivity {
     }
 
 
-    private void setEmpty(BaseQuickAdapter adapter){
-        //不需要可以配置加载更多
-        adapter.disableLoadMoreIfNotFullPage();
-        //TODO 预加载，当列表滑动到倒数第N个Item的时候(默认是1)回调onLoadMoreRequested方法
-        adapter.setPreLoadNumber(2);
-        View emptyView = LayoutInflater.from(this).inflate(R.layout.activity_empty,null);
-        adapter.setEmptyView(emptyView);
-        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("成为第一个评论者");
-    }
-
-
 }
 
 

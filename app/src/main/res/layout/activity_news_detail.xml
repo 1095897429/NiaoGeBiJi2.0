@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:ratingbar="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
     <RelativeLayout
@@ -14,6 +15,7 @@
         android:layout_height="49dp">
 
         <LinearLayout
+            android:id="@+id/toLlTalk"
             android:layout_toLeftOf="@+id/comment"
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
@@ -29,7 +31,6 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/toTalk"
                     android:textSize="13sp"
                     android:paddingLeft="10dp"
                     android:textColor="@color/text_second_color"
@@ -179,6 +180,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:visibility="visible"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:id="@+id/solid_part"
@@ -269,6 +271,7 @@
 
 
             <RelativeLayout
+                android:id="@+id/rl_audio"
                 android:background="@drawable/bg_corners_8_gray"
                 android:paddingLeft="10dp"
                 android:paddingRight="15dp"
@@ -320,6 +323,7 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_marginTop="21dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -479,6 +483,7 @@
             </FrameLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
@@ -493,49 +498,82 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/acticle_point"
-                    android:layout_marginTop="4dp"
-                    android:text="4"
-                    android:textColor="#515357"
-                    android:gravity="center"
-                    android:textSize="40sp"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/acticle_point"
+                        android:text=""
+                        android:textColor="#515357"
+                        android:gravity="center"
+                        android:textSize="40sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <Space
+                        android:layout_width="15dp"
+                        android:layout_height="match_parent" />
 
 
-                <!--<com.qmkj.niaogebiji.module.widget.StarBar-->
-                    <!--android:id="@+id/starBar"-->
-                    <!--android:visibility="gone"-->
-                    <!--android:layout_gravity="center"-->
-                    <!--android:layout_marginTop="2dp"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_centerVertical="true"-->
-                    <!--android:layout_toRightOf="@+id/part1111"-->
-                    <!--ratingbar:starEmpty="@mipmap/icon_news_rating_flase"-->
-                    <!--ratingbar:starFill="@mipmap/icon_news_rating_true"-->
-                    <!--ratingbar:starDistance="4dp"-->
-                    <!--ratingbar:starCount="5"-->
-                    <!--ratingbar:starSize="16dp"/>-->
+                    <com.qmkj.niaogebiji.module.widget.StarBar
+                        android:id="@+id/starBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        ratingbar:starEmpty="@mipmap/icon_rating_false"
+                        ratingbar:starFill="@mipmap/icon_rating_true"
+                        ratingbar:starDistance="5dp"
+                        ratingbar:starCount="5"
+                        ratingbar:starSize="30dp"/>
 
-                <!--<com.example.xlhratingbar_lib.XLHRatingBar-->
-                    <!--android:id="@+id/xlhRatingBar"-->
-                    <!--android:visibility="visible"-->
-                    <!--android:layout_gravity="center"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center_vertical"-->
-                    <!--app:numStars="5"-->
-                    <!--app:rating="5"-->
-                    <!--app:ratingViewClass="com.qmkj.niaogebiji.module.widget.SimpleRatingView"-->
-                    <!--/>-->
+                </LinearLayout>
 
+
+
+
+                <LinearLayout
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_corners_8_gray"
+                    android:layout_width="264dp"
+                    android:layout_height="44dp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:text="我的评分"
+                        android:textColor="@color/text_first_color"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="match_parent" />
+
+
+                    <com.qmkj.niaogebiji.module.widget.StarBar
+                        android:id="@+id/starMyBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        ratingbar:starEmpty="@mipmap/icon_rating_my_false"
+                        ratingbar:starFill="@mipmap/icon_rating_my_true"
+                        ratingbar:starDistance="1dp"
+                        ratingbar:starCount="5"
+                        ratingbar:starSize="20dp"/>
+
+                </LinearLayout>
 
 
                 <TextView
                     android:text="评分得羽毛"
                     android:id="@+id/toRating"
+                    android:visibility="gone"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="24dp"
                     android:textColor="@color/text_first_color"
@@ -625,137 +663,60 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
-                    <RadioGroup
-                        android:layout_marginTop="8dp"
+                    <LinearLayout
+                        android:id="@+id/ll_conent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/answer_rg"
                         android:orientation="vertical">
 
-                        <LinearLayout
-                            android:orientation="vertical"
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/test_recycler"
+                            android:overScrollMode="never"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </androidx.recyclerview.widget.RecyclerView>
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/test_submit"
                             android:gravity="center"
-                            android:layout_height="58dp">
+                            android:visibility="visible"
+                            android:layout_marginTop="27dp"
+                            android:text="提交"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/bg_corners_8_light_yellow"
+                            android:textColor="@color/text_second_color"
+                            android:layout_width="160dp"
+                            android:layout_height="44dp" />
 
-                            <RadioButton
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="A. 留存和利润有直接关系留存和利润有直接关系"
-                                android:button="@null"
-                                android:textSize="16sp"
-                                android:background="@android:color/transparent"
-                                android:drawableRight="@mipmap/icon_answer_default"
-                                android:id="@+id/a_rb"/>
-
-                            <ImageView
-                                android:id="@+id/right_1"
-                                android:visibility="gone"
-                                android:layout_gravity="left"
-                                android:src="@mipmap/icon_right_answer"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                        </LinearLayout>
-
-
-
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_height="58dp">
-
-                            <RadioButton
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="B. 留存和利润有直接关系"
-                                android:button="@null"
-                                android:textSize="16sp"
-                                android:background="@android:color/transparent"
-                                android:drawableRight="@mipmap/icon_answer_default"
-                                android:id="@+id/b_rb"/>
-
-                            <ImageView
-                                android:id="@+id/right_2"
-                                android:visibility="gone"
-                                android:layout_gravity="left"
-                                android:src="@mipmap/icon_right_answer"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:id="@+id/answer_part3"
+                        <TextView
+                            android:id="@+id/test_error"
                             android:visibility="gone"
-                            android:orientation="vertical"
-                            android:layout_width="match_parent"
                             android:gravity="center"
-                            android:layout_height="58dp">
+                            android:layout_marginTop="27dp"
+                            android:text="很遗憾你答错了，下次请继续努力"
+                            android:textSize="13sp"
+                            android:layout_gravity="center"
+                            android:textColor="@color/text_second_color"
+                            android:layout_width="195dp"
+                            android:layout_height="19dp" />
 
 
-                            <RadioButton
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="C. 留存和利润有直接关系"
-                                android:textSize="16sp"
-                                android:button="@null"
-                                android:background="@android:color/transparent"
-                                android:drawableRight="@mipmap/icon_answer_default"
-                                android:id="@+id/c_rb"/>
-                            <ImageView
-                                android:id="@+id/right_3"
-                                android:visibility="gone"
-                                android:layout_gravity="left"
-                                android:src="@mipmap/icon_right_answer"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                        </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/answer_part4"
-                            android:visibility="gone"
-                            android:orientation="vertical"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_height="58dp">
-
-                            <RadioButton
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="D. 留存和利润有直接关系"
-                                android:textSize="16sp"
-                                android:button="@null"
-                                android:background="@android:color/transparent"
-                                android:drawableRight="@mipmap/icon_answer_default"
-                                android:id="@+id/d_rb"/>
-                            <ImageView
-                                android:id="@+id/right_4"
-                                android:visibility="gone"
-                                android:layout_gravity="left"
-                                android:src="@mipmap/icon_right_answer"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                        </LinearLayout>
+                    </LinearLayout>
 
 
-                    </RadioGroup>
-
-
-                    <TextView
-                        android:id="@+id/test_submit"
-                        android:gravity="center"
-                        android:layout_marginTop="12dp"
-                        android:text="提交"
-                        android:textStyle="bold"
-                        android:textSize="13sp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/bg_corners_8_light_yellow"
-                        android:textColor="@color/text_second_color"
-                        android:layout_width="160dp"
-                        android:layout_height="44dp" />
 
 
                 </LinearLayout>
@@ -885,6 +846,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/more_comment_list"
                 android:layout_marginTop="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"

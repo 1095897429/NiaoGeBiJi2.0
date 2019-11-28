@@ -10,5 +10,34 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  */
 public class ToolBean extends BaseBean {
 
+    private String mes;
 
+    //默认为 false
+    private boolean openState ;
+
+    private boolean isSave;
+
+    public boolean isSave() {
+        return isSave;
+    }
+
+    public String getMes() {
+        return mes;
+    }
+
+    public void setMes(String mes) {
+        this.mes = mes;
+    }
+
+    public void setSave(boolean save) {
+        isSave = save;
+    }
+
+    public boolean isOpenState() {
+        return openState;
+    }
+
+    public void setOpenState(boolean openState) {
+        this.openState = openState;
+    }
 }

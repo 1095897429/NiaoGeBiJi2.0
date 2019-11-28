@@ -1,40 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:id="@+id/ll_part"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
     <LinearLayout
-        android:gravity="center|left"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tag"
-            android:text="A."
-            android:textSize="18sp"
-            android:textColor="#FFA940"
+        <LinearLayout
+            android:gravity="center|left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tag"
+                android:text="A."
+                android:textSize="18sp"
+                android:textColor="#FFA940"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/option"
+                android:text="留存和利润有直接关系"
+                android:textSize="16sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+
+
+            <ImageView
+                android:id="@+id/img"
+                android:src="@mipmap/icon_answer_default"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/right_icon"
+            android:layout_marginTop="3dp"
+            android:visibility="gone"
+            android:layout_gravity="left"
+            android:src="@mipmap/icon_right_answer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/option"
-            android:text="留存和利润有直接关系"
-            android:textSize="16sp"
-            android:textColor="@color/text_first_color"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
-        
-        
-        <ImageView
-            android:id="@+id/img"
-            android:src="@mipmap/icon_answer_default"
-            android:layout_width="20dp"
-            android:layout_height="20dp" />
 
     </LinearLayout>
+
+
+
 
 
 </LinearLayout>

@@ -41,6 +41,23 @@ public class TestLaunchItemAdapter extends BaseQuickAdapter<TestBean, BaseViewHo
             helper.setImageResource(R.id.img,R.mipmap.icon_answer_select);
         }
 
+        //默认为false,提交了答案之后变为true
+        if(item.isError()){
+            helper.setBackgroundRes(R.id.ll_part,R.drawable.bg_corners_12_light_green);
+            helper.setVisible(R.id.right_icon,true);
+        }else{
+            helper.setBackgroundColor(R.id.ll_part,0);
+            helper.setVisible(R.id.right_icon,false);
+        }
+
+
+        if(item.isClick()){
+            helper.getView(R.id.ll_part).setEnabled(false);
+        }else{
+            helper.getView(R.id.ll_part).setEnabled(true);
+        }
     }
+
+
 }
 

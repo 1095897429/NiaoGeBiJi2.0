@@ -36,4 +36,7 @@
 
     <!-- 设置默认字体 -->
     <color name="setting_text_default">#A6A6A6</color>
+
+    <color name="color_answer_error">#0D0FB779</color>
+
 </resources>

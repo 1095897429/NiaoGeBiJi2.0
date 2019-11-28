@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:context="http://schemas.android.com/tools"
     android:id="@+id/rl_common_title"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_marginTop="@dimen/status_bar_height"
     android:paddingLeft="16dp"

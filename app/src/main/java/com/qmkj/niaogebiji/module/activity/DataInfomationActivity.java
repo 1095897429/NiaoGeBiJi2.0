@@ -86,8 +86,6 @@ public class DataInfomationActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        showDownNotEnoughDialog();
-
         //获取新闻id
         newsId = getIntent().getStringExtra("newsId");
         newsId = "23654";

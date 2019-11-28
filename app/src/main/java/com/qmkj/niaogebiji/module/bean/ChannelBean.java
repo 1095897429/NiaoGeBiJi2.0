@@ -19,6 +19,16 @@ public class ChannelBean extends BaseBean {
     private String chaname;
     private String status;
 
+    private boolean isSelect;
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
+    }
+
     public ChannelBean() {
     }
 

@@ -207,6 +207,14 @@
 
         </activity>
 
+        <activity android:name=".module.activity.ToolEditActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+
+
+
 
         <activity
             android:name=".wxapi.WXEntryActivity"

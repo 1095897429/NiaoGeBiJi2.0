@@ -29,6 +29,7 @@ import com.qmkj.niaogebiji.module.activity.TestLauchActivity;
 import com.qmkj.niaogebiji.module.activity.TestListActivity;
 import com.qmkj.niaogebiji.module.activity.TestResultActivity;
 import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
+import com.qmkj.niaogebiji.module.activity.ToolEditActivity;
 import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
@@ -248,6 +249,12 @@ public class UIHelper {
     /** 打开邀请界面 */
     public static void toInviteActivity(Context ctx) {
         Intent intent = new Intent(ctx, InviteActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开工具编辑界面 */
+    public static void toToolEditActivity(Context ctx) {
+        Intent intent = new Intent(ctx, ToolEditActivity.class);
         ctx.startActivity(intent);
     }
 

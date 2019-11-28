@@ -12,9 +12,12 @@ import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
+import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
+import com.qmkj.niaogebiji.module.activity.InviteActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
 import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
+import com.qmkj.niaogebiji.module.activity.MyCollectionListActivity;
 import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
@@ -24,8 +27,11 @@ import com.qmkj.niaogebiji.module.activity.SettingActivity;
 import com.qmkj.niaogebiji.module.activity.TestDetailActivity;
 import com.qmkj.niaogebiji.module.activity.TestLauchActivity;
 import com.qmkj.niaogebiji.module.activity.TestListActivity;
+import com.qmkj.niaogebiji.module.activity.TestResultActivity;
+import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
 import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
+import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
@@ -204,6 +210,44 @@ public class UIHelper {
     /** 打开测一测开始界面 */
     public static void toTestLauchActivity(Context ctx) {
         Intent intent = new Intent(ctx, TestLauchActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开测一测结果界面 */
+    public static void toTestResultActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TestResultActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开测一测结果失败界面 */
+    public static void toTestResultFailActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TestResultFailActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开个人信息界面 */
+    public static void toUserInfoActivity(Context ctx) {
+        Intent intent = new Intent(ctx, UserInfoActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开打招呼界面 */
+    public static void toHelloMakeActivity(Context ctx) {
+        Intent intent = new Intent(ctx, HelloMakeActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开收藏界面 */
+    public static void toMyCollectionListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, MyCollectionListActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开邀请界面 */
+    public static void toInviteActivity(Context ctx) {
+        Intent intent = new Intent(ctx, InviteActivity.class);
         ctx.startActivity(intent);
     }
 

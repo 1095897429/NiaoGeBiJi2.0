@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:overScrollMode="never"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/common_title_layout"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"/>
+
+            <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:id="@+id/part2222"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="284dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/icon_tag"
+                        android:src="@mipmap/icon_no_comment"
+                        android:layout_width="144dp"
+                        android:layout_height="144dp" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp" />
+
+                    <TextView
+                        android:text="测试完成"
+                        android:textSize="22sp"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:text="你的分数"
+                            android:textSize="13sp"
+                            android:textColor="#FF5040"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Space
+                            android:layout_width="4dp"
+                            android:layout_height="match_parent" />
+
+                        <TextView
+                            android:id="@+id/test_grade"
+                            android:text="100"
+                            android:textSize="42sp"
+                            android:textColor="#FF5040"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp" />
+
+
+                <TextView
+                    android:text="还需努力喔！题目答案可以参阅鸟哥百科里的测试题库"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_second_color"
+                    android:layout_width="316dp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="1dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+            <LinearLayout
+                android:id="@+id/part3333"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/toReTest"
+                    android:text="我要重考"
+                    android:gravity="center"
+                    android:textSize="17sp"
+                    android:background="@drawable/bg_corners_12_yellow"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp" />
+
+
+                <TextView
+                    android:id="@+id/toLook"
+                    android:text="查看题库"
+                    android:gravity="center"
+                    android:textSize="17sp"
+                    android:background="@drawable/bg_corners_12_gray"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

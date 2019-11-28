@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:id="@+id/part2222"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:paddingTop="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/left_part"
+                android:layout_alignBottom="@+id/right_part"
+                android:layout_alignTop="@+id/right_part"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|top"
+                android:orientation="vertical">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/head_icon"
+                    android:src="@mipmap/icon_fenxiang"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/right_part"
+                android:visibility="visible"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@+id/left_part"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/nickname"
+                            android:text="张俊介  上海青墨网络科技有限公司产品经理"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_second_color"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp" />
+
+
+                    <TextView
+                        android:id="@+id/comment_text"
+                        android:textColor="@color/text_first_color"
+                        android:layout_below="@+id/nickname"
+                        android:layout_marginTop="2dp"
+                        android:textSize="16sp"
+                        android:maxLines="6"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="2dp"
+                        android:text="10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                    <RelativeLayout
+                        android:id="@+id/part4444"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp">
+
+                        <TextView
+                            android:layout_centerVertical="true"
+                            android:id="@+id/time"
+                            android:text="11分钟前"
+                            android:textSize="11sp"
+                            android:layout_marginTop="14dp"
+                            android:textColor="@color/text_three_color"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+
+                        <LinearLayout
+                            android:layout_marginRight="10dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
+                            android:visibility="visible"
+                            android:id="@+id/comment_priase"
+                            android:layout_width="wrap_content"
+                            android:layout_height="28dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:src="@mipmap/icon_flash_priase"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp" />
+
+                            <Space
+                                android:layout_width="2dp"
+                                android:layout_height="match_parent" />
+
+
+                            <TextView
+                                android:id="@+id/zan_num"
+                                android:text="99+"
+                                android:textSize="13sp"
+                                android:textColor="#555962"
+                                android:gravity="center"
+                                android:layout_width="25dp"
+                                android:layout_height="match_parent" />
+
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
+
+
+                </LinearLayout>
+
+
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <View
+            android:layout_marginLeft="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+    </LinearLayout>
+
+</LinearLayout>

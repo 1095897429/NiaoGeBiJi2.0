@@ -33,11 +33,17 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
                 .addOnClickListener(R.id.ll_has_second_comment)
                 .addOnClickListener(R.id.comment_priase)
                 .addOnClickListener(R.id.toSecondComment);
-//
-//
-//        TextView chineseTv = helper.getView(R.id.author_name);
-//        TextPaint paint = chineseTv.getPaint();
-//        paint.setFakeBoldText(true);
+
+
+        helper.setText(R.id.comment_text,item.getMessage());
+
+        List<CommentBean.SecondComment> list = item.getCommentslist();
+        //如果一级评论下的二级评论条数大于 1 条才显示
+        if(null != list && !list.isEmpty() && list.size() > 1){
+            helper.setVisible(R.id.all_comment,true);
+        }else{
+            helper.setVisible(R.id.all_comment,false);
+        }
 
     }
 }

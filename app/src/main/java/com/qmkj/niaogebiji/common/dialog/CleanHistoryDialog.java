@@ -81,6 +81,7 @@ public class CleanHistoryDialog {
     //设置标题
     public CleanHistoryDialog setTitle(String title) {
         showTitle = true;
+        txt_title.setVisibility(View.VISIBLE);
         if ("".equals(title)) {
             txt_title.setText("标题");
         } else {

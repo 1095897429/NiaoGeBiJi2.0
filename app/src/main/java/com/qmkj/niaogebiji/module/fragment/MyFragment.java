@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
@@ -129,7 +130,20 @@ public class MyFragment extends BaseLazyFragment {
     }
 
     private void initEvent() {
-
+        mMyItemAdapter.setOnItemClickListener((adapter, view, position) -> {
+            switch (position){
+                case 1:
+                    UIHelper.toInviteActivity(getActivity());
+                    break;
+                case 3:
+                    KLog.d("tag","去 h5的我的动态");
+                    break;
+                case 4:
+                    UIHelper.toMyCollectionListActivity(getActivity());
+                    break;
+                    default:
+            }
+        });
     }
 
 
@@ -140,10 +154,6 @@ public class MyFragment extends BaseLazyFragment {
     }
 
 
-
-
-
-
     @OnClick({R.id.toSet,R.id.toMsg,R.id.about_ll,
                 R.id.name_tag,
                 R.id.part2222_2,
@@ -151,9 +161,13 @@ public class MyFragment extends BaseLazyFragment {
                 R.id.toExchange,
                 R.id.rl_vip_time,
                 R.id.toVip,
-                R.id.toQue,R.id.advice_ll})
+                R.id.toQue,R.id.advice_ll,
+                R.id.toUserInfo})
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.toUserInfo:
+                UIHelper.toUserInfoActivity(getActivity());
+                break;
             case R.id.advice_ll:
                 toUDesk();
                 break;
@@ -181,7 +195,7 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.toMsg:
 
-
+                UIHelper.toLoginActivity(getActivity());
                 break;
             case R.id.toSet:
                 UIHelper.toSettingActivity(getActivity());

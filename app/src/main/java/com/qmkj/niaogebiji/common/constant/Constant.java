@@ -25,4 +25,7 @@ public class Constant {
     public static final String UDESKAPPID = "a46a8847ddb01d80";
     public static final String UDESKAPPKEY = "939976d3a7516ef30f65e06174cbf229";
     public static final String UDESKDOMAIN = "niaogebiji.udesk.cn";
+
+    //后台返回的数据
+    public static final int SEERVER_NUM = 10;
 }

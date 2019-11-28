@@ -111,7 +111,7 @@ public class RetrofitHelper {
             map.put("access_token", "");
         }
 
-        map.put("access_token","GjihEbiZvazyGVaMPwaEifSzkccGAcQC");
+        map.put("access_token","kYI95McthborDq3zGmspbSfTMtDYRQy7");
 
         //渠道号
         map.put("app_channel", "ngbj");

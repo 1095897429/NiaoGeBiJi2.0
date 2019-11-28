@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -29,7 +31,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Size;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
@@ -618,6 +622,69 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
     }
+
+
+    // 分享微信（pic)
+    public void shareWxByPic(Bitmap bitmap) {
+        if (this == null){
+            return;
+        }
+
+        SHARE_MEDIA platform;
+        platform = SHARE_MEDIA.WEIXIN;
+        UMImage image = new UMImage(this, bitmap);
+        UMImage  thumb = new UMImage(this, bitmap);
+        image.setThumb(thumb);
+
+        //传入平台
+        new ShareAction(this)
+                .withText("哈哈")
+                .setPlatform(platform)
+                .withMedia(image)
+                .share();
+    }
+
+
+    // 分享微信圈（pic)
+    public void shareWxCircleByPic(Bitmap bitmap) {
+        if (this == null){
+            return;
+        }
+
+        SHARE_MEDIA platform;
+        platform = SHARE_MEDIA.WEIXIN_CIRCLE;
+        UMImage  image = new UMImage(this, bitmap);
+
+        //传入平台
+        new ShareAction(this)
+                .withText("哈哈")
+                .setPlatform(platform)
+                .withMedia(image)
+                .share();
+    }
+
+
+    //检查权限
+    protected boolean hasPermissions(@NonNull Context context,
+                                         @Size(min = 1) @NonNull String... perms) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            Log.w("tag", "hasPermissions: API version < M, returning true by default");
+            return true;
+        }
+
+        if (context == null) {
+            throw new IllegalArgumentException("Can't check permissions for null context");
+        }
+
+        for (String perm : perms) {
+            if (ContextCompat.checkSelfPermission(context, perm)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 
 

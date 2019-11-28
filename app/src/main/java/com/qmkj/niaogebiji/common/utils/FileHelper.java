@@ -23,4 +23,14 @@ public class FileHelper {
     public static File getOutputEditImageFile(Context context) {
         return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "headedit.png");
     }
+
+    /** 邀请好友的图片文件 /storage/mnt/Android/data/包名/files/Download/xxx.png */
+    public static File getOutputInviteImageFile(Context context){
+        return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "invite.png");
+    }
+
+    /** 邀请好友的图片目录 /storage/mnt/Android/data/包名/files/Download/*/
+    public static File getOutputInviteDirFile(Context context){
+        return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "");
+    }
 }

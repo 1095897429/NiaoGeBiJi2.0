@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
@@ -100,6 +101,8 @@ public class HomeActivity extends BaseActivity {
     CircleFragment mCircleFragment;
     MyFragment mMyFragment;
     Fragment mCurrentFragment;
+    //每个cell的大小
+    int perWidth;
 
     @Override
     protected boolean regEvent() {
@@ -113,6 +116,13 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        int screenWidth = ScreenUtils.getScreenWidth();
+        perWidth = screenWidth / 5;
+
+//        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) guide_img.getLayoutParams();
+//        lp.setMargins(perWidth / 2 ,0,0,0);
+//        guide_img.setLayoutParams(lp);
 
 
         boolean firstGuide = SPUtils.getInstance().getBoolean("isFirstHomeGuide",false);

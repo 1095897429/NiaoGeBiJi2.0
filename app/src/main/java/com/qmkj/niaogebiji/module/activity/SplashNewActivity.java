@@ -229,26 +229,7 @@ public class SplashNewActivity extends BaseActivity {
     }
 
 
-    //检查权限
-    public static boolean hasPermissions(@NonNull Context context,
-                                         @Size(min = 1) @NonNull String... perms) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Log.w("tag", "hasPermissions: API version < M, returning true by default");
-            return true;
-        }
 
-        if (context == null) {
-            throw new IllegalArgumentException("Can't check permissions for null context");
-        }
-
-        for (String perm : perms) {
-            if (ContextCompat.checkSelfPermission(context, perm)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
 
 
     public void toNext(){

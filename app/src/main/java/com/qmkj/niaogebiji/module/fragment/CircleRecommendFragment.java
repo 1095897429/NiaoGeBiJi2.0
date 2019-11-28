@@ -204,7 +204,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
             myPosition = position;
             switch (view.getId()) {
                 case R.id.circle_remove:
-                    showRemoveDialog();
+//                    showRemoveDialog();
                     break;
                 case R.id.circle_priase:
 //                    if(mTempBuilltinBean.getIs_good() == 0){
@@ -440,6 +440,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         });
 
         share.setOnClickListener(view1 -> {
+            showShareDialog();
             mPopupWindow.dismiss();
         });
     }

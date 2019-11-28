@@ -5,10 +5,10 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="65dp"
+        android:layout_height="64dp"
         android:orientation="horizontal">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="64dp"
             android:layout_height="wrap_content">
 
@@ -18,12 +18,12 @@
                 style="@style/text_editStyle1" />
 
             <View
-                android:layout_gravity="bottom"
+                android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider_line"/>
 
-        </FrameLayout>
+        </RelativeLayout>
 
         <View
             android:layout_width="0dp"
@@ -31,7 +31,7 @@
             android:layout_weight="1" />
 
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="64dp"
             android:layout_height="wrap_content">
 
@@ -41,12 +41,13 @@
                 style="@style/text_editStyle1" />
 
             <View
+                android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider_line"/>
 
-        </FrameLayout>
+        </RelativeLayout>
 
 
         <!--<TextView-->
@@ -62,7 +63,7 @@
             <!--android:id="@+id/item_code_iv3"-->
             <!--style="@style/text_editStyle" />-->
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="64dp"
             android:layout_height="wrap_content">
 
@@ -72,12 +73,13 @@
                 style="@style/text_editStyle1" />
 
             <View
+                android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider_line"/>
 
-        </FrameLayout>
+        </RelativeLayout>
 
         <View
             android:layout_width="0dp"
@@ -89,7 +91,7 @@
             <!--style="@style/text_editStyle" />-->
 
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="64dp"
             android:layout_height="wrap_content">
 
@@ -99,12 +101,13 @@
                 style="@style/text_editStyle1" />
 
             <View
+                android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider_line"/>
 
-        </FrameLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 

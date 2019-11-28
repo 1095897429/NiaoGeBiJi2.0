@@ -1,10 +1,16 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -13,10 +19,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.module.adapter.TestItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.TestLaunchItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
@@ -27,9 +35,13 @@ import com.socks.library.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author zhouliang
@@ -46,8 +58,8 @@ public class TestLauchActivity extends BaseActivity {
     @BindView(R.id.total)
     TextView total;
 
-
-
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
 
     @BindView(R.id.toNext)
     TextView toNext;
@@ -79,7 +91,7 @@ public class TestLauchActivity extends BaseActivity {
     private String answer_no;
 
     //总共有10题
-    private int totalNum = 5;
+    private int totalNum = 2;
     //当前的题数
     private int currentNum = 1;
 
@@ -104,6 +116,11 @@ public class TestLauchActivity extends BaseActivity {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
         current_page.setTypeface(typeface);
         total.setTypeface(typeface);
+    }
+
+    @Override
+    public void initData() {
+        setAnimation(progressBar,100);
     }
 
     private void getData(int currentNum) {
@@ -168,19 +185,36 @@ public class TestLauchActivity extends BaseActivity {
 
 
 
-    @OnClick({R.id.iv_back,R.id.toNext})
+    @OnClick({R.id.iv_back,R.id.toNext,R.id.toSubmit})
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.toSubmit:
+
+                break;
+
             case R.id.toNext:
+
+                if(animator != null && animator.isRunning()){
+                    animator.end();
+                    animator.cancel();
+                    animator = null;
+                }else{
+                    setAnimation(progressBar,100);
+                }
+
                 //最后一题
                 if(totalNum == currentNum){
                     KLog.d("tag","交卷了");
+                    finish();
                     return;
                 }
                 //更换数据源
                 ++currentNum;
                 current_page.setText(currentNum + "");
                 getData(currentNum);
+                //恢复状态
+                toNext.setTextSize(17);
+
                 break;
             case R.id.iv_back:
                 finish();
@@ -191,6 +225,76 @@ public class TestLauchActivity extends BaseActivity {
     }
 
 
+
+
+    public void showSubmit(){
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
+        iosAlertDialog.setPositiveButton("交卷", v -> {
+
+        }).setNegativeButton("再想想", v -> {
+
+        }).setMsg("你没有答完全部题目\n" +
+                "\n" +
+                "确定要提前交卷吗？").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    Disposable disposable;
+    //倒计时60秒
+    public static int COUNT = 3;
+
+    private void initRxTime() {
+        //参数依次为：从0开始，发送次数是9次 ，0秒延时,每隔1秒发射,主线程中
+        disposable = Observable.intervalRange(0,COUNT + 1,0,1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                .doOnNext(aLong -> {
+                    if (toNext != null) {
+                        if(totalNum == currentNum){
+                            toNext.setText("本题回答时间已到，将自动提交答案  " + (COUNT - aLong) +  " s");
+                        }else{
+                            toNext.setText("本题回答时间已到，将自动切换到下一题  " + (COUNT - aLong) +  " s");
+                        }
+                    }
+                }).doOnComplete(() -> {
+
+                    clicks(toNext);
+                })
+                .subscribe();
+
+
+    }
+
+    ValueAnimator animator;
+    private void setAnimation(final ProgressBar view, final int mProgressBar) {
+        animator = ValueAnimator.ofInt(mProgressBar, 0).setDuration(1000 * 4);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(valueAnimator -> view.setProgress((Integer) valueAnimator.getAnimatedValue()));
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                KLog.d("tag","取消了");
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                toNext.setText("本题回答时间已到，将自动切换到下一题 3s");
+                toNext.setTextSize(14);
+                initRxTime();
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+            }
+
+            @Override
+            public void onAnimationPause(Animator animation) {
+                super.onAnimationPause(animation);
+                KLog.d("tag","暂停了");
+            }
+        });
+        animator.start();
+    }
 
 
 

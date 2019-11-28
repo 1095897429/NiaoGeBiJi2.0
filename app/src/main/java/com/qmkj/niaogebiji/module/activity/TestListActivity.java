@@ -100,7 +100,8 @@ public class TestListActivity extends BaseActivity {
             if(position % 2 == 0){
                 UIHelper.toTestDetailActivity(this);
             }else{
-
+//                UIHelper.toTestResultActivity(this);
+                UIHelper.toTestResultFailActivity(this);
             }
         });
 

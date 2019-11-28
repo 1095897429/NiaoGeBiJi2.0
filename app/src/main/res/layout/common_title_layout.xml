@@ -42,6 +42,19 @@
         android:id="@+id/iv_right"
         android:src="@mipmap/icon_test_detail_share"
         android:layout_alignParentRight="true"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
+
+    <TextView
+        android:id="@+id/iv_text"
+        android:text="编辑"
+        android:textSize="16sp"
+        android:textColor="@color/text_first_color"
+        android:src="@mipmap/icon_test_detail_share"
+        android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

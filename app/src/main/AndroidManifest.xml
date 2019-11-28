@@ -19,9 +19,27 @@
         android:testOnly="false"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <!-- 竖屏绘制到耳朵区 -->
+        <meta-data android:name="notch.config"
+            android:value="portrait"></meta-data>
+
+        <!-- 填充全面屏屏幕底部 -->
+        <meta-data android:name="android.max_aspect"
+            android:value="2.2"></meta-data>
+
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5d64dd3e3fc1954178000034" />
+
         <activity android:name=".module.activity.HomeActivity">
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
 
@@ -143,6 +161,8 @@
 
         <activity android:name=".module.activity.TestListActivity"
             android:screenOrientation="portrait">
+
+
         </activity>
 
         <activity android:name=".module.activity.TestDetailActivity"
@@ -152,12 +172,41 @@
         <activity android:name=".module.activity.TestLauchActivity"
             android:screenOrientation="portrait">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
+
+        <activity android:name=".module.activity.TestResultActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".module.activity.TestResultFailActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".module.activity.UserInfoActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".module.activity.HelloMakeActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+
+        <activity android:name=".module.activity.MyCollectionListActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".module.activity.InviteActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
 
         <activity
             android:name=".wxapi.WXEntryActivity"
@@ -165,6 +214,26 @@
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tencent100424468" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
 
 
         <!-- 7.0之后下载需要的provider name一般都固定 -->

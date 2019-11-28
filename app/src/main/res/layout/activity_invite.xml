@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/common_title_layout"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/bg_color"/>
+
+   <androidx.core.widget.NestedScrollView
+       android:overScrollMode="never"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical">
+
+           <LinearLayout
+               android:background="@color/white"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
+
+               <LinearLayout
+                   android:id="@+id/part1111"
+                   android:paddingTop="16dp"
+                   android:layout_width="match_parent"
+                   android:layout_height="414dp"
+                   android:clipChildren="false"
+                   android:layerType="software"
+                   android:orientation="vertical">
+
+                   <androidx.viewpager.widget.ViewPager
+                       android:id="@+id/viewpager"
+                       android:overScrollMode="never"
+                       android:layout_marginLeft="50dp"
+                       android:layout_marginRight="50dp"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent">
+
+                   </androidx.viewpager.widget.ViewPager>
+
+
+               </LinearLayout>
+
+               <!-- 引导页小圆点 -->
+               <LinearLayout
+                   android:id="@+id/dot"
+                   android:layout_marginBottom="10dp"
+                   android:gravity="center"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:orientation="horizontal"
+                   >
+
+                   <ImageView
+                       android:id="@+id/dot1"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="center_vertical"
+                       android:src="@mipmap/icon_invite_short_pic"
+                       />
+                   <ImageView
+                       android:id="@+id/dot2"
+                       android:layout_marginLeft="10dp"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="center_vertical"
+                       android:src="@mipmap/icon_invite_long_pic"
+                       />
+                   <ImageView
+                       android:id="@+id/dot3"
+                       android:layout_marginLeft="10dp"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="center_vertical"
+                       android:src="@mipmap/icon_invite_short_pic"
+                       />
+
+                   <ImageView
+                       android:id="@+id/dot4"
+                       android:layout_marginLeft="10dp"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="center_vertical"
+                       android:src="@mipmap/icon_invite_short_pic"
+                       />
+               </LinearLayout>
+
+               <LinearLayout
+                   android:paddingTop="16dp"
+                   android:paddingLeft="16dp"
+                   android:paddingRight="16dp"
+                   android:id="@+id/part2222"
+                   android:layout_width="match_parent"
+                   android:layout_height="140dp"
+                   android:orientation="vertical">
+
+                   <LinearLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:orientation="horizontal">
+
+                       <LinearLayout
+                           android:id="@+id/share_wx"
+                           android:layout_width="0dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:layout_weight="1"
+                           android:orientation="vertical">
+
+                           <ImageView
+                               android:src="@mipmap/icon_invite_wx"
+                               android:layout_width="50dp"
+                               android:layout_height="50dp" />
+
+                           <TextView
+                               android:text="微信好友"
+                               android:textSize="11sp"
+                               android:gravity="center"
+                               android:padding="8dp"
+                               android:textColor="@color/text_second_color"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content" />
+
+                       </LinearLayout>
+
+
+                       <LinearLayout
+                           android:id="@+id/share_circle"
+                           android:layout_width="0dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:layout_weight="1"
+                           android:orientation="vertical">
+
+                           <ImageView
+                               android:src="@mipmap/icon_invite_circle"
+                               android:layout_width="50dp"
+                               android:layout_height="50dp" />
+
+                           <TextView
+                               android:text="朋友圈"
+                               android:textSize="11sp"
+                               android:gravity="center"
+                               android:paddingTop="8dp"
+                               android:paddingBottom="8dp"
+                               android:textColor="@color/text_second_color"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content" />
+
+                       </LinearLayout>
+
+                       <LinearLayout
+                           android:id="@+id/share_qq"
+                           android:layout_width="0dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:layout_weight="1"
+                           android:orientation="vertical">
+
+                           <ImageView
+                               android:src="@mipmap/icon_invite_qq"
+                               android:layout_width="50dp"
+                               android:layout_height="50dp" />
+
+                           <TextView
+                               android:text="QQ"
+                               android:textSize="11sp"
+                               android:gravity="center"
+                               android:paddingTop="8dp"
+                               android:paddingBottom="8dp"
+                               android:textColor="@color/text_second_color"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content" />
+
+                       </LinearLayout>
+
+                       <LinearLayout
+                           android:id="@+id/share_save"
+                           android:layout_width="0dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:layout_weight="1"
+                           android:orientation="vertical">
+
+                           <ImageView
+                               android:src="@mipmap/icon_invite_save"
+                               android:layout_width="50dp"
+                               android:layout_height="50dp" />
+
+                           <TextView
+                               android:text="保存图片"
+                               android:textSize="11sp"
+                               android:gravity="center"
+                               android:paddingTop="8dp"
+                               android:paddingBottom="8dp"
+                               android:textColor="@color/text_second_color"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content" />
+
+                       </LinearLayout>
+
+                       <LinearLayout
+                           android:id="@+id/share_link"
+                           android:layout_width="0dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:layout_weight="1"
+                           android:orientation="vertical">
+
+                           <ImageView
+                               android:src="@mipmap/icon_invite_link"
+                               android:layout_width="50dp"
+                               android:layout_height="50dp" />
+
+                           <TextView
+                               android:text="复制链接"
+                               android:textSize="11sp"
+                               android:gravity="center"
+                               android:paddingTop="8dp"
+                               android:paddingBottom="8dp"
+                               android:textColor="@color/text_second_color"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content" />
+
+                       </LinearLayout>
+
+
+                   </LinearLayout>
+
+               </LinearLayout>
+
+
+           </LinearLayout>
+
+           <LinearLayout
+               android:background="@drawable/bg_invite_rule"
+               android:id="@+id/part3333"
+               android:paddingLeft="24dp"
+               android:paddingRight="24dp"
+               android:paddingTop="27dp"
+               android:layout_width="match_parent"
+               android:layout_height="249dp"
+               android:orientation="vertical">
+
+               <TextView
+                   android:text="邀请规则"
+                   android:textSize="17sp"
+                   android:textColor="@color/text_first_color"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+               <Space
+                   android:layout_width="match_parent"
+                   android:layout_height="10dp" />
+
+               <TextView
+                   android:text="1.怎么样算邀请成功"
+                   android:textSize="14sp"
+                   android:textColor="@color/text_first_color"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+               <Space
+                   android:layout_width="match_parent"
+                   android:layout_height="10dp" />
+
+               <TextView
+                   android:text="2.邀请成功有什么奖励"
+                   android:textSize="14sp"
+                   android:textColor="@color/text_first_color"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+               <Space
+                   android:layout_width="match_parent"
+                   android:layout_height="10dp" />
+
+               <TextView
+                   android:text="3.邀请成功好友有什么奖励"
+                   android:textSize="14sp"
+                   android:textColor="@color/text_first_color"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+               <Space
+                   android:layout_width="match_parent"
+                   android:layout_height="10dp" />
+
+               <TextView
+                   android:text="4.怎么邀请"
+                   android:textSize="14sp"
+                   android:textColor="@color/text_first_color"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+
+               <Space
+                   android:layout_width="match_parent"
+                   android:layout_height="10dp" />
+
+               <TextView
+                   android:text="5.邀请记录在哪里"
+                   android:textSize="14sp"
+                   android:textColor="@color/text_first_color"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+
+
+
+           </LinearLayout>
+
+       </LinearLayout>
+
+   </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

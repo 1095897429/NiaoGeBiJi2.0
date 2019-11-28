@@ -5,6 +5,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
@@ -162,5 +163,21 @@ public interface ApiEncryptService{
     Observable<HttpResponse<RegisterLoginBean.UserInfo>> alterinfo(@Field("params") String param);
 
 
+    /* 2019.11.26 我的关注列表接口  接口有问题  已解决 */
+    @FormUrlEncoded
+    @POST("app/my/myFollowList")
+    Observable<HttpResponse<AuthorBean>> myFollowList(@Field("params") String param);
+
+
+    /* 2019.11.27 我的收藏列表  有问题*/
+    @FormUrlEncoded
+    @POST("app/my/favoriteList")
+    Observable<HttpResponse<CollectArticleBean>> favoriteList(@Field("params") String param);
+
+
+    /* 2019.11.27 快讯评论列表接口  */
+    @FormUrlEncoded
+    @POST("app/item/getCommentList")
+    Observable<HttpResponse<CommentBean>> getCommentLis(@Field("params") String param);
 
 }

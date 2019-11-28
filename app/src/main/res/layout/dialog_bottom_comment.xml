@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_above="@+id/totalk"
+        android:background="@drawable/bg_corners_left_16_right"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/part1111"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@mipmap/icon_comment_delete"
+                android:tint="@color/black"
+                android:layout_centerVertical="true"
+                android:layout_width="28dp"
+                android:layout_height="28dp" />
+
+            <TextView
+                android:id="@+id/comment_num"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:text="2条回复"
+                android:textSize="17sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:background="#F6F7F9"
+            android:layout_above="@+id/totalk"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:scrollbars="none"/>
+
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/totalk"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="56dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_fenxiang"/>
+
+        <TextView
+            android:id="@+id/hint_text"
+            android:layout_marginLeft="8dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/icon"
+            android:textSize="16sp"
+            android:textColor="@color/text_three_color"
+            android:text="想说就说，不吐不快"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

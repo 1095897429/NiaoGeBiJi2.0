@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_corners_12">
+
+
+    <TextView
+        android:id="@+id/txt_msg"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="清理搜索记录"
+        android:textColor="@color/text_first_color"
+        android:textSize="17sp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:text="职业认证后，被关注几率将提升300%"
+        android:visibility="visible"
+        android:textColor="@color/text_second_color"
+        android:textSize="13sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        />
+
+
+    <TextView
+        android:id="@+id/btn_pos"
+        android:layout_width="239dp"
+        android:layout_height="46dp"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:text="让大佬注意你，立即认证"
+        android:gravity="center"
+        android:background="@drawable/bg_corners_10_yellow"
+        android:textColor="@color/text_news_title_color"
+        android:textSize="14sp" />
+
+
+    <TextView
+        android:id="@+id/btn_neg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下次再说"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp"
+        android:gravity="center"
+        android:textColor="@color/text_second_color"
+        android:textSize="13sp" />
+
+
+
+</LinearLayout>

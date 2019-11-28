@@ -36,61 +36,43 @@
                    android:layout_height="8dp"
                    android:background="#F6F7F9"/>
 
-               <LinearLayout
-                   android:visibility="gone"
-                   android:id="@+id/ll_nocomment"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:padding="24dp"
-                   android:gravity="center"
-                   android:orientation="vertical">
-
-
-                   <ImageView
-                       android:src="@mipmap/icon_no_comment"
-                       android:layout_width="144dp"
-                       android:layout_height="144dp" />
-
-                   <Space
-                       android:layout_width="match_parent"
-                       android:layout_height="16dp" />
-
-                   <TextView
-                       android:textColor="@color/text_second_color"
-                       android:textSize="13sp"
-                       android:text="成为第一个评论者"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content" />
-
-               </LinearLayout>
-
 
                <LinearLayout
-                   android:visibility="gone"
-                   android:id="@+id/ll_have_comment"
+                   android:visibility="visible"
                    android:paddingLeft="16dp"
                    android:paddingRight="16dp"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:orientation="vertical">
 
-                   <TextView
-                       android:text="全部20条评论"
-                       android:gravity="center|left"
-                       android:textSize="17sp"
-                       android:textColor="@color/text_first_color"
-                       android:layout_width="match_parent"
-                       android:layout_height="56dp" />
+                  <LinearLayout
+                      android:id="@+id/ll_have_comment"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical">
 
-                   <View
-                       android:layout_width="match_parent"
-                       android:layout_height="1px"
-                       android:background="@color/divider_line"/>
+                      <TextView
+                          android:id="@+id/first_comment_num"
+                          android:text="全部20条评论"
+                          android:gravity="center|left"
+                          android:textSize="17sp"
+                          android:textColor="@color/text_first_color"
+                          android:layout_width="match_parent"
+                          android:layout_height="56dp" />
 
+                      <View
+                          android:layout_width="match_parent"
+                          android:layout_height="1px"
+                          android:background="@color/divider_line"/>
+
+
+
+                  </LinearLayout>
 
                    <Space
                        android:layout_width="match_parent"
                        android:layout_height="16dp" />
+
 
                    <androidx.recyclerview.widget.RecyclerView
                        android:id="@+id/more_comment_recycler"

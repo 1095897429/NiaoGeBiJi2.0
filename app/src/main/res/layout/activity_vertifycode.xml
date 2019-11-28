@@ -53,7 +53,7 @@
         <com.qmkj.niaogebiji.module.widget.SecurityCodeView
             android:id="@+id/edit_security_code"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:gravity="center_horizontal" />
 
     </LinearLayout>

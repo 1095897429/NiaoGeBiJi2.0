@@ -37,6 +37,7 @@ public class BaseApp extends Application {
 
     {
         PlatformConfig.setWeixin(Constant.WXAPPKEY, Constant.WXAPPSECRET);
+        PlatformConfig.setQQZone("100424468", "c7394704798a158208a74ab60104f0ba");
     }
 
 
@@ -75,7 +76,6 @@ public class BaseApp extends Application {
 
     private void initUMConfig() {
         UMConfigure.init(this, Constant.UMAPPKEY, ChannelUtil.getChannel(this) , UMConfigure.DEVICE_TYPE_PHONE, Constant.UMSECRET);
-
         // 选用AUTO页面采集模式
         MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
         //分享集成，统计集成

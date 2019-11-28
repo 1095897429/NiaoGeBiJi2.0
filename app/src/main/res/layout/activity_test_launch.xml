@@ -50,7 +50,7 @@
             style="@style/test_progress_horizontal"
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:progress="50"
+            android:progress="100"
             android:max="100"/>
 
     </LinearLayout>

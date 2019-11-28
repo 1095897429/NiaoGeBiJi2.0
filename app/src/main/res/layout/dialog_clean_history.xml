@@ -8,25 +8,6 @@
 
 
     <TextView
-        android:id="@+id/txt_title"
-        android:text="注意啦"
-        android:visibility="gone"
-        android:textColor="#222222"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="10dp"
-        />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="0.5dp"
-        android:background="#c6c6c6" />
-
-    <TextView
         android:id="@+id/txt_msg"
         android:paddingTop="40dp"
         android:layout_width="match_parent"
@@ -35,6 +16,25 @@
         android:textColor="@color/text_first_color"
         android:textSize="17sp"
         android:gravity="center" />
+    
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:text="注意啦"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:visibility="visible"
+        android:textColor="@color/text_second_color"
+        android:textSize="13sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        />
 
 
     <LinearLayout

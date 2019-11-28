@@ -183,13 +183,14 @@
 
 
             <ImageView
+                android:scaleType="centerCrop"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_alignParentBottom="true"
                 android:id="@+id/guide_img"
                 android:src="@mipmap/icon_guide_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_width="328dp"
+                android:layout_height="112dp" />
 
             <LinearLayout
                 android:layout_above="@+id/guide_img"

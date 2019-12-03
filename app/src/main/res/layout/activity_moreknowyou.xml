@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
+    android:background="@drawable/bg_gradient_gray"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 前面 -->
+    <LinearLayout
+        android:id="@+id/part11"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:paddingTop="20dp"
+            android:paddingLeft="16dp"
+            android:paddingBottom="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="选择职位"
+                android:textSize="26sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:text="请选择你的职位，开启个性化定制"
+                android:textSize="13sp"
+                android:textColor="@color/text_second_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <LinearLayout
+                android:id="@+id/part1111"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:background="@drawable/bg_corners_2_yellow"
+                    android:layout_width="18dp"
+                    android:layout_height="4dp" />
+
+                <Space
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent" />
+
+                <View
+
+                    android:background="@drawable/bg_corners_2_light_yellow"
+                    android:layout_width="10dp"
+                    android:layout_height="4dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/part2222"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:background="@drawable/bg_corners_2_light_yellow"
+                    android:layout_width="10dp"
+                    android:layout_height="4dp" />
+
+                <Space
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent" />
+
+                <View
+
+                    android:background="@drawable/bg_corners_2_yellow"
+                    android:layout_width="18dp"
+                    android:layout_height="4dp" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/part_picker"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_gravity="bottom|right"
+                android:src="@mipmap/icon_know_pic"
+                android:layout_width="134dp"
+                android:layout_height="270dp" />
+
+
+            <com.igalata.bubblepicker.rendering.BubblePicker
+                android:id="@+id/picker"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:backgroundColor="@android:color/transparent" />
+
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="简单两步，让鸟哥笔记更懂你"
+                android:textSize="13sp"
+                android:padding="17dp"
+                android:gravity="center"
+                android:textColor="@color/text_second_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="31dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/toCancle"
+                    android:background="@drawable/bg_corners_12_gray"
+                    android:text="不选了"
+                    android:gravity="center"
+                    android:layout_width="70dp"
+                    android:layout_height="52dp" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/toNext"
+                    android:background="@drawable/bg_corners_12_light_yellow"
+                    android:text="下一步"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 中间 -->
+    <LinearLayout
+        android:id="@+id/part22"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:paddingTop="20dp"
+            android:paddingLeft="16dp"
+            android:paddingBottom="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="选择职位"
+                android:textSize="26sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:text="请选择你的职位，开启个性化定制"
+                android:textSize="13sp"
+                android:textColor="@color/text_second_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:background="@drawable/bg_corners_2_yellow"
+                    android:layout_width="18dp"
+                    android:layout_height="4dp" />
+
+                <Space
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent" />
+
+                <View
+
+                    android:background="@drawable/bg_corners_2_light_yellow"
+                    android:layout_width="10dp"
+                    android:layout_height="4dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:background="@drawable/bg_corners_2_light_yellow"
+                    android:layout_width="10dp"
+                    android:layout_height="4dp" />
+
+                <Space
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent" />
+
+                <View
+
+                    android:background="@drawable/bg_corners_2_yellow"
+                    android:layout_width="18dp"
+                    android:layout_height="4dp" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/profession_picker"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"></androidx.recyclerview.widget.RecyclerView>
+
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="简单两步，让鸟哥笔记更懂你"
+                android:textSize="13sp"
+                android:padding="17dp"
+                android:gravity="center"
+                android:textColor="@color/text_second_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="31dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/toCancle2"
+                    android:background="@drawable/bg_corners_12_gray"
+                    android:text="不选了"
+                    android:gravity="center"
+                    android:layout_width="70dp"
+                    android:layout_height="52dp" />
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/toNext2"
+                    android:background="@drawable/bg_corners_12_light_yellow"
+                    android:text="下一步"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 后面 -->
+    <LinearLayout
+        android:layout_marginTop="70dp"
+        android:id="@+id/calcate_part"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="计算中"
+            android:textSize="26sp"
+            android:gravity="center"
+            android:textColor="@color/text_first_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:text="正在为你匹配个性化内容数据"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:textColor="@color/text_second_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <!--<ImageView-->
+                <!--android:id="@+id/gif_pic"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:layout_marginRight="20dp"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="220dp" />-->
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/gif_pic"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"  />
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/complete_part"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_marginTop="70dp"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="计算完成"
+                android:textSize="26sp"
+                android:gravity="center"
+                android:textColor="@color/text_first_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:text="已为你匹配个性化内容数据"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="@color/text_second_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp" />
+
+                <ImageView
+                    android:id="@+id/pic2"
+                    android:src="@mipmap/icon_pic_done"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/toComplete"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="32dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/bg_corners_12_yellow"
+            android:text="好的"
+            android:textSize="17sp"
+            android:textColor="@color/text_first_color"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="52dp" />
+
+
+    </RelativeLayout>
+
+
+
+    </LinearLayout>

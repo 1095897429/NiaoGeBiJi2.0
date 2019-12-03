@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
 
     <application
         android:name="com.qmkj.niaogebiji.common.BaseApp"
@@ -40,6 +42,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
 
         </activity>
 
@@ -162,11 +165,12 @@
         <activity android:name=".module.activity.TestListActivity"
             android:screenOrientation="portrait">
 
-
         </activity>
 
         <activity android:name=".module.activity.TestDetailActivity"
             android:screenOrientation="portrait">
+
+
         </activity>
 
         <activity android:name=".module.activity.TestLauchActivity"
@@ -208,6 +212,12 @@
         </activity>
 
         <activity android:name=".module.activity.ToolEditActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+
+        <activity android:name=".module.activity.MoreKnowYouActivity"
             android:screenOrientation="portrait">
 
         </activity>

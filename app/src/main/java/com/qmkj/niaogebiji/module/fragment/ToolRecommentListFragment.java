@@ -26,14 +26,15 @@ import com.qmkj.niaogebiji.module.adapter.NewsCollectItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolRecommentItemAdapter;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
-import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.CollectionEvent;
 import com.qmkj.niaogebiji.module.event.ToolChangeEvent;
+import com.qmkj.niaogebiji.module.event.ToolHomeChangeEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -207,22 +208,6 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
         mToolRecommentItemAdapter.setEmptyView(emptyView);
         ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("您还没有关注的文章哦～");
 
-
-        mToolRecommentItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            switch (view.getId()){
-                case R.id.tool_collect:
-                    KLog.d("tag","toast 收藏 or 不收藏");
-                    ToolBean bean = mToolRecommentItemAdapter.getData().get(position);
-                    if(bean.isSave()){
-                        bean.setSave(false);
-                    }else{
-                        bean.setSave(true);
-                    }
-                    mToolRecommentItemAdapter.notifyItemChanged(position);
-                    break;
-                default:
-            }
-        });
     }
 
 
@@ -236,6 +221,7 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
     }
 
 
+    //点击上方标签 更改下面数据源
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onToolChangeEvent(ToolChangeEvent event) {
 

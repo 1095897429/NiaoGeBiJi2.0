@@ -40,13 +40,16 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/divider_line"/>
 
         </RelativeLayout>
+
+        <View
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/divider_line"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler00"
@@ -89,15 +92,9 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/divider_line"/>
-
         </RelativeLayout>
 
-        <Space
+        <View
             android:background="@color/bg_color"
             android:layout_width="match_parent"
             android:layout_height="8dp" />

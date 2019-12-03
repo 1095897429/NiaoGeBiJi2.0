@@ -166,4 +166,13 @@ dependencies {
     //html解析器
     implementation 'org.jsoup:jsoup:1.9.2'
     compile project(path: ':imagepicker')
+
+    implementation 'com.github.igalata:Bubble-Picker:v0.2.4'
+
+    implementation 'com.facebook.fresco:fresco:2.0.0'
+
+    compile 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
+
+    //Optional: see how to use the utility.
+    compile 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
 }

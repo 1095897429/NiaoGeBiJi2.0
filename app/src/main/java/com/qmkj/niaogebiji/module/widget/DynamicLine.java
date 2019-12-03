@@ -72,8 +72,8 @@ public class DynamicLine extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         rectF.set(startX,0,stopX, SizeUtils.dp2px(10));
-//        canvas.drawRoundRect(rectF,5,5,paint);
-        canvas.drawRect(rectF,paint);
+        canvas.drawRoundRect(rectF,SizeUtils.dp2px(5),SizeUtils.dp2px(5),paint);
+//        canvas.drawRect(rectF,paint);
     }
 
     //更新View，传入坐标

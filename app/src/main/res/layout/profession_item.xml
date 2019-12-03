@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@mipmap/icon_profession_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/part1111"
+            android:background="@drawable/bg_corners_12_yellow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/pro_name"
+                android:text="莘莘学子"
+                android:textSize="17sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/pro_img"
+                android:layout_gravity="right"
+                android:src="@mipmap/icon_pic_1"
+                android:layout_width="136dp"
+                android:layout_height="70dp" />
+
+
+
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+</LinearLayout>

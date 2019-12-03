@@ -11,10 +11,13 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.event.ToolHomeChangeEvent;
 import com.socks.library.KLog;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +32,10 @@ import java.util.Map;
  */
 public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseViewHolder> {
 
+
     public ToolRecommentItemAdapter(List<ToolBean> data) {
         super(R.layout.item_tool_recomment,data);
+        mMap = new HashMap<>();
 
     }
 
@@ -41,13 +46,10 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
     int defaultLine = 1;
 
     //保存每个item对应的文本linecount
-    Map<Integer,Integer> mMap = new HashMap<>();
+    Map<Integer,Integer> mMap ;
 
     @Override
     protected void convert(BaseViewHolder helper, ToolBean bean) {
-
-        helper.addOnClickListener(R.id.tool_collect);
-
 
         //标签
         TagFlowLayout flowLayout = helper.getView(R.id.flowlayout);
@@ -76,16 +78,18 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
 
         ImageView toShowMore = helper.getView(R.id.toShowMore);
 
+        TextView tool_collect = helper.getView(R.id.tool_collect);
+
         LinearLayout ll_show = helper.getView(R.id.ll_show);
         //获取当前文本的行数
         TextView textView = helper.getView(R.id.comment_text);
         helper.setText(R.id.comment_text,bean.getMes());
 
+
         //需异步获取行数
         textView.post(() -> {
-            KLog.d("tag","文本是 " + textView.getText().toString());
-
-            int linecount = textView.getLineCount();
+            int linecount;
+            linecount = textView.getLineCount();
             KLog.d("tag", "Number of lines is " + linecount);
             mMap.put(helper.getAdapterPosition(), linecount);
             if (linecount > defaultLine) {
@@ -93,6 +97,27 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
             }else{
                 helper.setVisible(R.id.toShowMore,false);
             }
+        });
+
+
+
+        tool_collect.setOnClickListener(view -> {
+
+            if(!bean.isSave()){
+                bean.setSave(true);
+                helper.setText(R.id.tool_collect,"已收藏");
+                helper.setBackgroundRes(R.id.tool_collect,R.drawable.bg_corners_6_gray);
+            }else{
+                bean.setSave(false);
+                helper.setText(R.id.tool_collect,"收藏");
+                helper.setBackgroundRes(R.id.tool_collect,R.drawable.bg_corners_6_yellow);
+            }
+
+            //发送数据
+
+
+            //发送更改主界面的数据源
+            EventBus.getDefault().post(new ToolHomeChangeEvent("改变主界面数据"));
         });
 
 
@@ -112,7 +137,5 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
         });
 
     }
-
-
 
 }

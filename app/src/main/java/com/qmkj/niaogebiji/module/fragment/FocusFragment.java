@@ -166,7 +166,10 @@ public class FocusFragment extends BaseLazyFragment {
                             }
                             mAuther_lists =  mIndexFocusBean.getAuther_list();
                             mArticle_lists = mIndexFocusBean.getArticle_list();
-                            if(!mAuther_lists.isEmpty() && !mArticle_lists.isEmpty()){
+//                            if(!mAuther_lists.isEmpty() && !mArticle_lists.isEmpty()){
+//                                listCommonLogic();
+//                            }
+                            if(!mAuther_lists.isEmpty()){
                                 listCommonLogic();
                             }
 
@@ -197,7 +200,7 @@ public class FocusFragment extends BaseLazyFragment {
         for (int i = 0; i < 2; i++) {
             MultiNewsBean bean = new MultiNewsBean();
             bean.setItemType(2);
-            bean.setArticleList(mArticle_lists.get(i));
+//            bean.setArticleList(mArticle_lists.get(i));
             mAllList.add(bean);
         }
 
@@ -212,10 +215,10 @@ public class FocusFragment extends BaseLazyFragment {
         bean2.setItemType(3);
         mAllList.add(bean2);
 
-        for (int i = 0; i < mArticle_lists.size(); i++) {
+        for (int i = 0; i < 4; i++) {
             MultiNewsBean bean = new MultiNewsBean();
             bean.setItemType(2);
-            bean.setArticleList(mArticle_lists.get(i));
+//            bean.setArticleList(mArticle_lists.get(i));
             mAllList.add(bean);
         }
 

@@ -43,7 +43,6 @@ import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
-import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.SendCircleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -484,7 +483,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     /** --------------------------------- 发布帖子成功  ---------------------------------v*/
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAudioEvent(SendCircleEvent event) {
+    public void onSendCircleEvent(SendCircleEvent event) {
         showSendMsg.setVisibility(View.VISIBLE);
         initAnim();
     }

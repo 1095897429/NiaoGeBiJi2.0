@@ -109,7 +109,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/toTest"
+                    android:id="@+id/toShare"
                     android:text="分享好友"
                     android:gravity="center"
                     android:textSize="17sp"

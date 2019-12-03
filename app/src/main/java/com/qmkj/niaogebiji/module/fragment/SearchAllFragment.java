@@ -155,6 +155,34 @@ public class SearchAllFragment extends BaseLazyFragment {
         bean3.setFlashBulltinBeanList(list3);
         mAllList.add(bean3);
 
+
+        //模拟第4条快讯
+        MultSearchBean bean4 ;
+        bean4 = new MultSearchBean();
+        bean4.setItemType(4);
+        mAllList.add(bean4);
+
+        //模拟第4条快讯
+        MultSearchBean bea54 ;
+        bea54 = new MultSearchBean();
+        bea54.setItemType(5);
+        mAllList.add(bea54);
+
+
+        //模拟第4条快讯
+        MultSearchBean bean6 ;
+        bean6 = new MultSearchBean();
+        bean6.setItemType(6);
+        mAllList.add(bean6);
+
+
+        //模拟第4条快讯
+        MultSearchBean bean7 ;
+        bean7 = new MultSearchBean();
+        bean7.setItemType(7);
+        mAllList.add(bean7);
+
+
         mSearchAllAdapter.setNewData(mAllList);
     }
 

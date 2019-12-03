@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -17,6 +18,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,6 +44,8 @@ import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.MyEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
+import com.qmkj.niaogebiji.module.widget.DynamicLine;
+import com.qmkj.niaogebiji.module.widget.MyLinearLayout;
 import com.qmkj.niaogebiji.module.widget.ViewPagerTitle;
 import com.socks.library.KLog;
 
@@ -80,6 +84,16 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.pager_title)
     ViewPagerTitle pager_title;
 
+    @BindView(R.id.first_11)
+    TextView first_11;
+
+    @BindView(R.id.first_22)
+    TextView first_22;
+
+    @BindView(R.id.myll)
+    MyLinearLayout myll;
+
+
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -111,12 +125,55 @@ public class FirstFragment extends BaseLazyFragment {
     protected void initView() {
         String [] titile = new String[]{"关注","干货","活动","快讯","热榜"};
 
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
+        first_11.setTypeface(typeface);
+        first_22.setTypeface(typeface);
+
         pager_title.initData(titile,mViewPager,0);
+
+        myll.initData(titile,mViewPager,0);
 
         initEvent();
     }
 
+    DynamicLine dynamicLine;
+    private void createDynamicLine() {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        dynamicLine = new DynamicLine(getContext());
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        dynamicLine.setLayoutParams(params);
+    }
+
+
+    @BindView(R.id.llll)
+    RelativeLayout llll;
+
     private void initEvent() {
+        createDynamicLine();
+
+        first_11.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                    @Override
+                    public void onGlobalLayout() {
+                        if (Build.VERSION.SDK_INT >= 16) {
+                            first_11.getViewTreeObserver()
+                                    .removeOnGlobalLayoutListener(this);
+                        }
+                        else {
+                            first_11.getViewTreeObserver()
+                                    .removeGlobalOnLayoutListener(this);
+                        }
+                        first_11.getWidth(); // 获取宽度
+                        first_11.getHeight(); // 获取高度
+
+                        int wi =  first_11.getWidth();
+                        KLog.d("tag",wi + "");
+
+                        dynamicLine.updateView(0,wi);
+                        llll.addView(dynamicLine,0);
+                    }
+                });
 
     }
 
@@ -209,7 +266,35 @@ public class FirstFragment extends BaseLazyFragment {
 
             @Override
             public void onPageSelected(int position) {
+
+                first_11.setTextSize(16);
+                first_22.setTextSize(22);
+                first_11.setTextColor(getResources().getColor(R.color.text_second_color));
+                first_22.setTextColor(getResources().getColor(R.color.text_first_color));
+
                 KLog.d(TAG, "选中的位置 ：" + position);
+                first_22.getViewTreeObserver().addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                            @Override
+                            public void onGlobalLayout() {
+                                if (Build.VERSION.SDK_INT >= 16) {
+                                    first_22.getViewTreeObserver()
+                                            .removeOnGlobalLayoutListener(this);
+                                }
+                                else {
+                                    first_22.getViewTreeObserver()
+                                            .removeGlobalOnLayoutListener(this);
+                                }
+
+                                int wi =  first_22.getWidth();
+                                KLog.d("tag",wi + " " + " getLeft " + first_22.getLeft());
+
+                                dynamicLine.updateView(first_22.getLeft(),wi+first_22.getLeft());
+                            }
+                        });
+
+
             }
 
             @Override
@@ -241,15 +326,8 @@ public class FirstFragment extends BaseLazyFragment {
                 getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                 break;
             case R.id.listenMoring:
-//                if(mMediaPlayer != null){
-//                    mMediaPlayer.seekTo(0);
-//                    seekbar.setProgress(0);
-//                }
-//
-//                part_audio.setVisibility(View.VISIBLE);
 
-                EventBus.getDefault().post(new AudioEvent());
-//                part_audio.setVisibility(View.VISIBLE);
+                EventBus.getDefault().post(new AudioEvent(0));
 
                 break;
             case R.id.toMoreMoring:

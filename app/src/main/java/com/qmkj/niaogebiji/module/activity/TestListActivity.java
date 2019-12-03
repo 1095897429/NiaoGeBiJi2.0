@@ -97,12 +97,15 @@ public class TestListActivity extends BaseActivity {
         //点击事件
         mTestItemAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的是 position " + position );
-            if(position % 2 == 0){
+            if(position  == 0){
                 UIHelper.toTestDetailActivity(this);
-            }else{
-//                UIHelper.toTestResultActivity(this);
+            }else if(position == 1){
                 UIHelper.toTestResultFailActivity(this);
+            }else{
+                UIHelper.toTestResultActivity(this);
             }
+
+
         });
 
     }

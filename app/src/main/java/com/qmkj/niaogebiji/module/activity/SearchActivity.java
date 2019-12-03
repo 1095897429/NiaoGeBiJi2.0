@@ -31,9 +31,11 @@ import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.LookMoreEvent;
 import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
 import com.qmkj.niaogebiji.module.fragment.ActionFragment;
+import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstItemFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.qmkj.niaogebiji.module.fragment.HotNewsFragment;
+import com.qmkj.niaogebiji.module.fragment.PeopletemFragment;
 import com.qmkj.niaogebiji.module.fragment.SearchAllFragment;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -325,15 +327,25 @@ public class SearchActivity extends BaseActivity {
         mChannelBeanList.add(bean);
         bean = new ChannelBean("1","干货");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("2","人脉");
+        bean = new ChannelBean("2","活动");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("3","动态");
+        bean = new ChannelBean("3","快讯");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("4","百科");
+        bean = new ChannelBean("4","资料");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("5","资料");
+        bean = new ChannelBean("5","工具");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("6","作者");
+        bean = new ChannelBean("6","动态");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("7","作者");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("8","人脉");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("9","课程");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("10","百科");
+        mChannelBeanList.add(bean);
+        bean = new ChannelBean("11","测试");
         mChannelBeanList.add(bean);
 
 
@@ -348,22 +360,34 @@ public class SearchActivity extends BaseActivity {
         mFragmentList.clear();
         mTitls.clear();
         for (int i = 0; i < mChannelBeanList.size(); i++) {
-            if(i == 0){
+            if(mChannelBeanList.get(i).getChaname().equals("全部")){
                 SearchAllFragment searchAllFragment = SearchAllFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(searchAllFragment);
-            }else if(i == 2){
+            }else if(mChannelBeanList.get(i).getChaname().equals("干货")){
+                FirstItemFragment firstItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(firstItemFragment);
+            }else if(mChannelBeanList.get(i).getChaname().equals("活动")){
                 ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
-            }else if(i == 3){
+            }else if(mChannelBeanList.get(i).getChaname().equals("快讯")){
                 FlashFragment flashFragment = FlashFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(flashFragment);
-            }else if(i == 4){
-                HotNewsFragment hotNewsFragment = HotNewsFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+            }else if(mChannelBeanList.get(i).getChaname().equals("资料")){
+                FirstItemFragment firstItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
-                mFragmentList.add(hotNewsFragment);
+                mFragmentList.add(firstItemFragment);
+            }else if(mChannelBeanList.get(i).getChaname().equals("动态")){
+                CircleRecommendFragment circleRecommendFragment = CircleRecommendFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(circleRecommendFragment);
+            }else if(mChannelBeanList.get(i).getChaname().equals("人脉")){
+                PeopletemFragment peopletemFragment = PeopletemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(peopletemFragment);
             }else{
                 FirstItemFragment newsItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());

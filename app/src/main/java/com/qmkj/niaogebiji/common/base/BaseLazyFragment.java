@@ -46,7 +46,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public abstract class BaseLazyFragment extends Fragment {
 
-
     public static final String TAG = "BaseLazyFragment";
     //上下文
     protected Context mContext;

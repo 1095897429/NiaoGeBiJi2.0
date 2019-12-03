@@ -18,12 +18,18 @@ import com.qmkj.niaogebiji.module.bean.MultiToolNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.event.ToolChangeEvent;
+import com.qmkj.niaogebiji.module.event.ToolHomeChangeEvent;
 import com.socks.library.KLog;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * @author zhouliang
@@ -49,6 +55,11 @@ public class ToolFragment extends BaseLazyFragment {
         return new ToolFragment();
     }
 
+
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -119,6 +130,26 @@ public class ToolFragment extends BaseLazyFragment {
     public void initData() {
 
     }
+
+
+    @OnClick({R.id.icon_search})
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.icon_search:
+                UIHelper.toToolSearchActivity(getActivity());
+                break;
+            default:
+        }
+    }
+
+    //点击item的收藏 更改首页数据源
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onToolHomeChangeEvent(ToolHomeChangeEvent event) {
+
+        KLog.d("tag"," 更改首页数据源");
+    }
+
+
 
 
 }

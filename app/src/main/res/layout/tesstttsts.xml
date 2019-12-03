@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/llll"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <View
+            android:layout_alignParentBottom="true"
+            android:background="@color/yellow"
+            android:layout_width="20dp"
+            android:layout_height="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/first_11"
+                android:layout_width="44dp"
+                android:gravity="bottom|center"
+                android:layout_height="match_parent"
+                android:text="关注"
+                android:textColor="@color/text_first_color"
+                android:textSize="22sp" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent" />
+
+
+            <TextView
+                android:id="@+id/first_22"
+                android:text="干货"
+                android:textSize="16sp"
+                android:gravity="bottom|center"
+                android:textColor="@color/text_second_color"
+                android:layout_width="44dp"
+                android:layout_height="match_parent" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent" />
+
+
+            <TextView
+                android:text="快讯"
+                android:textSize="16sp"
+                android:gravity="bottom|center"
+                android:textColor="@color/text_second_color"
+                android:layout_width="44dp"
+                android:layout_height="match_parent" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent" />
+
+
+            <TextView
+                android:text="活动"
+                android:textSize="16sp"
+                android:gravity="bottom|center"
+                android:textColor="@color/text_second_color"
+                android:layout_width="44dp"
+                android:layout_height="match_parent" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent" />
+
+
+            <ImageView
+
+                android:src="@mipmap/icon_first_hot"
+                android:layout_width="49dp"
+                android:layout_height="19dp" />
+
+
+        </LinearLayout>
+
+
+
+
+    </RelativeLayout>
+
+</LinearLayout>

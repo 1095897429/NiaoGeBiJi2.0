@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+ >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_corners_12">
+
+
+        <TextView
+            android:id="@+id/txt_msg"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="您已预约重考"
+            android:textColor="@color/text_first_color"
+            android:textSize="17sp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:text="最近的可重考时间为2019年10月25日。请及时参加考试~"
+            android:visibility="visible"
+            android:textColor="@color/text_second_color"
+            android:textSize="13sp"
+            android:layout_gravity="center"
+            android:layout_width="219dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="14dp" />
+
+
+        <TextView
+            android:id="@+id/btn_pos"
+            android:layout_width="239dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:text="帮我添加到日历"
+            android:gravity="center"
+            android:background="@drawable/bg_corners_10_yellow"
+            android:textColor="@color/text_news_title_color"
+            android:textSize="14sp" />
+
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
+
+
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+    
+    <ImageView
+        android:layout_gravity="center"
+        android:id="@+id/icon_delete"
+        android:src="@mipmap/icon_retest_delete"
+        android:layout_width="34dp"
+        android:layout_height="34dp" />
+
+</LinearLayout>

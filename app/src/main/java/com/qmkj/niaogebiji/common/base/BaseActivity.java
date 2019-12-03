@@ -249,6 +249,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         return false;
     }
 
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudioEvent(AudioEvent event){
 
@@ -270,7 +272,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             initListener();
-
             // 准备播放（异步）
             mMediaPlayer.prepareAsync();
         }
@@ -291,7 +292,9 @@ public abstract class BaseActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //监听用户结束拖动进度条的时候
                 int dest = seekBar.getProgress();
-                mMediaPlayer.seekTo(dest);
+                if(mMediaPlayer != null){
+                    mMediaPlayer.seekTo(dest);
+                }
             }
         });
 
@@ -327,7 +330,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /** --------------------------------- 设置 app 字体不随系统字体设置改变  ---------------------------------*/
 
 
-    String getAudioLocation = "https://sharefs.yun.kugou.com/201911181637/1dd7d2442dacc7389e0c49b459adcfbc/G010/M05/1C/15/qoYBAFUJpaCAVEoIAEK3rlUikTE431.mp3";
+    String getAudioLocation = "https://sharefs.yun.kugou.com/201912031741/bcee77ed522f9b20c381f7123dbb87ea/G010/M07/1D/03/Sg0DAFUBbC-AaUHgADsTIx9YQdY068.mp3";
 
 
     private MediaPlayer mMediaPlayer;
@@ -439,8 +442,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         }
     }
-
+    //0 表示点击了暂停   1表示点击了播放
     private void play(int position) {
+
+        if(part_audio.getVisibility() == View.GONE){
+            part_audio.setVisibility(View.VISIBLE);
+        }
 
         if(position == 0){
             play.setVisibility(View.VISIBLE);
@@ -453,13 +460,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
 
-        if (mMediaPlayer.isPlaying()){
+        if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
             isplay = false;
             mMediaPlayer.pause();
             //当停止播放时线程也停止了(这样也可以减少占用的内存)
             mythred = null;
 
         }else {
+
+
             isplay = true;
             mMediaPlayer.start();
             mythred = new Mythred();

@@ -5,10 +5,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.module.bean.WxShareBean;
+import com.socks.library.KLog;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * @author zhouliang
@@ -47,6 +53,56 @@ public class TestResultActivity extends BaseActivity {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
         test_grade.setTypeface(typeface);
     }
+
+
+    @OnClick({R.id.toTake,R.id.toShare,
+            R.id.iv_back,R.id.iv_right
+    })
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.iv_back:
+                finish();
+                break;
+            case R.id.iv_right:
+            case R.id.toShare:
+                showShareDialog();
+                break;
+            case R.id.toTake:
+                KLog.d("tag","佩戴成功");
+                break;
+            default:
+        }
+    }
+
+
+    private void showShareDialog() {
+        ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(this).builder();
+        alertDialog.setShareDynamicView().setTitleGone();
+        alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setOnDialogItemClickListener(position -> {
+            switch (position) {
+                case 0:
+                    KLog.d("tag", "朋友圈 是张图片");
+                    WxShareBean bean = new WxShareBean();
+                    shareWxCircleByWeb(bean);
+                    break;
+                case 1:
+                    KLog.d("tag", "朋友 是链接");
+                    WxShareBean bean2 = new WxShareBean();
+                    shareWxByWeb(bean2);
+                    break;
+                case 4:
+                    KLog.d("tag", "转发到动态");
+                    UIHelper.toTranspondActivity(this);
+                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                    break;
+                default:
+            }
+        });
+        alertDialog.show();
+    }
+
 
 
 

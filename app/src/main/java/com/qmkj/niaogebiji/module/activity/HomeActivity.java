@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
@@ -186,11 +187,16 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.index_first,R.id.index_school,R.id.index_tool,R.id.index_circle,R.id.index_my,R.id.toMoreLoveYou})
+    @OnClick({R.id.index_first,R.id.index_school,R.id.index_tool,R.id.index_circle,R.id.index_my,
+            R.id.toMoreLoveYou,R.id.to_tomorow
+    })
     public void bottomClick(android.view.View layout){
         switch (layout.getId()){
+            case R.id.to_tomorow:
+
+                break;
             case R.id.toMoreLoveYou:
-                //TODO 11.14
+                UIHelper.toMoreKnowYouActivity(this);
                 break;
             case R.id.index_first:
 

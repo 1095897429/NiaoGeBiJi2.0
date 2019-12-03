@@ -155,19 +155,60 @@
 
 
             <RelativeLayout
-                android:visibility="gone"
+                android:id="@+id/part3333"
+                android:visibility="visible"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="17dp"
                 android:layout_above="@+id/part1111"
-                android:background="@color/bg_color"
-                android:id="@+id/toMoreLoveYou"
+                android:background="@drawable/bg_corners_17_gray"
                 android:layout_width="match_parent"
-                android:layout_height="30dp">
+                android:layout_height="34dp">
+
+               <LinearLayout
+                   android:layout_toLeftOf="@+id/to_line"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:gravity="center"
+                   android:orientation="vertical">
+
+                   <TextView
+                       android:id="@+id/toMoreLoveYou"
+                       android:textColor="@color/white"
+                       android:drawableRight="@mipmap/icon_home_more"
+                       android:drawablePadding="6dp"
+                       android:textSize="11sp"
+                       android:text="想要内容更精确，点这里让我更懂你"
+                       android:gravity="center"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent" />
+
+               </LinearLayout>
+                
+                <View
+                    android:id="@+id/to_line"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_toLeftOf="@+id/to_tomorow"
+                    android:layout_centerVertical="true"
+                    android:layout_width="1px"
+                    android:layout_height="19dp"
+                    android:background="@color/divider_line"/>
 
                 <TextView
-                    android:id="@+id/text"
-                    android:text="想要内容更精确，点这里让我更懂你"
+                    android:id="@+id/to_tomorow"
+                    android:text="明天再说"
+                    android:layout_marginRight="16dp"
+                    android:textColor="#99ffffff"
                     android:gravity="center"
-                    android:layout_width="match_parent"
+                    android:textSize="11sp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
+                
+
+
             </RelativeLayout>
 
 

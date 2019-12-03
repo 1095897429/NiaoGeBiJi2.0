@@ -7,4 +7,9 @@ package com.qmkj.niaogebiji.module.event;
  * 描述:
  */
 public class AudioEvent {
+    public int position;
+
+    public AudioEvent(int position){
+        this.position = position;
+    }
 }

@@ -9,6 +9,7 @@
     android:paddingBottom="12dp"
     android:layout_height="108dp">
 
+
     <FrameLayout
         android:id="@+id/part1111"
         android:layout_alignParentRight="true"

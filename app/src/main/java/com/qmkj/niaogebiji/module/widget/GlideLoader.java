@@ -1,13 +1,25 @@
 package com.qmkj.niaogebiji.module.widget;
 
+import android.content.Context;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.gifdecoder.GifDecoder;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.xzh.imagepicker.utils.ImageLoader;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * @author zhouliang
@@ -44,4 +56,14 @@ public class GlideLoader implements ImageLoader {
     public void clearMemoryCache() {
         Glide.get(BaseApp.getApplication()).clearMemory();
     }
+
+
+
+    /**
+     * Gif播放完毕回调
+     */
+    public interface GifListener {
+        void gifPlayComplete();
+    }
+
 }

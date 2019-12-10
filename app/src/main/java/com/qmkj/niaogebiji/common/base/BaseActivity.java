@@ -2,8 +2,10 @@ package com.qmkj.niaogebiji.common.base;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -13,6 +15,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -51,6 +54,7 @@ import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
@@ -152,7 +156,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    play(0);
+                    mMyBinder.pauseMusic();
                 });
 
 
@@ -161,7 +165,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    play(1);
+                    mMyBinder.playMusic();
                 });
 
 
@@ -171,7 +175,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .subscribe(object -> {
                     SPUtils.getInstance().put("audio_view_show",false);
                     if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
-                        mMediaPlayer.reset();
+                        mMediaPlayer.stop();
                     }
                     part_audio.setVisibility(View.GONE);
 
@@ -235,6 +239,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (regEvent()) {
             EventBus.getDefault().unregister(this);
         }
+
+        if(null != mMediaPlayer){
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 
 
@@ -255,7 +264,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onAudioEvent(AudioEvent event){
 
         if(null != mMediaPlayer){
-            play(1);
+            mMediaPlayer.reset();
+            //重新加载音频资源
+            try {
+                mMediaPlayer.setDataSource(getAudioLocation);
+                mMediaPlayer.prepare();//预加载音频
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            mMediaPlayer.start();//开始播放
+            KLog.d("tag","重新正在播放音频.....");
+            isplay = true;
+            mMediaPlayer.start();
+            mythred = new Mythred();
+            mythred.start();
         }else{
             //播放音频的view已打开
             //视频时间是后台返回的
@@ -330,7 +353,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /** --------------------------------- 设置 app 字体不随系统字体设置改变  ---------------------------------*/
 
 
-    String getAudioLocation = "https://sharefs.yun.kugou.com/201912031741/bcee77ed522f9b20c381f7123dbb87ea/G010/M07/1D/03/Sg0DAFUBbC-AaUHgADsTIx9YQdY068.mp3";
+    String getAudioLocation = "https://sharefs.yun.kugou.com/201912051126/7d36b8ff6cd1c97e76ee60c1a1a7015b/G180/M07/04/08/9A0DAF3FKAqATsbCACy595OooJM759.mp3";
 
 
     private MediaPlayer mMediaPlayer;
@@ -380,6 +403,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         //播放完成监听
         mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
             KLog.d("tag","播放完成监听");
+            play.setVisibility(View.VISIBLE);
+            pause.setVisibility(View.GONE);
+            close.setVisibility(View.VISIBLE);
             isplay = false;
             mythred = null;
         });
@@ -396,7 +422,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             KLog.d("tag","获得音乐总时长 " + lengthoftime);
             seekbar.setMax(lengthoftime);
             time.setText(timeParse(lengthoftime));
-            play(1);
+            play();
         });
 
         //进度调整完成SeekComplete监听，主要是配合seekTo(int)方法
@@ -415,7 +441,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
-            mMediaPlayer = null;
         }
     }
 
@@ -443,21 +468,33 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
     //0 表示点击了暂停   1表示点击了播放
-    private void play(int position) {
+    private void play() {
 
         if(part_audio.getVisibility() == View.GONE){
             part_audio.setVisibility(View.VISIBLE);
         }
 
-        if(position == 0){
-            play.setVisibility(View.VISIBLE);
-            pause.setVisibility(View.GONE);
-            close.setVisibility(View.VISIBLE);
-        }else if(position == 1){
-            play.setVisibility(View.GONE);
-            pause.setVisibility(View.VISIBLE);
-            close.setVisibility(View.GONE);
+        play.setVisibility(View.GONE);
+        pause.setVisibility(View.VISIBLE);
+        close.setVisibility(View.GONE);
+
+
+        isplay = true;
+        mMediaPlayer.start();
+        mythred = new Mythred();
+        mythred.start();
+        setMarquee(audio_title);
+    }
+
+    private void pause() {
+
+        if(part_audio.getVisibility() == View.GONE){
+            part_audio.setVisibility(View.VISIBLE);
         }
+
+        play.setVisibility(View.VISIBLE);
+        pause.setVisibility(View.GONE);
+        close.setVisibility(View.VISIBLE);
 
 
         if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
@@ -466,16 +503,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             //当停止播放时线程也停止了(这样也可以减少占用的内存)
             mythred = null;
 
-        }else {
-
-
-            isplay = true;
-            mMediaPlayer.start();
-            mythred = new Mythred();
-            mythred.start();
         }
+
         setMarquee(audio_title);
     }
+
 
     /**
      * Android 音乐播放器应用里，读出的音乐时长为 long 类型以毫秒数为单位，例如：将 234736 转化为分钟和秒应为 03:55 （包含四舍五入）
@@ -718,4 +750,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
+    /** ---------------------------------  播放  ---------------------------------*/
+    //“绑定”服务的intent
+    Intent MediaServiceIntent;
+
+    private MediaService.MyBinder mMyBinder;
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMyBinder = (MediaService.MyBinder) service;
+            Log.d("tag", "Service与Activity已连接");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 }

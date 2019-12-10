@@ -12,22 +12,33 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -47,6 +58,9 @@ public class CircleFocusFragment extends BaseLazyFragment {
     RecyclerView mRecyclerView;
 
     private int page = 1;
+
+    private String chanelName;
+
     //适配器
     CircleRecommendAdapter mCircleRecommendAdapter;
     //组合集合
@@ -71,10 +85,37 @@ public class CircleFocusFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+        chanelName = getArguments().getString("chainName");
+        KLog.d("tag","当前展示的是 " + chanelName);
         initSamrtLayout();
         initLayout();
         getData();
     }
+
+
+
+    @Override
+    protected void lazyLoadData() {
+        followBlogList();
+    }
+
+    private void followBlogList() {
+        Map<String,String> map = new HashMap<>();
+        map.put("page",page + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followBlogList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<CircleBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<CircleBean> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                    }
+
+                });
+    }
+
 
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());

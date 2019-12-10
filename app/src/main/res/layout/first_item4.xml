@@ -85,6 +85,7 @@
                 android:layout_centerVertical="true"
                 android:visibility="visible"
                 android:lineSpacingExtra="4dp"
+                android:textStyle="bold"
                 android:text="四通一达首次承诺双11时效：长三角72小时达，超时赔付"
                 android:textSize="14sp"
                 android:textColor="@color/text_first_color"

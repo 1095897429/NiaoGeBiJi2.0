@@ -5,15 +5,11 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -29,24 +25,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
-import com.qmkj.niaogebiji.module.event.SendCircleEvent;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
@@ -57,10 +59,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import butterknife.BindView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -87,7 +92,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
-
+    //页数
     private int page = 1;
     //适配器
     CircleRecommendAdapter mCircleRecommendAdapter;
@@ -128,7 +133,27 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         getData();
     }
 
+    @Override
+    protected void lazyLoadData() {
+        recommendBlogList();
+    }
 
+    private void recommendBlogList() {
+        Map<String,String> map = new HashMap<>();
+        map.put("page",page + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().recommendBlogList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<CircleBean>> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                    }
+
+                });
+    }
 
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
@@ -147,7 +172,14 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         initEvent();
     }
 
+
+
     private void initSamrtLayout() {
+
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
+
+
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
@@ -187,6 +219,14 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
         mCircleRecommendAdapter.setNewData(mAllList);
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                smartRefreshLayout.finishRefresh();
+            }
+        },2000);
+
+
     }
 
 
@@ -205,15 +245,20 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                 case R.id.circle_remove:
 //                    showRemoveDialog();
                     break;
-                case R.id.circle_priase:
+//                case R.id.circle_priase:
 //                    if(mTempBuilltinBean.getIs_good() == 0){
 ////                        goodBulletin(mTempBuilltinBean.getId());
 ////                    }else{
 ////                        cancleGoodBulletin(mTempBuilltinBean.getId());
 ////                    }
 
-                    goodBulletin("111");
-                    break;
+//                    goodBulletin("111");
+
+
+
+
+
+//                    break;
                 case R.id.ll_report:
                     KLog.d("tag", "举报或分享");
                     showPopupWindow(adapter.getViewByPosition(position, R.id.ll_report));
@@ -483,7 +528,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     /** --------------------------------- 发布帖子成功  ---------------------------------v*/
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSendCircleEvent(SendCircleEvent event) {
+    public void onSendCircleEvent(SendOkCircleEvent event) {
         showSendMsg.setVisibility(View.VISIBLE);
         initAnim();
     }

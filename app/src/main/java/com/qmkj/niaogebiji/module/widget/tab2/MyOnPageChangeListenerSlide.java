@@ -1,14 +1,19 @@
-package com.qmkj.niaogebiji.module.widget;
+package com.qmkj.niaogebiji.module.widget.tab2;
 
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
+import android.util.Size;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.qmkj.niaogebiji.module.widget.tab1.DynamicLineNoRadiu;
+import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.socks.library.KLog;
 
 import java.util.ArrayList;
@@ -16,22 +21,21 @@ import java.util.ArrayList;
 /**
  * @author zhouliang
  * 版本 1.0
- * 创建时间 2019-11-12
- * 描述:
+ * 创建时间 2019-10-10
+ * 描述:页面切换监听器 可共用一套
  */
-public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
+public class MyOnPageChangeListenerSlide implements ViewPager.OnPageChangeListener {
 
 
     private ViewPager pager;
 
-    private ViewPagerTitle viewPagerTitle;
+    private ViewPagerTitleSlide viewPagerTitle;
 
-    private DynamicLine dynamicLine;
+    private DynamicLineNoRadiu dynamicLine;
 
     private ArrayList<TextView> textViews;
 
     private int screenWidth;
-
 
     private int pagerCount;
     //线的宽度
@@ -59,46 +63,14 @@ public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
     }
 
-
-    int leftWidth = 0;
-
-
     @Override
     public void onPageSelected(int position) {
-//        KLog.d("tag","onPageSelected");
+        KLog.d("tag","onPageSelected");
         lastPosition = pager.getCurrentItem();
         viewPagerTitle.setCurrentItem(position);
+        dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (position )*everyLength);
 
-        //向左
-//        if(lastPosition > position){
-//            int temp;
-//            temp =  (int)getTextViewLength(textViews.get(lastPosition));
-//            dynamicLine.updateView(leftWidth,leftWidth + temp);
-//            leftWidth = leftWidth - temp;
-//        }else{
-
-//        }
-
-
-        int x =  textViews.get(position).getLeft() ;
-//        KLog.d("tag",x + "");
-        dynamicLine.updateView(x, (int)getTextViewLength(textViews.get(position)) + x);
-
-//        if(lastPosition == 0){
-//            temp =  (int)getTextViewLength(textViews.get(lastPosition));
-//            dynamicLine.updateView(leftWidth,leftWidth + temp);
-//        }else if(lastPosition == 1){
-//            temp =  (int)getTextViewLength(textViews.get(lastPosition));
-//            dynamicLine.updateView(leftWidth,temp + leftWidth);
-//        }else if(lastPosition == 2){
-//            temp =  (int)getTextViewLength(textViews.get(lastPosition));
-//            dynamicLine.updateView(leftWidth,temp + leftWidth);
-//        }
-
-
-
-//        dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (position )*everyLength);
-
+        viewPagerTitle.changePager(lastPosition);
     }
 
 
@@ -114,35 +86,31 @@ public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
 
 
-    public MyOnPageChangeListener(Context context, ViewPager viewPager, DynamicLine dynamicLine, ViewPagerTitle viewPagerTitle) {
+
+
+    public MyOnPageChangeListenerSlide(Context context, ViewPager viewPager, DynamicLineNoRadiu dynamicLine, ViewPagerTitleSlide viewPagerTitle, int defaultIndex) {
         this.pager = viewPager;
         this.viewPagerTitle = viewPagerTitle;
         this.dynamicLine = dynamicLine;
         textViews = viewPagerTitle.getTextView();
         pagerCount = textViews.size();
-        //默认是屏幕的宽，但是有时右边有路障
-        screenWidth = getScreenWidth((Activity) context) - SizeUtils.dp2px(16f + 28f + 16f);
-        //文本的宽度
-        lineWidth = (int)getTextViewLength(textViews.get(0));
+        screenWidth = ScreenUtils.getScreenWidth();
 
-//        for (int i = 0; i < textViews.size(); i++) {
-//            lineWidth += (int)getTextViewLength(textViews.get(i));
-//        }
-//
-//        int lastSpace = screenWidth - lineWidth;
-//        dis = lastSpace / pagerCount;
+        int allWidth = SizeUtils.dp2px(60) * 7;
+        KLog.d("tag","总长度为 " + allWidth);
+        if(allWidth > screenWidth){
+            screenWidth = allWidth;
+        }
 
+        //得到第一个文本的大小
+        lineWidth = (int)getTextViewLength(textViews.get(defaultIndex));
         everyLength = screenWidth / pagerCount;
         dis = (everyLength - lineWidth) / 2;
-//        KLog.d("tag","左右边距 " + dis);
+        dis = 0;
+        KLog.d("tag","每个控件均分长度为  " + everyLength);
 
         //默认绘制
-//        dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (0)*everyLength);
-
-        //画第二个 思路，得到第一个盒子的宽度
-        float x =  textViews.get(0).getX();
-//        KLog.d("tag",x + "");
-        dynamicLine.updateView(x, (int)getTextViewLength(textViews.get(0)) + x);
+        dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (0)*everyLength );
 
     }
 

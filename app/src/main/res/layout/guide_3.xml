@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="学院测评"
+            android:textSize="40sp"
+            android:textColor="@color/text_first_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:text="上百课程任你学，专业机构测试认证"
+            android:textSize="18sp"
+            android:textColor="@color/text_first_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="11dp" />
 
     <ImageView
         android:src="@mipmap/welcome3"
         android:layout_marginLeft="27dp"
         android:layout_marginRight="27dp"
-        android:layout_marginTop="123dp"
         android:layout_width="match_parent"
-        android:layout_height="362dp" />
+        android:layout_height="445dp" />
 
 </LinearLayout>

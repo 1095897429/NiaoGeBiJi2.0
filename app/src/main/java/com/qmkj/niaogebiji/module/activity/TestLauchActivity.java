@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
@@ -15,6 +16,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +50,10 @@ import io.reactivex.disposables.Disposable;
  * 版本 1.0
  * 创建时间 2019-11-22
  * 描述:开始测试
- * 下一题有效果 1.选择答案  2.倒计时结束
+ * 下一题有效果
+ * 1.选择答案 , 无倒计时
+ * 2.倒计时结束，无选择答案
+ * 3.倒计时中，选择答案
  */
 public class TestLauchActivity extends BaseActivity {
 
@@ -77,6 +82,9 @@ public class TestLauchActivity extends BaseActivity {
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
+    @BindView(R.id.toNextbyAnim)
+    TextView toNextbyAnim;
+
 
     //适配器
     TestLaunchItemAdapter mTestLaunchItemAdapter;
@@ -100,11 +108,6 @@ public class TestLauchActivity extends BaseActivity {
     //当前的题数
     private int currentNum = 1;
 
-    private String [] contents = new String[]{
-            "A 留存是延长用户生命周期",
-            "B 留存是延长用户生命周期",
-            "C 留存是延长用户生命周期",
-            "D 留存是延长用户生命周期"};
 
     @Override
     protected int getLayoutId() {
@@ -117,7 +120,6 @@ public class TestLauchActivity extends BaseActivity {
         total.setText(" /" + totalNum);
         initLayout();
         getData(1);
-
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
         current_page.setTypeface(typeface);
         total.setTypeface(typeface);
@@ -133,8 +135,6 @@ public class TestLauchActivity extends BaseActivity {
         toNext.setEnabled(false);
         toSubmit.setEnabled(false);
 
-
-        //设置界面一些内容
         if(currentNum == totalNum){
             toSubmit.setVisibility(View.GONE);
             toNext.setText("交卷");
@@ -193,23 +193,31 @@ public class TestLauchActivity extends BaseActivity {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @OnClick({R.id.iv_back,R.id.toNext,R.id.toSubmit})
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toSubmit:
 
+                //动画暂停
+                if(animator != null && animator.isRunning()){
+                    animator.pause();
+                }
+
+                showSubmit();
                 break;
 
             case R.id.toNext:
-
-                if(isAnimPause){
-                    isAnimPause = false;
+                //有动画走这里 取消动画
+                if(animator != null && animator.isRunning()){
+                    animator.cancel();
+                    setAnimation(progressBar,100);
                     changeData();
-                }else{
-                    initRxTime();
+                    return;
                 }
 
-
+                //没有动画走这里
+                changeData();
 
                 break;
             case R.id.iv_back:
@@ -221,7 +229,7 @@ public class TestLauchActivity extends BaseActivity {
     }
 
     private void changeData() {
-        //最后一题
+        //加载下一页数据时判断 最后一题
         if(totalNum == currentNum){
             KLog.d("tag","到了最后一页了");
             finish();
@@ -236,11 +244,19 @@ public class TestLauchActivity extends BaseActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void showSubmit(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("交卷", v -> {
 
+            finish();
+
         }).setNegativeButton("再想想", v -> {
+
+            //动画暂停
+            if(animator != null && animator.isPaused()){
+                animator.resume();
+            }
 
         }).setMsg("你没有答完全部题目\n" +
                 "\n" +
@@ -255,20 +271,20 @@ public class TestLauchActivity extends BaseActivity {
         //参数依次为：从0开始，发送次数是9次 ，0秒延时,每隔1秒发射,主线程中
         disposable = Observable.intervalRange(0,time_text + 1,0,1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                 .doOnNext(aLong -> {
-                    if (toNext != null) {
+                    if (toNextbyAnim != null) {
                         if(totalNum == currentNum){
-                            toNext.setText("本题回答时间已到，将自动提交答案  " + (time_text - aLong) +  " s");
+                            toNextbyAnim.setText("本题回答时间已到，将自动提交答案  " + (time_text - aLong) +  " s");
                         }else{
-                            toNext.setText("本题回答时间已到，将自动切换到下一题  " + (time_text - aLong) +  " s");
+                            toNextbyAnim.setText("本题回答时间已到，将自动切换到下一题  " + (time_text - aLong) +  " s");
                         }
                     }
                 }).doOnComplete(() -> {
-
-                    setAnimation(progressBar,100);
+                    KLog.d("tag","文本倒计时结束");
+                    toNextbyAnim.setVisibility(View.GONE);
                     changeData();
+                    setAnimation(progressBar,100);
                 })
                 .subscribe();
-
 
     }
 
@@ -287,9 +303,15 @@ public class TestLauchActivity extends BaseActivity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-//               if(animation != null && null != this){
-//                   clicks(toNext);
-//               }
+                //动画正常结束 动画对象存在 界面存储 文本存在
+               if(!isAnimPause && animation != null && null != this && toNextbyAnim != null){
+                   KLog.d("tag","动画结束,显示文本倒计时");
+                   toNextbyAnim.setVisibility(View.VISIBLE);
+                   initRxTime();
+               }
+
+                //重新恢复状态
+                isAnimPause = false;
             }
 
             @Override
@@ -315,7 +337,6 @@ public class TestLauchActivity extends BaseActivity {
         }
 
         if(null != animator){
-            animator.end();
             animator.cancel();
             animator = null;
         }

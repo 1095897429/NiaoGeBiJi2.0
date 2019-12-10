@@ -8,9 +8,8 @@
     <LinearLayout
         android:id="@+id/part1111"
         android:background="@drawable/bg_corners_8_gray"
-        android:layout_width="109dp"
+        android:layout_width="99dp"
         android:orientation="vertical"
-        android:gravity="center"
         android:paddingTop="15dp"
         android:paddingLeft="10dp"
         android:layout_height="84dp">
@@ -18,9 +17,10 @@
         <TextView
             android:id="@+id/test_title"
             android:text="做8题送价值1988元VIP"
+            android:paddingRight="10dp"
             android:textColor="@color/text_first_color"
             android:textSize="13sp"
-            android:layout_width="wrap_content"
+            android:layout_width="88dp"
             android:layout_height="wrap_content" />
 
         <RelativeLayout

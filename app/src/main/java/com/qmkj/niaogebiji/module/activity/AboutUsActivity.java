@@ -54,7 +54,15 @@ public class AboutUsActivity extends BaseActivity {
     @Override
     protected void initView() {
         tv_title.setText("关于我们");
+        tv_title.setOnClickListener(view -> {
 
+        });
+        tv_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     @OnClick({R.id.iv_back,R.id.icon,R.id.rl_weixin,

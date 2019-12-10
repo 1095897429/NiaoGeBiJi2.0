@@ -1,9 +1,7 @@
-package com.qmkj.niaogebiji.module.widget;
+package com.qmkj.niaogebiji.module.widget.tab1;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -16,29 +14,27 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
-import com.socks.library.KLog;
 
 import java.util.ArrayList;
-
-import static udesk.core.utils.UdeskUtils.getScreenWidth;
 
 /**
  * @author zhouliang
  * 版本 1.0
- * 创建时间 2019-11-12
- * 描述:
+ * 创建时间 2019-10-10
+ * 描述: 固定标题的指示器
  */
 public class ViewPagerTitle extends LinearLayout {
 
+    //标题
+    private String[] titles;
     //控件
     private ArrayList<TextView> textViews = new ArrayList<>();
     //点击事件
     private OnTextViewClick onTextViewClick;
     //字体
     private Typeface typeface;
-    private Context mContext;
 
-    private DynamicLine dynamicLine;
+    private DynamicLineNoRadiu dynamicLine;
     private ViewPager viewPager;
     private MyOnPageChangeListener onPageChangeListener;
 
@@ -52,7 +48,6 @@ public class ViewPagerTitle extends LinearLayout {
 
     public ViewPagerTitle(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
         init();
     }
 
@@ -60,17 +55,15 @@ public class ViewPagerTitle extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public void setViewPager(ViewPager viewPager) {
-        this.viewPager = viewPager;
-    }
 
     //初始化方法
     public void initData(String [] titles,ViewPager viewPager,int defaultIndex){
+        this.titles = titles;
         this.viewPager = viewPager;
         createDynamicLine();
         createTextViews(titles);
         setCurrentItem(defaultIndex);
-        onPageChangeListener = new MyOnPageChangeListener(getContext(), viewPager, dynamicLine, this);
+        onPageChangeListener = new MyOnPageChangeListener(getContext(), viewPager, dynamicLine, this,defaultIndex);
         viewPager.addOnPageChangeListener(onPageChangeListener);
 
         //关闭硬件加速
@@ -97,60 +90,43 @@ public class ViewPagerTitle extends LinearLayout {
         RelativeLayout rl = new RelativeLayout(getContext());
         LinearLayout.LayoutParams linearLayoutParams0 = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         rl.setLayoutParams(linearLayoutParams0);
-        rl.setGravity(Gravity.CENTER);
-//        rl.addView(dynamicLine);
-
-
-        int screenWidth = getScreenWidth((mContext) ) - SizeUtils.dp2px(16f + 28f + 16);
-        //每个区域的大小
-        int  everyLength = screenWidth / titles.length;
+        rl.addView(dynamicLine);
 
 
         LinearLayout textViewLl = new LinearLayout(getContext());
-        RelativeLayout.LayoutParams linearLayoutParams = new RelativeLayout.LayoutParams(screenWidth,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams linearLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
         linearLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         textViewLl.setLayoutParams(linearLayoutParams);
 
         textViewLl.setOrientation(HORIZONTAL);
-
-//        LinearLayout.LayoutParams params = new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1);
-        LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        // 给与一定的宽度
+        LinearLayout.LayoutParams params = new LayoutParams(SizeUtils.dp2px(60) ,ViewGroup.LayoutParams.MATCH_PARENT);
         typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/DIN-Bold.otf");
 
         for (int i = 0; i < titles.length; i++) {
             TextView textView = new TextView(getContext());
             textView.setText(titles[i]);
-            int textWidth  = (int)getTextViewLength(textView);
-            int dis = (everyLength - textWidth)/2;
-//            KLog.d("tag",dis + "");
-
-            textView.setPadding(0,0,SizeUtils.dp2px(20f),0);
-
-
             textView.setTextColor(getResources().getColor(R.color.text_news_tag_color));
             textView.setTextSize(16);
+
             textView.setLayoutParams(params);
-            textView.setGravity(Gravity.BOTTOM);
-//            textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+            textView.setGravity(Gravity.BOTTOM|Gravity.LEFT);
             textView.setOnClickListener(onClickListener);
             textView.setTag(i);
             textViews.add(textView);
             textViewLl.addView(textView);
-
         }
 
         rl.addView(textViewLl);
 
         addView(rl);
 
-
-
     }
 
     private void createDynamicLine() {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        dynamicLine = new DynamicLine(getContext());
+        dynamicLine = new DynamicLineNoRadiu(getContext());
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         dynamicLine.setLayoutParams(params);
     }
@@ -195,26 +171,7 @@ public class ViewPagerTitle extends LinearLayout {
                 onTextViewClick.textViewClick((TextView) v, (int) v.getTag());
             }
 
-            //TODO 10.15 设置延迟事件，避免多次触发太快
-//            new Handler().postDelayed(() -> {
-//                //设置viewpager的项目
-//                viewPager.setCurrentItem((int) v.getTag());
-//                if (onTextViewClick != null) {
-//                    onTextViewClick.textViewClick((TextView) v, (int) v.getTag());
-//                }
-//            },300);
-
-
         }
     };
-
-
-
-    public  float getTextViewLength(TextView textView) {
-        TextPaint paint = textView.getPaint();
-        // 得到使用该paint写上text的时候,像素为多少
-        return paint.measureText(textView.getText().toString());
-    }
-
 
 }

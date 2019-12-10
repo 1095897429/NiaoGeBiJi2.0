@@ -6,6 +6,107 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 模拟xml -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_marginTop="22dp"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@color/divider_line"/>
+
+            <LinearLayout
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:gravity="center|left"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="AAAAA"
+                    android:textSize="16sp"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="BBBBB"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content" />
+
+
+                <ImageView
+                    android:src="@mipmap/icon_first_hot"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+    <!-- 模拟xml -->
+    <HorizontalScrollView
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:background="@color/gray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"
+                    android:background="@color/divider_line"/>
+
+               <LinearLayout
+                   android:id="@+id/ll_show"
+                   android:layout_alignParentBottom="true"
+                   android:layout_width="match_parent"
+                   android:gravity="bottom"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal">
+                   <TextView
+                       android:text="AAAAA"
+                       android:layout_width="60dp"
+                       android:layout_height="wrap_content" />
+
+                   <TextView
+                       android:text="BBBBB"
+                       android:layout_width="60dp"
+                       android:layout_height="wrap_content" />
+
+
+                   <ImageView
+                       android:src="@mipmap/icon_first_hot"
+                       android:layout_width="60dp"
+                       android:layout_height="wrap_content" />
+
+               </LinearLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
     <LinearLayout
         android:layout_marginTop="@dimen/status_bar_height"
         android:layout_marginLeft="16dp"
@@ -138,13 +239,26 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="16dp"
         android:orientation="vertical">
 
-        <TableLayout
-            android:id="@+id/tablayout"
+        <LinearLayout
+            android:layout_marginLeft="16dp"
             android:layout_width="match_parent"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide
+                android:id="@+id/pager_title"
+                android:layout_width="match_parent"
+                android:visibility="visible"
+                android:layout_height="match_parent">
+            </com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide>
+
+
+        </LinearLayout>
+
+
 
 
         <com.qmkj.niaogebiji.module.widget.CustomViewPager

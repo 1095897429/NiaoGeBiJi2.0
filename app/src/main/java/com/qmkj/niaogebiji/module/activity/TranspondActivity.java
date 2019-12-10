@@ -17,7 +17,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
-import com.qmkj.niaogebiji.module.event.SendCircleEvent;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -116,7 +116,7 @@ public class TranspondActivity extends BaseActivity {
             case R.id.send:
                 KLog.d("tag","发布");
                 ToastUtils.showShort("发布成功");
-                EventBus.getDefault().post(new SendCircleEvent());
+                EventBus.getDefault().post(new SendOkCircleEvent());
                 finish();
                 break;
             case R.id.cancel:

@@ -40,6 +40,7 @@ import static android.view.View.VISIBLE;
 
 public class HomeActivity extends BaseActivity {
 
+
     @BindView(R.id.index_first_icon)
     ImageView index_first_icon;
     @BindView(R.id.index_first_text)
@@ -79,11 +80,15 @@ public class HomeActivity extends BaseActivity {
 
 
     @BindView(R.id.oldguide)
-    RelativeLayout oldguide;
+    LinearLayout oldguide;
 
 
     @BindView(R.id.guide_img)
     ImageView guide_img;
+
+    @BindView(R.id.guide_text)
+    TextView guide_text;
+
 
     @BindView(R.id.skip)
     TextView skip;
@@ -92,6 +97,13 @@ public class HomeActivity extends BaseActivity {
     TextView guide_num;
 
 
+    String [] string = new String[]{"这里是学院。我们根据知识脉络精心梳理了营销知识树WIKI，欢迎大家查阅\n" +
+            "此外，专业认证测试与课程帮助你更好的提生自己~",
+    "这里是工具箱。我们为你推荐了常用的营销人工作必备工具",
+    "这里是圈子。行业大V都在用的营销人朋友圈，快看看大家都在说什么吧\n" +
+            "好了，介绍完成了，尽情体验全新鸟哥笔记APP吧~"};
+
+    LinearLayout.LayoutParams lp;
 
     //点击引导图的次数
     int count = 1;
@@ -120,10 +132,9 @@ public class HomeActivity extends BaseActivity {
 
         int screenWidth = ScreenUtils.getScreenWidth();
         perWidth = screenWidth / 5;
-
-//        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) guide_img.getLayoutParams();
-//        lp.setMargins(perWidth / 2 ,0,0,0);
-//        guide_img.setLayoutParams(lp);
+        lp = (LinearLayout.LayoutParams) guide_img.getLayoutParams();
+        lp.width = perWidth;
+        guide_img.setLayoutParams(lp);
 
 
         boolean firstGuide = SPUtils.getInstance().getBoolean("isFirstHomeGuide",false);
@@ -161,14 +172,25 @@ public class HomeActivity extends BaseActivity {
                     KLog.d("tag","count = " + count);
                     if(count == 2){
                         guide_num.setText(count + "/4");
+                        guide_text.setText(string[0]);
+                        lp.setMargins(perWidth,0,0,0);
+                        guide_img.setLayoutParams(lp);
                         guide_img.setImageResource(R.mipmap.bg_oldguide_2);
                     }else if(count == 3){
                         guide_num.setText(count + "/4");
+                        guide_text.setText(string[1]);
+                        lp.setMargins(perWidth * 2,0,0,0);
+                        guide_img.setLayoutParams(lp);
                         guide_img.setImageResource(R.mipmap.bg_oldguide_3);
                     }else if(count == 4){
                         //这里对应最后一页
                         skip.setText("立即体验");
+                        skip.setTextColor(getResources().getColor(R.color.text_first_color));
+                        skip.setBackgroundResource(R.drawable.bg_corners_22_yellow);
+                        guide_text.setText(string[2]);
                         guide_num.setVisibility(View.GONE);
+                        lp.setMargins(perWidth * 3,0,0,0);
+                        guide_img.setLayoutParams(lp);
                         guide_img.setImageResource(R.mipmap.bg_oldguide_4);
                     }else{
                         oldguide.setVisibility(View.GONE);
@@ -187,17 +209,13 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.index_first,R.id.index_school,R.id.index_tool,R.id.index_circle,R.id.index_my,
-            R.id.toMoreLoveYou,R.id.to_tomorow
+    @OnClick({R.id.index_first,R.id.index_school,R.id.index_tool,R.id.index_circle,R.id.index_my
+
     })
     public void bottomClick(android.view.View layout){
         switch (layout.getId()){
-            case R.id.to_tomorow:
 
-                break;
-            case R.id.toMoreLoveYou:
-                UIHelper.toMoreKnowYouActivity(this);
-                break;
+
             case R.id.index_first:
 
                 hideImageStatus();

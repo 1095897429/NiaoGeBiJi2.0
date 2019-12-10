@@ -9,7 +9,6 @@ import com.xzh.imagepicker.manager.ConfigManager;
 import com.xzh.imagepicker.utils.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ImagePicker {
 

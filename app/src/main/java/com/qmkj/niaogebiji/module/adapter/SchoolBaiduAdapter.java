@@ -25,6 +25,9 @@ public class SchoolBaiduAdapter extends BaseQuickAdapter<SchoolBean.SchoolBaiDu,
     @Override
     protected void convert(BaseViewHolder helper,SchoolBean.SchoolBaiDu item) {
 
+        helper.setImageResource(R.id.baidu_icon,item.getImg());
+
+        helper.setText(R.id.baidu_name,item.getName());
     }
 }
 

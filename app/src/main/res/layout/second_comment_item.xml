@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -105,15 +106,33 @@
                             android:layout_centerVertical="true"
                             android:gravity="center"
                             android:visibility="visible"
-                            android:id="@+id/comment_priase"
+                            android:id="@+id/circle_priase"
                             android:layout_width="wrap_content"
                             android:layout_height="28dp"
                             android:orientation="horizontal">
 
-                            <ImageView
-                                android:src="@mipmap/icon_flash_priase"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/iamge_priase"
+                                    android:src="@mipmap/icon_flash_priase_28"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp" />
+
+                                <com.airbnb.lottie.LottieAnimationView
+                                    android:id="@+id/lottieAnimationView"
+                                    android:visibility="visible"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    app:lottie_loop="false"
+                                    app:lottie_autoPlay="false" />
+
+                            </RelativeLayout>
+
+
 
                             <Space
                                 android:layout_width="2dp"

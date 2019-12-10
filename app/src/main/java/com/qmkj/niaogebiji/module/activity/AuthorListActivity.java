@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.R;
@@ -144,7 +145,8 @@ public class AuthorListActivity extends BaseActivity {
         //设置适配器
         mAuthorAdapter = new AuthorAdapter(mAuthors);
         mRecyclerView.setAdapter(mAuthorAdapter);
-
+        //禁止动画
+        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);

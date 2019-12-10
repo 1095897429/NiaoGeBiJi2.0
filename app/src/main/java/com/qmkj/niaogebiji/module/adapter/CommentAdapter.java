@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.graphics.Typeface;
 import android.text.TextPaint;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
@@ -44,6 +47,30 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         }else{
             helper.setVisible(R.id.all_comment,false);
         }
+
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
+        //点赞数
+        TextView zan_num = helper.getView(R.id.zan_num);
+        zan_num.setTypeface(typeface);
+        zan_num.setText(99 + "+");
+
+        //点赞
+        LottieAnimationView lottie = helper.getView(R.id.lottieAnimationView);
+
+        ImageView animationIV = helper.getView(R.id.iamge_priase);
+
+        helper.getView(R.id.circle_priase).setOnClickListener(view -> {
+
+            lottie.setImageAssetsFolder("images");
+            lottie.setAnimation("images/new_like_28.json");
+            //硬件加速，解决lottie卡顿问题
+            lottie.useHardwareAcceleration(true);
+            lottie.playAnimation();
+
+
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.prise_select_color));
+        });
+
 
     }
 }

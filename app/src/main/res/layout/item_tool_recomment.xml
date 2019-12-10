@@ -126,11 +126,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="16dp" />
 
-                <com.zhy.view.flowlayout.TagFlowLayout
+                <com.qmkj.niaogebiji.module.widget.tagflowlayout.TagFlowLayout
                     android:id="@+id/flowlayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                </com.zhy.view.flowlayout.TagFlowLayout>
+                </com.qmkj.niaogebiji.module.widget.tagflowlayout.TagFlowLayout>
 
 
 

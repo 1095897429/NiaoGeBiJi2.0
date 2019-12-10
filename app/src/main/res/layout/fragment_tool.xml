@@ -24,6 +24,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:text="工具箱"
+                android:textStyle="bold"
                 android:textSize="22sp"
                 android:textColor="@color/text_first_color"
                 android:layout_gravity="center|left"
@@ -48,7 +49,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="1px"
         android:background="@color/divider_line"/>
 
     <androidx.recyclerview.widget.RecyclerView

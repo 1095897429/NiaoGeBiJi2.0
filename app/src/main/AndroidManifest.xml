@@ -22,6 +22,14 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <!-- 今日头条适配 -->
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="360"/>
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="640"/>
+
         <!-- 竖屏绘制到耳朵区 -->
         <meta-data android:name="notch.config"
             android:value="portrait"></meta-data>
@@ -48,6 +56,8 @@
 
         <activity android:name=".module.activity.SplashNewActivity">
 
+
+
         </activity>
 
 
@@ -57,6 +67,8 @@
 
         <activity android:name=".module.activity.WelcomeActivity"
             android:screenOrientation="portrait">
+
+
         </activity>
 
 
@@ -252,6 +264,9 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+
+        <service android:name=".common.service.MediaService"/>
 
 
         <!-- 7.0之后下载需要的provider name一般都固定 -->

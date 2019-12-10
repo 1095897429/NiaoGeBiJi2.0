@@ -64,7 +64,9 @@ import androidx.core.widget.TextViewCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
+import com.socks.library.KLog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -76,6 +78,10 @@ import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_DRAGGING;
 import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_IDLE;
 import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_SETTLING;
+
+/***
+ * 适用于  ----  固定长度的指示器,比如长度为20dp
+ */
 
 /**
  * TabLayout provides a horizontal layout to display tabs.
@@ -345,7 +351,7 @@ public class TabLayout extends HorizontalScrollView {
         try {
             mTabTextSize = ta.getDimensionPixelSize(
                    R.styleable.TextAppearance_android_textSize, dpToPx(25));
-//            AppLog.i(TAG + "mTabTextSize=" + mTabTextSize);
+            KLog.d("tag" ,"mTabTextSize=" + mTabTextSize);
             mTabTextColors = ta.getColorStateList(R.styleable.TextAppearance_android_textColor);
 
         } finally {
@@ -964,7 +970,11 @@ public class TabLayout extends HorizontalScrollView {
     private void addTabView(Tab tab) {
         final TabView tabView = tab.mView;
         tabView.setPadding(dpToPx(12), 0, dpToPx(12), 0);
+//        tabView.setBackgroundColor(getResources().getColor(R.color.yellow));
         mTabStrip.addView(tabView, tab.getPosition(), createLayoutParamsForTabs());
+
+
+
 //        int dp10 = dip2px(getContext(), 10);
 //        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tabView.getLayoutParams();
 //        TextView mTextView = (TextView) tabView.getmTextView();
@@ -1695,7 +1705,7 @@ public class TabLayout extends HorizontalScrollView {
         final void update() {
             final Tab tab = mTab;
             final View custom = tab != null ? tab.getCustomView() : null;
-//            AppLog.i(TAG + "update:" + (tab != null ? tab.getText() : null));
+            KLog.d("tag" , "update:" + (tab != null ? tab.getText() : null));
             if (custom != null) {
                 final ViewParent customParent = custom.getParent();
                 if (customParent != this) {
@@ -1996,6 +2006,7 @@ public class TabLayout extends HorizontalScrollView {
             int left, right;
 
             if (selectedTitle != null && selectedTitle.getWidth() > 0) {
+                //left right 的值是tab的左右距离
                 left = selectedTitle.getLeft();
                 right = selectedTitle.getRight();
 
@@ -2093,25 +2104,22 @@ public class TabLayout extends HorizontalScrollView {
         public void draw(Canvas canvas) {
             super.draw(canvas);
 
-            // Thick colored underline below the current selection
             if (mIndicatorLeft >= 0 && mIndicatorRight > mIndicatorLeft) {
                 mSelectedIndicatorPaint.setStrokeCap(Paint.Cap.ROUND);
+                mSelectedIndicatorPaint.setStrokeWidth(mSelectedIndicatorHeight);
                 mSelectedIndicatorPaint.setAntiAlias(true);
-                float h = (getHeight() + mTabTextSize) / 2 + dpToPx(6);
-//                canvas.drawLine(mIndicatorLeft + dpToPx(12), h ,
-//                        mIndicatorRight - dpToPx(12), h, mSelectedIndicatorPaint);
 
-                //自定义长度
-                canvas.drawLine(mIndicatorLeft + dpToPx(12) + dpToPx((int) (mTabTextSize/2)), h,
-                        mIndicatorRight - dpToPx(12)  - dpToPx((int) (mTabTextSize/2)) , h, mSelectedIndicatorPaint);
+                float h =   getChildAt(mSelectedPosition).getBottom() - SizeUtils.dp2px(4);
 
+                //tabview的宽度
+                int tabWidth = mIndicatorRight - mIndicatorLeft;
+                int result = tabWidth - SizeUtils.dp2px(62f);
+                int per = result / 2;
+                //tool 中是 42dp
+                //自定义长度 linearlayout中addview，这个view的真实内容是减去左右padding 12的
+                canvas.drawLine(mIndicatorLeft + SizeUtils.dp2px(12f) + per, h,
+                        mIndicatorRight -  SizeUtils.dp2px(12f) - per, h, mSelectedIndicatorPaint);
 
-
-                //*****************************自定义部分 START*****************************
-
-//                canvas.drawLine(mIndicatorLeft + dpToPx(12) + mSelectedIndicatorWidth, h,
-//                        mIndicatorRight - dpToPx(12) - mScrollableTabMinWidth, h, mSelectedIndicatorPaint);
-                //*****************************自定义部分 END*****************************
             }
 
 

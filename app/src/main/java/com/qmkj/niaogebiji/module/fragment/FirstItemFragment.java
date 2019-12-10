@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -19,6 +21,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.adapter.FirstAuthorAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
@@ -43,6 +46,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -57,6 +61,9 @@ import static com.blankj.utilcode.util.Utils.runOnUiThread;
  */
 public class FirstItemFragment extends BaseLazyFragment {
 
+
+    @BindView(R.id.part3333)
+    RelativeLayout part3333;
 
     @BindView(R.id.backtop)
     ImageView backtop;
@@ -219,9 +226,8 @@ public class FirstItemFragment extends BaseLazyFragment {
             if(StringUtil.isFastClick()){
                 return;
             }
-            KLog.d("tag", "ddddd");
-            String aid = mAllList.get(position).getNewsItemBean().getAid();
-            aid = "24689";
+//            String aid = mAllList.get(position).getNewsItemBean().getAid();
+            String aid = "24689";
             if (!TextUtils.isEmpty(aid)) {
                 UIHelper.toNewsDetailActivity(getActivity(), aid);
             }
@@ -275,5 +281,19 @@ public class FirstItemFragment extends BaseLazyFragment {
         }
     }
 
+
+
+    @OnClick({R.id.to_tomorow, R.id.toMoreLoveYou})
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.to_tomorow:
+                part3333.setVisibility(View.GONE);
+                break;
+            case R.id.toMoreLoveYou:
+                UIHelper.toMoreKnowYouActivity(getActivity());
+                break;
+            default:
+        }
+    }
 
 }

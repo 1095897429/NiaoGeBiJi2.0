@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,7 +20,6 @@ import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.MyBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
-import com.qmkj.niaogebiji.module.event.SendCircleEvent;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,6 +44,20 @@ import udesk.core.UdeskConst;
  * 描述:
  */
 public class MyFragment extends BaseLazyFragment {
+
+    @BindView(R.id.name)
+    TextView name;
+
+    @BindView(R.id.read_time)
+    TextView read_time;
+
+
+    @BindView(R.id.medal_count)
+    TextView medal_count;
+
+    @BindView(R.id.feather_count)
+    TextView feather_count;
+
 
     @BindView(R.id.name_tag)
     TextView name_tag;
@@ -83,8 +97,11 @@ public class MyFragment extends BaseLazyFragment {
     protected void initView() {
         initLayout();
         getData();
-
-
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
+        name.setTypeface(typeface);
+        read_time.setTypeface(typeface);
+        medal_count.setTypeface(typeface);
+        feather_count.setTypeface(typeface);
     }
 
     //点击切换fragement会调用
@@ -166,7 +183,10 @@ public class MyFragment extends BaseLazyFragment {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toUserInfo:
-                UIHelper.toUserInfoActivity(getActivity());
+
+//                UIHelper.toUserInfoActivity(getActivity());
+
+                UIHelper.toLoginActivity(getActivity());
                 break;
             case R.id.advice_ll:
                 toUDesk();

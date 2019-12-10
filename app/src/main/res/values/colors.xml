@@ -49,4 +49,9 @@
     <color name="greenStart">#a7f56e</color>
     <color name="greenEnd">#11c612</color>
 
+
+    <color name="prise_select_color">#FFFFBA20</color>
+    <color name="prise_no_select_color"> #555962</color>
+
+
 </resources>

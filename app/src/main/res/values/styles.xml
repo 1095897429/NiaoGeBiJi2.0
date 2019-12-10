@@ -123,4 +123,17 @@
         <item name="android:maxHeight">4dp</item>
     </style>
 
+
+    <!-- 发布的进度条 -->
+    <style name="send_progress_horizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateOnly">false</item>
+        <!--进度条的进度颜色drawable文件-->
+        <item name="android:progressDrawable">@drawable/send_progress_indeterminate_horizontal</item>
+        <!--进度条的最小高度-->
+        <item name="android:minHeight">4dp</item>
+        <!--进度条的最大高度-->
+        <item name="android:maxHeight">4dp</item>
+    </style>
+
+
 </resources>

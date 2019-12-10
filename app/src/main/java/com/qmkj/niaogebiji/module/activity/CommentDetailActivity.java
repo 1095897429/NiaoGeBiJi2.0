@@ -12,24 +12,37 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.TalkAlertDialog;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.CommentAdapter;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -60,6 +73,8 @@ public class CommentDetailActivity extends BaseActivity {
 
     private int page = 1;
 
+    private String blog_id = "5";
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_comment_detail;
@@ -69,6 +84,45 @@ public class CommentDetailActivity extends BaseActivity {
     protected void initView() {
         initLayout();
         getData();
+        blogDetail();
+        getBlogComment();
+    }
+
+
+    private void blogDetail() {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",blog_id + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().blogDetail(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<User_info>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<User_info> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                    }
+
+                });
+    }
+
+
+    private void getBlogComment() {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",blog_id + "");
+        map.put("page",page + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getBlogComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<CommentBeanNew>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<CommentBeanNew> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                    }
+
+                });
     }
 
     private void getData() {
@@ -284,12 +338,28 @@ public class CommentDetailActivity extends BaseActivity {
                     bottomSheetDialog.dismiss();
                     mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
+
+                if(newState == BottomSheetBehavior.STATE_DRAGGING){
+                    KLog.d("tag",bottomSheet.getTop() + "");
+                }
+
+                //手指移动布局的高度
+                if(newState == BottomSheetBehavior.STATE_SETTLING){
+
+                    KLog.d("tag11","屏幕的高度减去状态栏高度是 : " +  (ScreenUtils.getScreenHeight() - SizeUtils.dp2px(25)) +  "   " + bottomSheet.getTop() + "");
+
+                    if(bottomSheet.getTop() >= 200){
+                        bottomSheetDialog.dismiss();
+                        mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
+
 
         bottomSheetDialog.show();
 

@@ -6,8 +6,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.module.widget.tagflowlayout.TagAdapter;
 import com.zhy.view.flowlayout.FlowLayout;
-import com.zhy.view.flowlayout.TagAdapter;
 
 import java.util.List;
 

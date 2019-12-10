@@ -57,6 +57,11 @@ public class SchoolFragment extends BaseLazyFragment {
     private List<SchoolBean.SchoolBook> mSchoolBooks = new ArrayList<>();
 
 
+    private int [] imgs = new int[]{R.mipmap.icon_school_1,R.mipmap.icon_school_2,R.mipmap.icon_school_3,
+            R.mipmap.icon_school_4,R.mipmap.icon_school_5};
+
+    private String [] names = new String[]{"初入职场","营销基础","营销进阶","产品研发","视野格局"};
+
     public static SchoolFragment getInstance() {
         return new SchoolFragment();
     }
@@ -83,6 +88,8 @@ public class SchoolFragment extends BaseLazyFragment {
         SchoolBean.SchoolBaiDu baiDu;
         for (int i = 0; i < 5; i++) {
             baiDu = new SchoolBean.SchoolBaiDu();
+            baiDu.setImg(imgs[i]);
+            baiDu.setName(names[i]);
             mSchoolBaiDus.add(baiDu);
         }
 
@@ -108,6 +115,7 @@ public class SchoolFragment extends BaseLazyFragment {
 
         mSchoolTestAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","去测试");
+            UIHelper.toTestDetailActivity(getActivity());
         });
 
         mSchoolBookAdapter.setOnItemClickListener((adapter, view, position) -> {

@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,8 +66,15 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class UserInfoActivity extends BaseActivity {
 
+
+    @BindView(R.id.send_article_num)
+    TextView send_article_num;
+
     @BindView(R.id.iv_text)
     TextView iv_text;
+
+    @BindView(R.id.medal_count)
+    TextView medal_count;
 
     @BindView(R.id.iv_right)
     ImageView iv_right;
@@ -105,6 +113,10 @@ public class UserInfoActivity extends BaseActivity {
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
         getData();
+
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
+        medal_count.setTypeface(typeface);
+        send_article_num.setTypeface(typeface);
     }
 
 
@@ -112,13 +124,15 @@ public class UserInfoActivity extends BaseActivity {
         mLinearLayoutManager = new LinearLayoutManager(this);
         //设置默认垂直布局
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mLinearLayoutManager.setAutoMeasureEnabled(true);
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCircleRecommendAdapter = new CircleRecommendAdapter(mAllList);
         mRecyclerView.setAdapter(mCircleRecommendAdapter);
         //解决数据加载不完
-        mRecyclerView.setNestedScrollingEnabled(true);
+        mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(true);
         //添加动画
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());

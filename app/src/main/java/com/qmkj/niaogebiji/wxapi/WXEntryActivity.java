@@ -11,6 +11,11 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.socks.library.KLog;
@@ -25,6 +30,9 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -117,14 +125,45 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
     }
 
 
+    private RegisterLoginBean.UserInfo mWxResultBean;
 
     private void wechatlogin(String code) {
-
         Map<String,String> map = new HashMap<>();
         map.put("code",code);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().wechatlogin(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+                        KLog.e("tag",response.getReturn_msg());
+                        KLog.d("tag","用户状态 " + response.getReturn_data().getStatus());
+                        mWxResultBean = response.getReturn_data();
+                        if(null != mWxResultBean){
+                            KLog.e("tag","token 是 " + response.getReturn_data().getAccess_token());
+                            String status  = mWxResultBean.getStatus();
+                            //保存一个对象
+                            StringUtil.setUserInfoBean(mWxResultBean);
+                            SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                            finish();
 
-        UIHelper.toPhoneInputActivity(WXEntryActivity.this);
-        finish();
+                        }
+                    }
 
+
+
+                    @Override
+                    public void onError(Throwable t) {
+                        super.onError(t);
+                        finish();
+                    }
+
+                    @Override
+                    public void onNetFail(String mes) {
+
+                        finish();
+                    }
+                });
     }
 }

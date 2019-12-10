@@ -4,11 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Size;
@@ -24,6 +26,8 @@ import com.qmkj.niaogebiji.common.dialog.PermissForbidStorageDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.socks.library.KLog;
 
+import butterknife.BindView;
+
 /**
  * @author zhouliang
  * 版本 1.0
@@ -31,6 +35,10 @@ import com.socks.library.KLog;
  * 描述:权限管理 -- 弹框，然后验证权限 -- 再验证下个权限 -- 采用！！
  */
 public class SplashNewActivity extends BaseActivity {
+
+    @BindView(R.id.image)
+    ImageView animationIV;
+
 
     private LaunchPermissDialog mLaunchPermissDialog;
     private PermissForbidStorageDialog mPermissForbidStorageDialog;
@@ -52,6 +60,8 @@ public class SplashNewActivity extends BaseActivity {
     private boolean isSdcardOk;
     private boolean isPhoneok;
 
+    private AnimationDrawable animationDrawable;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_splash;
@@ -59,6 +69,12 @@ public class SplashNewActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        //帧动画
+        animationIV.setImageResource(R.drawable.splash_animation1);
+        animationDrawable = (AnimationDrawable) animationIV.getDrawable();
+        animationDrawable.start();
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
@@ -232,6 +248,7 @@ public class SplashNewActivity extends BaseActivity {
 
 
 
+    //动画完成时间是1400
     public void toNext(){
         new Handler().postDelayed(() -> {
             boolean firstCome = SPUtils.getInstance().getBoolean("isFirstCome",true);
@@ -243,6 +260,15 @@ public class SplashNewActivity extends BaseActivity {
                 finish();
             }
 
-        },500);
+        },1800);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(null != animationDrawable){
+            animationDrawable.stop();
+        }
     }
 }

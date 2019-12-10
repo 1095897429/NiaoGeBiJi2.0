@@ -1,72 +1,45 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Typeface;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
-import android.os.PowerManager;
-import android.os.SystemClock;
-import android.text.TextPaint;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import com.blankj.utilcode.util.SPUtils;
-import com.blankj.utilcode.util.TimeUtils;
-import com.jakewharton.rxbinding2.view.RxView;
+import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
-import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
-import com.qmkj.niaogebiji.module.event.MyEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.widget.DynamicLine;
 import com.qmkj.niaogebiji.module.widget.MyLinearLayout;
-import com.qmkj.niaogebiji.module.widget.ViewPagerTitle;
+import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
+import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
+import com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -81,17 +54,10 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
+
+
     @BindView(R.id.pager_title)
-    ViewPagerTitle pager_title;
-
-    @BindView(R.id.first_11)
-    TextView first_11;
-
-    @BindView(R.id.first_22)
-    TextView first_22;
-
-    @BindView(R.id.myll)
-    MyLinearLayout myll;
+    ViewPagerTitleSlide3 pager_title;
 
 
 
@@ -125,13 +91,9 @@ public class FirstFragment extends BaseLazyFragment {
     protected void initView() {
         String [] titile = new String[]{"关注","干货","活动","快讯","热榜"};
 
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
-        first_11.setTypeface(typeface);
-        first_22.setTypeface(typeface);
 
-        pager_title.initData(titile,mViewPager,0);
+        pager_title.initData(titile,mViewPager,1);
 
-        myll.initData(titile,mViewPager,0);
 
         initEvent();
     }
@@ -151,29 +113,7 @@ public class FirstFragment extends BaseLazyFragment {
     private void initEvent() {
         createDynamicLine();
 
-        first_11.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
 
-                    @Override
-                    public void onGlobalLayout() {
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            first_11.getViewTreeObserver()
-                                    .removeOnGlobalLayoutListener(this);
-                        }
-                        else {
-                            first_11.getViewTreeObserver()
-                                    .removeGlobalOnLayoutListener(this);
-                        }
-                        first_11.getWidth(); // 获取宽度
-                        first_11.getHeight(); // 获取高度
-
-                        int wi =  first_11.getWidth();
-                        KLog.d("tag",wi + "");
-
-                        dynamicLine.updateView(0,wi);
-                        llll.addView(dynamicLine,0);
-                    }
-                });
 
     }
 
@@ -211,8 +151,9 @@ public class FirstFragment extends BaseLazyFragment {
             setUpAdater();
         }
 
-
     }
+
+
 
 
 
@@ -254,7 +195,7 @@ public class FirstFragment extends BaseLazyFragment {
         mViewPager.setAdapter(mFirstFragmentAdapter);
         mViewPager.setOffscreenPageLimit(mFragmentList.size());
         //设置当前显示标签页为第二页
-        mViewPager.setCurrentItem(0);
+        mViewPager.setCurrentItem(1);
 
 
         //设置事件
@@ -266,34 +207,6 @@ public class FirstFragment extends BaseLazyFragment {
 
             @Override
             public void onPageSelected(int position) {
-
-                first_11.setTextSize(16);
-                first_22.setTextSize(22);
-                first_11.setTextColor(getResources().getColor(R.color.text_second_color));
-                first_22.setTextColor(getResources().getColor(R.color.text_first_color));
-
-                KLog.d(TAG, "选中的位置 ：" + position);
-                first_22.getViewTreeObserver().addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-
-                            @Override
-                            public void onGlobalLayout() {
-                                if (Build.VERSION.SDK_INT >= 16) {
-                                    first_22.getViewTreeObserver()
-                                            .removeOnGlobalLayoutListener(this);
-                                }
-                                else {
-                                    first_22.getViewTreeObserver()
-                                            .removeGlobalOnLayoutListener(this);
-                                }
-
-                                int wi =  first_22.getWidth();
-                                KLog.d("tag",wi + " " + " getLeft " + first_22.getLeft());
-
-                                dynamicLine.updateView(first_22.getLeft(),wi+first_22.getLeft());
-                            }
-                        });
-
 
             }
 
@@ -313,6 +226,8 @@ public class FirstFragment extends BaseLazyFragment {
         switch (view.getId()){
             case R.id.rl_sign:
                 KLog.d("tag","去签到界面");
+
+                UIHelper.toWelcomeActivity(getActivity());
                 break;
             case R.id.search_part:
                 UIHelper.toSearchActivity(getActivity());

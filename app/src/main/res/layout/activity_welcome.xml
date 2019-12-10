@@ -4,31 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewpager"
         android:overScrollMode="never"
+        android:layout_above="@+id/btn"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     </androidx.viewpager.widget.ViewPager>
 
-    <ImageView
+    <TextView
         android:id="@+id/btn"
-        android:visibility="gone"
-        android:src="@mipmap/welcome_enter"
-        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="visible"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:text="立即进入"
+        android:textSize="17sp"
+        android:textColor="@color/text_first_color"
+        android:background="@drawable/bg_corners_12_yellow"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
 
     <!-- 引导页小圆点 -->
     <LinearLayout
         android:id="@+id/dot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="118.0dip"
+        android:layout_above="@+id/btn"
+        android:layout_marginBottom="30dp"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal"
         >
@@ -38,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/welcome_long_pic"
+            android:src="@mipmap/icon_welcome_select"
             />
         <ImageView
             android:id="@+id/dot2"
@@ -46,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/welcome_short_pic"
+            android:src="@mipmap/icon_welcome_default"
             />
         <ImageView
             android:id="@+id/dot3"
@@ -54,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/welcome_short_pic"
+            android:src="@mipmap/icon_welcome_default"
             />
 
         <ImageView
@@ -63,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/welcome_short_pic"
+            android:src="@mipmap/icon_welcome_default"
             />
     </LinearLayout>
 

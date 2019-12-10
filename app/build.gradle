@@ -43,8 +43,8 @@ android {
     buildTypes {
         debug{
             buildConfigField("boolean","LOG_DEBUG","true")
-//            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
-            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
+            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
+//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
             buildConfigField("String","SecretKey","\"TESTINGT82U8qPK5wSyjtoyseZcP2iXlsN2VdC5\"")
 //            signingConfig signingConfigs.config
             minifyEnabled false
@@ -56,7 +56,8 @@ android {
 
         release {
             buildConfigField("boolean", "LOG_DEBUG", "false")
-            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
+            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
+//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
             buildConfigField("String", "SecretKey", "\"STAGINGT82U8qPK5wSyjtoyseZcP2iXlsN2VdC5\"")
             signingConfig signingConfigs.release
             minifyEnabled true  //代码混淆
@@ -165,14 +166,23 @@ dependencies {
     implementation 'com.airbnb.android:lottie:2.7.0'
     //html解析器
     implementation 'org.jsoup:jsoup:1.9.2'
-    compile project(path: ':imagepicker')
+    implementation project(path: ':imagepicker')
 
     implementation 'com.github.igalata:Bubble-Picker:v0.2.4'
 
-    implementation 'com.facebook.fresco:fresco:2.0.0'
+//    implementation 'com.facebook.fresco:fresco:2.0.0'
+    // 支持GIF动图，需要添加
+//    implementation 'com.facebook.fresco:animated-gif:2.0.0'
+    api 'com.facebook.fresco:fresco:1.14.2'
+    api 'com.facebook.fresco:animated-gif:1.14.2'
+    api 'com.facebook.fresco:animated-drawable:1.14.2'
 
-    compile 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
+    implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
 
-    //Optional: see how to use the utility.
-    compile 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
+
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.3'
+
+    implementation 'me.jessyan:autosize:1.1.2'
+
+    implementation 'com.qiniu:qiniu-android-sdk:7.5.0'
 }

@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
@@ -69,6 +70,7 @@ public class TestResultActivity extends BaseActivity {
                 break;
             case R.id.toTake:
                 KLog.d("tag","佩戴成功");
+                ToastUtils.showShort("佩戴成功");
                 break;
             default:
         }

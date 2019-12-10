@@ -19,7 +19,7 @@ import com.qmkj.niaogebiji.R;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-12
- * 描述:
+ * 描述:固定标题的指示器
  */
 public class DynamicLine extends View {
 
@@ -53,7 +53,6 @@ public class DynamicLine extends View {
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(1);
 
-//        scroller = new Scroller(getContext());
     }
 
 
@@ -73,7 +72,6 @@ public class DynamicLine extends View {
     protected void onDraw(Canvas canvas) {
         rectF.set(startX,0,stopX, SizeUtils.dp2px(10));
         canvas.drawRoundRect(rectF,SizeUtils.dp2px(5),SizeUtils.dp2px(5),paint);
-//        canvas.drawRect(rectF,paint);
     }
 
     //更新View，传入坐标

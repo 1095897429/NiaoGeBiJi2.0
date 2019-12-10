@@ -32,6 +32,7 @@ import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.dialog.ReTestCalendaDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.socks.library.KLog;
 
@@ -76,7 +77,7 @@ public class TestResultFailActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toLook:
-                KLog.d("tag","h5 跳转");
+                ToastUtils.showShort("h5 跳转题库");
                 break;
             case R.id.iv_right:
                 showShareDialog();
@@ -290,12 +291,15 @@ public class TestResultFailActivity extends BaseActivity {
             beginTime = beginCalendar.getTimeInMillis();
         }
 
+        KLog.d("tag","开始时间 " + TimeAppUtils.timeStamp2Date(beginTime,""));
+
         Calendar mCalendar = Calendar.getInstance();
         mCalendar.setTimeInMillis(beginTime);//设置开始时间
         long start = mCalendar.getTime().getTime();
         mCalendar.setTimeInMillis(start + ONE_HOUR);//设置终止时间
         long end = mCalendar.getTime().getTime();
 
+        KLog.d("tag","结束时间 " + TimeAppUtils.timeStamp2Date(end,""));
         event.put(CalendarContract.Events.DTSTART, start);
         event.put(CalendarContract.Events.DTEND, end);
         event.put(CalendarContract.Events.HAS_ALARM, 1);//设置有闹钟提醒

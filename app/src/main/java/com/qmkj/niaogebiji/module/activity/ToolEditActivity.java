@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.qmkj.niaogebiji.R;
@@ -59,8 +60,8 @@ public class ToolEditActivity extends BaseActivity {
     @BindView(R.id.tv_title)
     TextView tv_title;
 
-//    @BindView(R.id.tabLayout)
-//    SmartTabLayout mTabLayout;
+    @BindView(R.id.tabLayout)
+    TabLayout mTabLayout;
 
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
@@ -123,60 +124,60 @@ public class ToolEditActivity extends BaseActivity {
 
     private void setUpTabLayout() {
 
-//        mTabLayout.setViewPager(mViewPager);
 
 
         //设置指示器颜色
-//        mTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.yellow));
-//        //设置可滑动模式
-//        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
-//        //设置选中状态
-//        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                View view = tab.getCustomView();
-//                if(null != view){
-//                    TextView textView = view.findViewById(R.id.tv_header);
-//                    textView.setTextSize(17);
-//                    textView.setTypeface(Typeface.DEFAULT_BOLD);
-//                    textView.setTextColor(getResources().getColor(R.color.text_news_title_color));
-//                }
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//                View view=tab.getCustomView();
-//                if(null != view){
-//                    TextView textView=view.findViewById(R.id.tv_header);
-//                    textView.setTextSize(16);
-//                    textView.setTypeface(Typeface.DEFAULT);
-//                    textView.setTextColor(getResources().getColor(R.color.text_news_tag_color));
-//                }
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
-//
-//        mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.yellow));
+        //设置可滑动模式
+        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        //设置指示器的高度
+        mTabLayout.setSelectedTabIndicatorHeight(SizeUtils.dp2px(4f));
+        //设置选中状态
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                View view = tab.getCustomView();
+                if(null != view){
+                    TextView textView = view.findViewById(R.id.tv_header);
+                    textView.setTextSize(17);
+                    textView.setTypeface(Typeface.DEFAULT_BOLD);
+                    textView.setTextColor(getResources().getColor(R.color.text_news_title_color));
+                }
+            }
 
-//        //设置自定义tab,这个需要在setupWithViewPager方法后
-//        for (int i = 0; i < mTabLayout.getTabCount(); i++){
-//            TabLayout.Tab tab = mTabLayout.getTabAt(i);
-//            if (tab != null) {
-//                View view = LayoutInflater.from(mContext).inflate(R.layout.tool_item_tablyout, null);
-//                TextView textView=view.findViewById(R.id.tv_header);
-//                textView.setText(mChannelBeanList.get(i).getChaname());
-//                tab.setCustomView(view);
-//            }
-//        }
-//        //设置第二个为选中状态时的tab文字颜色
-//        View view = mTabLayout.getTabAt(0).getCustomView();
-//        TextView textView = view.findViewById(R.id.tv_header);
-//        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,17);
-//        textView.setSelected(true);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                View view=tab.getCustomView();
+                if(null != view){
+                    TextView textView=view.findViewById(R.id.tv_header);
+                    textView.setTextSize(16);
+                    textView.setTypeface(Typeface.DEFAULT);
+                    textView.setTextColor(getResources().getColor(R.color.text_news_tag_color));
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        mTabLayout.setupWithViewPager(mViewPager);
+
+        //设置自定义tab,这个需要在setupWithViewPager方法后
+        for (int i = 0; i < mTabLayout.getTabCount(); i++){
+            TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            if (tab != null) {
+                View view = LayoutInflater.from(mContext).inflate(R.layout.tool_item_tablyout, null);
+                TextView textView=view.findViewById(R.id.tv_header);
+                textView.setText(mChannelBeanList.get(i).getChaname());
+                tab.setCustomView(view);
+            }
+        }
+        //设置第二个为选中状态时的tab文字颜色
+        View view = mTabLayout.getTabAt(0).getCustomView();
+        TextView textView = view.findViewById(R.id.tv_header);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,17);
+        textView.setSelected(true);
 
 
 

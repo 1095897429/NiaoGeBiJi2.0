@@ -30,7 +30,7 @@ public class WelcomeActivity extends BaseActivity {
 
 
     @BindView(R.id.btn)
-    ImageView btn;
+    TextView btn;
 
     @BindView(R.id.viewpager)
     ViewPager viewpager;
@@ -73,8 +73,6 @@ public class WelcomeActivity extends BaseActivity {
         views =new ArrayList<>();
         //构造View1
         View view = inflater.inflate(R.layout.guide_1,null);
-        TextView name = view.findViewById(R.id.name);
-        name.setText("ahhaha ");
         views.add(view);
         views.add(inflater.inflate(R.layout.guide_2,null));
         views.add(inflater.inflate(R.layout.guide_3,null));
@@ -95,16 +93,10 @@ public class WelcomeActivity extends BaseActivity {
                 // 设置底部小点选中状态
                 for(int i = 0;i<ids.length;i ++){
                     if(position==i){
-                        dotArray[i].setImageResource(R.mipmap.welcome_long_pic);
+                        dotArray[i].setImageResource(R.mipmap.icon_welcome_select);
                     }else {
-                        dotArray[i].setImageResource(R.mipmap.welcome_short_pic);
+                        dotArray[i].setImageResource(R.mipmap.icon_welcome_default);
                     }
-                }
-                //判断是否是最后一页，若是则显示按钮
-                if (position == dotArray.length - 1){
-                    btn.setVisibility(View.VISIBLE);
-                }else {
-                    btn.setVisibility(View.GONE);
                 }
             }
 

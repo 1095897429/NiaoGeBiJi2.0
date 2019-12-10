@@ -5,18 +5,24 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -185,6 +191,50 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/readArticle")
     Observable<HttpResponse<TestOkBean>> readArticle(@Field("params") String param);
+
+
+    /* 2019.12.09 微信登录接口 判断此微信已把绑定*/
+    @FormUrlEncoded
+    @POST("app/auth/wechatlogin")
+    Observable<HttpResponse<RegisterLoginBean.UserInfo>> wechatlogin(@Field("params") String param);
+
+
+    /* 2019.12.9 推荐动态 */
+    @FormUrlEncoded
+    @POST("app/blog/recommendBlogList")
+    Observable<HttpResponse<List<CircleBean>>> recommendBlogList(@Field("params") String param);
+
+
+    /* 2019.12.9 关注动态 */
+    @FormUrlEncoded
+    @POST("app/blog/followBlogList")
+    Observable<HttpResponse<CircleBean>> followBlogList(@Field("params") String param);
+
+
+    /* 2019.12.9 发布动态  -- ok*/
+    @FormUrlEncoded
+    @POST("app/blog/createBlog")
+    Observable<HttpResponse> createBlog(@Field("params") String param);
+
+
+
+
+    /* 2019.12.9 动态详情 上面部分 */
+    @FormUrlEncoded
+    @POST("app/blog/blogDetail")
+    Observable<HttpResponse<User_info>> blogDetail(@Field("params") String param);
+
+
+    /* 2019.12.9 动态详情 动态评论列表 */
+    @FormUrlEncoded
+    @POST("app/blog/getBlogComment")
+    Observable<HttpResponse<CommentBeanNew>> getBlogComment(@Field("params") String param);
+
+    /* 2019.12.9 获取七牛云上传token ok */
+    @FormUrlEncoded
+    @POST("app/blog/getUploadToken")
+    Observable<HttpResponse<QINiuTokenBean>> getUploadToken(@Field("params") String param);
+
 
 
 }

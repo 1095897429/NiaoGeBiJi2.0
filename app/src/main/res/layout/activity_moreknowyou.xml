@@ -78,7 +78,7 @@
 
                 <View
                     android:background="@drawable/bg_corners_2_light_yellow"
-                    android:layout_width="10dp"
+                    android:layout_width="18dp"
                     android:layout_height="4dp" />
 
                 <Space
@@ -88,7 +88,7 @@
                 <View
 
                     android:background="@drawable/bg_corners_2_yellow"
-                    android:layout_width="18dp"
+                    android:layout_width="10dp"
                     android:layout_height="4dp" />
 
             </LinearLayout>
@@ -146,6 +146,7 @@
                     android:id="@+id/toCancle"
                     android:background="@drawable/bg_corners_12_gray"
                     android:text="不选了"
+                    android:textColor="@color/text_first_color"
                     android:gravity="center"
                     android:layout_width="70dp"
                     android:layout_height="52dp" />
@@ -159,6 +160,7 @@
                     android:background="@drawable/bg_corners_12_light_yellow"
                     android:text="下一步"
                     android:gravity="center"
+                    android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="52dp" />
             </LinearLayout>
@@ -298,6 +300,7 @@
                     android:id="@+id/toCancle2"
                     android:background="@drawable/bg_corners_12_gray"
                     android:text="不选了"
+                    android:textColor="@color/text_first_color"
                     android:gravity="center"
                     android:layout_width="70dp"
                     android:layout_height="52dp" />
@@ -310,6 +313,7 @@
                     android:id="@+id/toNext2"
                     android:background="@drawable/bg_corners_12_light_yellow"
                     android:text="下一步"
+                    android:enabled="false"
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="52dp" />
@@ -359,19 +363,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="8dp" />
 
-            <!--<ImageView-->
-                <!--android:id="@+id/gif_pic"-->
-                <!--android:layout_marginLeft="20dp"-->
-                <!--android:layout_marginRight="20dp"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="220dp" />-->
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="220dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/gif_pic"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"  />
+                android:layout_height="match_parent"  />
+
+            <TextView
+                android:id="@+id/text_progress"
+                android:text="0%"
+                android:textSize="40sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
 
 
         </LinearLayout>

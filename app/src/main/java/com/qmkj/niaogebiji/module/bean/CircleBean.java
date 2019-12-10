@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.module.bean;
 
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
+import java.util.List;
+
 /**
  * @author zhouliang
  * 版本 1.0
@@ -9,4 +11,286 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  * 描述:圈子动态bean
  */
 public class CircleBean extends BaseBean {
+
+        private String id;
+        private String uid;
+        private String blog;
+        private List<String> images;
+        private String link;
+        private String link_title;
+        private String type;
+        private String pid;
+        private String like_num;
+        private String show_num;
+        private String sort;
+        private String created_at;
+        private String comment_num;
+        private User_info user_info;
+        private P_blog p_blog;
+        private String share_url;
+        public void setId(String id) {
+            this.id = id;
+        }
+        public String getId() {
+            return id;
+        }
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+        public String getUid() {
+            return uid;
+        }
+
+        public void setBlog(String blog) {
+            this.blog = blog;
+        }
+        public String getBlog() {
+            return blog;
+        }
+
+        public void setImages(List<String> images) {
+            this.images = images;
+        }
+        public List<String> getImages() {
+            return images;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
+        }
+        public String getLink() {
+            return link;
+        }
+
+        public void setLink_title(String link_title) {
+            this.link_title = link_title;
+        }
+        public String getLink_title() {
+            return link_title;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+        public String getType() {
+            return type;
+        }
+
+        public void setPid(String pid) {
+            this.pid = pid;
+        }
+        public String getPid() {
+            return pid;
+        }
+
+        public void setLike_num(String like_num) {
+            this.like_num = like_num;
+        }
+        public String getLike_num() {
+            return like_num;
+        }
+
+        public void setShow_num(String show_num) {
+            this.show_num = show_num;
+        }
+        public String getShow_num() {
+            return show_num;
+        }
+
+        public void setSort(String sort) {
+            this.sort = sort;
+        }
+        public String getSort() {
+            return sort;
+        }
+
+        public void setCreated_at(String created_at) {
+            this.created_at = created_at;
+        }
+        public String getCreated_at() {
+            return created_at;
+        }
+
+        public void setComment_num(String comment_num) {
+            this.comment_num = comment_num;
+        }
+        public String getComment_num() {
+            return comment_num;
+        }
+
+        public void setUser_info(User_info user_info) {
+            this.user_info = user_info;
+        }
+        public User_info getUser_info() {
+            return user_info;
+        }
+
+        public void setP_blog(P_blog p_blog) {
+            this.p_blog = p_blog;
+        }
+        public P_blog getP_blog() {
+            return p_blog;
+        }
+
+        public void setShare_url(String share_url) {
+            this.share_url = share_url;
+        }
+        public String getShare_url() {
+            return share_url;
+        }
+
+   //转发动态详情
+   static public class P_blog {
+        private String id;
+        private String uid;
+        private String blog;
+        private List<String> images;
+        private String link;
+        private String link_title;
+        private String type;
+        private String pid;
+        private String like_num;
+        private String repost_num;
+        private String sort;
+        private P_user_info p_user_info;
+        public void setId(String id) {
+            this.id = id;
+        }
+        public String getId() {
+            return id;
+        }
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+        public String getUid() {
+            return uid;
+        }
+
+        public void setBlog(String blog) {
+            this.blog = blog;
+        }
+        public String getBlog() {
+            return blog;
+        }
+
+        public void setImages(List<String> images) {
+            this.images = images;
+        }
+        public List<String> getImages() {
+            return images;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
+        }
+        public String getLink() {
+            return link;
+        }
+
+        public void setLink_title(String link_title) {
+            this.link_title = link_title;
+        }
+        public String getLink_title() {
+            return link_title;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+        public String getType() {
+            return type;
+        }
+
+        public void setPid(String pid) {
+            this.pid = pid;
+        }
+        public String getPid() {
+            return pid;
+        }
+
+        public void setLike_num(String like_num) {
+            this.like_num = like_num;
+        }
+        public String getLike_num() {
+            return like_num;
+        }
+
+        public void setRepost_num(String repost_num) {
+            this.repost_num = repost_num;
+        }
+        public String getRepost_num() {
+            return repost_num;
+        }
+
+        public void setSort(String sort) {
+            this.sort = sort;
+        }
+        public String getSort() {
+            return sort;
+        }
+
+        public void setP_user_info(P_user_info p_user_info) {
+            this.p_user_info = p_user_info;
+        }
+        public P_user_info getP_user_info() {
+            return p_user_info;
+        }
+
+    }
+
+
+   static public class P_user_info {
+
+        private String uid;
+        private String name;
+        private String avatar;
+        private String company_name;
+        private String position;
+        private String auth_com_status;
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+        public String getUid() {
+            return uid;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setCompany_name(String company_name) {
+            this.company_name = company_name;
+        }
+        public String getCompany_name() {
+            return company_name;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+        public String getPosition() {
+            return position;
+        }
+
+        public void setAuth_com_status(String auth_com_status) {
+            this.auth_com_status = auth_com_status;
+        }
+        public String getAuth_com_status() {
+            return auth_com_status;
+        }
+
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextPaint;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -30,16 +31,18 @@ public class ToolCategoryAdapter extends BaseQuickAdapter<ChannelBean, BaseViewH
         helper.setText(R.id.tag_name,item.getChaname());
 
         TextView textView = helper.getView(R.id.tag_name);
+        TextPaint paint = textView.getPaint();
+
         if(item.isSelect()){
             textView.setSelected(true);
             textView.setTextSize(14);
+            paint.setFakeBoldText(true);
             textView.setTextColor(mContext.getResources().getColor(R.color.text_first_color));
-//            textView.setBackground(mContext.getResources().getDrawable(R.drawable.bg_corners_4_yellow));
         }else{
             textView.setSelected(false);
             textView.setTextSize(13);
+            paint.setFakeBoldText(false);
             textView.setTextColor(mContext.getResources().getColor(R.color.text_second_color));
-//            textView.setBackground(mContext.getResources().getDrawable(R.drawable.bg_corners_4_gray));
 
         }
     }

@@ -4,244 +4,258 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include layout="@layout/common_title_layout"/>
+
     <LinearLayout
+        android:layout_below="@+id/rl_common_title"
+        android:layout_above="@+id/part3333"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/common_title_layout"/>
-
-        <Space
+        <ScrollView
+            android:overScrollMode="never"
             android:layout_width="match_parent"
-            android:layout_height="22dp" />
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/part1111"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/head_icon"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@mipmap/icon_fenxiang"/>
-
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="22dp" />
 
                 <LinearLayout
-                    android:layout_marginLeft="8dp"
+                    android:id="@+id/part1111"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_alignTop="@+id/head_icon"
-                    android:layout_toRightOf="@+id/head_icon"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/head_icon"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:src="@mipmap/icon_fenxiang"/>
+
+
                         <LinearLayout
-                            android:gravity="center"
-                            android:layout_width="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:layout_centerVertical="true"
+                            android:layout_alignTop="@+id/head_icon"
+                            android:layout_toRightOf="@+id/head_icon"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <LinearLayout
+                                    android:gravity="center"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/sender_name"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:lineSpacingExtra="2dp"
+                                        android:maxLines="1"
+                                        android:text="张俊杰"
+                                        android:textColor="@color/text_first_color"
+                                        android:textSize="22sp" />
+
+                                    <Space
+                                        android:layout_width="8dp"
+                                        android:layout_height="match_parent" />
+
+                                    <LinearLayout
+                                        android:id="@+id/tobadge"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+                                        <ImageView
+                                            android:background="#D8D8D8"
+                                            android:layout_width="28dp"
+                                            android:layout_height="22dp" />
+
+                                        <Space
+                                            android:layout_width="4dp"
+                                            android:layout_height="match_parent" />
+
+                                        <ImageView
+                                            android:background="#D8D8D8"
+                                            android:layout_width="28dp"
+                                            android:layout_height="22dp" />
+
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                            </RelativeLayout>
+
+                            <Space
+                                android:layout_width="match_parent"
+                                android:layout_height="4dp" />
+
 
                             <TextView
-                                android:id="@+id/sender_name"
+                                android:id="@+id/sender_tag"
+                                android:visibility="gone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:drawableRight="@mipmap/icon_authen_company"
+                                android:drawablePadding="4dp"
+                                android:lineSpacingExtra="2dp"
+                                android:maxLines="1"
+                                android:text="上海青墨网络科技有限公司产品经理"
+                                android:textColor="@color/text_first_color"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/sender_not_verticity"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
                                 android:lineSpacingExtra="2dp"
                                 android:maxLines="1"
-                                android:text="张俊杰"
-                                android:textColor="@color/text_first_color"
-                                android:textSize="22sp" />
+                                android:text="立即职业认证，建立人脉"
+                                android:textColor="#5675A7"
+                                android:textSize="13sp" />
 
                             <Space
-                                android:layout_width="8dp"
-                                android:layout_height="match_parent" />
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp" />
 
-                            <LinearLayout
-                                android:id="@+id/tobadge"
+                            <TextView
+                                android:id="@+id/user_des"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:lineSpacingExtra="2dp"
+                                android:text="10年运营从业经验，现任公司运营负责人，《超级运营术》作者；曾任猫眼电影运营专家、百度高级产品运营。"
+                                android:textColor="@color/text_second_color"
+                                android:textSize="13sp" />
+
+                            <Space
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:orientation="horizontal">
-                                <ImageView
-                                    android:background="#D8D8D8"
-                                    android:layout_width="28dp"
-                                    android:layout_height="22dp" />
+
+                                <LinearLayout
+                                    android:gravity="center"
+                                    android:id="@+id/part1111_1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/send_article_num"
+                                        android:text="1400"
+                                        android:layout_gravity="left"
+                                        android:textSize="18sp"
+                                        android:textColor="@color/text_first_color"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                    <Space
+                                        android:layout_width="match_parent"
+                                        android:layout_height="2dp" />
+
+                                    <TextView
+                                        android:text="发布动态"
+                                        android:textSize="11sp"
+                                        android:textColor="#AAAEB3"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+
+                                </LinearLayout>
 
                                 <Space
-                                    android:layout_width="4dp"
+                                    android:layout_width="32dp"
                                     android:layout_height="match_parent" />
 
-                                <ImageView
-                                    android:background="#D8D8D8"
-                                    android:layout_width="28dp"
-                                    android:layout_height="22dp" />
+                                <LinearLayout
+                                    android:gravity="center"
+                                    android:id="@+id/part2222_2"
+                                    android:layout_toRightOf="@+id/part1111_1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
 
+                                    <TextView
+                                        android:id="@+id/medal_count"
+                                        android:text="2.1w"
+                                        android:layout_gravity="left"
+                                        android:textSize="18sp"
+                                        android:textColor="@color/text_first_color"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                    <Space
+                                        android:layout_width="match_parent"
+                                        android:layout_height="2dp" />
+
+                                    <TextView
+                                        android:text="被关注"
+                                        android:textSize="11sp"
+                                        android:layout_gravity="left"
+                                        android:textColor="#AAAEB3"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+
+                                </LinearLayout>
 
                             </LinearLayout>
+
+
+
+
 
                         </LinearLayout>
 
                     </RelativeLayout>
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="4dp" />
-
-
-                    <TextView
-                        android:id="@+id/sender_tag"
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:drawableRight="@mipmap/icon_authen_company"
-                        android:drawablePadding="4dp"
-                        android:lineSpacingExtra="2dp"
-                        android:maxLines="1"
-                        android:text="上海青墨网络科技有限公司产品经理"
-                        android:textColor="@color/text_first_color"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/sender_not_verticity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lineSpacingExtra="2dp"
-                        android:maxLines="1"
-                        android:text="立即职业认证，建立人脉"
-                        android:textColor="#5675A7"
-                        android:textSize="13sp" />
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp" />
-
-                    <TextView
-                        android:id="@+id/user_des"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lineSpacingExtra="2dp"
-                        android:text="10年运营从业经验，现任公司运营负责人，《超级运营术》作者；曾任猫眼电影运营专家、百度高级产品运营。"
-                        android:textColor="@color/text_second_color"
-                        android:textSize="13sp" />
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:gravity="center"
-                            android:id="@+id/part1111_1"
-                            android:layout_centerVertical="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/send_article_num"
-                                android:text="1400"
-                                android:layout_gravity="left"
-                                android:textSize="18sp"
-                                android:textColor="@color/text_first_color"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                            <Space
-                                android:layout_width="match_parent"
-                                android:layout_height="2dp" />
-
-                            <TextView
-                                android:text="发布动态"
-                                android:textSize="11sp"
-                                android:textColor="#AAAEB3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-
-                        </LinearLayout>
-
-                        <Space
-                            android:layout_width="32dp"
-                            android:layout_height="match_parent" />
-
-                        <LinearLayout
-                            android:gravity="center"
-                            android:id="@+id/part2222_2"
-                            android:layout_toRightOf="@+id/part1111_1"
-                            android:layout_centerVertical="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/medal_count"
-                                android:text="2.1w"
-                                android:layout_gravity="left"
-                                android:textSize="18sp"
-                                android:textColor="@color/text_first_color"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                            <Space
-                                android:layout_width="match_parent"
-                                android:layout_height="2dp" />
-
-                            <TextView
-                                android:text="被关注"
-                                android:textSize="11sp"
-                                android:layout_gravity="left"
-                                android:textColor="#AAAEB3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-
-
-
 
                 </LinearLayout>
 
-            </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:background="@color/bg_color"/>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler"
+                    android:overScrollMode="never"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </androidx.recyclerview.widget.RecyclerView>
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:background="@color/bg_color"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:overScrollMode="never"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </androidx.recyclerview.widget.RecyclerView>
-
-
+        </ScrollView>
 
     </LinearLayout>
 

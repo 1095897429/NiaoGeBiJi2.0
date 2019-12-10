@@ -27,16 +27,16 @@ import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.History;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.db.DBManager;
-import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.LookMoreEvent;
 import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
 import com.qmkj.niaogebiji.module.fragment.ActionFragment;
 import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstItemFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
-import com.qmkj.niaogebiji.module.fragment.HotNewsFragment;
 import com.qmkj.niaogebiji.module.fragment.PeopletemFragment;
 import com.qmkj.niaogebiji.module.fragment.SearchAllFragment;
+import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
+import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -84,13 +84,16 @@ public class SearchActivity extends BaseActivity {
     @BindView(R.id.flowlayout_history)
     TagFlowLayout flowlayout_history;
 
+    @BindView(R.id.pager_title)
+    ViewPagerTitleSlide pager_title;
+
+
     List<History> mList1 = new ArrayList<>();
 
     @BindView(R.id.flowlayout)
     TagFlowLayout mTagFlowLayout;
 
     private String defaultHotKey;
-
 
     @Override
     protected boolean regEvent() {
@@ -105,6 +108,9 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        pager_title.initData(titile,mViewPager,0);
+
         //显示弹框
         KeyboardUtils.showSoftInput(et_input);
 
@@ -317,7 +323,7 @@ public class SearchActivity extends BaseActivity {
     //适配器
     private FirstFragmentAdapter mFirstFragmentAdapter;
 
-    String [] titile = new String[]{"全部","干货","人脉","动态","百科","资料","作者"};
+    String [] titile = new String[]{"全部","干货","活动","快讯","资料","工具","动态"};
 
 
     private void initPartData2(){

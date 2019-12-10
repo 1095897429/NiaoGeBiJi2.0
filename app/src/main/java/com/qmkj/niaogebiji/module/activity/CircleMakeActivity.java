@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,35 +22,61 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UpCancellationSignal;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
+import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CirclePicItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MulMediaFile;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.db.DBManager;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
+import com.qmkj.niaogebiji.module.event.SendingCircleEvent;
 import com.qmkj.niaogebiji.module.widget.GlideLoader;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.xzh.imagepicker.ImagePicker;
 import com.xzh.imagepicker.bean.MediaFile;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -144,7 +172,6 @@ public class CircleMakeActivity extends BaseActivity {
                     KLog.d("tag", "accept: " + charSequence.toString() );
                     //　trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
-                    KLog.d("tag",mString);
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
                         send.setEnabled(true);
                         send.setTextColor(getResources().getColor(R.color.text_first_color));
@@ -193,6 +220,7 @@ public class CircleMakeActivity extends BaseActivity {
                 break;
             case R.id.send:
                 KLog.d("tag","发布");
+                sendPicToQiuNiu();
                 break;
             case R.id.cancel:
                 //如果有正文 有外链 有图片
@@ -208,6 +236,33 @@ public class CircleMakeActivity extends BaseActivity {
             default:
         }
     }
+
+    private void sendPicToQiuNiu() {
+
+        sendData();
+
+//        EventBus.getDefault().post(new SendingCircleEvent(mTempMsgBean));
+
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("key",mTempMsgBean);
+        intent.putExtras(bundle);
+        setResult(200,intent);
+        finish();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void onBackPressed() {
@@ -274,6 +329,18 @@ public class CircleMakeActivity extends BaseActivity {
                 mTempMsgBean.setImgPath(mediaFiles);
             }
             saveTempMsg(mTempMsgBean);
+        }
+    }
+
+    private void sendData() {
+        if(null == mTempMsgBean){
+            mTempMsgBean = new TempMsgBean();
+            mTempMsgBean.setContent(mString);
+            mTempMsgBean.setLinkTitle(linkTitle);
+            mTempMsgBean.setLinkurl(linkurl);
+            if(!mediaFiles.isEmpty()){
+                mTempMsgBean.setImgPath(mediaFiles);
+            }
         }
     }
 
@@ -441,6 +508,7 @@ public class CircleMakeActivity extends BaseActivity {
         intent.putExtras(bundle);
         startActivity(intent);
     }
+
 
 
 

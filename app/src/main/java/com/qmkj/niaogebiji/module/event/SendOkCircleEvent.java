@@ -6,5 +6,5 @@ package com.qmkj.niaogebiji.module.event;
  * 创建时间 2019-11-12
  * 描述:发布帖子成功
  */
-public class SendCircleEvent {
+public class SendOkCircleEvent {
 }

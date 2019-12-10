@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextPaint;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -12,10 +13,10 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.event.ToolHomeChangeEvent;
+import com.qmkj.niaogebiji.module.widget.tagflowlayout.TagFlowLayout;
 import com.socks.library.KLog;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
-import com.zhy.view.flowlayout.TagFlowLayout;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -66,12 +67,17 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
         mMyToolEditTagAdapter = new MyToolEditTagAdapter(mStringLIst);
         flowLayout.setAdapter(mMyToolEditTagAdapter);
 
+
+        TextView textView_1 = helper.getView(R.id.tool_collect);
+        TextPaint textPaint = textView_1.getPaint();
         //收藏
         if(!bean.isSave()){
+            textPaint.setFakeBoldText(true);
             helper.setText(R.id.tool_collect,"收藏");
             helper.setBackgroundRes(R.id.tool_collect,R.drawable.bg_corners_6_yellow);
         }else{
             helper.setText(R.id.tool_collect,"已收藏");
+            textPaint.setFakeBoldText(false);
             helper.setBackgroundRes(R.id.tool_collect,R.drawable.bg_corners_6_gray);
         }
 
@@ -90,7 +96,7 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
         textView.post(() -> {
             int linecount;
             linecount = textView.getLineCount();
-            KLog.d("tag", "Number of lines is " + linecount);
+//            KLog.d("tag", "Number of lines is " + linecount);
             mMap.put(helper.getAdapterPosition(), linecount);
             if (linecount > defaultLine) {
                 textView.setMaxLines(defaultLine);
@@ -106,10 +112,12 @@ public class ToolRecommentItemAdapter extends BaseQuickAdapter<ToolBean, BaseVie
             if(!bean.isSave()){
                 bean.setSave(true);
                 helper.setText(R.id.tool_collect,"已收藏");
+                textPaint.setFakeBoldText(false);
                 helper.setBackgroundRes(R.id.tool_collect,R.drawable.bg_corners_6_gray);
             }else{
                 bean.setSave(false);
                 helper.setText(R.id.tool_collect,"收藏");
+                textPaint.setFakeBoldText(true);
                 helper.setBackgroundRes(R.id.tool_collect,R.drawable.bg_corners_6_yellow);
             }
 

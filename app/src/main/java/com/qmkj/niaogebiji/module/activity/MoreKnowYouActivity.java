@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
@@ -9,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -62,6 +66,9 @@ import butterknife.OnClick;
  */
 public class MoreKnowYouActivity extends BaseActivity {
 
+    @BindView(R.id.text_progress)
+    TextView text_progress;
+
     @BindView(R.id.gif_pic)
     SimpleDraweeView gif_pic;
 
@@ -89,6 +96,11 @@ public class MoreKnowYouActivity extends BaseActivity {
     @BindView(R.id.toNext)
     TextView toNext;
 
+    @BindView(R.id.toNext2)
+    TextView toNext2;
+
+    ValueAnimator animation;
+
     Typeface mediumTypeface;
 
     Set<PickerItem> mSet = new HashSet<>();
@@ -104,8 +116,10 @@ public class MoreKnowYouActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
         mediumTypeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/roboto_medium.ttf");
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/DIN-Bold.otf");
+        text_progress.setTypeface(typeface);
     }
 
     @Override
@@ -113,6 +127,17 @@ public class MoreKnowYouActivity extends BaseActivity {
         getDynamicData();
         initLayout();
         getData();
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(animation != null){
+            animation.cancel();
+            animation = null;
+        }
     }
 
     private void getData() {
@@ -153,6 +178,8 @@ public class MoreKnowYouActivity extends BaseActivity {
 
         colors.recycle();
 
+        picker.setCenterImmediately(true);
+
         picker.setBubbleSize(20);
 
         picker.setListener(new BubblePickerListener() {
@@ -160,11 +187,17 @@ public class MoreKnowYouActivity extends BaseActivity {
             public void onBubbleSelected(@NotNull PickerItem item) {
                 KLog.d("tag","选择 " + item.getTitle());
                 mSet.add(item);
+                toNext.setEnabled(true);
+                toNext.setBackgroundResource(R.drawable.bg_corners_12_yellow);
             }
 
             @Override
             public void onBubbleDeselected(@NotNull PickerItem item) {
                 mSet.remove(item);
+                if(mSet.isEmpty()){
+                    toNext.setEnabled(false);
+                    toNext.setBackgroundResource(R.drawable.bg_corners_12_light_yellow);
+                }
             }
         });
     }
@@ -182,67 +215,104 @@ public class MoreKnowYouActivity extends BaseActivity {
     }
 
 
+    private void startAnimtor() {
+        animation = ValueAnimator.ofInt(0, 100);
+        animation.setDuration(2000);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.addUpdateListener(valueAnimator -> {
+            int value = (int) animation.getAnimatedValue();
+            KLog.e("tag", "value is " + value);
+            if(text_progress != null){
+                text_progress.setText(value + "%");
+            }
+        });
+        animation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                KLog.d("tag","动画结束");
+                calcate_part.setVisibility(View.GONE);
+                complete_part.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
+        animation.start();
+    }
+
+
     @OnClick({R.id.toNext,R.id.toCancle,
             R.id.toNext2,R.id.toCancle2,
             R.id.toComplete
     })
     public void clicks(View view){
         switch (view.getId()){
+
             case R.id.toNext2:
-                part22.setVisibility(View.GONE);
-                calcate_part.setVisibility(View.VISIBLE);
-                String url = "https://raw.githubusercontent.com/Jay-YaoJie/KotlinDialogs/master/diagram/test.gif";
 
-                DraweeController controller = Fresco.newDraweeControllerBuilder()
-                        .setUri(Uri.parse(url))
-                        .setAutoPlayAnimations(false)
-                        .setControllerListener( new BaseControllerListener<ImageInfo> (){
-                            @RequiresApi(api = Build.VERSION_CODES.P)
-                            @Override
-                            public void onFinalImageSet(String id, ImageInfo imageInfo,  Animatable animatable) {
-                                if(animatable != null && !animatable.isRunning()){
-                                    animatable.start();
-                                    Animatable2 drawable = (Animatable2) animatable;
-                                    drawable.registerAnimationCallback(new Animatable2.AnimationCallback() {
-                                        @Override
-                                        public void onAnimationEnd(Drawable drawable) {
-                                            super.onAnimationEnd(drawable);
-                                            KLog.d("tag","gif 动画完成");
-                                            //播放完成回调
-                                            calcate_part.setVisibility(View.GONE);
-                                            complete_part.setVisibility(View.VISIBLE);
-                                        }
-                                    });
-                                }
-                            }
-                        })
-                      .build();
-
-                gif_pic.setController(controller);
-
+                calcate();
 
                 break;
             case R.id.toCancle2:
-                part22.setVisibility(View.GONE);
-                calcate_part.setVisibility(View.VISIBLE);
+
+                calcate();
                 break;
             case R.id.toComplete:
+                part11.setVisibility(View.GONE);
+                part22.setVisibility(View.GONE);
+                calcate_part.setVisibility(View.GONE);
                 finish();
             case R.id.toNext:
                 KLog.d("tag","大小是 ： " + mSet.size() + "" );
-                part11.setVisibility(View.GONE);
-                part22.setVisibility(View.VISIBLE);
+
+
+                hidePicker();
                 break;
 
             case R.id.toCancle:
-                part11.setVisibility(View.GONE);
-                part22.setVisibility(View.VISIBLE);
+                hidePicker();
                 break;
             default:
         }
     }
 
+    private void hidePicker() {
+        part11.setVisibility(View.GONE);
+        part22.setVisibility(View.VISIBLE);
+        picker.setVisibility(View.GONE);
+        picker.onPause();
+    }
 
+    private void calcate() {
+
+        part22.setVisibility(View.GONE);
+        calcate_part.setVisibility(View.VISIBLE);
+
+        // 设置箭头gif
+        Uri uri = new Uri.Builder()
+                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                .path(String.valueOf(R.drawable.icon_kown_more_gif))
+                .build();
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setUri(uri)
+                .setAutoPlayAnimations(true)
+                .build();
+        gif_pic.setController(controller);
+
+        startAnimtor();
+    }
 
 
     /** --------------------------------- 通用的配置  ---------------------------------*/
@@ -280,6 +350,9 @@ public class MoreKnowYouActivity extends BaseActivity {
             ProBean temp = mDatas.get(position);
             temp.setSelect(true);
             mProfessionItemAdapter.notifyDataSetChanged();
+
+            toNext2.setEnabled(true);
+            toNext2.setBackgroundResource(R.drawable.bg_corners_12_yellow);
         });
 
     }

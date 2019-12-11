@@ -72,6 +72,7 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-14
  * 描述:圈子推荐
+ *  1.列表图片最多显示3张，多余的用 + n 表示
  */
 public class CircleRecommendFragment extends BaseLazyFragment {
 

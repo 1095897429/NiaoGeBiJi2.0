@@ -13,6 +13,11 @@ import java.io.File;
  */
 public class FileHelper {
 
+    /** 圈子拍照的图片文件 /storage/mnt/Android/data/包名/files/Download/out_image.png */
+    public static File getOutputCircleImageFile(Context context){
+        return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), System.currentTimeMillis() + ".png");
+    }
+
     /** 头像拍照的图片文件 /storage/mnt/Android/data/包名/files/Download/out_image.png */
     public static File getOutputHeadImageFile(Context context){
         return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "output_image.png");

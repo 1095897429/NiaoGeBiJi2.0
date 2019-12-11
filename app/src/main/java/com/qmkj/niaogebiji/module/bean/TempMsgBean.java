@@ -19,8 +19,11 @@ public class TempMsgBean extends BaseBean {
     private String linkurl;
     //链接标题
     private String linkTitle;
-    //图片路径
+    //相册
     private List<MediaFile> imgPath;
+
+    //拍照
+    private List<MediaFile> imgPath2;
 
 
     public String getContent() {
@@ -53,5 +56,13 @@ public class TempMsgBean extends BaseBean {
 
     public void setLinkTitle(String linkTitle) {
         this.linkTitle = linkTitle;
+    }
+
+    public List<MediaFile> getImgPath2() {
+        return imgPath2;
+    }
+
+    public void setImgPath2(List<MediaFile> imgPath2) {
+        this.imgPath2 = imgPath2;
     }
 }

@@ -6,9 +6,14 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.socks.library.KLog;
 
 import java.io.IOException;
 
@@ -28,20 +33,38 @@ public class MediaService extends Service {
     //标记当前歌曲的序号
     private int i = 0;
     //歌曲路径
-    private String[] musicPath = new String[]{
-          "https://sharefs.yun.kugou.com/201912051126/7d36b8ff6cd1c97e76ee60c1a1a7015b/G180/M07/04/08/9A0DAF3FKAqATsbCACy595OooJM759.mp3",
-            Environment.getExternalStorageDirectory() + "/Sounds/a2.mp3",
-            Environment.getExternalStorageDirectory() + "/Sounds/a3.mp3",
-            Environment.getExternalStorageDirectory() + "/Sounds/a4.mp3"
+    public static String[] musicPath = new String[]{
+          "https://sharefs.yun.kugou.com/201912111738/fed25fbad75e98a6c8a039e2972aa549/G010/M07/1D/03/Sg0DAFUBbC-AaUHgADsTIx9YQdY068.mp3",
+          "https://sharefs.yun.kugou.com/201912111142/f0738d11b52775f12cfafc49c428106f/G180/M07/04/08/9A0DAF3FKAqATsbCACy595OooJM759.mp3",
+            "https://sharefs.yun.kugou.com/201912111201/dea428b56666bd137df2f31d8543919e/G134/M00/07/03/JocBAFxFxtiAGHTpAD93JySh5zM584.mp3"
     };
-    //初始化MediaPlayer
-    public MediaPlayer mMediaPlayer = new MediaPlayer();
+
+
+    public MediaPlayer mMediaPlayer;
+    private Mythred mythred;
 
 
     public MediaService() {
-        iniMediaPlayerFile(i);
+        KLog.d("tag"," service的构造函数 ");
+        if(null == mMediaPlayer){
+            mMediaPlayer = new MediaPlayer();
+            // 设置音量，参数分别表示左右声道声音大小，取值范围为0~1
+            mMediaPlayer.setVolume(0.5f, 0.5f);
+            // 设置是否循环播放
+            mMediaPlayer.setLooping(false);
+        }
     }
 
+    public void prepare(String url){
+        iniMediaPlayerFile(url);
+    }
+
+
+    @Override
+    public void onCreate() {
+        KLog.d("tag"," onCreate ");
+        super.onCreate();
+    }
 
     @Nullable
     @Override
@@ -62,6 +85,11 @@ public class MediaService extends Service {
             if (!mMediaPlayer.isPlaying()) {
                 //如果还没开始播放，就开始
                 mMediaPlayer.start();
+
+                mythred = new Mythred();
+                mythred.start();
+
+                isPauseOrEnding = false;
             }
         }
 
@@ -72,6 +100,7 @@ public class MediaService extends Service {
             if (mMediaPlayer.isPlaying()) {
                 //如果还没开始播放，就开始
                 mMediaPlayer.pause();
+                isPauseOrEnding = true;
             }
         }
 
@@ -79,11 +108,11 @@ public class MediaService extends Service {
          * reset
          */
         public void resetMusic() {
-            if (!mMediaPlayer.isPlaying()) {
-                //如果还没开始播放，就开始
-                mMediaPlayer.reset();
-                iniMediaPlayerFile(i);
-            }
+//            if (!mMediaPlayer.isPlaying()) {
+//                //如果还没开始播放，就开始
+//                mMediaPlayer.reset();
+//                iniMediaPlayerFile(i);
+//            }
         }
 
         /**
@@ -93,6 +122,12 @@ public class MediaService extends Service {
             if (mMediaPlayer != null) {
                 mMediaPlayer.stop();
                 mMediaPlayer.release();
+                mMediaPlayer = null;
+                isPauseOrEnding = true;
+                 KLog.e("tag","关闭播放器");
+                if(null != mOnCloseListener){
+                    mOnCloseListener.onClose();
+                }
             }
         }
 
@@ -100,36 +135,36 @@ public class MediaService extends Service {
          * 下一首
          */
         public void nextMusic() {
-            if (mMediaPlayer != null && i < 4 && i >= 0) {
-                //切换歌曲reset()很重要很重要很重要，没有会报IllegalStateException
-                mMediaPlayer.reset();
-                iniMediaPlayerFile(i + 1);
-                //这里的if只要是为了不让歌曲的序号越界，因为只有4首歌
-                if (i == 2) {
-
-                } else {
-                    i = i + 1;
-                }
-                playMusic();
-            }
+//            if (mMediaPlayer != null && i < 4 && i >= 0) {
+//                //切换歌曲reset()很重要很重要很重要，没有会报IllegalStateException
+//                mMediaPlayer.reset();
+//                iniMediaPlayerFile(i + 1);
+//                //这里的if只要是为了不让歌曲的序号越界，因为只有4首歌
+//                if (i == 2) {
+//
+//                } else {
+//                    i = i + 1;
+//                }
+//                playMusic();
+//            }
         }
 
         /**
          * 上一首
          */
-        public void preciousMusic() {
-            if (mMediaPlayer != null && i < 4 && i > 0) {
-                mMediaPlayer.reset();
-                iniMediaPlayerFile(i - 1);
-                if (i == 1) {
-
-                } else {
-
-                    i = i - 1;
-                }
-                playMusic();
-            }
-        }
+//        public void preciousMusic() {
+//            if (mMediaPlayer != null && i < 4 && i > 0) {
+//                mMediaPlayer.reset();
+//                iniMediaPlayerFile(i - 1);
+//                if (i == 1) {
+//
+//                } else {
+//
+//                    i = i - 1;
+//                }
+//                playMusic();
+//            }
+//        }
 
         /**
          * 获取歌曲长度
@@ -153,23 +188,169 @@ public class MediaService extends Service {
             mMediaPlayer.seekTo(msec);
         }
 
+        /**
+         * 是否播放
+         */
+        public boolean isPlaying(){
+            return mMediaPlayer.isPlaying();
+        }
    }
 
 
     /**
      * 添加file文件到MediaPlayer对象并且准备播放音频
      */
-    private void iniMediaPlayerFile(int dex) {
+    private void iniMediaPlayerFile(String  url) {
         //获取文件路径
         try {
             //此处的两个方法需要捕获IO异常
             //设置音频文件到MediaPlayer对象中
-            mMediaPlayer.setDataSource(musicPath[dex]);
+            if(null == mMediaPlayer){
+                mMediaPlayer = new MediaPlayer();
+                // 设置音量，参数分别表示左右声道声音大小，取值范围为0~1
+                mMediaPlayer.setVolume(0.5f, 0.5f);
+                // 设置是否循环播放
+                mMediaPlayer.setLooping(false);
+            }
+            mMediaPlayer.reset();
+            mMediaPlayer.setDataSource(url);
             //让MediaPlayer对象准备
-            mMediaPlayer.prepare();
+            mMediaPlayer.prepareAsync();
+            initListener();
+            Log.d("tag", "设置资源，准备阶段成功，开始播放");
         } catch (IOException e) {
-            Log.d(TAG, "设置资源，准备阶段出错");
+            Log.d("tag", "设置资源，准备阶段出错");
             e.printStackTrace();
         }
+    }
+
+
+    private void initListener() {
+        //播放出错监听
+        mMediaPlayer.setOnErrorListener((mediaPlayer, what, extra) -> {
+            Log.d("tag", "OnError - Error code: " + what + " Extra code: " + extra);
+            return false;
+        });
+        //播放完成监听
+        mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
+            KLog.d("tag","播放完成监听");
+            isPauseOrEnding = true;
+            if(null != mOnEndListener){
+                mOnEndListener.onEnd();
+            }
+        });
+        //网络流媒体缓冲监听
+        mMediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> {
+            // i 0~100
+            Log.d("tag:", "缓存进度" + i + "%");
+        });
+
+        //准备Prepared完成监听
+        mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
+            //获得音乐总时长
+            int lengthoftime = mediaPlayer.getDuration();
+            KLog.d("tag","获得音乐总时长 " + lengthoftime);
+
+            if(null != mOnStartListener){
+                mOnStartListener.onStart(lengthoftime);
+            }
+
+            //准备好了自动开始播放
+//            if (!mMediaPlayer.isPlaying()) {
+//                //如果还没开始播放，就开始
+//                mMediaPlayer.start();
+//            }
+        });
+
+
+        //进度调整完成SeekComplete监听，主要是配合seekTo(int)方法
+        mMediaPlayer.setOnSeekCompleteListener(mediaPlayer -> {
+            KLog.d("tag","seekbar移动监听，seekcomplete");
+        });
+    }
+
+
+    boolean isPauseOrEnding = false;
+
+    class Mythred extends Thread {
+        @Override
+        public void run() {
+                //得到当前音乐的播放位置
+                while (true){
+
+                    if(isPauseOrEnding){
+                        break;
+                    }
+                    int currentPosition = mBinder.getPlayPosition();
+                    Log.i("tag", "currentPosition " + currentPosition);
+                    if(null != onProgressListener){
+                        onProgressListener.onProgress(currentPosition);
+                    }
+                    //让进度条每一秒向前移动
+                    SystemClock.sleep(1000);
+                }
+
+        }
+    }
+
+
+    public interface OnProgressListener {
+        void onProgress(int progress);
+    }
+
+    /**
+     * 更新进度的回调接口
+     */
+    private OnProgressListener onProgressListener;
+    /**
+     * 注册回调接口的方法，供外部调用
+     * @param onProgressListener
+     */
+    public void setOnProgressListener(OnProgressListener onProgressListener) {
+        this.onProgressListener = onProgressListener;
+    }
+
+
+    public interface OnEndListener {
+        void onEnd();
+    }
+
+    /**
+     * 完成结束回调
+     */
+    private OnEndListener mOnEndListener;
+
+
+    public void setOnEndListener(OnEndListener onEndListener) {
+        mOnEndListener = onEndListener;
+    }
+
+
+
+    public interface OnStartListener {
+        void onStart(int totalLength);
+    }
+    /**
+     * 开始回调
+     */
+    private OnStartListener mOnStartListener;
+
+    public void setOnStartListener(OnStartListener onStartListener) {
+        mOnStartListener = onStartListener;
+    }
+
+
+    public interface OnCloseListener {
+        void onClose();
+    }
+
+    /**
+     * 关闭资源回调
+     */
+    private OnCloseListener mOnCloseListener;
+
+
+    public void setOnCloseListener(OnCloseListener onCloseListener) {
+        mOnCloseListener = onCloseListener;
     }
 }

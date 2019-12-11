@@ -54,10 +54,6 @@ import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.common.service.MediaService;
-import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
-import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
-import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.socks.library.KLog;
@@ -94,6 +90,10 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-8
  * 描述:视频的基类
+ * 关键点：1.service控制mediaplay播放状态
+ *         2.切换资源
+ *         3.让seekbar只能在播放时移动
+ *         4.有底部栏的需加上底部栏，没有的不加
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -101,6 +101,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Context mContext;
     //ButterKnife
     private Unbinder mUnbinder;
+    //全局常量
+    private static int currentProgress;
+    private static int maxProgress;
+    private static long audiotime;
+    public static boolean isAudaioShow;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,29 +140,38 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         ((ViewGroup)findViewById(R.id.fl_content)).addView(getLayoutInflater().inflate(getLayoutId(),null));
 
-
         //初始化ButterKnife
         mUnbinder = ButterKnife.bind(this);
 
-        //设置布局
-        if(SPUtils.getInstance().getBoolean("audio_view_show",false)){
-            part_audio.setVisibility(View.VISIBLE);
-        }else{
-            part_audio.setVisibility(View.GONE);
-        }
-
+        //设置事件
         initAudioEvent();
     }
 
+
+
+
     @SuppressLint("CheckResult")
     protected  void initAudioEvent(){
+        //主要用于不在播放时，不可移动seekbar
+        seekbar.setEnabled(false);
+
+        //详情
+        RxView.clicks(part_audio)
+                //每1秒中只处理第一个元素
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                   KLog.d("tag","去播放详情页 ");
+                });
 
         //之前是正在播放，现在是暂停
         RxView.clicks(pause)
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    mMyBinder.pauseMusic();
+                    //主要用于不在播放时，不可移动seekbar
+                    seekbar.setEnabled(false);
+                    BaseApp.mMyBinder.pauseMusic();
+                    pause();
                 });
 
 
@@ -165,23 +180,136 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    mMyBinder.playMusic();
+                    //主要用于不在播放时，不可移动seekbar
+                    seekbar.setEnabled(true);
+                    BaseApp.mMyBinder.playMusic();
+                    BaseApp.mMediaService.setOnProgressListener(progress -> {
+                        if(seekbar != null){
+                            seekbar.setProgress(progress);
+                            currentProgress = progress;
+                        }
+
+                    });
+                    play();
                 });
 
 
         RxView.clicks(close)
-                //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    SPUtils.getInstance().put("audio_view_show",false);
-                    if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
-                        mMediaPlayer.stop();
-                    }
                     part_audio.setVisibility(View.GONE);
+                    isAudaioShow = false;
+                    seekbar.setEnabled(false);
+                    if(seekbar != null){
+                       seekbar.setProgress(0);
+                    }
+                    if(BaseApp.mMyBinder != null){
+                        BaseApp.mMyBinder.closeMedia();
+                    }
 
                 });
 
+
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //主要是用于监听进度值的改变
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //监听用户开始拖动进度条的时候
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //监听用户结束拖动进度条的时候
+                int dest = seekBar.getProgress();
+                if(BaseApp.mMyBinder != null && BaseApp.mMyBinder.isPlaying()){
+                    BaseApp.mMyBinder.seekToPositon(dest);
+                }
+            }
+        });
+
     }
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioEvent(AudioEvent event){
+
+        String url = event.getUrl();
+        KLog.e("tag","播放视频的路径是 " + url );
+        part_audio.setVisibility(View.VISIBLE);
+        isAudaioShow = true;
+
+        //有资源时 先关闭之前资源
+        BaseApp.mMyBinder.closeMedia();
+
+        //有资源时 重新准备新资源
+        BaseApp.mMediaService.prepare(url);
+
+
+        BaseApp.mMediaService.setOnCloseListener(() -> {
+            if(play != null){
+                play.setVisibility(View.VISIBLE);
+            }
+            if(close != null){
+                close.setVisibility(View.VISIBLE);
+            }
+            if(pause != null){
+                pause.setVisibility(View.GONE);
+            }
+            if(seekbar != null){
+                seekbar.setProgress(0);
+            }
+
+        });
+
+        BaseApp.mMediaService.setOnEndListener(() -> {
+
+            if(play != null){
+                play.setVisibility(View.VISIBLE);
+            }
+            if(close != null){
+                close.setVisibility(View.VISIBLE);
+            }
+            if(pause != null){
+                pause.setVisibility(View.GONE);
+            }
+        });
+
+
+        //准备完成回调 重置默认值
+        BaseApp.mMediaService.setOnStartListener(totalLength -> {
+            currentProgress = 0;
+            maxProgress = totalLength;
+            audiotime = totalLength;
+
+            if(time != null){
+                time.setText(timeParse(totalLength) + "");
+            }
+
+            if(seekbar != null){
+                seekbar.setMax(totalLength);
+                seekbar.setProgress(currentProgress);
+            }
+            //控件 恢复默认值
+            if(play != null){
+                play.setVisibility(View.VISIBLE);
+            }
+            if(close != null){
+                close.setVisibility(View.VISIBLE);
+            }
+            if(pause != null){
+                pause.setVisibility(View.GONE);
+            }
+
+        });
+
+    }
+
+
 
 
     /**
@@ -240,10 +368,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             EventBus.getDefault().unregister(this);
         }
 
-        if(null != mMediaPlayer){
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
     }
 
 
@@ -259,71 +383,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAudioEvent(AudioEvent event){
-
-        if(null != mMediaPlayer){
-            mMediaPlayer.reset();
-            //重新加载音频资源
-            try {
-                mMediaPlayer.setDataSource(getAudioLocation);
-                mMediaPlayer.prepare();//预加载音频
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            mMediaPlayer.start();//开始播放
-            KLog.d("tag","重新正在播放音频.....");
-            isplay = true;
-            mMediaPlayer.start();
-            mythred = new Mythred();
-            mythred.start();
-        }else{
-            //播放音频的view已打开
-            //视频时间是后台返回的
-            SPUtils.getInstance().put("audio_view_show",true);
-            part_audio.setVisibility(View.VISIBLE);
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) part_audio.getLayoutParams();
-            lp.setMargins(SizeUtils.dp2px(16f),0,SizeUtils.dp2px(16f), SizeUtils.dp2px(34f + 49f));
-            part_audio.setLayoutParams(lp);
-            initMediaPlayer();
-            //加载音频资源
-            try {
-                mMediaPlayer.setDataSource(getAudioLocation);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            initListener();
-            // 准备播放（异步）
-            mMediaPlayer.prepareAsync();
-        }
-
-
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //主要是用于监听进度值的改变
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //监听用户开始拖动进度条的时候
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                //监听用户结束拖动进度条的时候
-                int dest = seekBar.getProgress();
-                if(mMediaPlayer != null){
-                    mMediaPlayer.seekTo(dest);
-                }
-            }
-        });
-
-
-    }
-
     //*************************************** eventbus实现*************************************
 
 
@@ -332,7 +391,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onPause();
         MobclickAgent.onPause(this);
     }
-
 
 
     /** --------------------------------- 设置 app 字体不随系统字体设置改变  ---------------------------------*/
@@ -350,16 +408,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         return res;
     }
 
-    /** --------------------------------- 设置 app 字体不随系统字体设置改变  ---------------------------------*/
 
-
-    String getAudioLocation = "https://sharefs.yun.kugou.com/201912051126/7d36b8ff6cd1c97e76ee60c1a1a7015b/G180/M07/04/08/9A0DAF3FKAqATsbCACy595OooJM759.mp3";
-
+    /** ---------------------------------  播放  ---------------------------------*/
 
     private MediaPlayer mMediaPlayer;
     private boolean isplay;
-    private Mythred mythred;
-
 
     @BindView(R.id.pause)
     ImageView pause;
@@ -382,131 +435,74 @@ public abstract class BaseActivity extends AppCompatActivity {
     @BindView(R.id.part_audio)
     public RelativeLayout part_audio;
 
-    // 初始化MediaPlayer
-    private void initMediaPlayer() {
-        if (mMediaPlayer == null){
-            mMediaPlayer = new MediaPlayer();
-        }
-        // 设置音量，参数分别表示左右声道声音大小，取值范围为0~1
-        mMediaPlayer.setVolume(0.5f, 0.5f);
-        // 设置是否循环播放
-        mMediaPlayer.setLooping(false);
-    }
-
-
-    private void initListener() {
-        //播放出错监听
-        mMediaPlayer.setOnErrorListener((mediaPlayer, what, extra) -> {
-            Log.d("tag", "OnError - Error code: " + what + " Extra code: " + extra);
-            return false;
-        });
-        //播放完成监听
-        mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            KLog.d("tag","播放完成监听");
-            play.setVisibility(View.VISIBLE);
-            pause.setVisibility(View.GONE);
-            close.setVisibility(View.VISIBLE);
-            isplay = false;
-            mythred = null;
-        });
-        //网络流媒体缓冲监听
-        mMediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> {
-            // i 0~100
-            Log.d("tag:", "缓存进度" + i + "%");
-        });
-
-        //准备Prepared完成监听
-        mMediaPlayer.setOnPreparedListener(mediaPlayer -> {
-            //获得音乐总时长
-            int lengthoftime = mediaPlayer.getDuration();
-            KLog.d("tag","获得音乐总时长 " + lengthoftime);
-            seekbar.setMax(lengthoftime);
-            time.setText(timeParse(lengthoftime));
-            play();
-        });
-
-        //进度调整完成SeekComplete监听，主要是配合seekTo(int)方法
-        mMediaPlayer.setOnSeekCompleteListener(mediaPlayer -> {
-            KLog.d("tag");
-        });
-    }
-
-
-
 
     @Override
     public void onStop() {
         super.onStop();
-        // 释放mediaPlayer
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-        }
     }
 
 
-    class Mythred extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            while (seekbar.getProgress() <= seekbar.getMax()) {
-                //设置进度条的进度
-                //得到当前音乐的播放位置
-                int currentPosition = mMediaPlayer.getCurrentPosition();
-                Log.i("tag", "currentPosition " + currentPosition);
-                seekbar.setProgress(currentPosition);
-                //让进度条每一秒向前移动
-                SystemClock.sleep(1000);
 
-                if (!isplay) {
-                    break;
+    @Override
+    protected void onResume() {
 
-                }
+        KLog.d("tag","开启的activity 是 " + getClass().getSimpleName() );
 
+        super.onResume();
+        MobclickAgent.onResume(this);
+
+        //存在 + view显示
+        if(BaseApp.mMyBinder != null && isAudaioShow){
+            part_audio.setVisibility(View.VISIBLE);
+
+            if(getClass().getSimpleName().equals("HomeActivity")
+                || getClass().getSimpleName().equals("NewsDetailActivity") ){
+                //设置view的距离
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) part_audio.getLayoutParams();
+                lp.setMargins(SizeUtils.dp2px(16f),0,SizeUtils.dp2px(16f),SizeUtils.dp2px(34f + 49f));
+                part_audio.setLayoutParams(lp);
+            }else{
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) part_audio.getLayoutParams();
+                lp.setMargins(SizeUtils.dp2px(16f),0,SizeUtils.dp2px(16f),SizeUtils.dp2px(34f));
+                part_audio.setLayoutParams(lp);
             }
 
+
+            //全局 设置界面进度
+            seekbar.setMax(maxProgress);
+            seekbar.setProgress(currentProgress);
+            time.setText(timeParse(audiotime) + "");
+            //视频正在播放
+            if( BaseApp.mMyBinder.isPlaying()){
+                BaseApp.mMyBinder.playMusic();
+                play.setVisibility(View.GONE);
+                close.setVisibility(View.GONE);
+                pause.setVisibility(View.VISIBLE);
+            }else{
+                play.setVisibility(View.VISIBLE);
+                close.setVisibility(View.VISIBLE);
+                pause.setVisibility(View.GONE);
+            }
+        }else{
+            part_audio.setVisibility(View.GONE);
         }
     }
-    //0 表示点击了暂停   1表示点击了播放
+
     private void play() {
-
-        if(part_audio.getVisibility() == View.GONE){
-            part_audio.setVisibility(View.VISIBLE);
-        }
-
         play.setVisibility(View.GONE);
         pause.setVisibility(View.VISIBLE);
         close.setVisibility(View.GONE);
-
-
         isplay = true;
-        mMediaPlayer.start();
-        mythred = new Mythred();
-        mythred.start();
         setMarquee(audio_title);
     }
 
     private void pause() {
-
-        if(part_audio.getVisibility() == View.GONE){
-            part_audio.setVisibility(View.VISIBLE);
-        }
-
         play.setVisibility(View.VISIBLE);
         pause.setVisibility(View.GONE);
         close.setVisibility(View.VISIBLE);
-
-
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
-            isplay = false;
-            mMediaPlayer.pause();
-            //当停止播放时线程也停止了(这样也可以减少占用的内存)
-            mythred = null;
-
-        }
-
         setMarquee(audio_title);
     }
+
 
 
     /**
@@ -542,15 +538,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-        if(!SPUtils.getInstance().getBoolean("audio_view_show",false)){
-            part_audio.setVisibility(View.GONE);
-        }
-    }
 
 
 
@@ -750,22 +737,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-    /** ---------------------------------  播放  ---------------------------------*/
-    //“绑定”服务的intent
-    Intent MediaServiceIntent;
 
-    private MediaService.MyBinder mMyBinder;
+    public interface OnAudioListener {
+        void onAudio();
+    }
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mMyBinder = (MediaService.MyBinder) service;
-            Log.d("tag", "Service与Activity已连接");
-        }
+    /**
+     * 完成结束回调
+     */
+    private OnAudioListener mOnAudioListener;
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
+    public void setOnAudioListener(OnAudioListener onAudioListener) {
+        mOnAudioListener = onAudioListener;
+    }
 }

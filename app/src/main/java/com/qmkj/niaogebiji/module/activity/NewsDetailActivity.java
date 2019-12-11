@@ -51,6 +51,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CommentAdapter;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
@@ -66,6 +67,8 @@ import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.AudioEvent1;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ObservableScrollView;
@@ -183,10 +186,6 @@ public class NewsDetailActivity extends BaseActivity {
     ImageView news_play;
 
 
-
-
-
-
     //文章的id
     private String newsId;
     //文章详情bean
@@ -219,6 +218,13 @@ public class NewsDetailActivity extends BaseActivity {
 
     }
 
+
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+
     private void initEvent() {
 
 
@@ -232,7 +238,7 @@ public class NewsDetailActivity extends BaseActivity {
             R.id.head_icon1111,R.id.head_data,
             R.id.comment,
             R.id.toLlTalk,
-            R.id.rl_audio
+            R.id.rl_audio,
     })
     public void clicks(View view){
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_answer_select);
@@ -240,6 +246,8 @@ public class NewsDetailActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.rl_audio:
                 KLog.d("tag","打开音频");
+                EventBus.getDefault().post(new AudioEvent(MediaService.musicPath[1]));
+
                 break;
             case R.id.toLlTalk:
                 showTalkDialog(-1,"111","first");

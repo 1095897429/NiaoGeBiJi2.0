@@ -145,7 +145,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
                 if(textViews.get(i) instanceof ImageView){
                     ImageView imageView = (ImageView) textViews.get(i);
-                    KLog.d("tag","图片没选中选总");
+//                    KLog.d("tag","图片没选中选总");
                 }
 
             }

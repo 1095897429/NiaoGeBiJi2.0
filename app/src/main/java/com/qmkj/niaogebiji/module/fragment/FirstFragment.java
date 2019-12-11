@@ -15,8 +15,10 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
@@ -242,7 +244,9 @@ public class FirstFragment extends BaseLazyFragment {
                 break;
             case R.id.listenMoring:
 
-                EventBus.getDefault().post(new AudioEvent(0));
+
+                    EventBus.getDefault().post(new AudioEvent(MediaService.musicPath[0]));
+
 
                 break;
             case R.id.toMoreMoring:

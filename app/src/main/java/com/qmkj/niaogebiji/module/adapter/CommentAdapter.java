@@ -64,7 +64,7 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
             lottie.setImageAssetsFolder("images");
             lottie.setAnimation("images/new_like_28.json");
             //硬件加速，解决lottie卡顿问题
-            lottie.useHardwareAcceleration(true);
+//            lottie.useHardwareAcceleration(true);
             lottie.playAnimation();
 
 

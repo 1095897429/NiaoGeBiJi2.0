@@ -1,13 +1,20 @@
 package com.qmkj.niaogebiji.common;
 
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.util.Log;
+import android.view.View;
 
 import androidx.multidex.MultiDex;
 
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.common.base.ActivityManager;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.utils.ChannelUtil;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -27,6 +34,8 @@ import cn.udesk.UdeskSDKManager;
  * 描述
  */
 public class BaseApp extends Application {
+
+    private static boolean isAudioShow;
 
     public static final String TAG = "BaseApp";
     private static BaseApp myApp;
@@ -60,9 +69,38 @@ public class BaseApp extends Application {
         initUMConfig();
         initWX();
         initUDesk();
-
+        initService();
     }
 
+    //“绑定”服务的intent
+    Intent MediaServiceIntent;
+    public static MediaService.MyBinder mMyBinder;
+
+    public static MediaService mMediaService;
+
+
+
+    private void initService() {
+
+        MediaServiceIntent = new Intent(this, MediaService.class);
+        //绑定播放音乐的服务
+        bindService(MediaServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMyBinder = (MediaService.MyBinder) service;
+            Log.d("tag", "Service与Activity已连接");
+            mMediaService = ((MediaService.MyBinder) service).getInstance();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
 
     private void initUDesk() {

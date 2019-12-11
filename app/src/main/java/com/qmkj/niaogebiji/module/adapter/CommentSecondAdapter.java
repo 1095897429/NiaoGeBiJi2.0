@@ -63,7 +63,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     lottie.setImageAssetsFolder("images");
                     lottie.setAnimation("images/new_like_28.json");
                     //硬件加速，解决lottie卡顿问题
-                    lottie.useHardwareAcceleration(true);
+//                    lottie.useHardwareAcceleration(true);
                     lottie.playAnimation();
 
 

@@ -129,14 +129,14 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
                     lottie.setImageAssetsFolder("images");
                     lottie.setAnimation("images/new_like_20.json");
                     //硬件加速，解决lottie卡顿问题
-                    lottie.useHardwareAcceleration(true);
+//                    lottie.useHardwareAcceleration(true);
                     lottie.playAnimation();
 
 
                     zan_num.setTextColor(mContext.getResources().getColor(R.color.prise_select_color));
 
                       //帧动画
-//                    animationIV.setImageResource(R.drawable.splash_animation2);
+//                    animationIV.setImageResource(R.drawable.splash_animation3);
 //                    animationDrawable = (AnimationDrawable) animationIV.getDrawable();
 //                    animationDrawable.start();
 

@@ -7,13 +7,19 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.MoringNewsAdapter;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MoringNewsBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.AudioEvent2;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +51,11 @@ public class MoringNewsListActivity extends BaseActivity {
     @Override
     protected int getLayoutId() {
         return R.layout.activity_moringnewlist;
+    }
+
+    @Override
+    protected boolean regEvent() {
+        return true;
     }
 
     @Override
@@ -80,6 +91,10 @@ public class MoringNewsListActivity extends BaseActivity {
     }
 
     private void initEvent() {
+
+        mMoringNewsAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+            EventBus.getDefault().post(new AudioEvent(MediaService.musicPath[2]));
+        });
     }
 
 

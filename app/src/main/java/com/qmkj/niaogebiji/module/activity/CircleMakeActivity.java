@@ -1,11 +1,16 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,10 +21,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -37,10 +46,13 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.dialog.HeadAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.FileHelper;
+import com.qmkj.niaogebiji.common.utils.PicPathHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CirclePicItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
@@ -67,6 +79,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +135,7 @@ public class CircleMakeActivity extends BaseActivity {
 
     //适配器
     CirclePicItemAdapter mCirclePicItemAdapter;
-    //集合
+    //总的集合
     List<MulMediaFile> mList = new ArrayList<>();
     //布局管理器
     GridLayoutManager mGridLayoutManager;
@@ -131,15 +144,22 @@ public class CircleMakeActivity extends BaseActivity {
     private int textLength;
     //编辑字数限制
     private int num = 140;
-    public static final int pic_num = 9;
+    public  int pic_num = 9;
 
     //url地址
     private String linkurl;
     private String linkTitle;
-    //图片选择器临时返回数据
+    //临时 图片选择器临时返回数据
     private  ArrayList<MediaFile> mediaFiles = new ArrayList<>();
 
+    //临时拍照 图片路径集合
+    private ArrayList<MediaFile> pathList = new ArrayList<>();
+
     private TempMsgBean mTempMsgBean;
+
+
+    private Uri imageUri;
+    public static final int TAKE_PHOTO = 2;
 
     private static final int REQCODE = 100;
 
@@ -205,7 +225,7 @@ public class CircleMakeActivity extends BaseActivity {
                 UIHelper.toWebViewActivity(this,linkurl);
                 break;
             case R.id.make:
-                initPicker();
+                showHeadDialog();
                 break;
             case R.id.to_delete_link:
                 part2222.setVisibility(View.GONE);
@@ -225,7 +245,7 @@ public class CircleMakeActivity extends BaseActivity {
             case R.id.cancel:
                 //如果有正文 有外链 有图片
                 if(!TextUtils.isEmpty(mString) || !TextUtils.isEmpty(linkTitle)
-                    || !mediaFiles.isEmpty()){
+                    || !mediaFiles.isEmpty() || !pathList.isEmpty()){
                     showSaveConetentExit();
                     return;
                 }
@@ -241,8 +261,6 @@ public class CircleMakeActivity extends BaseActivity {
 
         sendData();
 
-//        EventBus.getDefault().post(new SendingCircleEvent(mTempMsgBean));
-
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
         bundle.putSerializable("key",mTempMsgBean);
@@ -252,15 +270,42 @@ public class CircleMakeActivity extends BaseActivity {
 
     }
 
+    private void showHeadDialog(){
+        HeadAlertDialog dialog = new HeadAlertDialog(this).builder();
+        dialog.setOnDialogItemClickListener(position1 -> {
+            if(0 == position1){
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+                } else {
+                    openTakePhoto();
+                }
+            }else if(1 == position1){
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+                } else {
+                    initPicker();
+                }
+            }
+        });
+        dialog.show();
+    }
 
+    private void openTakePhoto() {
+        File outputImage = FileHelper.getOutputCircleImageFile(this);
+        if (Build.VERSION.SDK_INT >= 24) {
+            imageUri = FileProvider.getUriForFile(this,
+                    AppUtils.getAppPackageName() + ".fileprovider", outputImage);
+        } else {
+            imageUri = Uri.fromFile(outputImage);
+        }
 
-
-
-
-
-
-
-
+        //启动相机程序
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, TAKE_PHOTO);
+    }
 
 
 
@@ -288,7 +333,20 @@ public class CircleMakeActivity extends BaseActivity {
         if (requestCode == REQUEST_SELECT_IMAGES_CODE && resultCode == RESULT_OK) {
             mediaFiles = (ArrayList<MediaFile>) data.getSerializableExtra(ImagePicker.EXTRA_SELECT_IMAGES);
             if(null != mediaFiles && !mediaFiles.isEmpty()){
-                setPicData(mediaFiles);
+                setPicData(mediaFiles,pathList);
+                setStatus(false);
+            }
+        }
+
+        //拍照 添加图片返回图片路径
+        if (requestCode == TAKE_PHOTO && resultCode == RESULT_OK) {
+            String realPath = PicPathHelper.getRealFilePath(this,imageUri);
+            KLog.d("tag","真实路径 " + realPath);
+            MediaFile mediaFile = new MediaFile();
+            mediaFile.setPath(realPath);
+            pathList.add(mediaFile);
+            if(null != pathList && !pathList.isEmpty()){
+                setPicData(mediaFiles,pathList);
                 setStatus(false);
             }
         }
@@ -322,14 +380,26 @@ public class CircleMakeActivity extends BaseActivity {
     private void setData() {
         if(null == mTempMsgBean){
             mTempMsgBean = new TempMsgBean();
-            mTempMsgBean.setContent(mString);
-            mTempMsgBean.setLinkTitle(linkTitle);
-            mTempMsgBean.setLinkurl(linkurl);
-            if(!mediaFiles.isEmpty()){
-                mTempMsgBean.setImgPath(mediaFiles);
-            }
-            saveTempMsg(mTempMsgBean);
         }
+
+        mTempMsgBean.setContent(mString);
+        mTempMsgBean.setLinkTitle(linkTitle);
+        mTempMsgBean.setLinkurl(linkurl);
+
+        if(!mediaFiles.isEmpty()){
+            mTempMsgBean.setImgPath(mediaFiles);
+        }else{
+            mTempMsgBean.setImgPath(null);
+        }
+
+
+        if(!pathList.isEmpty()){
+            mTempMsgBean.setImgPath2(pathList);
+        }else {
+            mTempMsgBean.setImgPath2(null);
+        }
+
+        saveTempMsg(mTempMsgBean);
     }
 
     private void sendData() {
@@ -360,8 +430,15 @@ public class CircleMakeActivity extends BaseActivity {
                 setStatus(false);
             }
 
+            if(null != mTempMsgBean.getImgPath2() && !mTempMsgBean.getImgPath2().isEmpty()){
+                setPicData(mTempMsgBean.getImgPath(),mTempMsgBean.getImgPath2());
+                pathList.addAll(mTempMsgBean.getImgPath2());
+                part3333.setVisibility(View.VISIBLE);
+                setStatus(false);
+            }
+
             if(null != mTempMsgBean.getImgPath() && !mTempMsgBean.getImgPath().isEmpty()){
-                setPicData(mTempMsgBean.getImgPath());
+                setPicData(mTempMsgBean.getImgPath(),mTempMsgBean.getImgPath2());
                 mediaFiles.addAll(mTempMsgBean.getImgPath());
                 part3333.setVisibility(View.VISIBLE);
                 setStatus(false);
@@ -396,6 +473,10 @@ public class CircleMakeActivity extends BaseActivity {
 
     /** --------------------------------- 相册  ---------------------------------*/
     private void initPicker() {
+
+        //减去拍照的数量
+        int temp_pic_num = pic_num - pathList.size();
+        KLog.d("tag","剩余选择的条数是 " + temp_pic_num);
         ImagePicker.getInstance()
                 .setTitle("相册与视频")
                 //选择上次选中的图片
@@ -405,7 +486,7 @@ public class CircleMakeActivity extends BaseActivity {
                 //设置是否展示视频
                 .showVideo(false)
                 //设置最大选择图片数目(默认为1，单选)
-                .setMaxCount(pic_num)
+                .setMaxCount(temp_pic_num)
                 .setImageLoader(new GlideLoader())
                 .start(this, REQUEST_SELECT_IMAGES_CODE);
     }
@@ -431,10 +512,16 @@ public class CircleMakeActivity extends BaseActivity {
         mCirclePicItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             KLog.d("tag","点击删除的是 " + position);
 
-            mediaFiles.remove(position);
+           String temp = mList.get(position).getLastType();
+           if("相册".equals(temp)){
+               mediaFiles.remove(position);
+           }else if("拍照".equals(temp)){
+               pathList.remove(position);
+           }
+
             mList.remove(position);
-            //TODO 19.20 == 0 表示原始数据无
-            if(mediaFiles.size() == 0){
+            //TODO == 0 表示原始数据无
+            if(mediaFiles.size() == 0 && pathList.size() == 0){
                 mList.clear();
                 setStatus(true);
             }
@@ -446,11 +533,10 @@ public class CircleMakeActivity extends BaseActivity {
             switch (type){
                 case CirclePicItemAdapter.ADD:
                     KLog.d("tag","增加");
-                    initPicker();
+                    showHeadDialog();
                     break;
                 case CirclePicItemAdapter.NORMAL:
                     KLog.d("tag","预览");
-
                     toPicPrewView();
                     break;
                     default:
@@ -459,21 +545,37 @@ public class CircleMakeActivity extends BaseActivity {
     }
 
     //手动的创建第二个加号图片实体bean
-    private void setPicData(List<MediaFile> mediaFiles) {
+    private void setPicData(List<MediaFile> mediaFiles,List<MediaFile> pathList) {
         part3333.setVisibility(View.VISIBLE);
         mList.clear();
         MulMediaFile mulMediaFile;
 
-        for (int i = 0; i < mediaFiles.size(); i++) {
-            mulMediaFile = new MulMediaFile();
-            mulMediaFile.setMediaFile(mediaFiles.get(i));
-            mulMediaFile.setItemType(1);
-            mList.add(mulMediaFile);
+        if(null != pathList && !pathList.isEmpty()){
+            for (int i = 0; i < pathList.size(); i++) {
+                mulMediaFile = new MulMediaFile();
+                mulMediaFile.setMediaFile(pathList.get(i));
+                mulMediaFile.setLastType("拍照");
+                mulMediaFile.setItemType(1);
+                mList.add(mulMediaFile);
+            }
+        }
+
+
+        if(null != mediaFiles && !mediaFiles.isEmpty()){
+            for (int i = 0; i < mediaFiles.size(); i++) {
+                mulMediaFile = new MulMediaFile();
+                mulMediaFile.setMediaFile(mediaFiles.get(i));
+                mulMediaFile.setLastType("相册");
+                mulMediaFile.setItemType(1);
+                mList.add(mulMediaFile);
+            }
         }
 
         //情况一 添加最后的加号
         mulMediaFile = new MulMediaFile();
+        mulMediaFile.setLastType("加号");
         mulMediaFile.setItemType(2);
+
         mList.add(mulMediaFile);
 
         mCirclePicItemAdapter.setNewData(mList);
@@ -496,10 +598,19 @@ public class CircleMakeActivity extends BaseActivity {
 
     /** --------------------------------- 图片预览  ---------------------------------*/
     private void toPicPrewView() {
+
         ArrayList<String> photos = new ArrayList<>();
+
+        for (int i = 0; i < pathList.size(); i++) {
+            photos.add(pathList.get(i).getPath());
+        }
+
+        //之前只是从相册中拿去
         for (int i = 0; i < mediaFiles.size(); i++) {
             photos.add(mediaFiles.get(i).getPath());
         }
+
+
         Bundle bundle = new Bundle ();
         bundle.putStringArrayList ("imageList", photos);
         bundle.putBoolean("fromNet",true);

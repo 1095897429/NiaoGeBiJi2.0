@@ -14,6 +14,8 @@ public class MulMediaFile extends BaseBean implements MultiItemEntity {
 
     private MediaFile mMediaFile;
 
+    private String lastType;
+
     //类型
     private int itemType;
 
@@ -33,4 +35,14 @@ public class MulMediaFile extends BaseBean implements MultiItemEntity {
     public void setMediaFile(MediaFile mediaFile) {
         mMediaFile = mediaFile;
     }
+
+
+    public String getLastType() {
+        return lastType;
+    }
+
+    public void setLastType(String lastType) {
+        this.lastType = lastType;
+    }
 }
+

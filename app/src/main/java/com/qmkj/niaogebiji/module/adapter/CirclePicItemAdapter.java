@@ -50,7 +50,7 @@ public class CirclePicItemAdapter extends BaseMultiItemQuickAdapter<MulMediaFile
                 break;
             case ADD:
                 //如果是9，表示是9张图 + 1个图片
-                if(helper.getAdapterPosition() == CircleMakeActivity.pic_num){
+                if(helper.getAdapterPosition() == 9){
                     helper.setVisible(R.id.pic_add,false);
                     //如果是0，表示是0张图 + 1个图片
                 }else if(helper.getAdapterPosition() == 0){

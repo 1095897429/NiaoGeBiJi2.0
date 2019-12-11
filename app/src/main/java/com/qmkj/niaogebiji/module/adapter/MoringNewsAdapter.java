@@ -28,7 +28,7 @@ public class MoringNewsAdapter extends BaseQuickAdapter<MoringNewsBean, BaseView
     @Override
     protected void convert(BaseViewHolder helper, MoringNewsBean item) {
 
-
+        helper.addOnClickListener(R.id.toListen);
 
     }
 }

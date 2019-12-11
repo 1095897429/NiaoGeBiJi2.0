@@ -273,7 +273,7 @@ public class DataInfomationActivity extends BaseActivity {
         lottieAnimationView.setAnimation("images/loading.json");
         lottieAnimationView.loop(true);
         //硬件加速，解决lottie卡顿问题
-        lottieAnimationView.useHardwareAcceleration(true);
+//        lottieAnimationView.useHardwareAcceleration(true);
         lottieAnimationView.playAnimation();
     }
 

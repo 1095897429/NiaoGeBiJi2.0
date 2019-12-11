@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	根标签为animation-list，
+	其中oneshot代表着是否只展示一遍，设置为false会不停的循环播放动画
+	根标签下，通过item标签对动画中的每一个图片进行声明
+	android:duration 表示展示所用的该图片的时间长度
+ -->
+<animation-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false"
+    >
+    <item android:drawable="@drawable/re00000" android:duration="50"></item>
+    <item android:drawable="@drawable/re00001" android:duration="50"></item>
+    <item android:drawable="@drawable/re00002" android:duration="50"></item>
+    <item android:drawable="@drawable/re00003" android:duration="50"></item>
+    <item android:drawable="@drawable/re00005" android:duration="50"></item>
+    <item android:drawable="@drawable/re00006" android:duration="50"></item>
+    <item android:drawable="@drawable/re00007" android:duration="50"></item>
+    <item android:drawable="@drawable/re00008" android:duration="50"></item>
+    <item android:drawable="@drawable/re00009" android:duration="50"></item>
+    <item android:drawable="@drawable/re00010" android:duration="50"></item>
+    <item android:drawable="@drawable/re00011" android:duration="50"></item>
+    <item android:drawable="@drawable/re00012" android:duration="50"></item>
+    <item android:drawable="@drawable/re00013" android:duration="50"></item>
+    <item android:drawable="@drawable/re00014" android:duration="50"></item>
+    <item android:drawable="@drawable/re00015" android:duration="50"></item>
+    <item android:drawable="@drawable/re00016" android:duration="50"></item>
+    <item android:drawable="@drawable/re00017" android:duration="50"></item>
+    <item android:drawable="@drawable/re00018" android:duration="50"></item>
+    <item android:drawable="@drawable/re00019" android:duration="50"></item>
+    <item android:drawable="@drawable/re00020" android:duration="50"></item>
+    <item android:drawable="@drawable/re00021" android:duration="50"></item>
+    <item android:drawable="@drawable/re00022" android:duration="50"></item>
+    <item android:drawable="@drawable/re00023" android:duration="50"></item>
+    <item android:drawable="@drawable/re00024" android:duration="50"></item>
+    <item android:drawable="@drawable/re00025" android:duration="50"></item>
+    <item android:drawable="@drawable/re00026" android:duration="50"></item>
+    <item android:drawable="@drawable/re00027" android:duration="50"></item>
+    <item android:drawable="@drawable/re00028" android:duration="50"></item>
+</animation-list>

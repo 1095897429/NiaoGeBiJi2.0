@@ -65,7 +65,6 @@ public class MediaFile implements Serializable {
     }
 
 
-
     @Override
     public boolean equals(@Nullable Object obj) {
         MediaFile m = (MediaFile) obj;

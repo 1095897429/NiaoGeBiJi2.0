@@ -1,7 +1,7 @@
 package com.qmkj.niaogebiji.module.widget.header;
 
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,10 +15,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
-import com.facebook.common.util.UriUtil;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.airbnb.lottie.LottieAnimationView;
 import com.qmkj.niaogebiji.R;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshKernel;
@@ -26,8 +23,6 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.socks.library.KLog;
-
-import pl.droidsonroids.gif.GifImageView;
 
 /**
  * @author zhouliang
@@ -37,10 +32,12 @@ import pl.droidsonroids.gif.GifImageView;
  */
 public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
 
-    private GifImageView mProgressView;
+    private LottieAnimationView lottie;
     private ImageView mImageView;
     RelativeLayout item;
     int color;
+
+    private AnimationDrawable animationDrawable;
 
     public XnClassicsHeader(Context context) {
         super(context);
@@ -67,23 +64,19 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
         setGravity(Gravity.CENTER);
         View v = LayoutInflater.from(context).inflate(R.layout.ref_view_head, null);
         item = v.findViewById(R.id.ref_view_head_item);
-        mProgressView = v.findViewById(R.id.gif_view);
         mImageView = v.findViewById(R.id.image);
 
-        // 设置箭头gif
-//        Uri uri = new Uri.Builder()
-//                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-//                .path(String.valueOf(R.mipmap.loading))
-//                .build();
-//        DraweeController controller = Fresco.newDraweeControllerBuilder()
-//                .setUri(uri)
-//                .setAutoPlayAnimations(true)
-//                .build();
-//        mProgressView.setController(controller);
-
+        lottie = v.findViewById(R.id.lottieAnimationView);
 
         addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         item.setBackgroundResource(color);
+
+
+        //帧动画
+        mImageView.setImageResource(R.drawable.splash_animation3);
+        animationDrawable = (AnimationDrawable) mImageView.getDrawable();
+
+
     }
 
     @Override
@@ -113,13 +106,16 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
         switch (newState) {
             case None:
                 KLog.d("tag","刷新None");
+                if(animationDrawable != null && animationDrawable.isRunning()){
+                    animationDrawable.stop();
+                }
                 break;
             case PullDownToRefresh:
 //                    mHeaderText.setText("下拉开始刷新");
 //                     mProgressView.setVisibility(VISIBLE);//隐藏动画
 //                    mArrowView.animate().rotation(0);//还原箭头方向
-                mImageView.setVisibility(VISIBLE);
-                mProgressView.setVisibility(GONE);
+//                mImageView.setVisibility(VISIBLE);
+//                lottie.setVisibility(GONE);
                 KLog.d("tag","下拉开始刷新");
 
                 break;
@@ -127,9 +123,19 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
 //                    mHeaderText.setText("正在刷新");
 //                    mProgressView.setVisibility(VISIBLE);//显示加载动画
 //                    mArrowView.setVisibility(GONE);//隐藏箭头
-                mImageView.setVisibility(GONE);
-                mProgressView.setVisibility(VISIBLE);
+//                mImageView.setVisibility(GONE);
+//                lottie.setVisibility(VISIBLE);
                 KLog.d("tag","正在刷新");
+
+               if(animationDrawable != null ){
+                   animationDrawable.start();
+               }
+
+//                lottie.setImageAssetsFolder("images");
+//                lottie.setAnimation("images/new_fresh.json");
+//                //硬件加速，解决lottie卡顿问题
+//                lottie.playAnimation();
+
                 break;
             case ReleaseToRefresh:
 //                    mHeaderText.setText("释放立即刷新");
@@ -139,6 +145,7 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
 //                    mHeaderText.setText("刷新结束");
                 KLog.d("tag","刷新结束");
                 break;
+                default:
         }
     }
 

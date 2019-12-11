@@ -7,9 +7,13 @@ package com.qmkj.niaogebiji.module.event;
  * 描述:
  */
 public class AudioEvent {
-    public int position;
+    public String  url;
 
-    public AudioEvent(int position){
-        this.position = position;
+    public AudioEvent(String  url){
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

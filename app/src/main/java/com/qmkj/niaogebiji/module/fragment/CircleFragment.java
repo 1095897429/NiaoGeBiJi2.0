@@ -30,6 +30,7 @@ import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -41,6 +42,7 @@ import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.db.DBManager;
 import com.qmkj.niaogebiji.module.event.SendingCircleEvent;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.socks.library.KLog;
@@ -210,10 +212,14 @@ public class CircleFragment extends BaseLazyFragment {
 
     @OnClick({R.id.icon_send_msg,R.id.rl_newmsg,
         R.id.search_part,
-        R.id.toReSend
+        R.id.toReSend,
+        R.id.icon_send_cancel
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.icon_send_cancel:
+                showDeleteCircle();
+                break;
             case R.id.toReSend:
                 changeData();
                 break;
@@ -502,4 +508,11 @@ public class CircleFragment extends BaseLazyFragment {
     }
 
 
+
+    public void showDeleteCircle(){
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(getActivity()).builder();
+        iosAlertDialog.setPositiveButton("取消", v -> {
+        }).setNegativeButton("再想想", v -> {}).setMsg("取消发布动态").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
 }

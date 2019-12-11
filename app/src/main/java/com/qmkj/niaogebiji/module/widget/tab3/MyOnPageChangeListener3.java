@@ -66,7 +66,7 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageSelected(int position) {
-        KLog.d("tag","onPageSelected");
+//        KLog.d("tag","onPageSelected");
         lastPosition = pager.getCurrentItem();
         viewPagerTitle.setCurrentItem(position);
 
@@ -107,7 +107,7 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
         //得到第一个选中文本的大小
         lineWidth = (int)getTextViewLength((TextView) textViews.get(defaultIndex));
         everyLength = screenWidth / pagerCount;
-        KLog.d("tag","每个控件均分长度为  " + everyLength);
+//        KLog.d("tag","每个控件均分长度为  " + everyLength);
         everyLength = SizeUtils.dp2px(60);
         //默认绘制
         dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (defaultIndex)*everyLength );

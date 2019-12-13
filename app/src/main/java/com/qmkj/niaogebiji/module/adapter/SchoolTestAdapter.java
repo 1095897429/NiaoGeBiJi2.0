@@ -1,11 +1,14 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import java.util.List;
 
@@ -24,6 +27,17 @@ public class SchoolTestAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, B
     @Override
     protected void convert(BaseViewHolder helper,SchoolBean.SchoolTest item) {
 
+        helper.setText(R.id.test_title,item.getTitle());
+        //是否展示限时标志 1是 0否
+        if("0".equals(item.getIs_limit_time())){
+            helper.setVisible(R.id.test_time,false);
+        }else if("1".equals(item.getIs_limit_time())){
+            helper.setVisible(R.id.test_time,true);
+        }
+
+        if(!TextUtils.isEmpty(item.getIcon())){
+            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.test_img));
+        }
     }
 }
 

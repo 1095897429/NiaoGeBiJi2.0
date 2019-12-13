@@ -103,7 +103,7 @@ public class CommentBeanNew extends BaseBean {
         private String like_num;
         private String create_at;
         private String comment_class;
-        private User_info username_info;
+        private User_info user_info;
         private User_info p_user_info;
 
         public String getId() {
@@ -162,12 +162,12 @@ public class CommentBeanNew extends BaseBean {
             this.comment_class = comment_class;
         }
 
-        public User_info getUsername_info() {
-            return username_info;
+        public User_info getUser_info() {
+            return user_info;
         }
 
-        public void setUsername_info(User_info username_info) {
-            this.username_info = username_info;
+        public void setUser_info(User_info user_info) {
+            this.user_info = user_info;
         }
 
         public User_info getP_user_info() {

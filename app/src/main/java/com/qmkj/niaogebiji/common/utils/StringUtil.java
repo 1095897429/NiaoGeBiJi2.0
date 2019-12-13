@@ -5,10 +5,13 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
+import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -92,5 +95,9 @@ public class StringUtil {
         }
         return bmp;
     }
+
+    /** --------------------------------- 封装的一些方法 ---------------------------------*/
+
+
 
 }

@@ -5,15 +5,10 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
 /**
  * @author zhouliang
  * 版本 1.0
- * 创建时间 2019-11-19
- * 描述:工具实体
+ * 创建时间 2019-12-13
+ * 描述:推荐工具新bean
  */
-public class ToolBean extends BaseBean {
-
-    private String mes;
-    //默认为 false
-    private boolean openState ;
-    private boolean isSave;
+public class ToolNewBean extends BaseBean {
 
     private String id;
     private String title;
@@ -24,6 +19,14 @@ public class ToolBean extends BaseBean {
     private String url;
     private int is_collected;
 
+
+
+    //来自上个类
+    private String mes;
+    //默认为 false
+    private boolean openState ;
+
+    private boolean isSave;
 
     public boolean isSave() {
         return isSave;
@@ -48,6 +51,7 @@ public class ToolBean extends BaseBean {
     public void setOpenState(boolean openState) {
         this.openState = openState;
     }
+
 
 
     public String getId() {

@@ -9,20 +9,37 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.TestItemAdapter;
+import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
+import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.TestListEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -45,21 +62,64 @@ public class TestListActivity extends BaseActivity {
         tv_title.setText("测一测 得徽章");
         initLayout();
         initSamrtLayout();
-        getData();
+        testCateList();
     }
 
-
-
-    private void getData() {
-
-        TestBean bean1;
-        for (int i = 0; i < 10; i++) {
-            bean1 = new TestBean();
-            mAllList.add(bean1);
-        }
-        mTestItemAdapter.setNewData(mAllList);
-
+    @Override
+    protected boolean regEvent() {
+        return true;
     }
+
+    private void testCateList() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().testCateList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<SchoolBean.SchoolTest>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<SchoolBean.SchoolTest>> response) {
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
+                        List<SchoolBean.SchoolTest> list = response.getReturn_data();
+                        if(null != list && !list.isEmpty()){
+
+                            if(1 == page){
+                                mTestItemAdapter.setNewData(list);
+                            }else{
+                                //已为加载更多有数据
+                                if(list != null && list.size() > 0){
+                                    mTestItemAdapter.loadMoreComplete();
+                                    mTestItemAdapter.addData(list);
+                                }else{
+                                    //已为加载更多无更多数据
+                                    mTestItemAdapter.loadMoreEnd();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        super.onNetFail(msg);
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String errorMes) {
+                        super.onHintError(errorMes);
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+                    }
+                });
+    }
+
 
     /** --------------------------------- 通用的配置  ---------------------------------*/
     @BindView(R.id.smartRefreshLayout)
@@ -69,7 +129,7 @@ public class TestListActivity extends BaseActivity {
     //适配器
     TestItemAdapter mTestItemAdapter;
     //组合集合
-    List<TestBean> mAllList = new ArrayList<>();
+    List<SchoolBean.SchoolTest> mAllList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
     private int page = 1;
@@ -89,22 +149,30 @@ public class TestListActivity extends BaseActivity {
 
     private void initEvent() {
 
-        mTestItemAdapter.setOnLoadMoreListener(() -> {
-            ++page;
-            getData();
-        },mRecyclerView);
+//        mTestItemAdapter.setOnLoadMoreListener(() -> {
+//            ++page;
+//            testCateList();
+//        },mRecyclerView);
+
 
         //点击事件
         mTestItemAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的是 position " + position );
-            if(position  == 0){
-                UIHelper.toTestDetailActivity(this);
-            }else if(position == 1){
-                UIHelper.toTestResultFailActivity(this);
-            }else{
-                UIHelper.toTestResultActivity(this);
-            }
 
+            SchoolBean.SchoolTest temp = mTestItemAdapter.getData().get(position);
+            SchoolBean.Record tempRecord =  temp.getRecord();
+            if("0".equals(tempRecord.getIs_tested() + "")){
+                UIHelper.toTestDetailActivity(this,temp);
+            }else if("1".equals(tempRecord.getIs_tested() + "")){
+               String score =  tempRecord.getScore();
+               String passScore = temp.getPass_score();
+               if(score.compareTo(passScore) < 0){
+                   KLog.d("tag","不及格");
+                   UIHelper.toTestResultFailActivity(this,temp);
+               }else{
+                   UIHelper.toTestResultActivity(this,temp);
+               }
+            }
 
         });
 
@@ -112,11 +180,13 @@ public class TestListActivity extends BaseActivity {
 
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            getData();
+            testCateList();
         });
     }
 
@@ -132,4 +202,12 @@ public class TestListActivity extends BaseActivity {
         }
     }
 
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTestListEvent(TestListEvent event){
+        mAllList.clear();
+        page = 1;
+        testCateList();
+    }
 }

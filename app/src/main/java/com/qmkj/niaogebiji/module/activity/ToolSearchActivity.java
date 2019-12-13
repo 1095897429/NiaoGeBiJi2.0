@@ -1,9 +1,11 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,20 +15,30 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.CategoryAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolRecommentItemAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
+import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.event.ToolHomeChangeEvent;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -59,7 +71,6 @@ public class ToolSearchActivity extends BaseActivity {
         //显示弹框
         KeyboardUtils.showSoftInput(et_input);
 
-        
         initLayout();
 
     }
@@ -141,7 +152,7 @@ public class ToolSearchActivity extends BaseActivity {
         et_input.setText(keyword);
         et_input.setSelection(keyword.length());
 
-        getData();
+        searchTool(keyword);
     }
 
     private void getData() {
@@ -153,6 +164,39 @@ public class ToolSearchActivity extends BaseActivity {
         }
 
         mAdapter.setNewData(mList);
+    }
+
+    private void searchTool(String keyword) {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",keyword + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchTool(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<ToolBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<ToolBean>> httpResponse) {
+                        KLog.d("tag",httpResponse.getReturn_data());
+
+                        mList = httpResponse.getReturn_data();
+
+                        setData();
+
+
+                    }
+                });
+    }
+
+    private void setData() {
+
+        if(!mList.isEmpty()){
+            mAdapter.setNewData(mList);
+        }else{
+            View emptyView = LayoutInflater.from(this).inflate(R.layout.activity_empty,null);
+            mAdapter.setEmptyView(emptyView);
+            ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有搜索结果哦～");
+        }
     }
 
 

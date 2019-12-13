@@ -32,15 +32,28 @@ import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.dialog.ReTestCalendaDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
+import com.qmkj.niaogebiji.module.bean.AppointmentBean;
+import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -56,6 +69,11 @@ public class TestResultFailActivity extends BaseActivity {
     @BindView(R.id.iv_right)
     ImageView iv_right;
 
+    @BindView(R.id.test_grade)
+    TextView test_grade;
+
+
+    private SchoolBean.SchoolTest mSchoolTest;
 
     @Override
     protected int getLayoutId() {
@@ -65,7 +83,12 @@ public class TestResultFailActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        tv_title.setText("初级ASO测试");
+        mSchoolTest = (SchoolBean.SchoolTest) getIntent().getExtras().getSerializable("bean");
+
+        tv_title.setText(mSchoolTest.getTitle());
+
+        test_grade.setText(mSchoolTest.getRecord().getScore());
+
         iv_right.setVisibility(View.VISIBLE);
         iv_right.setImageResource(R.mipmap.icon_test_share_black);
     }
@@ -92,6 +115,37 @@ public class TestResultFailActivity extends BaseActivity {
             default:
         }
     }
+
+
+    private void reserveTest() {
+        Map<String,String> map = new HashMap<>();
+        map.put("test_cate_id",mSchoolTest.getId() + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().reserveTest(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<AppointmentBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<AppointmentBean> httpResponse) {
+                        KLog.d("tag",httpResponse.getReturn_data());
+
+                        // 状态值 0之前没有预约过 1已预约过，但还没到预约时间 2可以参加预约考试
+                        AppointmentBean temp = httpResponse.getReturn_data();
+
+                        if("0".equals(temp.getStatus())){
+                            showReTestCalendar();
+                        }else if("1".equals(temp.getStatus())){
+                            ToastUtils.showShort("已预约过，请不要重复预约");
+                        }else if("2".equals(temp.getStatus())){
+                            UIHelper.toTestDetailActivity(TestResultFailActivity.this,mSchoolTest);
+                        }
+
+
+                    }
+                });
+    }
+
 
 
     /** --------------------------------- 分享  ---------------------------------*/
@@ -141,6 +195,7 @@ public class TestResultFailActivity extends BaseActivity {
     private static String CALENDARS_ACCOUNT_TYPE = "com.android.exchange";
     private static String CALENDARS_DISPLAY_NAME = "测试账户";
     private static int ONE_HOUR =  60 * 1000;
+    private static int TWO_DAT =   48 * 60 * 1000 ;
 
     //获取事件ID
     private long eventId;
@@ -149,18 +204,22 @@ public class TestResultFailActivity extends BaseActivity {
     public void showReTestSubmit(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("重考", v -> {
+//            reserveTest();
             showReTestCalendar();
         }).setNegativeButton("再想想", v -> {
-
         }).setMsg("要进行重考吗？").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
 
 
 
+    //13考试  --- 16号可以考试
     public void showReTestCalendar(){
+        String time = TimeAppUtils.getOldDate(3);
+        String result = "最近的可重考时间为"+ time +"。请及时参加考试~";
+
         final ReTestCalendaDialog iosAlertDialog = new ReTestCalendaDialog(this).builder();
-        iosAlertDialog.setPositiveButton("帮我添加到日历", v -> {
+        iosAlertDialog.setTitle(result).setPositiveButton("帮我添加到日历", v -> {
 
             //发请求之前判断权限
             if (hasPermissions(this, permissions)) {
@@ -198,7 +257,7 @@ public class TestResultFailActivity extends BaseActivity {
 
 
     private void toNext(){
-        addCalendarEvent(this,"测试","猜测是超链接离开进口量",System.currentTimeMillis());
+        addCalendarEvent(this,mSchoolTest.getTitle(),mSchoolTest.getDesc(),System.currentTimeMillis());
     }
 
 
@@ -226,7 +285,8 @@ public class TestResultFailActivity extends BaseActivity {
                 return -1;
             }
             int count = userCursor.getCount();
-            if (count > 0) {//存在现有账户，取第一个账户的id返回
+            //存在现有账户，取第一个账户的id返回
+            if (count > 0) {
                 userCursor.moveToFirst();
                 return userCursor.getInt(userCursor.getColumnIndex(CalendarContract.Calendars._ID));
             } else {
@@ -294,17 +354,22 @@ public class TestResultFailActivity extends BaseActivity {
         KLog.d("tag","开始时间 " + TimeAppUtils.timeStamp2Date(beginTime,""));
 
         Calendar mCalendar = Calendar.getInstance();
-        mCalendar.setTimeInMillis(beginTime);//设置开始时间
+        //设置开始时间
+        mCalendar.setTimeInMillis(beginTime);
         long start = mCalendar.getTime().getTime();
-        mCalendar.setTimeInMillis(start + ONE_HOUR);//设置终止时间
+        //设置终止时间
+        mCalendar.setTimeInMillis(start + TWO_DAT);
         long end = mCalendar.getTime().getTime();
 
         KLog.d("tag","结束时间 " + TimeAppUtils.timeStamp2Date(end,""));
         event.put(CalendarContract.Events.DTSTART, start);
         event.put(CalendarContract.Events.DTEND, end);
-        event.put(CalendarContract.Events.HAS_ALARM, 1);//设置有闹钟提醒
-        TimeZone tz = TimeZone.getDefault(); // 获取默认时区
-        event.put(CalendarContract.Events.EVENT_TIMEZONE, tz.getID());  //这个是时区，必须有，
+        //设置有闹钟提醒
+        event.put(CalendarContract.Events.HAS_ALARM, 1);
+        // 获取默认时区
+        TimeZone tz = TimeZone.getDefault();
+        //这个是时区，必须有，
+        event.put(CalendarContract.Events.EVENT_TIMEZONE, tz.getID());
         //添加事件
         Uri newEvent = context.getContentResolver().insert(Uri.parse(CALANDER_EVENT_URL), event);
         if (newEvent == null) {

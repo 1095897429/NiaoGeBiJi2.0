@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
+import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 
 import java.util.List;
 
@@ -18,17 +19,17 @@ import java.util.List;
  * 创建时间 2019-11-28
  * 描述:工具编辑中的tag
  */
-public class ToolCategoryAdapter extends BaseQuickAdapter<ChannelBean, BaseViewHolder> {
-    public ToolCategoryAdapter(@Nullable List<ChannelBean> data) {
+public class ToolCategoryAdapter extends BaseQuickAdapter<ToollndexBean, BaseViewHolder> {
+    public ToolCategoryAdapter(@Nullable List<ToollndexBean> data) {
         super(R.layout.edit_tool_head_tag,data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, ChannelBean item) {
+    protected void convert(BaseViewHolder helper, ToollndexBean item) {
 
         helper.addOnClickListener(R.id.tag_name);
 
-        helper.setText(R.id.tag_name,item.getChaname());
+        helper.setText(R.id.tag_name,item.getTitle());
 
         TextView textView = helper.getView(R.id.tag_name);
         TextPaint paint = textView.getPaint();

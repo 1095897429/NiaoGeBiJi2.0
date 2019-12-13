@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/nickname"
+                        android:id="@+id/toolTitle"
                         android:text="App Store排行榜"
                         android:textSize="17sp"
                         android:textColor="@color/text_first_color"

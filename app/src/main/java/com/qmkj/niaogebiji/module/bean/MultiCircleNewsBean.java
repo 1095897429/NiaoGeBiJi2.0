@@ -7,16 +7,18 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-14
- * 描述:圈子的多实体
+ * 描述:圈子的多实体 ，一个对象可以有多种类型的
  */
 public class MultiCircleNewsBean extends BaseBean implements MultiItemEntity {
 
-    //首页新闻
-    private NewsItemBean mNewsItemBean;
-    //首页快讯
-    private FirstItemBean mFirstItemBean;
-    //首页关注作者文章
-    private IndexFocusBean.Article_list mArticleList;
+//    //首页新闻
+//    private NewsItemBean mNewsItemBean;
+//    //首页快讯
+//    private FirstItemBean mFirstItemBean;
+//    //首页关注作者文章
+//    private IndexFocusBean.Article_list mArticleList;
+
+    private CircleBean mCircleBean;
 
     //类型
     private int itemType;
@@ -30,29 +32,38 @@ public class MultiCircleNewsBean extends BaseBean implements MultiItemEntity {
         return itemType;
     }
 
-
-    public NewsItemBean getNewsItemBean() {
-        return mNewsItemBean;
+    public CircleBean getCircleBean() {
+        return mCircleBean;
     }
 
-    public void setNewsItemBean(NewsItemBean newsItemBean) {
-        mNewsItemBean = newsItemBean;
-    }
-
-    public FirstItemBean getFirstItemBean() {
-        return mFirstItemBean;
-    }
-
-    public void setFirstItemBean(FirstItemBean firstItemBean) {
-        mFirstItemBean = firstItemBean;
+    public void setCircleBean(CircleBean circleBean) {
+        mCircleBean = circleBean;
     }
 
 
-    public IndexFocusBean.Article_list getArticleList() {
-        return mArticleList;
-    }
-
-    public void setArticleList(IndexFocusBean.Article_list articleList) {
-        mArticleList = articleList;
-    }
+    //
+//    public NewsItemBean getNewsItemBean() {
+//        return mNewsItemBean;
+//    }
+//
+//    public void setNewsItemBean(NewsItemBean newsItemBean) {
+//        mNewsItemBean = newsItemBean;
+//    }
+//
+//    public FirstItemBean getFirstItemBean() {
+//        return mFirstItemBean;
+//    }
+//
+//    public void setFirstItemBean(FirstItemBean firstItemBean) {
+//        mFirstItemBean = firstItemBean;
+//    }
+//
+//
+//    public IndexFocusBean.Article_list getArticleList() {
+//        return mArticleList;
+//    }
+//
+//    public void setArticleList(IndexFocusBean.Article_list articleList) {
+//        mArticleList = articleList;
+//    }
 }

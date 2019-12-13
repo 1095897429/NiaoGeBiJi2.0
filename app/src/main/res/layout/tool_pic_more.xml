@@ -12,11 +12,20 @@
         android:orientation="vertical">
 
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <!--<de.hdodenhof.circleimageview.CircleImageView-->
+            <!--android:id="@+id/tool_pic"-->
+            <!--android:visibility="gone"-->
+            <!--android:layout_width="48dp"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:src="@mipmap/icon_fenxiang"/>-->
+
+        <ImageView
             android:id="@+id/tool_pic"
+            android:visibility="visible"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@mipmap/icon_fenxiang"/>
+
 
         <Space
             android:layout_width="match_parent"

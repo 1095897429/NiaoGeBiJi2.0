@@ -1,43 +1,28 @@
 package com.qmkj.niaogebiji.module.fragment;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
-import com.qmkj.niaogebiji.common.constant.Constant;
-import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
-import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.adapter.NewsCollectItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolRecommentItemAdapter;
-import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
-import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
-import com.qmkj.niaogebiji.module.bean.ToolNewBean;
-import com.qmkj.niaogebiji.module.event.CollectionEvent;
 import com.qmkj.niaogebiji.module.event.ToolChangeEvent;
-import com.qmkj.niaogebiji.module.event.ToolHomeChangeEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -53,10 +38,10 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * @author zhouliang
  * 版本 1.0
- * 创建时间 2019-11-28
- * 描述:推荐工具
+ * 创建时间 2019-12-13
+ * 描述:我收藏工具
  */
-public class ToolRecommentListFragment extends BaseLazyFragment {
+public class ToolCollectionListFragment extends BaseLazyFragment {
 
     private String cate = "0";
     private String chainId = "0";
@@ -67,8 +52,8 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
     private ToolRecommentItemAdapter mToolRecommentItemAdapter;
 
 
-    public static ToolRecommentListFragment getInstance(String chainId, String chainName) {
-        ToolRecommentListFragment actionItemFragment = new ToolRecommentListFragment();
+    public static ToolCollectionListFragment getInstance(String chainId, String chainName) {
+        ToolCollectionListFragment actionItemFragment = new ToolCollectionListFragment();
         Bundle args = new Bundle();
         args.putString("chainId", chainId);
         args.putString("chainName", chainName);
@@ -96,15 +81,14 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-
-        toollist();
-
+        collectionList();
     }
-    private void toollist() {
+
+    private void collectionList() {
         Map<String,String> map = new HashMap<>();
         map.put("cate",cate);
         String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().toollist(result)
+        RetrofitHelper.getApiService().collectionList(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
@@ -123,15 +107,16 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
                 });
     }
 
-
     private void setData() {
+
         if(!mLists.isEmpty()){
             mToolRecommentItemAdapter.setNewData(mLists);
         }else{
             View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
             mToolRecommentItemAdapter.setEmptyView(emptyView);
-            ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有推荐工具哦～");
+            ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有我收藏工具哦～");
         }
+
     }
 
     private void favoriteList() {
@@ -196,7 +181,7 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mLists.clear();
             page = 1;
-            toollist();
+            collectionList();
         });
     }
 
@@ -205,10 +190,10 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onToolChangeEvent(ToolChangeEvent event) {
 
-        KLog.d("tag","发送请求的cateid 是 " + event.getName() + " ");
-
+        KLog.d("tag","发送请求 " + event.getName() + " ");
         cate = event.getName();
-        toollist();
+        collectionList();
+
     }
 
 

@@ -28,6 +28,17 @@ public class CircleBean extends BaseBean {
         private User_info user_info;
         private P_blog p_blog;
         private String share_url;
+        //是否已点赞 1是 0否
+        private int is_like;
+
+        public int getIs_like() {
+            return is_like;
+        }
+
+        public void setIs_like(int is_like) {
+            this.is_like = is_like;
+        }
+
         public void setId(String id) {
             this.id = id;
         }

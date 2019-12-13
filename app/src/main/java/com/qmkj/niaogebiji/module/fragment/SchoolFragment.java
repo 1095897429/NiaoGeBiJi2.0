@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -11,18 +12,28 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.SchoolBaiduAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolBookAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolTestAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -42,7 +53,6 @@ public class SchoolFragment extends BaseLazyFragment {
     RecyclerView recycler22;
 
 
-
     SchoolBaiduAdapter mSchoolBaiduAdapter;
     SchoolTestAdapter mSchoolTestAdapter;
     SchoolBookAdapter mSchoolBookAdapter;
@@ -55,6 +65,8 @@ public class SchoolFragment extends BaseLazyFragment {
     private List<SchoolBean.SchoolTest> mSchoolTests = new ArrayList<>();
 
     private List<SchoolBean.SchoolBook> mSchoolBooks = new ArrayList<>();
+
+    private SchoolBean mSchoolBean;
 
 
     private int [] imgs = new int[]{R.mipmap.icon_school_1,R.mipmap.icon_school_2,R.mipmap.icon_school_3,
@@ -78,44 +90,91 @@ public class SchoolFragment extends BaseLazyFragment {
         initLayout0();
         initLayout1();
         initLayout2();
-        getData();
         initEvent();
+        schoolindex();
+    }
 
+
+    private void schoolindex() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().index(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SchoolBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<SchoolBean> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        mSchoolBean  = response.getReturn_data();
+                        setData();
+                    }
+                });
+    }
+
+    private void setData() {
+        if(null != mSchoolBean){
+            mSchoolBaiDus.addAll(mSchoolBean.getWiki());
+            mSchoolTests.addAll(mSchoolBean.getCates());
+            mSchoolBooks.addAll(mSchoolBean.getCourse());
+        }
+
+        mSchoolBaiduAdapter.setNewData(mSchoolBaiDus);
+        mSchoolTestAdapter.setNewData(mSchoolTests);
+        mSchoolBookAdapter.setNewData(mSchoolBooks);
     }
 
     private void getData() {
 
-        SchoolBean.SchoolBaiDu baiDu;
-        for (int i = 0; i < 5; i++) {
-            baiDu = new SchoolBean.SchoolBaiDu();
-            baiDu.setImg(imgs[i]);
-            baiDu.setName(names[i]);
-            mSchoolBaiDus.add(baiDu);
-        }
-
-        SchoolBean.SchoolTest test;
-        for (int i = 0; i < 6; i++) {
-            test = new SchoolBean.SchoolTest();
-            mSchoolTests.add(test);
-        }
-
-        SchoolBean.SchoolBook book;
-        for (int i = 0; i < 6; i++) {
-            book = new SchoolBean.SchoolBook();
-            mSchoolBooks.add(book);
-        }
+//        SchoolBean.SchoolBaiDu baiDu;
+//        for (int i = 0; i < 5; i++) {
+//            baiDu = new SchoolBean.SchoolBaiDu();
+//            baiDu.setImg(imgs[i]);
+//            baiDu.setName(names[i]);
+//            mSchoolBaiDus.add(baiDu);
+//        }
+//
+//        SchoolBean.SchoolTest test;
+//        for (int i = 0; i < 6; i++) {
+//            test = new SchoolBean.SchoolTest();
+//            mSchoolTests.add(test);
+//        }
+//
+//        SchoolBean.SchoolBook book;
+//        for (int i = 0; i < 6; i++) {
+//            book = new SchoolBean.SchoolBook();
+//            mSchoolBooks.add(book);
+//        }
 
     }
 
     private void initEvent() {
         mSchoolBaiduAdapter.setOnItemClickListener((adapter, view, position) -> {
-            KLog.d("tag","去wiki");
-            UIHelper.toWebViewActivity(getActivity(),"www.baidu.com");
+            KLog.d("tag","根据cateid 去wiki");
+            SchoolBean.SchoolBaiDu temp =  mSchoolBaiduAdapter.getData().get(position);
+            if(!TextUtils.isEmpty(temp.getCated_id())){
+
+            }
+
         });
 
         mSchoolTestAdapter.setOnItemClickListener((adapter, view, position) -> {
-            KLog.d("tag","去测试");
-            UIHelper.toTestDetailActivity(getActivity());
+            SchoolBean.SchoolTest temp = mSchoolTestAdapter.getData().get(position);
+            SchoolBean.Record tempRecord =  temp.getRecord();
+            if("0".equals(tempRecord.getIs_tested() + "")){
+                UIHelper.toTestDetailActivity(getActivity(),temp);
+            }else if("1".equals(tempRecord.getIs_tested() + "")){
+                String score =  tempRecord.getScore();
+                String passScore = temp.getPass_score();
+                if(score.compareTo(passScore) < 0){
+                    KLog.d("tag","不及格");
+                    UIHelper.toTestResultFailActivity(getActivity(),temp);
+                }else{
+                    UIHelper.toTestResultActivity(getActivity(),temp);
+                }
+            }
+
+
         });
 
         mSchoolBookAdapter.setOnItemClickListener((adapter, view, position) -> {

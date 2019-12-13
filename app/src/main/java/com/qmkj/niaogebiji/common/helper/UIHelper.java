@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.common.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.qmkj.niaogebiji.module.activity.AboutUsActivity;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
@@ -38,6 +39,12 @@ import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
+import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.bean.TestBean;
+import com.qmkj.niaogebiji.module.bean.TestNewBean;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * @author zhouliang
@@ -173,8 +180,12 @@ public class UIHelper {
     }
 
     /** 打开评论详情界面 */
-    public static void toCommentDetailActivity(Context ctx) {
+    public static void toCommentDetailActivity(Context ctx,String blog_id,String layoutType) {
         Intent intent = new Intent(ctx, CommentDetailActivity.class);
+        Bundle  bundle = new Bundle();
+        bundle.putString("blog_id",blog_id);
+        bundle.putString("layoutType",layoutType);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
@@ -205,26 +216,40 @@ public class UIHelper {
     }
 
     /** 打开测一测详情界面 */
-    public static void toTestDetailActivity(Context ctx) {
+    public static void toTestDetailActivity(Context ctx, SchoolBean.SchoolTest test) {
         Intent intent = new Intent(ctx, TestDetailActivity.class);
+        Bundle bundle  = new Bundle();
+        bundle.putSerializable("bean",test);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
     /** 打开测一测开始界面 */
-    public static void toTestLauchActivity(Context ctx) {
+    public static void toTestLauchActivity(Activity ctx, ArrayList<TestNewBean> list, SchoolBean.SchoolTest testBean) {
         Intent intent = new Intent(ctx, TestLauchActivity.class);
-        ctx.startActivity(intent);
+        Bundle bundle  = new Bundle();
+        //序列化,要注意转化(Serializable)
+        bundle.putSerializable("list",list);
+        bundle.putSerializable("bean",testBean);
+        intent.putExtras(bundle);
+        ctx.startActivityForResult(intent,100);
     }
 
     /** 打开测一测结果界面 */
-    public static void toTestResultActivity(Context ctx) {
+    public static void toTestResultActivity(Context ctx,SchoolBean.SchoolTest test) {
         Intent intent = new Intent(ctx, TestResultActivity.class);
+        Bundle bundle  = new Bundle();
+        bundle.putSerializable("bean",test);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
     /** 打开测一测结果失败界面 */
-    public static void toTestResultFailActivity(Context ctx) {
+    public static void toTestResultFailActivity(Context ctx,SchoolBean.SchoolTest test) {
         Intent intent = new Intent(ctx, TestResultFailActivity.class);
+        Bundle bundle  = new Bundle();
+        bundle.putSerializable("bean",test);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 

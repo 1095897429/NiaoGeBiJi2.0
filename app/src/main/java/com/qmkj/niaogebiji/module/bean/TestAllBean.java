@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class TestAllBean extends BaseBean {
 
-    private List<TestBean> mList;
+    private List<TestNewBean> mList;
 
-    public List<TestBean> getList() {
+    public List<TestNewBean> getList() {
         return mList;
     }
 
-    public void setList(List<TestBean> list) {
+    public void setList(List<TestNewBean> list) {
         mList = list;
     }
 }

@@ -86,7 +86,7 @@
 
 
                 <TextView
-                    android:text="恭喜你获得鸟哥笔记认证『初级ASO优化师』称号。特授予你初级ASO优化师认证徽章"
+                    android:text="恭喜你获得鸟哥笔记认证『初级ASO优化师』称号。特授予你初级ASO优化师认证徽章，已帮你自动佩戴上"
                     android:textSize="13sp"
                     android:textColor="@color/white"
                     android:layout_width="311dp"
@@ -125,6 +125,7 @@
 
                 <TextView
                     android:id="@+id/toTake"
+                    android:visibility="gone"
                     android:text="立即佩戴"
                     android:gravity="center"
                     android:textSize="17sp"

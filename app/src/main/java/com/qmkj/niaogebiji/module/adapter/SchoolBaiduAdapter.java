@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -7,6 +9,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import java.util.List;
 
@@ -25,9 +28,12 @@ public class SchoolBaiduAdapter extends BaseQuickAdapter<SchoolBean.SchoolBaiDu,
     @Override
     protected void convert(BaseViewHolder helper,SchoolBean.SchoolBaiDu item) {
 
-        helper.setImageResource(R.id.baidu_icon,item.getImg());
 
-        helper.setText(R.id.baidu_name,item.getName());
+        if(!TextUtils.isEmpty(item.getIcon())){
+            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.baidu_icon));
+        }
+
+        helper.setText(R.id.baidu_name,item.getTitle());
     }
 }
 

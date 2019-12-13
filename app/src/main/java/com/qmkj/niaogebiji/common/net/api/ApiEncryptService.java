@@ -4,6 +4,7 @@ package com.qmkj.niaogebiji.common.net.api;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
+import com.qmkj.niaogebiji.module.bean.AppointmentBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
@@ -16,9 +17,14 @@ import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
+import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.bean.ToolNewBean;
+import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 
@@ -222,18 +228,129 @@ public interface ApiEncryptService{
     /* 2019.12.9 动态详情 上面部分 */
     @FormUrlEncoded
     @POST("app/blog/blogDetail")
-    Observable<HttpResponse<User_info>> blogDetail(@Field("params") String param);
+    Observable<HttpResponse<CircleBean>> blogDetail(@Field("params") String param);
 
 
-    /* 2019.12.9 动态详情 动态评论列表 */
+    /* 2019.12.9 动态详情 一级评论列表 */
     @FormUrlEncoded
     @POST("app/blog/getBlogComment")
-    Observable<HttpResponse<CommentBeanNew>> getBlogComment(@Field("params") String param);
+    Observable<HttpResponse<List<CommentBeanNew>>> getBlogComment(@Field("params") String param);
 
     /* 2019.12.9 获取七牛云上传token ok */
     @FormUrlEncoded
     @POST("app/blog/getUploadToken")
     Observable<HttpResponse<QINiuTokenBean>> getUploadToken(@Field("params") String param);
+
+
+    /* 2019.12.12 动态举报 ok */
+    @FormUrlEncoded
+    @POST("app/blog/reportBlog")
+    Observable<HttpResponse> reportBlog(@Field("params") String param);
+
+
+
+    @FormUrlEncoded
+    @POST("app/blog/blogCommentDetail")
+    Observable<HttpResponse<List<CommentBeanNew>>> blogCommentDetail(@Field("params") String param);
+
+
+
+    /* 2019.12.12 二级评论列表 */
+    @FormUrlEncoded
+    @POST("app/blog/getCommentComment")
+    Observable<HttpResponse<List<CommentBeanNew.SecondComment>>> getCommentComment(@Field("params") String param);
+
+
+    /* 2019.12.12 动态评论 */
+    @FormUrlEncoded
+    @POST("app/blog/createBlogComment")
+    Observable<HttpResponse> createBlogComment(@Field("params") String param);
+
+
+    /* 2019.12.12 删除评论 */
+    @FormUrlEncoded
+    @POST("app/blog/deleteBlog")
+    Observable<HttpResponse> deleteBlog(@Field("params") String param);
+
+    /* 2019.12.12 点赞 取消点赞 - 圈子 */
+    @FormUrlEncoded
+    @POST("app/blog/likeBlog")
+    Observable<HttpResponse> likeBlog(@Field("params") String param);
+
+    /* 2019.12.12 点赞 取消点赞 - 评论 */
+    @FormUrlEncoded
+    @POST("app/blog/likeComment")
+    Observable<HttpResponse> likeComment(@Field("params") String param);
+
+
+
+
+
+
+    /* 2019.12.12 学院首页 */
+    @FormUrlEncoded
+    @POST("app/academy/index")
+    Observable<HttpResponse<SchoolBean>> index(@Field("params") String param);
+
+
+    /* 2019.12.13 学院测试列表 */
+    @FormUrlEncoded
+    @POST("app/academy/testCateList")
+    Observable<HttpResponse<List<SchoolBean.SchoolTest>>> testCateList(@Field("params") String param);
+
+    /* 2019.12.13 学院测试题目 */
+    @FormUrlEncoded
+    @POST("app/academy/getTestQuestions")
+    Observable<HttpResponse<List<TestNewBean>>> getTestQuestions(@Field("params") String param);
+
+
+    /* 2019.12.13 学院测试交卷 */
+    @FormUrlEncoded
+    @POST("app/academy/recordTest")
+    Observable<HttpResponse> recordTest(@Field("params") String param);
+
+    /* 2019.12.13 学院预约考试 */
+    @FormUrlEncoded
+    @POST("app/academy/reserveTest")
+    Observable<HttpResponse<AppointmentBean>> reserveTest(@Field("params") String param);
+
+    /* 2019.12.13 首页推荐工具 */
+    @FormUrlEncoded
+    @POST("app/tool/index")
+    Observable<HttpResponse<List<ToollndexBean>>> toolindex(@Field("params") String param);
+
+    /* 2019.12.13 推荐工具列表 */
+    @FormUrlEncoded
+    @POST("app/tool/list")
+    Observable<HttpResponse<List<ToolBean>>> toollist(@Field("params") String param);
+
+    /* 2019.12.13 收藏工具 */
+    @FormUrlEncoded
+    @POST("app/tool/collect")
+    Observable<HttpResponse> collect(@Field("params") String param);
+
+    /* 2019.12.13 取消收藏工具 */
+    @FormUrlEncoded
+    @POST("app/tool/cancelCollect")
+    Observable<HttpResponse> cancelCollect(@Field("params") String param);
+
+
+    /* 2019.12.13 收藏工具列表 */
+    @FormUrlEncoded
+    @POST("app/tool/collectionList")
+    Observable<HttpResponse<List<ToolBean>>> collectionList(@Field("params") String param);
+
+
+    /* 2019.12.13 工具分类 */
+    @FormUrlEncoded
+    @POST("app/tool/getToolCate")
+    Observable<HttpResponse<List<ToollndexBean>>> getToolCate(@Field("params") String param);
+
+
+    /* 2019.12.13 搜索工具列表 */
+    @FormUrlEncoded
+    @POST("app/tool/searchTool")
+    Observable<HttpResponse<List<ToolBean>>> searchTool(@Field("params") String param);
 
 
 

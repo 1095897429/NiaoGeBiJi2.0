@@ -388,7 +388,8 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 break;
             case  SEACHER_TEST:
                 helper.setText(R.id.text_name,"测试");
-                List<TestBean> testList = new ArrayList<>();
+//                List<TestBean> testList = new ArrayList<>();
+                List<SchoolBean.SchoolTest> testList = new ArrayList<>();
                 recyclerView = helper.getView(R.id.recycler00);
                 //二级
                 talkManager = new LinearLayoutManager(mContext);

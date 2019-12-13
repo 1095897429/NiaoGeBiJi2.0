@@ -144,30 +144,30 @@ public class CircleFocusFragment extends BaseLazyFragment {
 
     private void getData() {
 
-        NewsItemBean itemBean;
-        FirstItemBean firstItemBean;
-        MultiCircleNewsBean bean1 ;
-        for (int i = 0; i < 10; i++) {
-            if(i == 2){
-                firstItemBean = new FirstItemBean();
-                bean1 = new MultiCircleNewsBean();
-                bean1.setItemType(4);
-                bean1.setFirstItemBean(firstItemBean);
-            }else {
-                itemBean = new NewsItemBean();
-                bean1 = new MultiCircleNewsBean();
-                if(i == 4){
-                    bean1.setItemType(2);
-                }else if(i == 5){
-                    bean1.setItemType(3);
-                }else{
-                    bean1.setItemType(1);
-                }
-
-                bean1.setNewsItemBean(itemBean);
-            }
-            mAllList.add(bean1);
-        }
+//        NewsItemBean itemBean;
+//        FirstItemBean firstItemBean;
+//        MultiCircleNewsBean bean1 ;
+//        for (int i = 0; i < 10; i++) {
+//            if(i == 2){
+//                firstItemBean = new FirstItemBean();
+//                bean1 = new MultiCircleNewsBean();
+//                bean1.setItemType(4);
+//                bean1.setFirstItemBean(firstItemBean);
+//            }else {
+//                itemBean = new NewsItemBean();
+//                bean1 = new MultiCircleNewsBean();
+//                if(i == 4){
+//                    bean1.setItemType(2);
+//                }else if(i == 5){
+//                    bean1.setItemType(3);
+//                }else{
+//                    bean1.setItemType(1);
+//                }
+//
+//                bean1.setNewsItemBean(itemBean);
+//            }
+//            mAllList.add(bean1);
+//        }
 
         mCircleRecommendAdapter.setNewData(mAllList);
 
@@ -205,7 +205,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
                         int type = adapter.getItemViewType(position);
                         switch (type) {
                             case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                                String aid = mAllList.get(position).getNewsItemBean().getAid();
+                                String aid ;
                                 aid = "24689";
                                 if(!TextUtils.isEmpty(aid)){
                                     UIHelper.toNewsDetailActivity(getActivity(),aid);

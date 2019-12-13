@@ -4,12 +4,15 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -27,16 +30,28 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.TestItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.TestLaunchItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
+import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestAllBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
+import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.event.TestListEvent;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -44,6 +59,7 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -56,6 +72,10 @@ import io.reactivex.disposables.Disposable;
  * 3.倒计时中，选择答案
  */
 public class TestLauchActivity extends BaseActivity {
+
+
+    @BindView(R.id.iv_back)
+    ImageView iv_back;
 
     @BindView(R.id.current_page)
     TextView current_page;
@@ -71,6 +91,10 @@ public class TestLauchActivity extends BaseActivity {
 
     @BindView(R.id.toSubmit)
     TextView toSubmit;
+
+    @BindView(R.id.test_title)
+    TextView test_title;
+
 
 
     @BindView(R.id.tv_title)
@@ -93,20 +117,32 @@ public class TestLauchActivity extends BaseActivity {
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
-    //此类包含所有的选项
-    private TestAllBean mTestAllBean;
 
-    private String answer_no;
 
     Disposable disposable;
     //文本显示倒计时
     public  int time_text = 3;
-    //动画倒计时60秒
+    //答题倒计时60秒
     public static int COUNT = 3;
     //总共有10题
     private int totalNum = 2;
     //当前的题数
     private int currentNum = 1;
+
+
+    private List<TestNewBean> list;
+
+    private SchoolBean.SchoolTest mSchoolTest;
+    //正确答案
+    private String rightAnswer;
+    //选择的答案
+    private String currentAnwser;
+    //客户端 分数
+    private int currentScore ;
+    //每题的分数
+    private String per_score;
+    //及格分数
+    private String pass_score;
 
 
     @Override
@@ -116,13 +152,60 @@ public class TestLauchActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        tv_title.setText("初级ASO测试");
+
+        iv_back.setVisibility(View.GONE);
+
+        list = (List<TestNewBean>) getIntent().getSerializableExtra("list");
+        mSchoolTest = (SchoolBean.SchoolTest) getIntent().getExtras().getSerializable("bean");
+
+        tv_title.setText(mSchoolTest.getTitle());
+
+        totalNum = list.size();
+
+        per_score = mSchoolTest.getPer_score();
+
+        pass_score = mSchoolTest.getPass_score();
+
+        COUNT = Integer.parseInt(mSchoolTest.getTime());
+
         total.setText(" /" + totalNum);
         initLayout();
-        getData(1);
+
+
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
         current_page.setTypeface(typeface);
         total.setTypeface(typeface);
+        total.setText("/" + totalNum);
+
+
+        setData(1);
+    }
+
+    private void setData(int currentNum) {
+
+        toNext.setEnabled(false);
+        toSubmit.setEnabled(false);
+
+        if(currentNum == totalNum){
+            toSubmit.setVisibility(View.GONE);
+            toNext.setText("交卷");
+        }
+
+        mAllList.clear();
+
+        String title = list.get(currentNum - 1).getQuestion();
+        test_title.setText(title);
+
+        TestBean bean1 ;
+        List<String> options = list.get(currentNum - 1).getOption();
+        for (int i = 0; i < options.size(); i++) {
+            bean1 = new TestBean();
+            bean1.setAnswer(options.get(i));
+            mAllList.add(bean1);
+        }
+
+        mTestLaunchItemAdapter.setNewData(mAllList);
+
     }
 
     @Override
@@ -177,7 +260,7 @@ public class TestLauchActivity extends BaseActivity {
 
     private void initEvent() {
         mTestLaunchItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                List<TestBean> mDatas = adapter.getData();
+                List<TestBean> mDatas = mTestLaunchItemAdapter.getData();
                 //① 将所有的selected设置false，当前点击的设为true
                 for (TestBean data : mDatas) {
                     data.setSelect(false);
@@ -187,6 +270,8 @@ public class TestLauchActivity extends BaseActivity {
                 toNext.setEnabled(true);
                 toSubmit.setEnabled(true);
                 mTestLaunchItemAdapter.notifyDataSetChanged();
+                // position 0 , 1 , 2 , 3
+                currentAnwser = position + "";
 
         });
     }
@@ -208,6 +293,7 @@ public class TestLauchActivity extends BaseActivity {
                 break;
 
             case R.id.toNext:
+
                 //有动画走这里 取消动画
                 if(animator != null && animator.isRunning()){
                     animator.cancel();
@@ -229,16 +315,27 @@ public class TestLauchActivity extends BaseActivity {
     }
 
     private void changeData() {
+
+        //判断分数
+        rightAnswer = list.get(currentNum - 1).getAnswer() + "";
+        if(rightAnswer.equals(currentAnwser)){
+            currentScore  += Integer.parseInt(per_score);
+        }
+
         //加载下一页数据时判断 最后一题
         if(totalNum == currentNum){
             KLog.d("tag","到了最后一页了");
-            finish();
+
+            recordTest();
+
+
             return;
         }
+
         //更换数据源
         ++currentNum;
         current_page.setText(currentNum + "");
-        getData(currentNum);
+        setData(currentNum);
         //恢复状态
         toNext.setTextSize(17);
     }
@@ -249,7 +346,9 @@ public class TestLauchActivity extends BaseActivity {
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("交卷", v -> {
 
-            finish();
+            recordTest();
+
+
 
         }).setNegativeButton("再想想", v -> {
 
@@ -264,7 +363,44 @@ public class TestLauchActivity extends BaseActivity {
         iosAlertDialog.show();
     }
 
+    private void recordTest() {
+        Map<String,String> map = new HashMap<>();
+        map.put("test_cate_id",mSchoolTest.getId() + "");
+        map.put("score",currentScore + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().recordTest(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse httpResponse) {
+                        KLog.d("tag",httpResponse.getReturn_data());
 
+                        setResult(RESULT_OK);
+                        finish();
+
+                        //发送列表刷新事件
+                        EventBus.getDefault().post(new TestListEvent());
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        super.onError(t);
+
+                        //TODO 网络错误，保存到本地,在有网的时候上传 -- 待做
+                        SPUtils.getInstance().put("test_cate_id",mSchoolTest.getId() + "");
+                        SPUtils.getInstance().put("score",currentScore + "");
+
+                        setResult(RESULT_OK);
+                        finish();
+                        //发送列表刷新事件
+                        EventBus.getDefault().post(new TestListEvent());
+                    }
+
+
+                });
+    }
 
 
     private void initRxTime() {
@@ -328,6 +464,26 @@ public class TestLauchActivity extends BaseActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onStop() {
+        super.onStop();
+        //动画暂停
+        if(animator != null && animator.isRunning()){
+            animator.pause();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //动画暂停
+        if(animator != null && animator.isPaused()){
+            animator.resume();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -341,4 +497,14 @@ public class TestLauchActivity extends BaseActivity {
             animator = null;
         }
     }
+
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();//注释掉这行,back键不退出activity
+
+       KLog.d("tag","按下了back键   onBackPressed()");
+    }
+
+
 }

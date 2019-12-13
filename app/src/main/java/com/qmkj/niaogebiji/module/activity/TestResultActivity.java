@@ -11,6 +11,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.socks.library.KLog;
 
@@ -37,6 +38,7 @@ public class TestResultActivity extends BaseActivity {
     @BindView(R.id.test_grade)
     TextView test_grade;
 
+    private SchoolBean.SchoolTest mSchoolTest;
 
 
     @Override
@@ -46,13 +48,19 @@ public class TestResultActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        tv_title.setText("初级ASO优化师");
+
+        mSchoolTest = (SchoolBean.SchoolTest) getIntent().getExtras().getSerializable("bean");
+        tv_title.setText(mSchoolTest.getTitle());
+
+
         tv_title.setTextColor(getResources().getColor(R.color.white));
         iv_back.setImageResource(R.mipmap.icon_test_detail_back);
         iv_right.setVisibility(View.VISIBLE);
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
         test_grade.setTypeface(typeface);
+
+        test_grade.setText(mSchoolTest.getRecord().getScore());
     }
 
 
@@ -69,8 +77,6 @@ public class TestResultActivity extends BaseActivity {
                 showShareDialog();
                 break;
             case R.id.toTake:
-                KLog.d("tag","佩戴成功");
-                ToastUtils.showShort("佩戴成功");
                 break;
             default:
         }

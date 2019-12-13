@@ -7,6 +7,7 @@ package com.qmkj.niaogebiji.module.event;
  * 描述:点击编辑上面 tag发送事件
  */
 public class ToolChangeEvent {
+
     private int position;
 
     private String name;

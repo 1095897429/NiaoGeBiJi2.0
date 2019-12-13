@@ -21,6 +21,9 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.tab.TabLayout;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.module.adapter.CategoryAdapter;
@@ -28,11 +31,16 @@ import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolCategoryAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
+import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.ToolChangeEvent;
 import com.qmkj.niaogebiji.module.fragment.ArcitleCollectionListFragment;
 import com.qmkj.niaogebiji.module.fragment.FocusAuthorListFragment;
+import com.qmkj.niaogebiji.module.fragment.ToolCollectionListFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolRecommentListFragment;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
@@ -40,17 +48,32 @@ import com.zhy.view.flowlayout.TagFlowLayout;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-28
  * 描述:工具编辑界面
+ *
+ *         ChannelBean channelBean;
+ *         for (int i = 0; i < tags.length; i++) {
+ *             channelBean = new ChannelBean();
+ *             channelBean.setChaname(tags[i]);
+ *             if(0 == i){
+ *                 channelBean.setSelect(true);
+ *             }
+ *             mList.add(channelBean);
+ *         }
+ *         mCategoryAdapter.setNewData(mList);
  */
 public class ToolEditActivity extends BaseActivity {
 
@@ -80,6 +103,8 @@ public class ToolEditActivity extends BaseActivity {
 
     private String [] tags = new String[]{"全部","新媒体运营","活动运营","推广"};
 
+    private List<ToollndexBean> cates = new ArrayList<>();
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_tool_edit;
@@ -88,6 +113,7 @@ public class ToolEditActivity extends BaseActivity {
     @Override
     protected void initView() {
 
+        getToolCate();
 
         tv_title.setText("编辑我的工具");
 
@@ -102,29 +128,46 @@ public class ToolEditActivity extends BaseActivity {
             setUpAdater();
         }
 
-
         setUpTabLayout();
-
 
         initLayout();
 
-        ChannelBean channelBean;
-        for (int i = 0; i < tags.length; i++) {
-            channelBean = new ChannelBean();
-            channelBean.setChaname(tags[i]);
-            if(0 == i){
-                channelBean.setSelect(true);
-            }
-            mList.add(channelBean);
-        }
-        mCategoryAdapter.setNewData(mList);
 
 
     }
 
+
+    private void getToolCate() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getToolCate(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<ToollndexBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<ToollndexBean>> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        cates = response.getReturn_data();
+                        setData();
+                    }
+                });
+    }
+
+    private void setData() {
+
+        //手动添加 全部
+        ToollndexBean bean = new ToollndexBean();
+        bean.setSelect(true);
+        bean.setTitle("全部");
+        bean.setId(0 + "");
+        cates.add(0,bean);
+
+        mCategoryAdapter.setNewData(cates);
+    }
+
+
     private void setUpTabLayout() {
-
-
 
         //设置指示器颜色
         mTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.yellow));
@@ -178,20 +221,23 @@ public class ToolEditActivity extends BaseActivity {
         TextView textView = view.findViewById(R.id.tv_header);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,17);
         textView.setSelected(true);
-
-
-
     }
 
 
     private void setUpAdater() {
-
         mFragmentList.clear();
         mTitls.clear();
         for (int i = 0; i < mChannelBeanList.size(); i++) {
-            ToolRecommentListFragment fragment1 = ToolRecommentListFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-                    mChannelBeanList.get(i).getChaname());
-            mFragmentList.add(fragment1);
+
+            if(i== 0){
+                ToolRecommentListFragment fragment1 = ToolRecommentListFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(fragment1);
+            }else if(i == 1){
+                ToolCollectionListFragment fragment1 = ToolCollectionListFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(fragment1);
+            }
 
             mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
         }
@@ -226,7 +272,7 @@ public class ToolEditActivity extends BaseActivity {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mCategoryAdapter = new ToolCategoryAdapter(mList);
+        mCategoryAdapter = new ToolCategoryAdapter(cates);
         mRecyclerView.setAdapter(mCategoryAdapter);
         initEvent();
     }
@@ -244,10 +290,10 @@ public class ToolEditActivity extends BaseActivity {
             mCategoryAdapter.getData().get(position).setSelect(true);
             mCategoryAdapter.notifyDataSetChanged();
 
-            String name = mCategoryAdapter.getData().get(position).getChaname();
+            String cateId = mCategoryAdapter.getData().get(position).getId();
 
             //发送事件
-            EventBus.getDefault().post(new ToolChangeEvent(position,name));
+            EventBus.getDefault().post(new ToolChangeEvent(position,cateId));
         });
 
 

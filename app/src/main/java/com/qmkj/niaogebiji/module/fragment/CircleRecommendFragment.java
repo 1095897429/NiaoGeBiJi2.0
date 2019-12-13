@@ -27,6 +27,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -107,6 +108,11 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     private int myPosition;
 
+    //后台直接返回一个集合
+    private List<CircleBean> serverData = new ArrayList<>();
+
+    private String blog_id;
+
 
     public static CircleRecommendFragment getInstance(String chainId, String chainName) {
         CircleRecommendFragment newsItemFragment = new CircleRecommendFragment();
@@ -131,7 +137,6 @@ public class CircleRecommendFragment extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
-        getData();
     }
 
     @Override
@@ -150,11 +155,130 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
                     @Override
                     public void onSuccess(HttpResponse<List<CircleBean>> response) {
-                        KLog.d("tag","response " + response.getReturn_code());
+
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
+                        serverData = response.getReturn_data();
+                        if(null != serverData){
+                            if(1 == page){
+                                setData2(serverData);
+                                mCircleRecommendAdapter.setNewData(mAllList);
+                                //如果第一次返回的数据不满10条，则显示无更多数据
+                                if(serverData.size() < Constant.SEERVER_NUM){
+                                    mCircleRecommendAdapter.loadMoreEnd();
+                                }
+                            }else{
+                                //已为加载更多有数据
+                                if(serverData != null && serverData.size() > 0){
+                                    mCircleRecommendAdapter.loadMoreComplete();
+                                    mCircleRecommendAdapter.addData(mAllList);
+                                }else{
+                                    //已为加载更多无更多数据
+                                    mCircleRecommendAdapter.loadMoreEnd();
+                                }
+                            }
+                        }
                     }
 
                 });
     }
+
+
+    //先判断原创 再判断图片 再判断link，最后只剩下全文本
+    private void setData2(List<CircleBean> list) {
+        CircleBean temp;
+        String type;
+        String link;
+        List<String> imgs;
+        MultiCircleNewsBean mulBean;
+        for (int i = 0; i < list.size(); i++) {
+            mulBean = new MultiCircleNewsBean();
+            temp = list.get(i);
+            type = temp.getType();
+            link = temp.getLink();
+            imgs =  temp.getImages();
+            //1 是 转发
+            if(!TextUtils.isEmpty(type) && "1".equals(type)){
+                //内部图片
+                List<String> imgsss = temp.getP_blog().getImages();
+                if(imgsss != null &&  !imgsss.isEmpty()){
+                    mulBean.setItemType(2);
+                }
+                //link
+                String linked = temp.getP_blog().getLink();
+                if(!TextUtils.isEmpty(linked)){
+                    mulBean.setItemType(3);
+                }
+
+                if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
+                    mulBean.setItemType(5);
+                }
+            }else{
+                //原创图片
+                if(imgs != null &&  !imgs.isEmpty()){
+                    mulBean.setItemType(1);
+                }
+
+                //原创link
+                if(!TextUtils.isEmpty(link)){
+                    mulBean.setItemType(4);
+                }
+
+                if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
+                    mulBean.setItemType(5);
+                }
+
+            }
+
+            mulBean.setCircleBean(temp);
+            mAllList.add(mulBean);
+        }
+    }
+
+
+    private void getData() {
+//
+//        NewsItemBean itemBean;
+//        FirstItemBean firstItemBean;
+//        MultiCircleNewsBean bean1;
+//        for (int i = 0; i < 10; i++) {
+//            if (i == 2) {
+//                firstItemBean = new FirstItemBean();
+//                bean1 = new MultiCircleNewsBean();
+//                bean1.setItemType(4);
+//                bean1.setFirstItemBean(firstItemBean);
+//            } else {
+//                itemBean = new NewsItemBean();
+//                itemBean.setTitle("名称 " + i);
+//                bean1 = new MultiCircleNewsBean();
+//                if (i == 4) {
+//                    bean1.setItemType(2);
+//                } else if (i == 5) {
+//                    bean1.setItemType(3);
+//                } else {
+//                    bean1.setItemType(1);
+//                }
+//
+//                bean1.setNewsItemBean(itemBean);
+//            }
+//            mAllList.add(bean1);
+//        }
+//
+//        mCircleRecommendAdapter.setNewData(mAllList);
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                smartRefreshLayout.finishRefresh();
+//            }
+//        },2000);
+
+
+    }
+
+
 
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
@@ -179,63 +303,23 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
-
-
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            getData();
+            recommendBlogList();
         });
     }
 
 
-    private void getData() {
 
-        NewsItemBean itemBean;
-        FirstItemBean firstItemBean;
-        MultiCircleNewsBean bean1;
-        for (int i = 0; i < 10; i++) {
-            if (i == 2) {
-                firstItemBean = new FirstItemBean();
-                bean1 = new MultiCircleNewsBean();
-                bean1.setItemType(4);
-                bean1.setFirstItemBean(firstItemBean);
-            } else {
-                itemBean = new NewsItemBean();
-                itemBean.setTitle("名称 " + i);
-                bean1 = new MultiCircleNewsBean();
-                if (i == 4) {
-                    bean1.setItemType(2);
-                } else if (i == 5) {
-                    bean1.setItemType(3);
-                } else {
-                    bean1.setItemType(1);
-                }
-
-                bean1.setNewsItemBean(itemBean);
-            }
-            mAllList.add(bean1);
-        }
-
-        mCircleRecommendAdapter.setNewData(mAllList);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                smartRefreshLayout.finishRefresh();
-            }
-        },2000);
-
-
-    }
 
 
     @SuppressLint("CheckResult")
     private void initEvent() {
         mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            getData();
+            recommendBlogList();
         }, mRecyclerView);
 
         mRecyclerView.addOnScrollListener(new RvScrollListener());
@@ -243,9 +327,6 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             myPosition = position;
             switch (view.getId()) {
-                case R.id.circle_remove:
-//                    showRemoveDialog();
-                    break;
 //                case R.id.circle_priase:
 //                    if(mTempBuilltinBean.getIs_good() == 0){
 ////                        goodBulletin(mTempBuilltinBean.getId());
@@ -254,20 +335,24 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 ////                    }
 
 //                    goodBulletin("111");
-
-
-
-
-
 //                    break;
                 case R.id.ll_report:
-                    KLog.d("tag", "举报或分享");
-                    showPopupWindow(adapter.getViewByPosition(position, R.id.ll_report));
-                    setBackgroundAlpha(getActivity(), 0.6f);
+                    KLog.d("tag", "举报或分享 或删除");
+                    blog_id = mCircleRecommendAdapter.getData().get(position).getCircleBean().getId();
+                    String clickUid = mCircleRecommendAdapter.getData().get(position).getCircleBean().getUid();
+                    if("300579".equals(clickUid)){
+                        showRemoveDialog();
+                    }else{
+
+                        showPopupWindow(adapter.getViewByPosition(position, R.id.ll_report));
+                        setBackgroundAlpha(getActivity(), 0.6f);
+                    }
+
                     break;
                 case R.id.circle_comment:
                     KLog.d("tag", "评论去圈子详情");
-                    UIHelper.toCommentDetailActivity(getActivity());
+                    blog_id = mAllList.get(position).getCircleBean().getId();
+                    UIHelper.toCommentDetailActivity(getActivity(),blog_id,"1");
                     break;
                 case R.id.circle_share:
                     KLog.d("tag", "圈子分享");
@@ -275,7 +360,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                     break;
                 case R.id.part2222:
                     KLog.d("tag", "图片预览");
-                    toPicPrewView();
+                    UIHelper.toCommentDetailActivity(getActivity(),"5","1");
                     break;
                 case R.id.part1111:
                     KLog.d("tag", "去个人界面");
@@ -299,7 +384,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    UIHelper.toCommentDetailActivity(getActivity());
+                    UIHelper.toCommentDetailActivity(getActivity(),"5","1");
                     break;
                 default:
             }
@@ -480,7 +565,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         });
 
         report.setOnClickListener(view1 -> {
-            ToastUtils.showShort("发请求，举报成功");
+            reportBlog();
             mPopupWindow.dismiss();
         });
 
@@ -488,6 +573,23 @@ public class CircleRecommendFragment extends BaseLazyFragment {
             showShareDialog();
             mPopupWindow.dismiss();
         });
+    }
+
+    private void reportBlog() {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",blog_id );
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().reportBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        ToastUtils.showShort("举报成功");
+                    }
+
+                });
     }
 
 
@@ -514,13 +616,29 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     /** --------------------------------- 删除帖子  ---------------------------------v*/
 
-    private void showRemoveDialog() {
+    private void deleteBlog() {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",blog_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().deleteBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        mCircleRecommendAdapter.getData().remove(myPosition);
+                        mCircleRecommendAdapter.notifyDataSetChanged();
+                        Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
+
+    private void showRemoveDialog() {
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(getActivity()).builder();
         iosAlertDialog.setPositiveButton("删除", v -> {
-            mCircleRecommendAdapter.getData().remove(myPosition);
-            mCircleRecommendAdapter.notifyDataSetChanged();
-            Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+            deleteBlog();
         }).setNegativeButton("取消", v -> {
         }).setMsg("确定要删除这条动态？").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();

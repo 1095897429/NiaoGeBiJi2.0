@@ -143,31 +143,31 @@ public class UserInfoActivity extends BaseActivity {
 
     private void getData() {
 
-        NewsItemBean itemBean;
-        FirstItemBean firstItemBean;
-        MultiCircleNewsBean bean1;
-        for (int i = 0; i < 10; i++) {
-            if (i == 2) {
-                firstItemBean = new FirstItemBean();
-                bean1 = new MultiCircleNewsBean();
-                bean1.setItemType(4);
-                bean1.setFirstItemBean(firstItemBean);
-            } else {
-                itemBean = new NewsItemBean();
-                itemBean.setTitle("名称 " + i);
-                bean1 = new MultiCircleNewsBean();
-                if (i == 4) {
-                    bean1.setItemType(2);
-                } else if (i == 5) {
-                    bean1.setItemType(3);
-                } else {
-                    bean1.setItemType(1);
-                }
-
-                bean1.setNewsItemBean(itemBean);
-            }
-            mAllList.add(bean1);
-        }
+//        NewsItemBean itemBean;
+//        FirstItemBean firstItemBean;
+//        MultiCircleNewsBean bean1;
+//        for (int i = 0; i < 10; i++) {
+//            if (i == 2) {
+//                firstItemBean = new FirstItemBean();
+//                bean1 = new MultiCircleNewsBean();
+//                bean1.setItemType(4);
+//                bean1.setFirstItemBean(firstItemBean);
+//            } else {
+//                itemBean = new NewsItemBean();
+//                itemBean.setTitle("名称 " + i);
+//                bean1 = new MultiCircleNewsBean();
+//                if (i == 4) {
+//                    bean1.setItemType(2);
+//                } else if (i == 5) {
+//                    bean1.setItemType(3);
+//                } else {
+//                    bean1.setItemType(1);
+//                }
+//
+//                bean1.setNewsItemBean(itemBean);
+//            }
+//            mAllList.add(bean1);
+//        }
 
         mCircleRecommendAdapter.setNewData(mAllList);
 
@@ -196,7 +196,7 @@ public class UserInfoActivity extends BaseActivity {
                     break;
                 case R.id.circle_comment:
                     KLog.d("tag", "评论去圈子详情");
-                    UIHelper.toCommentDetailActivity(this);
+                    UIHelper.toCommentDetailActivity(this,"5","1");
                     break;
                 case R.id.circle_share:
                     KLog.d("tag", "圈子分享");
@@ -228,7 +228,7 @@ public class UserInfoActivity extends BaseActivity {
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    UIHelper.toCommentDetailActivity(this);
+                    UIHelper.toCommentDetailActivity(this,"5","1");
                     break;
                 default:
             }

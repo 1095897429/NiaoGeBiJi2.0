@@ -86,6 +86,8 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
             case PARSE_ERROR:
                 KLog.d("解析错误");
                 onNetFail("解析错误");
+                //TODO 如果解析错误，那么就给空值
+
                 break;
 
             case UNKNOWN_ERROR:

@@ -11,7 +11,16 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
 public class ProBean extends BaseBean {
     private String name;
     private int img;
+    private int id;
     private boolean isSelect;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public boolean isSelect() {
         return isSelect;

@@ -21,6 +21,7 @@ import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MoringNewsBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -73,8 +74,8 @@ public class ActionFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
-        initLayout();
         initSamrtLayout();
+        initLayout();
     }
 
     @Override
@@ -155,6 +156,8 @@ public class ActionFragment extends BaseLazyFragment {
     LinearLayoutManager mLinearLayoutManager;
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAct_lists.clear();
@@ -189,7 +192,11 @@ public class ActionFragment extends BaseLazyFragment {
 
         //相关资料
         mActionAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            UIHelper.toDataInfoActivity(getActivity());
+            String aid = mActionAdapter.getData().get(position).getId();
+            if(!TextUtils.isEmpty(aid)){
+                UIHelper.toDataInfoActivity(getActivity(),aid);
+            }
+
         });
     }
 

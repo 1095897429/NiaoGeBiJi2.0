@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.common.net.api;
 
 
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
+import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
@@ -13,11 +15,25 @@ import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
+import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
+import com.qmkj.niaogebiji.module.bean.MoringAllBean;
+import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.OfficialBean;
+import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
+import com.qmkj.niaogebiji.module.bean.ProBean;
+import com.qmkj.niaogebiji.module.bean.ProfressionBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
+import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllActicleBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllAuthorBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllBaiduBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllCircleBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllPeopleBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
@@ -87,11 +103,6 @@ public interface ApiEncryptService{
     @POST("app/my/followAuthor")
     Observable<HttpResponse<IndexFocusBean>> followAuthor(@Field("params") String param);
 
-    /* 2019.8.29 文章详情页接口 */
-    @FormUrlEncoded
-    @POST("app/article/detail")
-    Observable<HttpResponse<NewsDetailBean>> detail(@Field("params") String param);
-
 
 
     /* 2019.8.29 文章收藏 */
@@ -123,11 +134,6 @@ public interface ApiEncryptService{
     Observable<HttpResponse<SearchResultBean>> searchContent(@Field("params") String param);
 
 
-    /* 2019.8.29 文章评论列表接口 */
-    @FormUrlEncoded
-    @POST("app/article/commentList")
-    Observable<HttpResponse<CommentBean>> commentList(@Field("params") String param);
-
 
     /* 2019.8.29 文章测一测回答*/
     @FormUrlEncoded
@@ -154,12 +160,6 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/addArticlePoint")
     Observable<HttpResponse<ActiclePointBean>> addArticlePoint(@Field("params") String param);
-
-
-    /* 2019.8.29 评论回复*/
-    @FormUrlEncoded
-    @POST("app/my/createComment")
-    Observable<HttpResponse<CommentOkBean>> createComment(@Field("params") String param);
 
 
 
@@ -214,7 +214,7 @@ public interface ApiEncryptService{
     /* 2019.12.9 关注动态 */
     @FormUrlEncoded
     @POST("app/blog/followBlogList")
-    Observable<HttpResponse<CircleBean>> followBlogList(@Field("params") String param);
+    Observable<HttpResponse<List<CircleBean>>> followBlogList(@Field("params") String param);
 
 
     /* 2019.12.9 发布动态  -- ok*/
@@ -247,24 +247,6 @@ public interface ApiEncryptService{
     @POST("app/blog/reportBlog")
     Observable<HttpResponse> reportBlog(@Field("params") String param);
 
-
-
-    @FormUrlEncoded
-    @POST("app/blog/blogCommentDetail")
-    Observable<HttpResponse<List<CommentBeanNew>>> blogCommentDetail(@Field("params") String param);
-
-
-
-    /* 2019.12.12 二级评论列表 */
-    @FormUrlEncoded
-    @POST("app/blog/getCommentComment")
-    Observable<HttpResponse<List<CommentBeanNew.SecondComment>>> getCommentComment(@Field("params") String param);
-
-
-    /* 2019.12.12 动态评论 */
-    @FormUrlEncoded
-    @POST("app/blog/createBlogComment")
-    Observable<HttpResponse> createBlogComment(@Field("params") String param);
 
 
     /* 2019.12.12 删除评论 */
@@ -351,6 +333,172 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/tool/searchTool")
     Observable<HttpResponse<List<ToolBean>>> searchTool(@Field("params") String param);
+
+
+
+    /* 2019.12.14 获取客服微信图接口  - ok */
+    @FormUrlEncoded
+    @POST("app/init/getServiceWechatPic")
+    Observable<HttpResponse<OfficialBean>> getServiceWechatPic(@Field("params") String param);
+
+
+    /* 2019.12.14 获取首页顶部早报（只拿今天的，否则为空） - ok*/
+    @FormUrlEncoded
+    @POST("app/article/getTopPost")
+    Observable<HttpResponse<MoringIndexBean>> getTopPost(@Field("params") String param);
+
+
+
+    /* 2019.12.14 早报列表接口 - ok */
+    @FormUrlEncoded
+    @POST("app/article/mplist")
+    Observable<HttpResponse<MoringAllBean>> mplist(@Field("params") String param);
+
+
+    /* 2019.12.14 分类文章列表接口 */
+    @FormUrlEncoded
+    @POST("app/article/catlist")
+    Observable<HttpResponse<ActicleAllBean>> catlist(@Field("params") String param);
+
+
+    /* 2019.12.14 文章详情页接口 */
+    @FormUrlEncoded
+    @POST("app/article/detail")
+    Observable<HttpResponse<NewsDetailBean>> detail(@Field("params") String param);
+
+
+
+    /* 2019.12.15  首页快讯滚动列表  */
+    @FormUrlEncoded
+    @POST("app/item/getIndexBulltin")
+    Observable<HttpResponse<IndexBulltin>> getIndexBulltin(@Field("params") String param);
+
+
+    /* 2019.12.15 获取用户信息*/
+    @FormUrlEncoded
+    @POST("app/my/getUserInfo")
+    Observable<HttpResponse<RegisterLoginBean.UserInfo>> getUserInfo(@Field("params") String param);
+
+
+    /* 2019.12.16 动态评论详情*/
+    @FormUrlEncoded
+    @POST("app/blog/blogCommentDetail")
+    Observable<HttpResponse<CommentBeanNew>> blogCommentDetail(@Field("params") String param);
+
+
+    /* 2019.12.16 二级评论列表 */
+    @FormUrlEncoded
+    @POST("app/blog/getCommentComment")
+    Observable<HttpResponse<List<CommentBeanNew>>> getCommentComment(@Field("params") String param);
+
+    /* 2019.12.16 猜你喜欢 */
+    @FormUrlEncoded
+    @POST("app/item/recommendAuthorArticleList")
+    Observable<HttpResponse<IndexFocusBean>> recommendAuthorArticleList(@Field("params") String param);
+
+
+
+    /* 2019.12.16 首页干货   */
+    @FormUrlEncoded
+    @POST("app/article/recommendlist")
+    Observable<HttpResponse<RecommendBean>> recommendlist(@Field("params") String param);
+
+
+
+    /* 2019.12.17 文章评论列表接口 */
+    @FormUrlEncoded
+    @POST("app/article/commentList")
+    Observable<HttpResponse<CommentBean>> commentList(@Field("params") String param);
+
+    /* 2019.12.17 文章评论回复*/
+    @FormUrlEncoded
+    @POST("app/my/createComment")
+    Observable<HttpResponse<CommentOkBean>> createComment(@Field("params") String param);
+
+
+    /* 2019.12.17 微信授权后，设置新的手机号之前，检验手机号是否注册过*/
+    @FormUrlEncoded
+    @POST("app/auth/isMobileReg")
+    Observable<HttpResponse<IsPhoneBindBean>> isMobileReg(@Field("params") String param);
+
+
+    /* 2019.12.17 发送验证码*/
+    @FormUrlEncoded
+    @POST("app/auth/sendverifycode")
+    Observable<HttpResponse> sendverifycode(@Field("params") String param);
+
+
+    /* 2019.12.17 使用手机验证码登录  */
+    @FormUrlEncoded
+    @POST("app/auth/loginViaCode")
+    Observable<HttpResponse<RegisterLoginBean.UserInfo>> loginViaCode(@Field("params") String param);
+
+    /* 2019.12.17 动态单独评论 */
+    @FormUrlEncoded
+    @POST("app/blog/createBlogComment")
+    Observable<HttpResponse> createBlogComment(@Field("params") String param);
+
+    /* 2019.12.17 评论评论 */
+    @FormUrlEncoded
+    @POST("app/blog/createCommentComment")
+    Observable<HttpResponse> createCommentComment(@Field("params") String param);
+
+    /* 2019.12.17 搜索－文章&人脉 */
+    @FormUrlEncoded
+    @POST("app/item/searchArticlePeople")
+    Observable<HttpResponse<ActiclePeopleBean>> searchArticlePeople(@Field("params") String param);
+
+    /* 2019.12.17 搜索－文章 */
+    @FormUrlEncoded
+    @POST("app/item/searchArticle")
+    Observable<HttpResponse<SearchAllActicleBean>> searchArticle(@Field("params") String param);
+
+    /* 2019.12.17 搜索－人脉 */
+    @FormUrlEncoded
+    @POST("app/item/searchPeople")
+    Observable<HttpResponse<SearchAllPeopleBean>> searchPeople(@Field("params") String param);
+
+    /* 2019.12.17 搜索－动态 */
+    @FormUrlEncoded
+    @POST("app/item/searchBlog")
+    Observable<HttpResponse<SearchAllCircleBean>> searchBlog(@Field("params") String param);
+
+    /* 2019.12.17 搜索－百科 */
+    @FormUrlEncoded
+    @POST("app/item/searchWiki")
+    Observable<HttpResponse<SearchAllBaiduBean>> searchWiki(@Field("params") String param);
+
+    /* 2019.12.17 搜索－资料 */
+    @FormUrlEncoded
+    @POST("app/item/searchMaterial")
+    Observable<HttpResponse<SearchAllActicleBean>> searchMaterial(@Field("params") String param);
+
+    /* 2019.12.17 搜索－作者 */
+    @FormUrlEncoded
+    @POST("app/item/searchAuthor")
+    Observable<HttpResponse<SearchAllAuthorBean>> searchAuthor(@Field("params") String param);
+
+    /* 2019.12.17 个人详情 */
+    @FormUrlEncoded
+    @POST("app/center/getUserInfo")
+    Observable<HttpResponse<PersonUserInfoBean>> getPersonInfo(@Field("params") String param);
+
+    /* 2019.12.17 更懂你职位信息 */
+    @FormUrlEncoded
+    @POST("app//my/getProfession")
+    Observable<HttpResponse<List<ProBean>>> getProfession(@Field("params") String param);
+
+    /* 2019.12.17 职业工作年限记录 */
+    @FormUrlEncoded
+    @POST("/app/my/personal")
+    Observable<HttpResponse> personal(@Field("params") String param);
+
+
+    /* 2019.12.17 微信登录绑定帐号 */
+    @FormUrlEncoded
+    @POST("/app/auth/WechatBindAccountViaCode")
+    Observable<HttpResponse> WechatBindAccountViaCode(@Field("params") String param);
+
 
 
 

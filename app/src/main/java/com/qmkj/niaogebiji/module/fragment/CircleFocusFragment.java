@@ -2,8 +2,11 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -23,6 +27,7 @@ import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -57,6 +62,9 @@ public class CircleFocusFragment extends BaseLazyFragment {
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
     private int page = 1;
 
     private String chanelName;
@@ -67,6 +75,11 @@ public class CircleFocusFragment extends BaseLazyFragment {
     List<MultiCircleNewsBean> mAllList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
+
+
+    //后台直接返回一个集合
+    private List<CircleBean> serverData = new ArrayList<>();
+
 
 
     public static CircleFocusFragment getInstance(String chainId, String chainName) {
@@ -89,7 +102,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
         KLog.d("tag","当前展示的是 " + chanelName);
         initSamrtLayout();
         initLayout();
-        getData();
+//        getData();
     }
 
 
@@ -107,13 +120,109 @@ public class CircleFocusFragment extends BaseLazyFragment {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<CircleBean>>() {
+                .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
                     @Override
-                    public void onSuccess(HttpResponse<CircleBean> response) {
+                    public void onSuccess(HttpResponse<List<CircleBean>> response) {
                         KLog.d("tag","response " + response.getReturn_code());
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
+                        serverData = response.getReturn_data();
+                        if(null != serverData){
+                            if(1 == page){
+                                setData2(serverData);
+                                mCircleRecommendAdapter.setNewData(mAllList);
+                                //如果第一次返回的数据不满10条，则显示无更多数据
+                                if(serverData.size() < Constant.SEERVER_NUM){
+                                    mCircleRecommendAdapter.loadMoreEnd();
+                                }
+                            }else{
+                                //已为加载更多有数据
+                                if(serverData != null && serverData.size() > 0){
+                                    mCircleRecommendAdapter.loadMoreComplete();
+                                    mCircleRecommendAdapter.addData(mAllList);
+                                }else{
+                                    //已为加载更多无更多数据
+                                    mCircleRecommendAdapter.loadMoreEnd();
+                                }
+                            }
+                        }
+                    }
+
+                    //{"return_code":"200","return_msg":"success","return_data":{}} -- 后台空集合返回{}，那么会出现解析异常，在这里所判断
+                    @Override
+                    public void onNetFail(String msg) {
+                        if("解析错误".equals(msg) || "未知错误".equals(msg)){
+                            if(page == 1){
+                                setData2(serverData);
+                            }else{
+                                mCircleRecommendAdapter.loadMoreComplete();
+                                mCircleRecommendAdapter.loadMoreEnd();
+                            }
+                        }
                     }
 
                 });
+    }
+
+
+    private void setData2(List<CircleBean> list) {
+
+        if(!list.isEmpty()){
+
+            CircleBean temp;
+            String type;
+            String link;
+            List<String> imgs;
+            MultiCircleNewsBean mulBean;
+            for (int i = 0; i < list.size(); i++) {
+                mulBean = new MultiCircleNewsBean();
+                temp = list.get(i);
+                type = temp.getType();
+                link = temp.getLink();
+                imgs =  temp.getImages();
+                //1 是 转发
+                if(!TextUtils.isEmpty(type) && "1".equals(type)){
+                    //内部图片
+                    List<String> imgsss = temp.getP_blog().getImages();
+                    if(imgsss != null &&  !imgsss.isEmpty()){
+                        mulBean.setItemType(2);
+                    }
+                    //link
+                    String linked = temp.getP_blog().getLink();
+                    if(!TextUtils.isEmpty(linked)){
+                        mulBean.setItemType(3);
+                    }
+
+                    if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
+                        mulBean.setItemType(5);
+                    }
+                }else{
+                    //原创图片
+                    if(imgs != null &&  !imgs.isEmpty()){
+                        mulBean.setItemType(1);
+                    }
+
+                    //原创link
+                    if(!TextUtils.isEmpty(link)){
+                        mulBean.setItemType(4);
+                    }
+
+                    if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
+                        mulBean.setItemType(5);
+                    }
+
+                }
+
+                mulBean.setCircleBean(temp);
+                mAllList.add(mulBean);
+            }
+        }else{
+            //第一次加载无数据
+            ll_empty.setVisibility(View.VISIBLE);
+            smartRefreshLayout.setVisibility(View.GONE);
+        }
     }
 
 
@@ -133,11 +242,13 @@ public class CircleFocusFragment extends BaseLazyFragment {
     }
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            getData();
+            followBlogList();
         });
     }
 
@@ -177,7 +288,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
     private void initEvent() {
         mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            getData();
+            followBlogList();
         },mRecyclerView);
 
         mRecyclerView.addOnScrollListener(new RvScrollListener());

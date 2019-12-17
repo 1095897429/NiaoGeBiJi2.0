@@ -6,6 +6,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.TimeUtils;
@@ -31,6 +34,10 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
     public CommentAdapterByNewBean(@Nullable List<CommentBeanNew> data) {
         super(R.layout.first_comment_item,data);
     }
+
+    private Limit2ReplyCircleAdapter mLimit2ReplyCircleAdapter;
+    private List<CommentBeanNew.SecondComment> mLimitComments;
+
 
     @Override
     protected void convert(BaseViewHolder helper,CommentBeanNew item) {
@@ -87,75 +94,31 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         });
 
 
+        //二级评论数据
         List<CommentBeanNew.SecondComment> list = item.getComment_comment();
-        int size  = list.size();
-        //如果一级评论下的二级评论条数大于 1 条才显示
-        if(null != list && !list.isEmpty() && size <= 2){
-            helper.setVisible(R.id.all_comment,true);
-
-            if(size == 1){
-                //xxx 回复  xxx : 内容
-                User_info userInfo1 = list.get(0).getUser_info();
-                User_info p_user_info = list.get(0).getP_user_info();
-                String name1 = userInfo1.getName();
-                String name11= p_user_info.getName();
-                String result;
-                if(!TextUtils.isEmpty(name11)){
-                    result = " 回复 " + name11;
-                }else{
-                    result = " " ;
-                }
-
-                String comment = list.get(0).getComment();
-                helper.setText(R.id.name1, name1 + result  + ":" + comment);
-
-                helper.setVisible(R.id.name1,true);
-                helper.setVisible(R.id.name2,false);
-            }else if(size == 2){
-                //xxx 回复  xxx : 内容
-                User_info userInfo1 = list.get(0).getUser_info();
-                User_info p_user_info1 = list.get(0).getP_user_info();
-
-                String name1 = userInfo1.getName();
-                String name11= p_user_info1.getName();
-                String result;
-                if(!TextUtils.isEmpty(name11)){
-                    result = " 回复 " + name11;
-                }else{
-                    result = " " ;
-                }
-
-                String comment = list.get(0).getComment();
-                helper.setText(R.id.name1, name1 + result  + ":" + comment);
+        mLimitComments = list;
+        //二级评论布局
+        LinearLayoutManager talkManager = new LinearLayoutManager(mContext);
+        talkManager.setOrientation(RecyclerView.VERTICAL);
+        RecyclerView recyclerView =  helper.getView(R.id.show_limit_2_reply);
+        recyclerView.setLayoutManager(talkManager);
+        mLimit2ReplyCircleAdapter = new Limit2ReplyCircleAdapter(mLimitComments);
+        //禁用change动画
+        ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        recyclerView.setAdapter(mLimit2ReplyCircleAdapter);
 
 
-
-
-                User_info userInfo2 = list.get(1).getUser_info();
-                User_info p_user_info2 = list.get(1).getP_user_info();
-
-                String name2 = userInfo2.getName();
-                String name22= p_user_info2.getName();
-                String result2;
-                if(!TextUtils.isEmpty(name22)){
-                    result2 = " 回复 " + name22;
-                }else{
-                    result2 = " " ;
-                }
-
-                String comment2 = list.get(1).getComment();
-                helper.setText(R.id.name1, name1 + result  + ":" + comment);
-                helper.setText(R.id.name2,name2 + result2  + ":" + comment2);
-                helper.setVisible(R.id.name1,true);
-                helper.setVisible(R.id.name2,true);
-            }
-
-
-
-        }else{
-            helper.setVisible(R.id.all_comment,false);
+        int size = 0;
+        if(!TextUtils.isEmpty(item.getComment_num())){
+            size = Integer.parseInt(item.getComment_num());
         }
-
+        //如果一级评论下的二级评论条数大于 1 条才显示
+        if(size != 0 ){
+            helper.setVisible(R.id.ll_has_second_comment,true);
+            helper.setText(R.id.all_comment,"查看全部" + size + "条回复");
+        }else{
+            helper.setVisible(R.id.ll_has_second_comment,false);
+        }
 
 
     }

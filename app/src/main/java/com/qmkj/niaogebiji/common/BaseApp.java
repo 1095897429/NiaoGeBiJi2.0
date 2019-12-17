@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.multidex.MultiDex;
 
+//import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.common.base.ActivityManager;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -24,6 +25,7 @@ import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
+import cn.jpush.android.api.JPushInterface;
 import cn.udesk.UdeskSDKManager;
 
 
@@ -70,7 +72,22 @@ public class BaseApp extends Application {
         initWX();
         initUDesk();
         initService();
+//        initJPush();
+//        initHWPush();
     }
+
+    private void initHWPush() {
+//        HMSAgent.init(this);
+    }
+
+    private void initJPush() {
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
+        String id = JPushInterface.getRegistrationID(this);
+        KLog.d("tag","极光推送的di " + id + "");
+    }
+
+
 
     //“绑定”服务的intent
     Intent MediaServiceIntent;
@@ -88,6 +105,7 @@ public class BaseApp extends Application {
     }
 
 
+    //TODO 2019.12.17 接入极光 ，华为sdk 时 就会报service连接不上
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

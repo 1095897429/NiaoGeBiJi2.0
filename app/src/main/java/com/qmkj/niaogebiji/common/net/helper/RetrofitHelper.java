@@ -17,6 +17,7 @@ import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.net.api.ApiEncryptService;
 import com.qmkj.niaogebiji.common.utils.AESCipherUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.socks.library.KLog;
 
 import java.util.Map;
@@ -107,8 +108,13 @@ public class RetrofitHelper {
         map.put("version_code", AppUtils.getAppVersionCode() + "");
         map.put("timestamp","");
 
-
-        map.put("access_token","j5spwODuaqAd1862OQItGMK09lv8gbQ2");
+        //注册测试服
+        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
+        String token = "";
+        if(null != userInfo){
+            token = userInfo.getAccess_token();
+        }
+        map.put("access_token",token);
 
 
 

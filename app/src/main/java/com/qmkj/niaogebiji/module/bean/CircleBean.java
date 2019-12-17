@@ -24,12 +24,23 @@ public class CircleBean extends BaseBean {
         private String show_num;
         private String sort;
         private String created_at;
+        //评论数
         private String comment_num;
         private User_info user_info;
         private P_blog p_blog;
         private String share_url;
         //是否已点赞 1是 0否
         private int is_like;
+        //内容
+        private String comment;
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
 
         public int getIs_like() {
             return is_like;

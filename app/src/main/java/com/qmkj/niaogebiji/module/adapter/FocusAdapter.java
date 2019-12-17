@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -14,6 +16,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import java.util.List;
 
@@ -31,10 +34,11 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
     public static final int FLASH_TYPE = 4;
     public static final int ACTIVITY_TYPE = 5;
     private AuthorCancleListener mAuthorCancleListener;
+    private AuthorDetailListener mAuthorDetailListener;
 
     public FocusAdapter(List<MultiNewsBean> data) {
         super(data);
-
+        //推荐关注
         addItemType(AUHTOR, R.layout.firtst_focus_item1);
         //文章 右图
         addItemType(RIGHT_IMG_TYPE,R.layout.firtst_focus_item2);
@@ -51,6 +55,17 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
         switch (helper.getItemViewType()){
             case RIGHT_IMG_TYPE:
+                IndexFocusBean.Article_list  bean = item.getArticleList();
+                helper.setText(R.id.one_img_title,bean.getTitle());
+                helper.setText(R.id.one_img_auth,bean.getAuthor());
+
+                if(!TextUtils.isEmpty(bean.getPublished_at())){
+                    helper.setText(R.id.one_img_time, TimeUtils.millis2String(Long.parseLong(bean.getPublished_at())* 1000L,"yyyy/MM/dd"));
+                }
+
+                if(!TextUtils.isEmpty(bean.getPic())){
+                    ImageUtil.load(mContext,bean.getPic(),helper.getView(R.id.one_img_imgs));
+                }
 
                 break;
             case GUESSLOVE:
@@ -77,12 +92,16 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
                 recyclerView.setAdapter(mFirstAuthorAdapter);
 
                 //事件
-                mFirstAuthorAdapter.setOnItemChildClickListener(new OnItemChildClickListener() {
-                    @Override
-                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                        if(null != mAuthorCancleListener){
-                            mAuthorCancleListener.canleOrFocus(position);
-                        }
+                mFirstAuthorAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+                    if(null != mAuthorCancleListener){
+                        mAuthorCancleListener.canleOrFocus(position);
+                    }
+                });
+
+                mFirstAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {
+
+                    if(null != mAuthorDetailListener){
+                        mAuthorDetailListener.authordetail(position);
                     }
                 });
 
@@ -103,4 +122,12 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
         mAuthorCancleListener = authorCancleListener;
     }
 
+
+    public interface AuthorDetailListener{
+        void authordetail(int position);
+    }
+
+    public void setAuthorDetailListener(AuthorDetailListener authorDetailListener) {
+        mAuthorDetailListener = authorDetailListener;
+    }
 }

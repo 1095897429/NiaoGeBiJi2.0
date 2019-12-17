@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -35,7 +36,12 @@ import butterknife.OnClick;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-08
- * 描述: 登录
+ * 描述:
+ * 1.手机验证码 登录 -- loginViaCode
+ * 2.微信登录 -- wechatlogin
+ *      1.新用户 -- 在验证码输入完成后 -- WechatBindAccountViaCode
+ *      2.老用户 -- 直接登录了
+ * 3.获取验证码 -- sendverifycode
  */
 public class LoginActivity extends BaseActivity {
 
@@ -49,11 +55,16 @@ public class LoginActivity extends BaseActivity {
     LinearLayout phoneLogin;
 
 
+    //登录方式
+    private String loginType;
+
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_login;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void initView() {
 
@@ -68,7 +79,10 @@ public class LoginActivity extends BaseActivity {
                                     Toast.makeText(this,"请先同意用户协议与隐私政策",Toast.LENGTH_SHORT).show();
                                     return;
                                 }
-                                UIHelper.toPhoneInputActivity(LoginActivity.this);
+
+                                loginType = "phone";
+
+                                UIHelper.toPhoneInputActivity(LoginActivity.this,loginType);
                             });
     }
 
@@ -123,6 +137,7 @@ public class LoginActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.weixinLogin:
+                loginType  = "weixin";
                 if(!mCheckBox.isChecked()){
                     Toast.makeText(this,"请先同意用户协议与隐私政策",Toast.LENGTH_SHORT).show();
                     return;

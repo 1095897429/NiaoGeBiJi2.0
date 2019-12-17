@@ -3,10 +3,12 @@ package com.qmkj.niaogebiji.module.fragment;
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,11 +20,16 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
+import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
+import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
@@ -32,16 +39,22 @@ import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
 import com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -56,10 +69,15 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
-
-
     @BindView(R.id.pager_title)
     ViewPagerTitleSlide3 pager_title;
+
+    @BindView(R.id.ll_moring)
+    LinearLayout ll_moring;
+
+    @BindView(R.id.moring_content)
+    TextView moring_content;
+
 
 
 
@@ -71,6 +89,9 @@ public class FirstFragment extends BaseLazyFragment {
     //适配器
     private FirstFragmentAdapter mFirstFragmentAdapter;
 
+    private int page = 1;
+    private int pageSize = 10;
+    private MoringIndexBean.MoringBean mMoringBean;
 
     @Override
     protected boolean regEvent() {
@@ -91,13 +112,15 @@ public class FirstFragment extends BaseLazyFragment {
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
-        String [] titile = new String[]{"关注","干货","活动","快讯","热榜"};
+        String [] titile = new String[]{"关注","干货","活动","快讯"};
 
 
         pager_title.initData(titile,mViewPager,1);
 
 
         initEvent();
+
+        getTopPost();
     }
 
     DynamicLine dynamicLine;
@@ -114,9 +137,6 @@ public class FirstFragment extends BaseLazyFragment {
 
     private void initEvent() {
         createDynamicLine();
-
-
-
     }
 
 
@@ -145,8 +165,8 @@ public class FirstFragment extends BaseLazyFragment {
         mChannelBeanList.add(bean);
         bean = new ChannelBean("3","快讯");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("4","热榜");
-        mChannelBeanList.add(bean);
+//        bean = new ChannelBean("4","热榜");
+//        mChannelBeanList.add(bean);
 
 
         if(null != mChannelBeanList){
@@ -155,8 +175,34 @@ public class FirstFragment extends BaseLazyFragment {
 
     }
 
+    // {"return_code":"200","return_msg":"success","return_data":{"morning_article":{}}}
+    private void getTopPost() {
+        Map<String,String> map = new HashMap<>();
+        map.put("page_no",page + "");
+        map.put("page_size",pageSize + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getTopPost(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<MoringIndexBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<MoringIndexBean> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        MoringIndexBean temp = response.getReturn_data();
+                        mMoringBean = temp.getMorning_article();
+                        setData();
+                    }
+                });
+    }
 
-
+    private void setData() {
+        if(!TextUtils.isEmpty(mMoringBean.getTitle()) &&
+                !TextUtils.isEmpty(mMoringBean.getVideo())){
+            moring_content.setText(mMoringBean.getTitle());
+            ll_moring.setVisibility(View.VISIBLE);
+        }
+    }
 
 
     private void setUpAdater() {
@@ -168,7 +214,11 @@ public class FirstFragment extends BaseLazyFragment {
                 FocusFragment focusFragment = FocusFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(focusFragment);
-            }else if(i == 2){
+            }else if(i == 1){
+                FirstItemFragment newsItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(newsItemFragment);
+            } else if(i == 2){
                 ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
@@ -176,18 +226,13 @@ public class FirstFragment extends BaseLazyFragment {
                 FlashFragment flashFragment = FlashFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(flashFragment);
-            }else if(i == 4){
-                HotNewsFragment hotNewsFragment = HotNewsFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-                        mChannelBeanList.get(i).getChaname());
-                mFragmentList.add(hotNewsFragment);
-            }else{
-                FirstItemFragment newsItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-                        mChannelBeanList.get(i).getChaname());
-                mFragmentList.add(newsItemFragment);
             }
 
-
-
+//            else if(i == 4){
+//                HotNewsFragment hotNewsFragment = HotNewsFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+//                        mChannelBeanList.get(i).getChaname());
+//                mFragmentList.add(hotNewsFragment);
+//            }
 
             mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
         }

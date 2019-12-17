@@ -70,6 +70,7 @@ import java.util.List;
 
     static public class Badge {
 
+
         private String id;
         private String name;
         private String icon;

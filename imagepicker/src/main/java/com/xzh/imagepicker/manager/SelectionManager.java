@@ -67,7 +67,7 @@ public class SelectionManager {
 
     //判断当前图片是否被选择
     public boolean isImageSelect(MediaFile mediaFile) {
-        if (mSelectImages.contains(mediaFile)) {
+        if (mSelectImages != null && mSelectImages.contains(mediaFile)) {
             return true;
         } else {
             return false;

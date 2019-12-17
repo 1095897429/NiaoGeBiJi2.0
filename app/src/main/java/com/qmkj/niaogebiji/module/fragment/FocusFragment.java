@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,17 +10,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -41,7 +46,9 @@ import io.reactivex.schedulers.Schedulers;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-11
- * 描述:
+ * 描述:  去关注作者文章接口前两条数据，没有则不显示
+ *  1.猜你喜欢没有加载更多
+ *
  */
 public class FocusFragment extends BaseLazyFragment {
 
@@ -70,6 +77,32 @@ public class FocusFragment extends BaseLazyFragment {
         getIndexArticle();
         initLayout();
     }
+
+    @Override
+    protected void lazyLoadData() {
+
+    }
+
+
+    List<IndexFocusBean.Article_list> guessYouLikeList ;
+
+    private void recommendAuthorArticleList() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().recommendAuthorArticleList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<IndexFocusBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<IndexFocusBean> response) {
+                       IndexFocusBean temp = response.getReturn_data();
+                        guessYouLikeList = temp.getArticle_list();
+                        listCommonLogic();
+                    }
+                });
+    }
+
 
     @BindView(R.id.smartRefreshLayout)
     SmartRefreshLayout smartRefreshLayout;
@@ -106,14 +139,13 @@ public class FocusFragment extends BaseLazyFragment {
     }
 
     private void initEvent() {
-
-//        mFocusAdapter.setOnLoadMoreListener(() -> {
-//            ++page;
-//            getIndexArticle();
-//        },mRecyclerView);
-
-
         mFocusAdapter.setAuthorCancleListener(position -> showCancelFocusDialog(position));
+
+        mFocusAdapter.setAuthorDetailListener(position -> {
+
+            String link = Constant.TEST_URL + "authordetail/" + mAuther_lists.get(position);
+            UIHelper.toWebViewActivity(getActivity(),link);
+        });
 
         mFocusAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()) {
@@ -127,6 +159,11 @@ public class FocusFragment extends BaseLazyFragment {
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FocusAdapter.RIGHT_IMG_TYPE:
+                    KLog.d("tag",mFocusAdapter.getData().get(position).getArticleList());
+                    String aid = mFocusAdapter.getData().get(position).getArticleList().getAid();
+                    if (!TextUtils.isEmpty(aid)) {
+                        UIHelper.toNewsDetailActivity(getActivity(), aid);
+                    }
                     break;
                 default:
             }
@@ -135,6 +172,9 @@ public class FocusFragment extends BaseLazyFragment {
 
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
+
         smartRefreshLayout.setEnableLoadMore(false);
         //下拉刷新
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
@@ -166,10 +206,10 @@ public class FocusFragment extends BaseLazyFragment {
                             }
                             mAuther_lists =  mIndexFocusBean.getAuther_list();
                             mArticle_lists = mIndexFocusBean.getArticle_list();
-//                            if(!mAuther_lists.isEmpty() && !mArticle_lists.isEmpty()){
-//                                listCommonLogic();
-//                            }
-                            if(!mAuther_lists.isEmpty()){
+                            //未关注文章时，请求猜你喜欢接口
+                            if(mArticle_lists.isEmpty()){
+                                recommendAuthorArticleList();
+                            }else{
                                 listCommonLogic();
                             }
 
@@ -197,13 +237,28 @@ public class FocusFragment extends BaseLazyFragment {
 
     private void listCommonLogic() {
 
-        for (int i = 0; i < 2; i++) {
-            MultiNewsBean bean = new MultiNewsBean();
-            bean.setItemType(2);
-//            bean.setArticleList(mArticle_lists.get(i));
-            mAllList.add(bean);
+        int size ;
+        //取头两条数据
+        if(!mArticle_lists.isEmpty()){
+            size = mArticle_lists.size();
+            if(size > 2){
+                for (int i = 0; i < 2; i++) {
+                    MultiNewsBean bean = new MultiNewsBean();
+                    bean.setItemType(2);
+                    bean.setArticleList(mArticle_lists.get(i));
+                    mAllList.add(bean);
+                }
+            }else{
+                for (int i = 0; i < mArticle_lists.size(); i++) {
+                    MultiNewsBean bean = new MultiNewsBean();
+                    bean.setItemType(2);
+                    bean.setArticleList(mArticle_lists.get(i));
+                    mAllList.add(bean);
+                }
+            }
         }
 
+        //推荐关注
         MultiNewsBean bean1 = new MultiNewsBean();
         FouBBBB bbbb = new FouBBBB();
         bbbb.setDjj(mAuther_lists);
@@ -211,17 +266,31 @@ public class FocusFragment extends BaseLazyFragment {
         bean1.setItemType(1);
         mAllList.add(bean1);
 
-        MultiNewsBean bean2 = new MultiNewsBean();
-        bean2.setItemType(3);
-        mAllList.add(bean2);
-
-        for (int i = 0; i < 4; i++) {
-            MultiNewsBean bean = new MultiNewsBean();
-            bean.setItemType(2);
-//            bean.setArticleList(mArticle_lists.get(i));
-            mAllList.add(bean);
+        //取不是第二条的数据
+        if(!mArticle_lists.isEmpty()){
+            for (int i = 2; i < mArticle_lists.size(); i++) {
+                MultiNewsBean bean = new MultiNewsBean();
+                bean.setItemType(2);
+                bean.setArticleList(mArticle_lists.get(i));
+                mAllList.add(bean);
+            }
         }
 
+        if(null != guessYouLikeList && !guessYouLikeList.isEmpty()){
+
+            //猜你喜欢布局
+            MultiNewsBean bean2 = new MultiNewsBean();
+            bean2.setItemType(3);
+            mAllList.add(bean2);
+
+            //猜你喜欢数据
+            for (int i = 0; i < guessYouLikeList.size(); i++) {
+                MultiNewsBean bean = new MultiNewsBean();
+                bean.setItemType(2);
+                bean.setArticleList(guessYouLikeList.get(i));
+                mAllList.add(bean);
+            }
+        }
 
 
         if(1 == page){
@@ -236,7 +305,6 @@ public class FocusFragment extends BaseLazyFragment {
                 mFocusAdapter.loadMoreEnd();
             }
         }
-
 
     }
 

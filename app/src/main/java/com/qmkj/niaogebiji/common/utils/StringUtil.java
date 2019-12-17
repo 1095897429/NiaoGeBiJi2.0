@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
+import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -99,5 +100,10 @@ public class StringUtil {
     /** --------------------------------- 封装的一些方法 ---------------------------------*/
 
 
+
+    public static String getLink(String parma){
+        String link = BuildConfig.DEBUG ? Constant.TEST_URL : Constant.RELEASE_URL + parma;
+        return link;
+    }
 
 }

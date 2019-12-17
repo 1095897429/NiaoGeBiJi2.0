@@ -81,6 +81,8 @@ public class MyWebView extends WebView {
         //阻止图片网络加载
         webSettings.setBlockNetworkImage(false);
         setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        //势焦点
+        requestFocusFromTouch();
         //视频播放需要
         webSettings.setPluginState(WebSettings.PluginState.ON);
 

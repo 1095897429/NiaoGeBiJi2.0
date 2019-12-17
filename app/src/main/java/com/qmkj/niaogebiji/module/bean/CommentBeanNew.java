@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class CommentBeanNew extends BaseBean {
 
+    private String puid;
+    private User_info p_user_info;
+
     private String id;
     private String uid;
     private String comment;
@@ -21,6 +24,22 @@ public class CommentBeanNew extends BaseBean {
     private String comment_num;
     private String comment_class;
     private List<SecondComment> comment_comment;
+
+    public String getPuid() {
+        return puid;
+    }
+
+    public void setPuid(String puid) {
+        this.puid = puid;
+    }
+
+    public User_info getP_user_info() {
+        return p_user_info;
+    }
+
+    public void setP_user_info(User_info p_user_info) {
+        this.p_user_info = p_user_info;
+    }
 
     public String getId() {
         return id;

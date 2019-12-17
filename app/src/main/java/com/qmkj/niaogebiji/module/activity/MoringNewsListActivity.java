@@ -10,22 +10,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.MoringNewsAdapter;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
+import com.qmkj.niaogebiji.module.bean.MoringAllBean;
 import com.qmkj.niaogebiji.module.bean.MoringNewsBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.AudioEvent2;
+import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -46,6 +57,11 @@ public class MoringNewsListActivity extends BaseActivity {
     List<MoringNewsBean> mList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
+
+
+    private int page = 1;
+    private int pageSize = 10;
+    List<MoringAllBean.MoringBean> mMoringList = new ArrayList<>();
 
 
     @Override
@@ -70,7 +86,37 @@ public class MoringNewsListActivity extends BaseActivity {
             mList.add(new MoringNewsBean());
         }
 
+        mplist();
+
         initLayout();
+    }
+
+
+
+    private void mplist() {
+        Map<String,String> map = new HashMap<>();
+        map.put("page_no",page + "");
+        map.put("page_size",pageSize + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().mplist(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<MoringAllBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<MoringAllBean> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        MoringAllBean temp  = response.getReturn_data();
+                        mMoringList = temp.getList();
+                        setData();
+                    }
+                });
+    }
+
+    private void setData() {
+        if(!mMoringList.isEmpty()){
+            mMoringNewsAdapter.setNewData(mMoringList);
+        }
     }
 
 
@@ -82,7 +128,7 @@ public class MoringNewsListActivity extends BaseActivity {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mMoringNewsAdapter = new MoringNewsAdapter(mList);
+        mMoringNewsAdapter = new MoringNewsAdapter(mMoringList);
         mRecyclerView.setAdapter(mMoringNewsAdapter);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);

@@ -25,6 +25,7 @@ import com.qmkj.niaogebiji.module.adapter.NewsCollectItemAdapter;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.event.CollectionEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -210,11 +211,10 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
             if(StringUtil.isFastClick()){
                 return;
             }
-            KLog.d("tag", "ddddd");
-            String aid = "24689";
-            if (!TextUtils.isEmpty(aid)) {
-                UIHelper.toNewsDetailActivity(getActivity(), aid);
-            }
+//            String aid = mNewsCollectItemAdapter.getData().get(position);
+//            if (!TextUtils.isEmpty(aid)) {
+//                UIHelper.toNewsDetailActivity(getActivity(), aid);
+//            }
         });
 
 
@@ -222,6 +222,8 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
 
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mCollectLists.clear();

@@ -17,7 +17,9 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.SearchAllAdapter;
+import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
@@ -25,14 +27,24 @@ import com.qmkj.niaogebiji.module.bean.MultSearchBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.RecommendBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllActicleBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllAuthorBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllBaiduBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllCircleBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllPeopleBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.event.LookMoreEvent;
+import com.qmkj.niaogebiji.module.event.SearchWordEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,8 +66,12 @@ public class SearchAllFragment extends BaseLazyFragment {
     //搜索类型：1-文章。2-作者
     private String mType = "1";
     private String myKeyword = "抖音";
+
     private SearchResultBean mSearchResultBean;
-    private List<SearchResultBean.Article_list> mArticle_lists;
+    //人脉 + 文章
+    private List<RecommendBean.Article_list> mArticle_lists;
+    private List<RegisterLoginBean.UserInfo> mUserInfos;
+
 
     public static SearchAllFragment getInstance(String chainId, String chainName) {
         SearchAllFragment newsItemFragment = new SearchAllFragment();
@@ -81,36 +97,227 @@ public class SearchAllFragment extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
-        searchContent();
     }
 
-    private void searchContent() {
+
+
+
+    @Override
+    protected void lazyLoadData() {
+//        searchArticlePeople();
+//        searchArticle();
+//        searchPeople();
+        searchAuthor();
+    }
+
+    ActiclePeopleBean temp;
+    private void searchArticlePeople() {
         Map<String,String> map = new HashMap<>();
         map.put("keyword",myKeyword);
-        map.put("type",mType + "");
-        map.put("page",page + "");
         String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().searchContent(result)
+        RetrofitHelper.getApiService().searchArticlePeople(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<SearchResultBean>>() {
+                .subscribe(new BaseObserver<HttpResponse<ActiclePeopleBean>>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
-                    public void onSuccess(HttpResponse<SearchResultBean> response) {
+                    public void onSuccess(HttpResponse<ActiclePeopleBean> response) {
 
-                        mSearchResultBean = response.getReturn_data();
-                        if(null != mSearchResultBean){
-                            mArticle_lists = mSearchResultBean.getList();
-                            //得到全部的数据，去解析
-                            getData();
+                        temp = response.getReturn_data();
+                        if(null != temp){
+                            mArticle_lists = temp.getArticle_list();
+                            mUserInfos = temp.getRenmai_list();
+                            setData1();
+                        }
+                    }
+                });
+    }
 
+
+    private List<RecommendBean.Article_list> mArticleListList;
+    private void searchArticle() {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
+        map.put("page",page + "");
+        map.put("page_size",page_size + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchArticle(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchAllActicleBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<SearchAllActicleBean> response) {
+                        SearchAllActicleBean temp  = response.getReturn_data();
+                        if(null != temp){
+                            mArticleListList = temp.getList();
+                            setData2();
                         }
 
                     }
-
                 });
     }
+
+
+    private List<RegisterLoginBean.UserInfo> mUserInfoList;
+    private void searchPeople() {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
+        map.put("page",page + "");
+        map.put("page_size",page_size + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchPeople(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchAllPeopleBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<SearchAllPeopleBean> response) {
+                        SearchAllPeopleBean temp  = response.getReturn_data();
+                        if(null != temp){
+                            mUserInfoList = temp.getList();
+                            setData3();
+                        }
+
+                    }
+                });
+    }
+
+    private List<CircleBean> mCircleBeanList;
+    private void searchBlog() {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
+        map.put("page",page + "");
+        map.put("page_size",page_size + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchAllCircleBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<SearchAllCircleBean> response) {
+                        SearchAllCircleBean temp  = response.getReturn_data();
+                        if(null != temp){
+                            mCircleBeanList = temp.getList();
+                            setData4();
+                        }
+
+                    }
+                });
+    }
+
+    private List<SearchAllBaiduBean.Wiki> mWikis;
+    private void searchWiki() {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
+        map.put("page",page + "");
+        map.put("page_size",page_size + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchWiki(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchAllBaiduBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<SearchAllBaiduBean> response) {
+                        SearchAllBaiduBean temp  = response.getReturn_data();
+                        if(null != temp){
+                            mWikis = temp.getList();
+                            setData5();
+                        }
+
+                    }
+                });
+    }
+
+
+    private List<RecommendBean.Article_list> mThings;
+    private void searchMaterial() {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
+        map.put("page",page + "");
+        map.put("page_size",page_size + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchMaterial(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchAllActicleBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<SearchAllActicleBean> response) {
+                        SearchAllActicleBean temp  = response.getReturn_data();
+                        if(null != temp){
+                            mThings = temp.getList();
+                            setData6();
+                        }
+
+                    }
+                });
+    }
+
+
+    private List<SearchAllAuthorBean.SearchAuthor> mSearchAuthors;
+    private void searchAuthor() {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
+        map.put("page",page + "");
+        map.put("page_size",page_size + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchAuthor(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchAllAuthorBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<SearchAllAuthorBean> response) {
+                        SearchAllAuthorBean temp = response.getReturn_data();
+                        if(null != temp){
+                            mSearchAuthors = temp.getList();
+                            setData7();
+                        }
+                    }
+                });
+    }
+
+    private void setData7() {
+
+    }
+
+    private void setData6() {
+
+    }
+
+    private void setData5() {
+
+    }
+
+    private void setData4() {
+
+    }
+
+
+    private void setData3() {
+
+    }
+
+    private void setData2() {
+
+    }
+
+    private void setData1() {
+        if(null != mArticle_lists &&  !mArticle_lists.isEmpty()){
+
+        }
+    }
+
 
     private void getData() {
 
@@ -198,6 +405,7 @@ public class SearchAllFragment extends BaseLazyFragment {
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
     private int page = 1;
+    private int page_size = 10;
 
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
@@ -216,7 +424,6 @@ public class SearchAllFragment extends BaseLazyFragment {
     }
 
     private void initEvent() {
-
 
         mSearchAllAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()) {
@@ -246,5 +453,15 @@ public class SearchAllFragment extends BaseLazyFragment {
         smartRefreshLayout.setEnableRefresh(false);
         smartRefreshLayout.setEnableLoadMore(false);
     }
+
+
+    //点击全部里的查看更多事件
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSearchWordEvent(SearchWordEvent event) {
+        myKeyword = event.getWord();
+        KLog.d("tag","myKeyword = " + myKeyword);
+    }
+
+
 
 }

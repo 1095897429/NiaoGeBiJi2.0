@@ -258,61 +258,81 @@
                    android:textColor="@color/text_first_color"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content" />
-               <Space
+
+               <com.qmkj.niaogebiji.module.widget.MyWebView
+                   android:id="@+id/webview"
+                   android:layout_marginTop="16dp"
                    android:layout_width="match_parent"
-                   android:layout_height="10dp" />
+                   android:layout_height="wrap_content">
 
-               <TextView
-                   android:text="1.怎么样算邀请成功"
-                   android:textSize="14sp"
-                   android:textColor="@color/text_first_color"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" />
+               </com.qmkj.niaogebiji.module.widget.MyWebView>
 
-               <Space
+
+               <LinearLayout
+                   android:visibility="gone"
                    android:layout_width="match_parent"
-                   android:layout_height="10dp" />
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
 
-               <TextView
-                   android:text="2.邀请成功有什么奖励"
-                   android:textSize="14sp"
-                   android:textColor="@color/text_first_color"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" />
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="10dp" />
 
-               <Space
-                   android:layout_width="match_parent"
-                   android:layout_height="10dp" />
+                   <TextView
+                       android:text="1.怎么样算邀请成功"
+                       android:textSize="14sp"
+                       android:textColor="@color/text_first_color"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
 
-               <TextView
-                   android:text="3.邀请成功好友有什么奖励"
-                   android:textSize="14sp"
-                   android:textColor="@color/text_first_color"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" />
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="10dp" />
 
-               <Space
-                   android:layout_width="match_parent"
-                   android:layout_height="10dp" />
+                   <TextView
+                       android:text="2.邀请成功有什么奖励"
+                       android:textSize="14sp"
+                       android:textColor="@color/text_first_color"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
 
-               <TextView
-                   android:text="4.怎么邀请"
-                   android:textSize="14sp"
-                   android:textColor="@color/text_first_color"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" />
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="10dp" />
+
+                   <TextView
+                       android:text="3.邀请成功好友有什么奖励"
+                       android:textSize="14sp"
+                       android:textColor="@color/text_first_color"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
+
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="10dp" />
+
+                   <TextView
+                       android:text="4.怎么邀请"
+                       android:textSize="14sp"
+                       android:textColor="@color/text_first_color"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
 
 
-               <Space
-                   android:layout_width="match_parent"
-                   android:layout_height="10dp" />
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="10dp" />
 
-               <TextView
-                   android:text="5.邀请记录在哪里"
-                   android:textSize="14sp"
-                   android:textColor="@color/text_first_color"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" />
+                   <TextView
+                       android:text="5.邀请记录在哪里"
+                       android:textSize="14sp"
+                       android:textColor="@color/text_first_color"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
+
+
+
+               </LinearLayout>
 
 
 

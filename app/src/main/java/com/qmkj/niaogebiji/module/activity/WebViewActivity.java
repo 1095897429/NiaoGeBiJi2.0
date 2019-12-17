@@ -26,8 +26,11 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
 
@@ -55,14 +58,6 @@ public class WebViewActivity extends BaseActivity {
     ProgressBar mProgressBar;
 
     MyWebView mMyWebView;
-    //apk是否已经在下载了，针对链接是apk的行为
-    public static HashMap<String, Boolean> isDownOk = new HashMap<>();
-
-    //文件上传
-    private ValueCallback<Uri> mUploadMessage;
-    private ValueCallback<Uri[]> mUploadMessage5;
-    public static final int FILECHOOSER_RESULTCODE = 5173;
-    public static final int FILECHOOSER_RESULTCODE_FOR_ANDROID_5 = 5174;
 
 
     private String link;
@@ -73,10 +68,9 @@ public class WebViewActivity extends BaseActivity {
         return R.layout.activity_webview;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void initView() {
-
-
         link = getIntent().getStringExtra("link");
         mTitle = getIntent().getStringExtra("title");
         KLog.d("tag","link " +link);
@@ -84,22 +78,8 @@ public class WebViewActivity extends BaseActivity {
             return;
         }
 
-
         //创建WebView
         mMyWebView = new MyWebView(getApplicationContext());
-
-        //设置apk下载
-        mMyWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
-//            if(!TextUtils.isEmpty(url)){
-//                KLog.d("tag","自定义下载逻辑");
-//                start_service(url);
-//            }
-
-            //利用系统的下载
-            Uri uri = Uri.parse(url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
-        });
 
         //js交互 -- 给js调用app的方法，xnNative是协调的对象
 //        mMyWebView.addJavascriptInterface(new AndroidtoJs(), "xnNative");
@@ -112,101 +92,6 @@ public class WebViewActivity extends BaseActivity {
                 return false;
             }
 
-//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-//                //deepLink
-//                String url = request.getUrl().toString();
-//
-//                if(null != url && url.startsWith("weixin://")){
-//                    Uri uri = Uri.parse(url);
-//                    Intent intent = new Intent();
-//                    intent.setData(uri);
-//                    startActivity(intent);
-//                    //表示webviewClient自己处理
-//                    return true;
-//                }
-//
-//                if (url.startsWith("pinduoduo://")) {
-//                    if (AppUtils.isAppInstalled("com.xunmeng.pinduoduo")) {
-//                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//                        startActivity(intent);
-//                        return true;
-//                    } else {
-//                        ToastUtils.showLong("未安装拼多多");
-//                        return true;
-//                    }
-//                }
-//
-//                if (url.startsWith("weixin://wap/pay?")) {
-//                    Intent intent = new Intent();
-//                    intent.setAction(Intent.ACTION_VIEW);
-//                    intent.setData(Uri.parse(url));
-//                    startActivity(intent);
-//                    return true;
-//                }
-//
-//                if (url.startsWith("alipays://platformapi/startApp?")) {
-//                    Intent intent = new Intent();
-//                    intent.setAction(Intent.ACTION_VIEW);
-//                    intent.setData(Uri.parse(url));
-//                    startActivity(intent);
-//                    return true;
-//                }
-//
-//
-//                if (url != null && url.startsWith("taobao://")) {
-//                    Uri uri = Uri.parse(url);
-//                    Intent intent = new Intent();
-//                    intent.setData(uri);
-//                    startActivity(intent);
-//                    return true;
-//                }
-//                if (url != null && url.startsWith("openapp.jdmobile://")) {
-//
-//                    if (AppUtils.isAppInstalled("com.jingdong.app.mall")) {
-//                        Uri uri = Uri.parse(url);
-//                        Intent intent = new Intent();
-//                        intent.setData(uri);
-//                        startActivity(intent);
-//                        return true;
-//                    } else {
-//                        ToastUtils.showLong("未安装京东");
-//                        return true;
-//                    }
-//                }
-//
-//                //苏宁易购
-//                if (url != null && url.startsWith("suning://")) {
-//                    if (AppUtils.isAppInstalled("com.suning.mobile.ebuy")) {
-//                        Uri uri = Uri.parse(url);
-//                        Intent intent = new Intent();
-//                        intent.setData(uri);
-//                        startActivity(intent);
-//                        return true;
-//                    } else {
-//                        ToastUtils.showLong("未安装苏宁易购");
-//                        return true;
-//                    }
-//                }
-//
-////                view.loadUrl(url);
-//                return false;
-//
-////                if(url.startsWith("http")){
-////                    return false;
-////                }
-////
-////                //网页在webView中打开  安卓5.0的加载方法
-////                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-////                    view.loadUrl(request.toString());
-////                } else {//5.0以上的加载方法
-////                    view.loadUrl(request.getUrl().toString());
-////                }
-////
-////                return super.shouldOverrideUrlLoading(view, request);
-//            }
-
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
@@ -217,6 +102,14 @@ public class WebViewActivity extends BaseActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
 //                KLog.d("tag","---- " + url);
+                toGiveToken();
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                //js交互
+                toGiveToken();
             }
         });
 
@@ -242,59 +135,10 @@ public class WebViewActivity extends BaseActivity {
                 }else{
                     tv_title.setText(title);
                 }
-
-            }
-
-            //图片
-            //文件上传
-            // For Android < 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-                this.openFileChooser(uploadMsg, "*/*");
-            }
-
-            // For Android >= 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,
-                                        String acceptType) {
-                this.openFileChooser(uploadMsg, acceptType, null);
-            }
-
-            // For Android >= 4.1
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,
-                                        String acceptType, String capture) {
-                mUploadMessage = uploadMsg;
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.setType("*/*");
-                startActivityForResult(Intent.createChooser(i, "File Browser"),
-                        FILECHOOSER_RESULTCODE);
-            }
-
-            // For Lollipop 5.0+ Devices
-            @Override
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            public boolean onShowFileChooser(WebView mWebView,
-                                             ValueCallback<Uri[]> filePathCallback,
-                                             WebChromeClient.FileChooserParams fileChooserParams) {
-                if (mUploadMessage5 != null) {
-                    mUploadMessage5.onReceiveValue(null);
-                    mUploadMessage5 = null;
-                }
-                mUploadMessage5 = filePathCallback;
-                Intent intent = fileChooserParams.createIntent();
-                try {
-                    startActivityForResult(intent,
-                            FILECHOOSER_RESULTCODE_FOR_ANDROID_5);
-                } catch (ActivityNotFoundException e) {
-                    mUploadMessage5 = null;
-                    return false;
-                }
-                return true;
             }
 
 
         });
-
-
 
         mMyWebView.loadUrl(link);
         mLayout.addView(mMyWebView);
@@ -328,6 +172,7 @@ public class WebViewActivity extends BaseActivity {
             } else {
                 String value = "传递字符串";
                 String result = "javascript:" + "xyApplication.getAppToken(\"" + value + "\")";
+                KLog.d("tag",result);
                 mMyWebView.evaluateJavascript(result, null);
             }
         }
@@ -346,7 +191,6 @@ public class WebViewActivity extends BaseActivity {
     }
 
 
-
     @OnClick({R.id.iv_back})
     public void clicks(View view){
         switch (view.getId()){
@@ -357,27 +201,33 @@ public class WebViewActivity extends BaseActivity {
         }
     }
 
-    /** --------------------------------- 上传图片  ---------------------------------*/
 
-    @SuppressLint("NewApi")
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == FILECHOOSER_RESULTCODE) {
-            if (null == mUploadMessage) {
-                return;
-            }
-            Uri result = intent == null || resultCode != Activity.RESULT_OK ? null
-                    : intent.getData();
-            mUploadMessage.onReceiveValue(result);
-            mUploadMessage = null;
-        } else if (requestCode == FILECHOOSER_RESULTCODE_FOR_ANDROID_5) {
-            if (null == mUploadMessage5) {
-                return;
-            }
-            mUploadMessage5.onReceiveValue(WebChromeClient.FileChooserParams
-                    .parseResult(resultCode, intent));
-            mUploadMessage5 = null;
+    private String token;
+    public void toGiveToken() {
+
+        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
+        if(null != userInfo){
+            token = userInfo.getAccess_token();
+        }
+
+        if (!TextUtils.isEmpty(token)) {
+            mMyWebView.post(() -> {
+                //小于4.4
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                    String result = "javascript:" + "localStorage.setItem('accessToken',\"" + token + "\")";
+                    KLog.d("tag",result + "");
+                    if (mMyWebView != null){
+                        //传递参数
+                        mMyWebView.loadUrl(result);
+                    }
+                } else {//4.4以上 包括4.4
+                    String result = "javascript:" + "localStorage.setItem('accessToken',\"" + token + "\")";
+                    KLog.d("tag",result);
+                    if (mMyWebView != null){
+                        mMyWebView.evaluateJavascript(result, value -> {});
+                    }
+                }
+            });
         }
     }
 

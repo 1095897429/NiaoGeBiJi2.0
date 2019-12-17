@@ -11,15 +11,19 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  */
 public class MultiNewsBean extends BaseBean implements MultiItemEntity {
 
-    //首页新闻
+    //首页文章
     private NewsItemBean mNewsItemBean;
     //首页快讯
+    private IndexBulltin mIndexBulltin;
     private FirstItemBean mFirstItemBean;
     //首页关注作者
-//    private IndexFocusBean.Auther_list mAutherList;
     private FouBBBB mFouBBBB;
     //首页关注作者文章
     private IndexFocusBean.Article_list mArticleList;
+    //首页活动 待定
+
+    //新首页文章
+    private RecommendBean.Article_list mNewsActicleList;
 
     //类型
     private int itemType;
@@ -33,6 +37,14 @@ public class MultiNewsBean extends BaseBean implements MultiItemEntity {
         return itemType;
     }
 
+
+    public IndexBulltin getIndexBulltin() {
+        return mIndexBulltin;
+    }
+
+    public void setIndexBulltin(IndexBulltin indexBulltin) {
+        mIndexBulltin = indexBulltin;
+    }
 
     public NewsItemBean getNewsItemBean() {
         return mNewsItemBean;
@@ -51,14 +63,13 @@ public class MultiNewsBean extends BaseBean implements MultiItemEntity {
     }
 
 
-//    public IndexFocusBean.Auther_list getAutherList() {
-//        return mAutherList;
-//    }
-//
-//    public void setAutherList(IndexFocusBean.Auther_list autherList) {
-//        mAutherList = autherList;
-//    }
+    public RecommendBean.Article_list getNewsActicleList() {
+        return mNewsActicleList;
+    }
 
+    public void setNewsActicleList(RecommendBean.Article_list newsActicleList) {
+        mNewsActicleList = newsActicleList;
+    }
 
     public FouBBBB getFouBBBB() {
         return mFouBBBB;

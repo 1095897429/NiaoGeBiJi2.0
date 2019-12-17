@@ -147,8 +147,8 @@ public class CircleMakeActivity extends BaseActivity {
     public  int pic_num = 9;
 
     //url地址
-    private String linkurl;
-    private String linkTitle;
+    private String linkurl = "";
+    private String linkTitle = "";
     //临时 图片选择器临时返回数据
     private  ArrayList<MediaFile> mediaFiles = new ArrayList<>();
 
@@ -411,6 +411,10 @@ public class CircleMakeActivity extends BaseActivity {
             if(!mediaFiles.isEmpty()){
                 mTempMsgBean.setImgPath(mediaFiles);
             }
+            if(!pathList.isEmpty()){
+                mTempMsgBean.setImgPath2(pathList);
+            }
+            KLog.d("tag","=====");
         }
     }
 

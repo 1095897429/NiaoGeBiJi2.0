@@ -5,8 +5,11 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -45,6 +48,7 @@ import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
+import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -53,6 +57,8 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -74,27 +80,31 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
     public static final int LINK_OUT_TYPE = 4;
     public static final int ALL_TEXT = 5;
 
+    public static final int ALL = 6;
+
 
     public CircleRecommendAdapter(List<MultiCircleNewsBean> data) {
 
         super(data);
-        //多图
+        //原创 多图
         addItemType(RIGHT_IMG_TYPE, R.layout.first_circle_item1);
-        //转发图片
+        //转发 图片
         addItemType(TRANSFER_IMG_TYPE,R.layout.first_circle_item3);
-        //转发链接
+        //转发 链接
         addItemType(TRANSFER_LIN_TYPE,R.layout.first_circle_item4);
-        //原创外链
+        //原创 外链
         addItemType(LINK_OUT_TYPE,R.layout.first_circle_item2);
-        //全文本
+        //原创 全文本
         addItemType(ALL_TEXT,R.layout.first_circle_item5);
+
+//        addItemType(ALL,R.layout.first_circle_item_all);ll_report
 
     }
 
     @Override
     protected void convert(BaseViewHolder helper, MultiCircleNewsBean item) {
 
-        helper.addOnClickListener(R.id.part1111)
+        helper
                 .addOnClickListener(R.id.part2222)
                 .addOnClickListener(R.id.circle_share)
                 .addOnClickListener(R.id.circle_comment)
@@ -115,7 +125,39 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
             }
             //正文
             TextView content = helper.getView(R.id.content);
-            content.setText(bean.getBlog());
+            String blogContent = bean.getBlog();
+            //判断内容是否中link
+            boolean isHas = false ;
+            String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+            Matcher matcher = Pattern.compile(regex).matcher(blogContent);
+            while (matcher.find()){
+                KLog.d("tag","url  " + matcher.group());
+                isHas  = true;
+                int size = matcher.groupCount();
+                KLog.d("tag","有几条 "  + size);
+
+            }
+
+            //设置文本
+            content.setText(blogContent);
+
+            //拼接链接
+            if(isHas){
+                Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_flash_link_pic);
+                drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+                //居中对齐imageSpan
+                CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+                SpannableString spanString2 = new SpannableString("icon");
+                spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                content.append(spanString2);
+            }else{
+
+            }
+
+
+
+
+
             //发布时间
             if(!TextUtils.isEmpty(bean.getCreated_at())){
                 String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(bean.getCreated_at()) * 1000L);
@@ -135,25 +177,25 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
             //职位
             helper.setText(R.id.sender_tag,bean.getUser_info().getPosition());
             //徽章
-            if(userInfo.getBadge() != null && !userInfo.getBadge().isEmpty()){
-                LinearLayout ll = helper.getView(R.id.ll_badge);
-                ll.removeAllViews();
-                for (int i = 0; i < userInfo.getBadge().size(); i++) {
-                    ImageView imageView = new ImageView(mContext);
-                    String icon = userInfo.getBadge().get(i).getIcon();
-                    if(!TextUtils.isEmpty(icon)){
-                        ImageUtil.load(mContext,icon,imageView);
-                    }
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-                    lp.width = SizeUtils.dp2px(22);
-                    lp.height = SizeUtils.dp2px(22);
-                    lp.gravity = Gravity.CENTER;
-                    lp.setMargins(0,0,SizeUtils.dp2px(8),0);
-                    imageView.setLayoutParams(lp);
-                    ll.addView(imageView);
-                }
-            }
+//            if(userInfo.getBadge() != null && !userInfo.getBadge().isEmpty()){
+//                LinearLayout ll = helper.getView(R.id.ll_badge);
+//                ll.removeAllViews();
+//                for (int i = 0; i < userInfo.getBadge().size(); i++) {
+//                    ImageView imageView = new ImageView(mContext);
+//                    String icon = userInfo.getBadge().get(i).getIcon();
+//                    if(!TextUtils.isEmpty(icon)){
+//                        ImageUtil.load(mContext,icon,imageView);
+//                    }
+//                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                            ViewGroup.LayoutParams.WRAP_CONTENT);
+//                    lp.width = SizeUtils.dp2px(22);
+//                    lp.height = SizeUtils.dp2px(22);
+//                    lp.gravity = Gravity.CENTER;
+//                    lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+//                    imageView.setLayoutParams(lp);
+//                    ll.addView(imageView);
+//                }
+//            }
 
             //评论
             Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
@@ -225,6 +267,8 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
 
                 break;
             case ALL_TEXT:
+
+
 
                 break;
             default:

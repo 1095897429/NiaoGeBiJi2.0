@@ -28,4 +28,12 @@ public class Constant {
 
     //后台返回的数据
     public static final int SEERVER_NUM = 10;
+
+
+    //测试环境
+    public static final String TEST_URL = "http://apph5.xy860.com/";
+
+    //正式环境
+    public static final String RELEASE_URL = "http://apph5.niaogebiji.com/";
 }
+

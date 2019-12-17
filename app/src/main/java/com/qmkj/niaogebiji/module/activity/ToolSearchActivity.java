@@ -182,14 +182,19 @@ public class ToolSearchActivity extends BaseActivity {
                         mList = httpResponse.getReturn_data();
 
                         setData();
+                    }
 
-
+                    //{"return_code":"200","return_msg":"success","return_data":{}} -- 后台空集合返回{}，那么会出现解析异常，在这里所判断
+                    @Override
+                    public void onNetFail(String msg) {
+                        if("解析错误".equals(msg)){
+                            setData();
+                        }
                     }
                 });
     }
 
     private void setData() {
-
         if(!mList.isEmpty()){
             mAdapter.setNewData(mList);
         }else{

@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.adapter;
 
 import android.animation.StateListAnimator;
 import android.graphics.Typeface;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,9 +13,13 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import java.util.List;
 
@@ -34,8 +39,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
         super(data);
         //正常
         addItemType(RIGHT_IMG_TYPE, R.layout.second_comment_item);
-        //头部
-        addItemType(NORMAL_IMG_TYPE,R.layout.second_comment_head);
     }
 
 
@@ -44,20 +47,42 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
 
         switch (helper.getItemViewType()){
             case RIGHT_IMG_TYPE:
-                CommentBean.FirstComment bean = item.getFirstComment();
-                helper.setText(R.id.comment_text,bean.getMessage());
+                CommentBeanNew bean = item.getSecondComment();
+
+
+                User_info userInfo = bean.getUser_info();
+                helper.setText(R.id.nickname,userInfo.getName());
+                ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
+
+
+                //添加谁回复谁
+
+                StringBuilder sb = new StringBuilder();
+                //如果回复者 和 被回复者 一样，则不显示 【回复】
+                User_info p_userInfo = bean.getP_user_info();
+                if(!TextUtils.isEmpty(userInfo.getName()) &&  !userInfo.getName().equals(p_userInfo.getName())){
+                    sb.append(userInfo.getName()).append(" 回复 ").append(p_userInfo.getName())
+                            .append(":").append(bean.getComment());
+                }else{
+                    sb.append(userInfo.getName()).append(":").append(bean.getComment());
+                }
+                helper.setText(R.id.comment_text,sb.toString());
+
+
 
                 Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
                 //点赞数
                 TextView zan_num = helper.getView(R.id.zan_num);
                 zan_num.setTypeface(typeface);
-                zan_num.setText(99 + "+");
+                if(bean.getLike_num().equals("0")){
+                    zan_num.setText("赞");
+                }else{
+                    zan_num.setText(bean.getLike_num() + "+");
+                }
 
                 //点赞
                 LottieAnimationView lottie = helper.getView(R.id.lottieAnimationView);
-
                 ImageView animationIV = helper.getView(R.id.iamge_priase);
-
                 helper.getView(R.id.circle_priase).setOnClickListener(view -> {
 
                     lottie.setImageAssetsFolder("images");
@@ -72,8 +97,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
 
                 break;
 
-            case NORMAL_IMG_TYPE:
-                break;
                 default:
         }
     }

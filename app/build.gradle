@@ -18,6 +18,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //MultiDex分包方法
         multiDexEnabled true
+
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "92ca0d87fdb787c25ea8d427", //JPush上注册的包名对应的appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
     }
 
     //配置签名
@@ -185,4 +192,10 @@ dependencies {
     implementation 'me.jessyan:autosize:1.1.2'
 
     implementation 'com.qiniu:qiniu-android-sdk:7.5.0'
+
+    implementation 'cn.jiguang.sdk:jpush:3.1.1'  // 此处以JPush 3.1.1 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:1.1.9'  // 此处以JCore 1.1.9 版本为例
+
+    //huawei
+    implementation 'com.huawei.android.hms:push:2.6.3.306'
 }

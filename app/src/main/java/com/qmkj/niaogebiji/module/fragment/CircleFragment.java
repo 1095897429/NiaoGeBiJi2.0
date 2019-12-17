@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -266,6 +268,29 @@ public class CircleFragment extends BaseLazyFragment {
         part33.setVisibility(View.GONE);
         ll_circle_send.setVisibility(View.VISIBLE);
         mediaFiles = mTempMsgBean.getImgPath();
+        pathList = mTempMsgBean.getImgPath2();
+
+        if(mediaFiles != null && !mediaFiles.isEmpty()){
+            for (int i = 0; i < mediaFiles.size(); i++) {
+                picbycomma.append(mediaFiles.get(i).getPath()).append(",");
+            }
+        }
+
+        if(pathList != null && !pathList.isEmpty()){
+            for (int i = 0; i < pathList.size(); i++) {
+                picbycomma.append(pathList.get(i).getPath()).append(",");
+            }
+        }
+
+
+        if(!TextUtils.isEmpty(picbycomma.toString())){
+            resultPic =  picbycomma.substring(0,picbycomma.length()  - 1);
+            KLog.d("tag","以逗号分隔：" + resultPic);
+        }
+
+
+        //内容
+        blog  = mTempMsgBean.getContent();
 
 
         //判断网络是否链接
@@ -296,7 +321,15 @@ public class CircleFragment extends BaseLazyFragment {
     //七牛上传图片完成计数
     private int uploadTaskCount;
     //图片选择器临时返回数据
-    private  List<MediaFile> mediaFiles = new ArrayList<>();
+    private List<MediaFile> mediaFiles = new ArrayList<>();
+    private List<MediaFile> pathList = new ArrayList<>();
+    //动态配图，多图链接之间用英文逗号隔开
+    private StringBuilder picbycomma = new StringBuilder();
+    //界面传递过来的
+    private String resultPic = "";
+    //构建七牛
+    private StringBuilder qiniuPic = new StringBuilder();
+    private String lashPic = "";
     private static final int QI_NIU_UPLOAD_OK = 120;
     private static final int CHECK_NET_OK = 110;
     private static final int CHECK_NET_FALSE= 111;
@@ -321,7 +354,7 @@ public class CircleFragment extends BaseLazyFragment {
                         KLog.d("tag","response " + response.getReturn_data().getToken());
                         qiniuToken = response.getReturn_data().getToken();
                         if(!TextUtils.isEmpty(qiniuToken)){
-                            if(null != mediaFiles && !mediaFiles.isEmpty()){
+                            if(!TextUtils.isEmpty(resultPic)){
                                 uploadPicToQiNiu();
                             }else{
                                 createBlog();
@@ -352,13 +385,27 @@ public class CircleFragment extends BaseLazyFragment {
         //data = <File对象、或 文件路径、或 字节数组>
         //String key = <指定七牛服务上的文件名，或 null>;
         //String token = <从服务端获取>;
-        key = null;
+        key = System.currentTimeMillis() + "niaogebiji";
         qiniuToken = qiniuToken.replace("\\s","");
         qiniuToken = qiniuToken.replace("\n","");
 
-        for (int i = 0; i < mediaFiles.size(); i++) {
-            data = mediaFiles.get(i).getPath();
-            uploadManager.put(data, key, qiniuToken,
+        List<String>  tempList = new ArrayList<>();
+
+        if(null != mediaFiles && !mediaFiles.isEmpty()){
+            for (MediaFile fileBean  : mediaFiles) {
+                tempList.add(fileBean.getPath());
+            }
+        }
+
+        if(null != pathList && !pathList.isEmpty()){
+            for (MediaFile fileBean  : pathList) {
+                tempList.add(fileBean.getPath());
+            }
+        }
+
+        for (int i = 0; i < tempList.size(); i++) {
+            data = tempList.get(i);
+            uploadManager.put(data, key + i, qiniuToken,
                     (key, info, res) -> {
                         //res包含hash、key等信息，具体字段取决于上传策略的设置
                         if(info.isOK()) {
@@ -375,6 +422,7 @@ public class CircleFragment extends BaseLazyFragment {
                             Message message = Message.obtain();
                             message.what = QI_NIU_UPLOAD_OK;
                             handler.sendMessage(message);
+                            qiniuPic.append(key).append(",");
                         }
 
                     }, new UpCancellationSignal() {
@@ -395,18 +443,30 @@ public class CircleFragment extends BaseLazyFragment {
                 //七牛上传图片完成计数
                 case QI_NIU_UPLOAD_OK:
                     uploadTaskCount++;
-                    KLog.e("uploadTaskCount", uploadTaskCount + "");
+                    KLog.e("qiniu", "上传的个数 " + uploadTaskCount + "");
                     float per = (float) (uploadTaskCount * 1.0 / mediaFiles.size());
                     int pro = (int) (per * 100);
                     progressBar.setProgress(pro);
                     //容器中图片全部上传完成
                     if (uploadTaskCount == mediaFiles.size()) {
                         part11.setVisibility(View.GONE);
+
+                        if(!TextUtils.isEmpty(qiniuPic.toString())){
+                            lashPic =  qiniuPic.substring(0,qiniuPic.length()  - 1);
+                            KLog.d("tag","以逗号分隔：" + lashPic);
+                        }
+
+
                         createBlog();
                     }
                     break;
                 case CHECK_NET_OK:
-                    getUploadToken();
+                    //如果没有图片，则直接上传，不需要获取tonken
+                    if(TextUtils.isEmpty(resultPic)){
+                        createBlog();
+                    }else{
+                        getUploadToken();
+                    }
                     break;
                 case CHECK_NET_FALSE:
                     ToastUtils.showShort("网络不可用");
@@ -426,7 +486,7 @@ public class CircleFragment extends BaseLazyFragment {
 
 
 
-    String blog = "动态内容";
+    String blog = "";
     String blog_images = "";
     String blog_link = "";
     String blog_link_title = "";
@@ -436,16 +496,25 @@ public class CircleFragment extends BaseLazyFragment {
     int blog_pid = 0;
     //转发时是否同时评论动态，1是 0否
     int blog_is_comment = 0;
+    //文章Id
+    int article_id;
+    //文字标题
+    String article_title = "";
+    //文字图片
+    String article_image= "";
 
     private void createBlog(){
         Map<String,String> map = new HashMap<>();
         map.put("blog",blog + "");
-        map.put("images",blog_images + "");
-        map.put("link",blog_link + "");
-        map.put("link_title",blog_link_title + "");
+        map.put("images",lashPic + "");
+        map.put("link",mTempMsgBean.getLinkurl() + "");
+        map.put("link_title",mTempMsgBean.getLinkTitle() + "");
         map.put("type",blog_type + "");
         map.put("pid",blog_pid + "");
         map.put("is_comment",blog_is_comment + "");
+        map.put("article_id", article_id + "");
+        map.put("article_title", article_title + "");
+        map.put("article_image",article_image + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().createBlog(result)
                 .subscribeOn(Schedulers.newThread())
@@ -512,6 +581,7 @@ public class CircleFragment extends BaseLazyFragment {
     public void showDeleteCircle(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(getActivity()).builder();
         iosAlertDialog.setPositiveButton("取消", v -> {
+
         }).setNegativeButton("再想想", v -> {}).setMsg("取消发布动态").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }

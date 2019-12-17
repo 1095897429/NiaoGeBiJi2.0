@@ -8,10 +8,11 @@
         android:id="@+id/smartRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <com.scwang.smartrefresh.layout.header.ClassicsHeader
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </com.scwang.smartrefresh.layout.header.ClassicsHeader>
+
+    <!--<com.scwang.smartrefresh.layout.header.ClassicsHeader-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
+    <!--</com.scwang.smartrefresh.layout.header.ClassicsHeader>-->
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -38,7 +39,7 @@
 
     <RelativeLayout
         android:id="@+id/part3333"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"

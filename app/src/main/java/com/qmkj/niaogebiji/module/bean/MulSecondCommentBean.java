@@ -14,6 +14,10 @@ public class MulSecondCommentBean extends BaseBean implements MultiItemEntity {
     //有这个对象的时候设置type 为 2，其他情况可不设置1
     private CommentBean.FirstComment mFirstComment;
 
+    private CircleBean mSecondCircle;
+
+    private CommentBeanNew mSecondComment;
+
     //类型
     private int itemType;
 
@@ -26,11 +30,27 @@ public class MulSecondCommentBean extends BaseBean implements MultiItemEntity {
         return itemType;
     }
 
+    public CommentBeanNew getSecondComment() {
+        return mSecondComment;
+    }
+
+    public void setSecondComment(CommentBeanNew secondComment) {
+        mSecondComment = secondComment;
+    }
+
     public CommentBean.FirstComment getFirstComment() {
         return mFirstComment;
     }
 
     public void setFirstComment(CommentBean.FirstComment firstComment) {
         mFirstComment = firstComment;
+    }
+
+    public CircleBean getSecondCircle() {
+        return mSecondCircle;
+    }
+
+    public void setSecondCircle(CircleBean secondCircle) {
+        mSecondCircle = secondCircle;
     }
 }

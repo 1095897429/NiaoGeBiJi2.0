@@ -177,16 +177,16 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
         for (int i = 0; i < titles.length; i++) {
 
-            if(i == titles.length - 1){
-                ImageView imageView = new ImageView(getContext());
-                imageView.setImageResource(R.mipmap.icon_first_hot);
-                imageView.setLayoutParams(params);
-                imageView.setTag(i);
-                imageView.setOnClickListener(onClickListener);
-                textViewLl.addView(imageView);
-                textViews.add(imageView);
-                break;
-            }
+//            if(i == titles.length - 1){
+//                ImageView imageView = new ImageView(getContext());
+//                imageView.setImageResource(R.mipmap.icon_first_hot);
+//                imageView.setLayoutParams(params);
+//                imageView.setTag(i);
+//                imageView.setOnClickListener(onClickListener);
+//                textViewLl.addView(imageView);
+//                textViews.add(imageView);
+//                break;
+//            }
 
             TextView textView = new TextView(getContext());
             textView.setText(titles[i]);

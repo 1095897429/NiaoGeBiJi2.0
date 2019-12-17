@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.google.gson.Gson;
@@ -142,7 +143,23 @@ public class HomeActivity extends BaseActivity {
             oldguide.setVisibility(View.VISIBLE);
         }
         guideUser();
+
+        loginHW();
     }
+
+
+    private void loginHW() {
+//        if (DeviceUtils.getManufacturer().equals("HUAWEI")){
+//            HMSAgent.Push.getToken(new GetTokenHandler() {
+//                @Override
+//                public void onResult(int rtnCode) {
+//                    KLog.d("tag","code  " + rtnCode);
+//                }
+//            });
+//        }
+    }
+
+
 
     @Override
     public void initData() {
@@ -326,12 +343,4 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        if(SPUtils.getInstance().getBoolean("audio_view_show",false)){
-//            part_audio.setVisibility(View.GONE);
-//        }
-//    }
 }

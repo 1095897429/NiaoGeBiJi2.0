@@ -14,11 +14,11 @@ import java.util.List;
 public class TempMsgBean extends BaseBean {
 
     //内容
-    private String content;
+    private String content = "";
     //链接
-    private String linkurl;
+    private String linkurl  = "";
     //链接标题
-    private String linkTitle;
+    private String linkTitle = "";
     //相册
     private List<MediaFile> imgPath;
 

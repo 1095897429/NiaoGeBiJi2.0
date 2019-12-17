@@ -27,7 +27,7 @@ public class ProfessionItemAdapter extends BaseQuickAdapter<ProBean, BaseViewHol
     @Override
     protected void convert(BaseViewHolder helper, ProBean item) {
 
-            helper.setText(R.id.pro_name,item.getName());
+        helper.setText(R.id.pro_name,item.getName());
 
         ImageUtil.load(mContext,item.getImg(),helper.getView(R.id.pro_img));
 

@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -9,13 +11,28 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.common.utils.SystemUtil;
+import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.SecurityCodeView;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +46,7 @@ import cn.udesk.config.UdeskConfig;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import udesk.core.UdeskConst;
 
 /**
@@ -63,6 +81,8 @@ public class VertifyCodeActivity extends BaseActivity {
 
     private String phone;
 
+    private String loginType;
+
 
     @Override
     protected int getLayoutId() {
@@ -72,20 +92,26 @@ public class VertifyCodeActivity extends BaseActivity {
     @Override
     protected void initView() {
 
+        loginType = getIntent().getStringExtra("loginType");
+
         KeyboardUtils.showSoftInput(et);
 
-//        showFobbidUserDialog();
 
         phone = getIntent().getStringExtra("phone");
         phone_text.setText("已向" + phone +" 发送验证码");
 
-        initRxTime();
+        toGetCode();
 
         editText.setInputCompleteListener(new SecurityCodeView.InputCompleteListener() {
             @Override
             public void inputComplete() {
                 inputContent = editText.getEditContent();
                 KLog.d("tag","请输入验证码 : " + inputContent);
+                if("weixin".equals(loginType)){
+                    WechatBindAccountViaCode();
+                }else if("phone".equals(loginType)){
+                    loginViaCode();
+                }
             }
 
             @Override
@@ -95,9 +121,103 @@ public class VertifyCodeActivity extends BaseActivity {
         });
 
         reget_code.setOnClickListener(view -> {
-            initRxTime();
+            toGetCode();
         });
     }
+
+    private void WechatBindAccountViaCode() {
+        Map<String,String> map = new HashMap<>();
+        map.put("mobile",phone);
+        map.put("verify_code",inputContent);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().WechatBindAccountViaCode(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+
+                    @Override
+                    public void onHintError(String errorMes) {
+                        ToastUtils.setGravity(Gravity.CENTER,0,0);
+                        ToastUtils.showShort(errorMes);
+                        ToastUtils.setGravity(Gravity.BOTTOM,0,0);
+                    }
+
+                });
+    }
+
+    private void loginViaCode() {
+            Map<String,String> map = new HashMap<>();
+            map.put("mobile",phone);
+            map.put("verify_code",inputContent);
+            //设备厂商
+            map.put("device_manufact", SystemUtil.getDeviceManufactuerer());
+            //设备机型
+            map.put("device_model",SystemUtil.getSystemModel());
+            String result = RetrofitHelper.commonParam(map);
+            RetrofitHelper.getApiService().loginViaCode(result)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                    .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                        @Override
+                        public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+
+                            RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                            UIHelper.toHomeActivity(VertifyCodeActivity.this,0);
+                            //保存一个对象
+                            StringUtil.setUserInfoBean(mUserInfo);
+                            finish();
+                        }
+
+                        @Override
+                        public void onHintError(String errorMes) {
+                            ToastUtils.setGravity(Gravity.CENTER,0,0);
+                            ToastUtils.showShort(errorMes);
+                            ToastUtils.setGravity(Gravity.BOTTOM,0,0);
+                        }
+
+                    });
+
+    }
+
+
+    private void toGetCode(){
+        sendverifycode();
+    }
+
+
+
+    //验证码类型：1-短信（默认），2-语音
+    private String mType = "1";
+    //操作类型： 1-注册 2-绑定微信账号 3-微信绑定已有账号 4-密码重置 5-极速登录 6-更换手机之验证旧手机 7-更换手机之验证新手机
+    private String mOpeType = "1";
+
+    private void sendverifycode() {
+        Map<String,String> map = new HashMap<>();
+        map.put("mobile",phone);
+        map.put("type", mType);
+        map.put("ope_type",mOpeType);
+
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().sendverifycode(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        KLog.e("tag",response.getReturn_msg());
+                        //设置倒计时
+                        initRxTime();
+                    }
+                });
+    }
+
 
 
     private void initRxTime() {

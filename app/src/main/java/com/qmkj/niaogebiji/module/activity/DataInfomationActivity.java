@@ -88,8 +88,6 @@ public class DataInfomationActivity extends BaseActivity {
 
         //获取新闻id
         newsId = getIntent().getStringExtra("newsId");
-        newsId = "23654";
-
         showWaitingDialog();
         detail();
     }

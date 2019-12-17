@@ -44,11 +44,14 @@ public class RegisterLoginBean extends BaseBean {
         private String from_uid;
         //1 男 2 女
         private String gender;
+        private String birthday;
         private String company_name;
         private String appname;
         private String level;
         private String type;
+        //注册类型：1-鸟哥笔记，2-渠道点评，3-鸟哥ASO
         private String reg_type;
+        private String is_aso_target;
         private String chn_code;
         private String company_abbr;
         private String link;
@@ -56,6 +59,8 @@ public class RegisterLoginBean extends BaseBean {
         private String position;
         private String card;
         private String point;
+        private String add_point;
+        private String invite_num;
         private String is_pro;
         private String pro_summary;
         private String auth_email_status;
@@ -65,7 +70,10 @@ public class RegisterLoginBean extends BaseBean {
         private String ban_time;
         private String reg_time;
         private String status;
+        private String act_state;
         private String created_at;
+        private String is_first_applogin;
+        private String ssid;
         private int is_wechat_bind;
         private String access_token;
         private String signed_today;
@@ -74,10 +82,95 @@ public class RegisterLoginBean extends BaseBean {
         //微信登录
         private String wechat_token;
 
-        private String birthday;
-
         //邀请信息
         private String invite_url;
+
+
+        private String per_profession;
+        private String per_career;
+        private String vip_start_date;
+        private String vip_end_date;
+
+
+        public String getIs_aso_target() {
+            return is_aso_target;
+        }
+
+        public void setIs_aso_target(String is_aso_target) {
+            this.is_aso_target = is_aso_target;
+        }
+
+        public String getAdd_point() {
+            return add_point;
+        }
+
+        public void setAdd_point(String add_point) {
+            this.add_point = add_point;
+        }
+
+        public String getInvite_num() {
+            return invite_num;
+        }
+
+        public void setInvite_num(String invite_num) {
+            this.invite_num = invite_num;
+        }
+
+        public String getAct_state() {
+            return act_state;
+        }
+
+        public void setAct_state(String act_state) {
+            this.act_state = act_state;
+        }
+
+        public String getIs_first_applogin() {
+            return is_first_applogin;
+        }
+
+        public void setIs_first_applogin(String is_first_applogin) {
+            this.is_first_applogin = is_first_applogin;
+        }
+
+        public String getSsid() {
+            return ssid;
+        }
+
+        public void setSsid(String ssid) {
+            this.ssid = ssid;
+        }
+
+        public String getPer_profession() {
+            return per_profession;
+        }
+
+        public void setPer_profession(String per_profession) {
+            this.per_profession = per_profession;
+        }
+
+        public String getPer_career() {
+            return per_career;
+        }
+
+        public void setPer_career(String per_career) {
+            this.per_career = per_career;
+        }
+
+        public String getVip_start_date() {
+            return vip_start_date;
+        }
+
+        public void setVip_start_date(String vip_start_date) {
+            this.vip_start_date = vip_start_date;
+        }
+
+        public String getVip_end_date() {
+            return vip_end_date;
+        }
+
+        public void setVip_end_date(String vip_end_date) {
+            this.vip_end_date = vip_end_date;
+        }
 
         public String getInvite_url() {
             return invite_url;

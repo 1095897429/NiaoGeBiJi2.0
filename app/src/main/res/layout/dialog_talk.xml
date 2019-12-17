@@ -8,72 +8,126 @@
     <LinearLayout
         android:id="@+id/ll_input"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/bg_corners_left_16_right"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="13dp"
-            android:paddingBottom="13dp"
-            android:background="@drawable/bg_corners_left_16_right"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="150dp"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/cancel"
-                android:layout_width="wrap_content"
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="取消"
-                android:gravity="center|left"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:background="@drawable/bg_corners_left_16_right"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="取消"
+                    android:gravity="center|left"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/send"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|right"
+                    android:text="发布"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:background="@drawable/bg_corners_6_selector"
+                    android:textColor="#CC818386"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/line1"
+                android:layout_above="@+id/bottom_part"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"></View>
+
+            <EditText
+                android:id="@+id/et_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:lineSpacingExtra="2dp"
+                android:layout_marginBottom="16dp"
+                android:background="@null"
+                android:focusable="true"
+                android:hint=""
+                android:textColorHint="@color/text_second_color"
+                android:focusableInTouchMode="true"
+                android:gravity="left"
+                android:paddingTop="10dp"
                 android:textColor="@color/text_first_color"
                 android:textSize="16sp" />
 
 
-            <TextView
-                android:id="@+id/send"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center|right"
-                android:text="发布"
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/comment_succuss_transfer"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/line2"
+                android:layout_above="@+id/bottom_part"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"></View>
+
+            <LinearLayout
+                android:id="@+id/bottom_part"
+                android:layout_width="match_parent"
+                android:gravity="center|left"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:background="@drawable/bg_corners_6_selector"
-                android:textColor="#CC818386"
-                android:textSize="16sp" />
-        </RelativeLayout>
+                android:layout_height="36dp"
+                android:orientation="horizontal">
 
-        <View
-            android:id="@+id/line1"
-            android:layout_above="@+id/bottom_part"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/divider_line"></View>
 
-        <EditText
-            android:id="@+id/et_input"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:lineSpacingExtra="2dp"
-            android:layout_marginBottom="16dp"
-            android:background="@null"
-            android:focusable="true"
-            android:hint="回复 某某某"
-            android:textColorHint="@color/text_second_color"
-            android:focusableInTouchMode="true"
-            android:gravity="left"
-            android:paddingTop="10dp"
-            android:textColor="@color/text_first_color"
-            android:textSize="16sp" />
+                <CheckBox
+                    android:id="@+id/checkbox"
+                    android:gravity="center"
+                    style="@style/CustomCheckBoxTheme"
+                    android:padding="5dp"
+                    android:checked="true"
+                    android:background="@null"
+                    android:textColor="@color/text_second_color"
+                    android:text="评论成功转发到圈子"
+                    android:textSize="13sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
     </LinearLayout>
 
 </RelativeLayout>

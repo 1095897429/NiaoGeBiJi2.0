@@ -39,6 +39,7 @@ import com.qmkj.niaogebiji.module.bean.FlashOkBean;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.MyLoadMoreView;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -129,6 +130,8 @@ public class FlashFragment extends BaseLazyFragment  {
     }
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mBuilltinBeans.clear();

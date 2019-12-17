@@ -24,6 +24,7 @@ import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -195,6 +196,8 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
 
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         //下拉刷新
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {

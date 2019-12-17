@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -9,23 +11,36 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
+import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.MyBean;
+import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +50,9 @@ import butterknife.OnClick;
 import cn.udesk.UdeskSDKManager;
 import cn.udesk.callback.IUdeskFormCallBack;
 import cn.udesk.config.UdeskConfig;
+import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import udesk.core.UdeskConst;
 
 /**
@@ -64,6 +82,14 @@ public class MyFragment extends BaseLazyFragment {
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.head_icon)
+    CircleImageView head_icon;
+
+
+    @BindView(R.id.vip_time)
+    TextView vip_time;
+
 
     //适配器
     MyItemAdapter mMyItemAdapter;
@@ -95,6 +121,9 @@ public class MyFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+
+        getUserInfo();
+
         initLayout();
         getData();
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
@@ -113,7 +142,93 @@ public class MyFragment extends BaseLazyFragment {
 
         }else{
             //resume
+            mUserInfo = StringUtil.getUserInfoBean();
+            if(null != mUserInfo){
+                getUserInfo();
+            }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mUserInfo = StringUtil.getUserInfoBean();
+        if(null != mUserInfo){
+            getUserInfo();
+        }
+    }
+
+
+    private void getUserInfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+                        mUserInfo = response.getReturn_data();
+                        if(null != mUserInfo){
+                            setUserInfo();
+                        }
+                    }
+                });
+
+    }
+
+    private void setUserInfo() {
+        if(null != mUserInfo){
+
+            //vip时间 20191216
+            String vipstart = mUserInfo.getVip_start_date();
+            vipstart = "2019-12-16";
+            String vipend = mUserInfo.getVip_end_date();
+            vipend = "2019-12-18";
+
+            //TODO 计算时间差
+            int space =  TimeAppUtils.stringDaysBetween(vipstart,vipend);
+            vip_time.setText("鸟哥笔记VIP剩余"+ space + "天");
+
+            TextPaint paint = name.getPaint();
+            paint.setFakeBoldText(true);
+
+            if(!TextUtils.isEmpty(mUserInfo.getNickname())){
+                name.setText(mUserInfo.getNickname());
+            }else{
+                name.setText(mUserInfo.getName());
+            }
+
+            if(!TextUtils.isEmpty(mUserInfo.getPro_summary())){
+                name_tag.setText(mUserInfo.getPro_summary());
+            }else{
+                name_tag.setText("写一句话介绍一下自己");
+            }
+
+            ImageUtil.load(mContext,mUserInfo.getAvatar(),head_icon);
+
+            //个人中心消息通知：1-有新消息，0-无新消息
+            if("1".equals(mUserInfo.getIs_red())){
+
+            }else{
+
+            }
+
+            //更新本地用户信息
+            StringUtil.setUserInfoBean(mUserInfo);
+
+            if(!TextUtils.isEmpty(mUserInfo.getPoint())){
+                feather_count.setText(mUserInfo.getPoint());
+            }
+
+            TextPaint paint2 = feather_count.getPaint();
+            paint2.setFakeBoldText(true);
+
+            TextPaint paint3 = medal_count.getPaint();
+            paint3.setFakeBoldText(true);
+        }
+
     }
 
 
@@ -154,6 +269,9 @@ public class MyFragment extends BaseLazyFragment {
                     break;
                 case 3:
                     KLog.d("tag","去 h5的我的动态");
+                    String link = Constant.TEST_URL + "myactivity/";
+                    UIHelper.toWebViewActivity(getActivity(),link);
+
                     break;
                 case 4:
                     UIHelper.toMyCollectionListActivity(getActivity());
@@ -184,15 +302,16 @@ public class MyFragment extends BaseLazyFragment {
         switch (view.getId()){
             case R.id.toUserInfo:
 
-//                UIHelper.toUserInfoActivity(getActivity());
-
                 UIHelper.toLoginActivity(getActivity());
+
+//                UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
+
                 break;
             case R.id.advice_ll:
                 toUDesk();
                 break;
             case R.id.toQue:
-                KLog.d("tag","h5 页面");
+                ToastUtils.showShort("h5 页面");
                 break;
             case R.id.about_ll:
                 UIHelper.toAboutUsActivity(getActivity());
@@ -247,9 +366,40 @@ public class MyFragment extends BaseLazyFragment {
         builder.setUseMore(true);
         builder.setUserForm(true);
         builder.setUserSDkPush(true);
-        builder.setFormCallBack(context -> KLog.d("tag","jkkkk"));
+        builder.setFormCallBack(context -> {
+            getServiceWechatPic();
+        });
         builder.setDefualtUserInfo(info);
         UdeskSDKManager.getInstance().entryChat(BaseApp.getApplication(), builder.build(), sdktoken);
+    }
+
+
+    /** --------------------------------- 意见反馈  ---------------------------------*/
+    //临时存储变量
+    private OfficialBean mOfficialBean;
+    private String advice_url;
+
+    private void getServiceWechatPic() {
+        Map<String,String> map = new HashMap<>();
+
+        String result = RetrofitHelper.commonParam(map);
+
+        RetrofitHelper.getApiService().getServiceWechatPic(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<OfficialBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<OfficialBean> response) {
+                        KLog.e("tag",response.getReturn_code());
+                        mOfficialBean = response.getReturn_data();
+                        if(null != mOfficialBean){
+                            advice_url = mOfficialBean.getQuestion_url();
+                            UIHelper.toWebViewActivity(getActivity(),advice_url);
+                        }
+                    }
+
+                });
     }
 
 

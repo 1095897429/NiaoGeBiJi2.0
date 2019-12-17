@@ -15,6 +15,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
@@ -80,7 +81,6 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
         KLog.d("tag", "type:------> 1 是登录 :  2是分享       " + type);
         switch (baseResp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
-
                 //用户同意
                 if (type == RETURN_MSG_TYPE_LOGIN) {
                     //用户换取access_token的code，仅在ErrCode为0时有效
@@ -141,13 +141,17 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                         KLog.d("tag","用户状态 " + response.getReturn_data().getStatus());
                         mWxResultBean = response.getReturn_data();
                         if(null != mWxResultBean){
-                            KLog.e("tag","token 是 " + response.getReturn_data().getAccess_token());
-                            String status  = mWxResultBean.getStatus();
-                            //保存一个对象
-                            StringUtil.setUserInfoBean(mWxResultBean);
-                            SPUtils.getInstance().put(Constant.IS_LOGIN,true);
-                            finish();
+                            KLog.e("tag","wechatoken 是 " + response.getReturn_data().getWechat_token());
+                            //wechat_token（不为空) 是 新用户
+                            if(!TextUtils.isEmpty(mWxResultBean.getWechat_token())){
+                                UIHelper.toPhoneInputActivity(WXEntryActivity.this,"weixin");
+                            }else{
+                                RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                                UIHelper.toHomeActivity(WXEntryActivity.this,0);
+                                StringUtil.setUserInfoBean(mUserInfo);
+                            }
 
+                            finish();
                         }
                     }
 

@@ -4,118 +4,132 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/part1111"
-        android:paddingTop="@dimen/status_bar_height"
-        android:background="@mipmap/icon_login_big"
+    <androidx.core.widget.NestedScrollView
+        android:overScrollMode="never"
         android:layout_width="match_parent"
-        android:layout_height="429dp"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="19dp"
-            android:id="@+id/iv_back"
-            android:src="@mipmap/icon_login_back"
-            android:layout_width="28dp"
-            android:layout_height="28dp" />
-
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_below="@+id/part1111"
-        android:id="@+id/part2222"
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical">
-
-
-    <LinearLayout
-        android:id="@+id/weixinLogin"
-        android:background="@drawable/bg_corners_12_green"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="52dp"
-        android:orientation="vertical">
-
-
-        <ImageView
-            android:src="@mipmap/icon_login_wx"
-            android:layout_width="100dp"
-            android:layout_height="24dp" />
-
-
-    </LinearLayout>
-
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-
-
-    <LinearLayout
-        android:id="@+id/phoneLogin"
-        android:background="@drawable/bg_corners_12_gray"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="52dp"
-        android:orientation="vertical">
-
-
-
-        <TextView
-            android:text="手机号登录"
-            android:textSize="16sp"
-            android:textColor="@color/text_first_color"
-            android:layout_width="80dp"
-            android:layout_height="24dp" />
-
-
-    </LinearLayout>
-
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <CheckBox
-                android:id="@+id/checkbox"
-                style="@style/CustomCheckBoxTheme"
-                android:checked="true"
-                android:textColor="#AAAEB3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <Space
-                android:layout_width="4dp"
-                android:layout_height="match_parent" />
+            <LinearLayout
+                android:id="@+id/part1111"
+                android:paddingTop="@dimen/status_bar_height"
+                android:background="@mipmap/icon_login_big"
+                android:layout_width="match_parent"
+                android:layout_height="429dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:textSize="11sp"
-                android:gravity="center"
-                android:id="@+id/user_text"
-                android:text="@string/login_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="19dp"
+                    android:id="@+id/iv_back"
+                    android:src="@mipmap/icon_login_back"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp" />
 
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_below="@+id/part1111"
+                android:id="@+id/part2222"
+                android:layout_marginTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/weixinLogin"
+                    android:background="@drawable/bg_corners_12_green"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="52dp"
+                    android:orientation="vertical">
+
+
+                    <ImageView
+                        android:src="@mipmap/icon_login_wx"
+                        android:layout_width="100dp"
+                        android:layout_height="24dp" />
+
+
+                </LinearLayout>
+
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp" />
+
+
+                <LinearLayout
+                    android:id="@+id/phoneLogin"
+                    android:background="@drawable/bg_corners_12_gray"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="52dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:text="手机号登录"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="80dp"
+                        android:layout_height="24dp" />
+
+
+                </LinearLayout>
+
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/checkbox"
+                        style="@style/CustomCheckBoxTheme"
+                        android:checked="true"
+                        android:textColor="#AAAEB3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <Space
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:textSize="10sp"
+                        android:gravity="center|left"
+                        android:id="@+id/user_text"
+                        android:text="@string/login_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
-
-
-</LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 
 

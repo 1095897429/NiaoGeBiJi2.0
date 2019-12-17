@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.common.util.UriUtil;
@@ -39,24 +40,40 @@ import com.igalata.bubblepicker.model.PickerItem;
 import com.igalata.bubblepicker.rendering.BubblePicker;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.ProfessionItemAdapter;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
+import com.qmkj.niaogebiji.module.bean.ProfressionBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
+import com.qmkj.niaogebiji.module.bean.TestNewBean;
+import com.qmkj.niaogebiji.module.event.ProDoneEvent;
 import com.qmkj.niaogebiji.module.widget.GlideLoader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -103,8 +120,10 @@ public class MoreKnowYouActivity extends BaseActivity {
 
     Typeface mediumTypeface;
 
-    Set<PickerItem> mSet = new HashSet<>();
+    private ArrayList<ProBean>  list;
 
+    Set<PickerItem> mSet = new HashSet<>();
+    private int [] ids = new int[]{1,2,3,4,5,6};
     private String[] names = new String[]{"莘莘学子","初入职场","三年筑基","五年结丹","十年洞虚","其他"};
     private int[] images = new int[]{R.mipmap.icon_pic_1,R.mipmap.icon_pic_2,R.mipmap.icon_pic_3,
             R.mipmap.icon_pic_5,R.mipmap.icon_pic_10,R.mipmap.icon_pic_other};
@@ -117,15 +136,21 @@ public class MoreKnowYouActivity extends BaseActivity {
     @Override
     protected void initView() {
         mediumTypeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/roboto_medium.ttf");
-
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/DIN-Bold.otf");
         text_progress.setTypeface(typeface);
+
+        list = (ArrayList<ProBean>) getIntent().getSerializableExtra("list");
+
+        getDynamicData();
     }
+
+
 
     @Override
     public void initData() {
-        getDynamicData();
+
         initLayout();
+
         getData();
     }
 
@@ -144,6 +169,7 @@ public class MoreKnowYouActivity extends BaseActivity {
         ProBean proBean;
         for (int i = 0; i < images.length; i++) {
             proBean = new ProBean();
+            proBean.setId(ids[i]);
             proBean.setImg(images[i]);
             proBean.setName(names[i]);
             mAllList.add(proBean);
@@ -151,9 +177,7 @@ public class MoreKnowYouActivity extends BaseActivity {
         mProfessionItemAdapter.setNewData(mAllList);
     }
 
-
     private void getDynamicData() {
-
 
         final String[] titles = getResources().getStringArray(R.array.countries);
         final TypedArray colors = getResources().obtainTypedArray(R.array.colors);
@@ -161,17 +185,18 @@ public class MoreKnowYouActivity extends BaseActivity {
         picker.setAdapter(new BubblePickerAdapter() {
             @Override
             public int getTotalCount() {
-                return titles.length;
+                return list.size();
             }
 
             @NotNull
             @Override
             public PickerItem getItem(int position) {
                 PickerItem item = new PickerItem();
-                item.setTitle(titles[position]);
+                item.setTitle(list.get(position).getName());
                 item.setTypeface(mediumTypeface);
                 item.setTextColor(ContextCompat.getColor(MoreKnowYouActivity.this, android.R.color.white));
                 item.setColor(colors.getColor((position * 2) % 8,0));
+
                 return item;
             }
         });
@@ -179,8 +204,10 @@ public class MoreKnowYouActivity extends BaseActivity {
         colors.recycle();
 
         picker.setCenterImmediately(true);
+        //单选
+        picker.setMaxSelectedCount(1);
 
-        picker.setBubbleSize(20);
+        picker.setBubbleSize(list.size());
 
         picker.setListener(new BubblePickerListener() {
             @Override
@@ -229,7 +256,7 @@ public class MoreKnowYouActivity extends BaseActivity {
         animation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-
+                personal();
             }
 
             @Override
@@ -253,6 +280,7 @@ public class MoreKnowYouActivity extends BaseActivity {
     }
 
 
+
     @OnClick({R.id.toNext,R.id.toCancle,
             R.id.toNext2,R.id.toCancle2,
             R.id.toComplete
@@ -273,6 +301,12 @@ public class MoreKnowYouActivity extends BaseActivity {
                 part11.setVisibility(View.GONE);
                 part22.setVisibility(View.GONE);
                 calcate_part.setVisibility(View.GONE);
+
+                //保存状态
+                SPUtils.getInstance().put("is_done",true);
+
+                EventBus.getDefault().post(new ProDoneEvent());
+
                 finish();
             case R.id.toNext:
                 KLog.d("tag","大小是 ： " + mSet.size() + "" );
@@ -343,6 +377,10 @@ public class MoreKnowYouActivity extends BaseActivity {
         mProfessionItemAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的是 position " + position );
             List<ProBean> mDatas = adapter.getData();
+
+            //获取Id
+            career  = mDatas.get(position).getId();
+
             //① 将所有的selected设置false，当前点击的设为true
             for (ProBean data : mDatas) {
                 data.setSelect(false);
@@ -354,9 +392,40 @@ public class MoreKnowYouActivity extends BaseActivity {
             toNext2.setEnabled(true);
             toNext2.setBackgroundResource(R.drawable.bg_corners_12_yellow);
         });
-
     }
 
+    private int profession;
+    private int career;
+    private void personal() {
 
+        if(!mSet.isEmpty()){
+            Iterator<PickerItem> it = mSet.iterator();
+            if(it.hasNext()){
+                String title = it.next().getTitle();
+                for (int i = 0; i < list.size(); i++) {
+                    if(title.equals(list.get(i).getName())){
+                        profession = list.get(i).getId();
+                        break;
+                    }
+                }
+            }
+        }
+
+        Map<String,String> map = new HashMap<>();
+        map.put("profession",profession + "");
+        map.put("career",career + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().personal(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
+    }
 
 }

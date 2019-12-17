@@ -39,6 +39,7 @@ import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
+import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
@@ -76,14 +77,16 @@ public class UIHelper {
     }
 
     /** 打开输入手机界面 */
-    public static void toPhoneInputActivity(Context ctx) {
+    public static void toPhoneInputActivity(Context ctx,String loginType) {
         Intent intent = new Intent(ctx, PhoneInputActivity.class);
+        intent.putExtra("loginType",loginType);
         ctx.startActivity(intent);
     }
 
     /** 打开验证码界面 */
-    public static void toVertifyCodeActivity(Context ctx,String phone) {
+    public static void toVertifyCodeActivity(Context ctx,String phone,String loginType) {
         Intent intent = new Intent(ctx, VertifyCodeActivity.class);
+        intent.putExtra("loginType",loginType);
         intent.putExtra("phone",phone);
         ctx.startActivity(intent);
     }
@@ -114,8 +117,9 @@ public class UIHelper {
     }
 
     /** 打开资料详情界面 */
-    public static void toDataInfoActivity(Context ctx) {
+    public static void toDataInfoActivity(Context ctx,String newsId) {
         Intent intent = new Intent(ctx, DataInfomationActivity.class);
+        intent.putExtra("newsId",newsId);
         ctx.startActivity(intent);
     }
 
@@ -254,8 +258,9 @@ public class UIHelper {
     }
 
     /** 打开个人信息界面 */
-    public static void toUserInfoActivity(Context ctx) {
+    public static void toUserInfoActivity(Context ctx,String uid) {
         Intent intent = new Intent(ctx, UserInfoActivity.class);
+        intent.putExtra("uid",uid);
         ctx.startActivity(intent);
     }
 
@@ -293,9 +298,13 @@ public class UIHelper {
 
 
     /** 打开更懂你界面 */
-    public static void toMoreKnowYouActivity(Context ctx) {
+    public static void toMoreKnowYouActivity(Activity ctx, ArrayList<ProBean> list) {
         Intent intent = new Intent(ctx, MoreKnowYouActivity.class);
-        ctx.startActivity(intent);
+        Bundle bundle  = new Bundle();
+        //序列化,要注意转化(Serializable)
+        bundle.putSerializable("list",list);
+        intent.putExtras(bundle);
+        ctx.startActivityForResult(intent,100);
     }
 
 }

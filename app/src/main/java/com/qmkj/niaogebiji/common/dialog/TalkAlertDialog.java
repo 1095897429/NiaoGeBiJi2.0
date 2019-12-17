@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -33,8 +34,20 @@ public class TalkAlertDialog {
     private TextView cancel;
     private TextView send;
 
+    private LinearLayout comment_succuss_transfer;
+
     //默认是评论文章
     private int myPosition = -1;
+
+    //文章需要转发 圈子不需要
+    private boolean isneedtotrans ;
+
+    public void setIsneedtotrans(boolean isneedtotrans) {
+        this.isneedtotrans = isneedtotrans;
+        if(isneedtotrans){
+            comment_succuss_transfer.setVisibility(View.VISIBLE);
+        }
+    }
 
     public void setMyPosition(int myPosition) {
         this.myPosition = myPosition;
@@ -53,13 +66,20 @@ public class TalkAlertDialog {
 
     /** 回调接口 结束 */
 
-
-
     public TalkAlertDialog(Context context){
         mContext = context;
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         display = windowManager.getDefaultDisplay();
     }
+
+
+    //点击item时获取要被评论的人
+    public TalkAlertDialog setHint(String name) {
+        et_input.setHint("回复 "  + name);
+        return this;
+    }
+
+
 
 
     public TalkAlertDialog builder(){
@@ -68,6 +88,7 @@ public class TalkAlertDialog {
         et_input = view.findViewById(R.id.et_input);
         send = view.findViewById(R.id.send);
         cancel = view.findViewById(R.id.cancel);
+        comment_succuss_transfer = view.findViewById(R.id.comment_succuss_transfer);
         // 获取自定义Dialog布局中的控件
         dialog = new Dialog(mContext, R.style.MyDialog);
 

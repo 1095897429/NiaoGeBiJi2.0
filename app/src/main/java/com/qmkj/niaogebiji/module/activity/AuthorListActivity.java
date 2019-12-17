@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -166,6 +167,10 @@ public class AuthorListActivity extends BaseActivity {
         mAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {
             AuthorBean.Author mAuthor = mAuthorAdapter.getData().get(position);
             KLog.d("tag","点击的是 position " + position );
+
+//            String link = Constant.TEST_URL + "authordetail/" + mAuthor.getId();
+            String link = "http://192.168.14.103:8081/"+ "authordetail/" + mAuthor.getId();
+            UIHelper.toWebViewActivity(AuthorListActivity.this,link);
         });
 
         //关注事件

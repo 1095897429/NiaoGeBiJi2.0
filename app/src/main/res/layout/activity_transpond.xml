@@ -97,7 +97,7 @@
 
             <LinearLayout
                 android:id="@+id/part2222"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"

@@ -1,6 +1,5 @@
 package com.qmkj.niaogebiji.module.activity;
 
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebChromeClient;
@@ -20,7 +18,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +27,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -39,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.ActiclePointDialog;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.QuestionResultErrorDialog;
@@ -59,11 +56,14 @@ import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.TestLaunchItemAdapter;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
+import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
@@ -72,6 +72,7 @@ import com.qmkj.niaogebiji.module.event.AudioEvent1;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ObservableScrollView;
+import com.qmkj.niaogebiji.module.widget.RCImageView;
 import com.qmkj.niaogebiji.module.widget.StarBar;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -82,6 +83,7 @@ import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
 
 import org.greenrobot.eventbus.EventBus;
+import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,6 +105,10 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-14
  * 描述:文章详情页
+ *   1.catid = 113 是带有音频的早报明细
+ *   2.评论文章成功后，是否显示此条评论
+ *   3.评论某条一级评论，并不显示回复
+ *   4.评论某条一级评论下的评论，显示【回复】
  */
 public class NewsDetailActivity extends BaseActivity {
 
@@ -160,8 +166,6 @@ public class NewsDetailActivity extends BaseActivity {
     @BindView(R.id.part_test)
     LinearLayout part_test;
 
-    @BindView(R.id.num_feather)
-    TextView num_feather;
 
     @BindView(R.id.num_feather_text)
     TextView num_feather_text;
@@ -184,6 +188,42 @@ public class NewsDetailActivity extends BaseActivity {
 
     @BindView(R.id.news_play)
     ImageView news_play;
+
+    @BindView(R.id.rl_audio)
+    RelativeLayout rl_audio;
+
+    @BindView(R.id.summary_text)
+    TextView summary_text;
+
+    @BindView(R.id.audio_summary)
+    TextView audio_summary;
+
+
+    @BindView(R.id.big_pic)
+    RCImageView big_pic;
+
+
+    @BindView(R.id.data_link_title)
+    TextView data_link_title;
+
+    @BindView(R.id.data_link_num_feather)
+    TextView data_link_num_feather;
+
+    @BindView(R.id.data_link_num_down)
+    TextView data_link_num_down;
+
+    @BindView(R.id.allready_remark)
+    LinearLayout allready_remark;
+
+
+    @BindView(R.id.toRating)
+    TextView toRating;
+
+    @BindView(R.id.ll_data)
+    LinearLayout ll_data;
+
+
+
 
 
     //文章的id
@@ -250,7 +290,8 @@ public class NewsDetailActivity extends BaseActivity {
 
                 break;
             case R.id.toLlTalk:
-                showTalkDialog(-1,"111","first");
+                //回复文章中间参数为 ""
+                showTalkDialog(-1,"","aimToActicle","");
                 break;
             case R.id.comment:
                 scrollView.post(() -> {
@@ -276,20 +317,17 @@ public class NewsDetailActivity extends BaseActivity {
                 }
                 break;
             case R.id.toRating:
-//                if(null != mNewsDetailBean){
-//                    if("0".equals(mNewsDetailBean.getIs_add_point())){
-//                        showActiclePointDialog();
-//                    }else{
-//                        return;
-//                    }
-//                }
                 showActiclePointDialog();
                 break;
             case R.id.toDown:
                 //没下载，走下载逻辑  下载过了，详情页
-                if(true){
-                    UIHelper.toDataInfoActivity(this);
-                }else{
+                String is_dl = mNewsDetailBean.getIs_dl();
+                if("1".equals(is_dl)){
+                    String aid = mNewsDetailBean.getAid();
+                    if(!TextUtils.isEmpty(aid)){
+                        UIHelper.toDataInfoActivity(this,aid);
+                    }
+                }else if("0".equals(is_dl)){
                     showDownDialog();
                 }
 
@@ -340,8 +378,41 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
 
+    String catId;
+    String summary;
+    String dataLink;
+    String dl_link_code;
     private void commonLogic() {
 
+        //相关资料
+        if(!TextUtils.isEmpty(mNewsDetailBean.getDl_mat_title())){
+            data_link_title.setText(mNewsDetailBean.getDl_mat_title());
+            data_link_num_feather.setText(mNewsDetailBean.getDl_point());
+            data_link_num_down.setText("下载数 " + mNewsDetailBean.getDl_times());
+            dataLink = mNewsDetailBean.getDl_link();
+            dl_link_code = mNewsDetailBean.getDl_link_code();
+            ll_data.setVisibility(View.VISIBLE);
+        }
+
+        //文章概述
+        summary = mNewsDetailBean.getSummary();
+        if(TextUtils.isEmpty(summary)){
+            summary = "没数据，测试数据";
+        }
+        //文章类型 catid = 113 是带有音频的文章
+        catId = mNewsDetailBean.getCatid();
+        if(!TextUtils.isEmpty(catId) && "113".equals(catId)){
+            rl_audio.setVisibility(View.VISIBLE);
+            audio_summary.setText(summary);
+        }else{
+            summary_text.setVisibility(View.VISIBLE);
+            summary_text.setText(summary);
+        }
+
+        //大图
+        if(!TextUtils.isEmpty(mNewsDetailBean.getPic())){
+            ImageUtil.load(this,mNewsDetailBean.getPic(),big_pic);
+        }
 
 
         title.setText(mNewsDetailBean.getTitle());
@@ -375,7 +446,20 @@ public class NewsDetailActivity extends BaseActivity {
                 starBar.setIntegerMark(true);
                 starBar.setStarMark(Float.parseFloat(mNewsDetailBean.getArticle_point()));
 
-                starMyBar.setStarMark(4.0f);
+                //是否评分过
+                String is_add_point = mNewsDetailBean.getIs_add_point();
+                if("0".equals(is_add_point)){
+                    toRating.setVisibility(View.VISIBLE);
+                }else if("1".equals(is_add_point)){
+                    allready_remark.setVisibility(View.VISIBLE);
+                    String my_add_point = mNewsDetailBean.getMy_add_point();
+                    if(!TextUtils.isEmpty(my_add_point)){
+                        starMyBar.setStarMark(Float.parseFloat(my_add_point));
+                    }
+
+                }
+
+
 
                 //源头上拦截事件
                 starBar.setOnTouchListener((view, motionEvent) -> true);
@@ -388,8 +472,6 @@ public class NewsDetailActivity extends BaseActivity {
         getWebData();
         //扩展阅读
         getMoreReadData();
-        //评论
-        getCommentData();
         //测一测
         getTestData();
         //相关资料
@@ -399,7 +481,7 @@ public class NewsDetailActivity extends BaseActivity {
     private void getRelativeData() {
         //设置样式
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
-        num_feather.setTypeface(typeface);
+        data_link_num_feather.setTypeface(typeface);
         num_feather_text.setTypeface(typeface);
 
     }
@@ -432,18 +514,17 @@ public class NewsDetailActivity extends BaseActivity {
                 mTestLaunchItemAdapter.getData().get(i).setClick(true);
             }
 
-            if(!rightAnswer.equals(myAnswer)){
+            if(!TextUtils.isEmpty(rightAnswer) && !rightAnswer.equals(myAnswer)){
                 //设置正确答案外框
                 int rightPostion = Integer.parseInt(rightAnswer) - 1;
                 mTestLaunchItemAdapter.getData().get(rightPostion).setError(true);
+                //设置自己选的答案
+                int myPosition = Integer.parseInt(myAnswer) - 1;
+                mTestLaunchItemAdapter.getData().get(myPosition).setSelect(true);
+                //设置提交按钮隐藏
+                test_submit.setVisibility(View.GONE);
             }
 
-            //设置自己选的答案
-            int myPosition = Integer.parseInt(myAnswer) - 1;
-            mTestLaunchItemAdapter.getData().get(myPosition).setSelect(true);
-
-            //设置提交按钮隐藏
-            test_submit.setVisibility(View.GONE);
         }
     }
 
@@ -634,21 +715,20 @@ public class NewsDetailActivity extends BaseActivity {
         if(null != mRelateList && !mRelateList.isEmpty()){
             initMoreReadListLayout();
             MultiNewsBean bean;
-            NewsItemBean newsItemBean;
-            if(null != mRelateList && !mRelateList.isEmpty()){
-                for (NewsDetailBean.Relate temp : mRelateList) {
-                    newsItemBean  = new NewsItemBean();
-                    newsItemBean.setAid(temp.getAid());
-                    newsItemBean.setAuthor(temp.getAuthor());
-                    newsItemBean.setTitle(temp.getTitle());
-                    newsItemBean.setPic(temp.getPic());
-                    newsItemBean.setPublished_at(temp.getPublished_at());
+            RecommendBean.Article_list newsItemBean;
+            //TODO 之前是NewsItemBean,现在是RecommendBean.Article_list
+            for (NewsDetailBean.Relate temp : mRelateList) {
+                newsItemBean  = new RecommendBean.Article_list();
+                newsItemBean.setAid(temp.getAid());
+                newsItemBean.setAuthor(temp.getAuthor());
+                newsItemBean.setTitle(temp.getTitle());
+                newsItemBean.setPic(temp.getPic());
+                newsItemBean.setPublished_at(temp.getPublished_at());
 
-                    bean = new MultiNewsBean();
-                    bean.setItemType(1);
-                    bean.setNewsItemBean(newsItemBean);
-                    mMultiNewsBeanList.add(bean);
-                }
+                bean = new MultiNewsBean();
+                bean.setItemType(1);
+                bean.setNewsActicleList(newsItemBean);
+                mMultiNewsBeanList.add(bean);
             }
 
             mFirstItemNewAdapter.setNewData(mMultiNewsBeanList);
@@ -678,7 +758,7 @@ public class NewsDetailActivity extends BaseActivity {
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    String aid = mMultiNewsBeanList.get(position).getNewsItemBean().getAid();
+                    String aid = mMultiNewsBeanList.get(position).getNewsActicleList().getAid();
                     if(!TextUtils.isEmpty(aid)){
                         UIHelper.toNewsDetailActivity(NewsDetailActivity.this,aid);
                     }
@@ -952,6 +1032,11 @@ public class NewsDetailActivity extends BaseActivity {
                             //改变状态
                             mNewsDetailBean.setIs_add_point("1");
 
+                            //手动设值
+                            toRating.setVisibility(View.GONE);
+                            allready_remark.setVisibility(View.VISIBLE);
+                            starMyBar.setStarMark((float) value);
+
                             int result = mActiclePointBean.getIs_show_tip();
                             //1显示 0 不显示羽毛数）
                             if("1".equals(result)){
@@ -1008,7 +1093,6 @@ public class NewsDetailActivity extends BaseActivity {
         RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
         if(null != userInfo){
             String myPoint = userInfo.getPoint();
-            myPoint = "40";
             String needPoint = mNewsDetailBean.getPointnum();
 
             int result = myPoint.compareTo(needPoint);
@@ -1075,18 +1159,22 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
     private void initCommentEvent() {
+
         mCommentAdapter.setOnItemClickListener((adapter, view, position) -> {
-            KLog.d("tag","点击一级评论去二级评论");
-            showSheetDialog();
-            getCommentData();
+            //直接弹框回复，并不是去二级界面
+            oneComment = mCommentAdapter.getData().get(position);
+            //这条评论的id
+            showTalkDialog(position, oneComment.getCid(),"aimTofirstcomment",oneComment.getUsername());
+
         });
 
         mCommentAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            KLog.d("tag","加载更多");
+            getCommentData();
         },more_comment_list);
 
-        setEmpty(mCommentAdapter);
+
+//        setEmpty(mCommentAdapter);
 
 
         mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
@@ -1096,9 +1184,7 @@ public class NewsDetailActivity extends BaseActivity {
                     break;
                 case R.id.toSecondComment:
                 case R.id.ll_has_second_comment:
-                    KLog.d("tag","点击一级评论去二级评论");
                     showSheetDialog();
-                    getCommentData();
                     break;
                 case R.id.comment_priase:
                     KLog.d("tag","帖子点赞");
@@ -1111,64 +1197,97 @@ public class NewsDetailActivity extends BaseActivity {
 
     //后台整体 Bean
     private CommentBean mTempCommentBean;
-
+    private List<CommentBean.FirstComment> mFirstComments;
     private void getCommentData(){
-//        Map<String,String> map = new HashMap<>();
-//        if(null != mNewsDetailBean){
-//            map.put("aid",mNewsDetailBean.getAid());
-//        }
-//        map.put("page_no",page + "");
-//        map.put("page_size",pageSize + "");
-//        String result = RetrofitHelper.commonParam(map);
-//        RetrofitHelper.getApiService().commentList(result)
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-//                .subscribe(new BaseObserver<HttpResponse<com.qmkj.niaogebiji.module.bean.CommentBean>>() {
-//                    @Override
-//                    public void onSuccess(HttpResponse<com.qmkj.niaogebiji.module.bean.CommentBean> response) {
-//                        mTempCommentBean = response.getReturn_data();
-//                        if(null != mTempCommentBean){
-//
-//                        }
-//                    }
-//
-//                });
-
-        //模拟评论数据
-        CommentBean.FirstComment  bean1 ;
-        List<CommentBean.SecondComment> secondCommentList = new ArrayList<>();
-        List<CommentBean.SecondComment> secondCommentList2 = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            bean1 = new CommentBean.FirstComment();
-            //模拟一级评论下有一条评论
-            if(i == 0 ){
-                CommentBean.SecondComment secondComment = new CommentBean.SecondComment();
-                secondCommentList.add(secondComment);
-                bean1.setCommentslist(secondCommentList);
-            }else if(i == 1){
-                //模拟一级评论下有来两条评论
-                CommentBean.SecondComment secondComment = new CommentBean.SecondComment();
-                secondCommentList2.add(secondComment);
-                CommentBean.SecondComment secondComment2 = new CommentBean.SecondComment();
-                secondCommentList2.add(secondComment2);
-                bean1.setCommentslist(secondCommentList2);
-            }else{
-
-            }
-
-            bean1.setMessage("10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。");
-            mAllList.add(bean1);
+        Map<String,String> map = new HashMap<>();
+        if(null != mNewsDetailBean){
+            map.put("aid",mNewsDetailBean.getAid());
         }
+        map.put("page_no",page + "");
+        map.put("page_size",pageSize + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().commentList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<com.qmkj.niaogebiji.module.bean.CommentBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<com.qmkj.niaogebiji.module.bean.CommentBean> response) {
+                        mTempCommentBean = response.getReturn_data();
+                        if(null != mTempCommentBean){
+                            mFirstComments = mTempCommentBean.getList();
+                            //集合数据不为空
+                            if(null != mFirstComments){
+                                if(1 == page){
+                                    setData2();
+                                    mCommentAdapter.setNewData(tempList);
+                                    //如果第一次返回的数据不满10条，则显示无更多数据
+                                    if(mFirstComments.size() < Constant.SEERVER_NUM){
+                                        mCommentAdapter.loadMoreEnd();
+                                    }
+                                }else{
+                                    //已为加载更多有数据
+                                    if(mFirstComments != null && mFirstComments.size() > 0){
+                                        setData2();
+                                        mCommentAdapter.loadMoreComplete();
+                                        mCommentAdapter.addData(tempList);
+                                    }else{
+                                        //已为加载更多无更多数据
+                                        mCommentAdapter.loadMoreEnd();
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-        mCommentAdapter.setNewData(mAllList);
+                });
+
+//        //模拟评论数据
+//        CommentBean.FirstComment  bean1 ;
+//        List<CommentBean.SecondComment> secondCommentList = new ArrayList<>();
+//        List<CommentBean.SecondComment> secondCommentList2 = new ArrayList<>();
+//        for (int i = 0; i < 2; i++) {
+//            bean1 = new CommentBean.FirstComment();
+//            //模拟一级评论下有一条评论
+//            if(i == 0 ){
+//                CommentBean.SecondComment secondComment = new CommentBean.SecondComment();
+//                secondCommentList.add(secondComment);
+//                bean1.setCommentslist(secondCommentList);
+//            }else if(i == 1){
+//                //模拟一级评论下有来两条评论
+//                CommentBean.SecondComment secondComment = new CommentBean.SecondComment();
+//                secondCommentList2.add(secondComment);
+//                CommentBean.SecondComment secondComment2 = new CommentBean.SecondComment();
+//                secondCommentList2.add(secondComment2);
+//                bean1.setCommentslist(secondCommentList2);
+//            }else{
+//
+//            }
+//
+//            bean1.setMessage("10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。");
+//            mAllList.add(bean1);
+//        }
+//
+//        mCommentAdapter.setNewData(mAllList);
     }
 
+
+    //数据新增
+    List<CommentBean.FirstComment> tempList = new ArrayList<>();
+    private void setData2() {
+        tempList.clear();
+        CommentBean.FirstComment bean1 ;
+        for (int i = 0; i < mFirstComments.size(); i++) {
+            bean1 = mFirstComments.get(i);
+            tempList.add(bean1);
+        }
+    }
 
 
     /** --------------------------------- 二级弹框 评论  ---------------------------------*/
     int secondPage = 1;
     RelativeLayout totalk;
+    ImageView second_close;
     RecyclerView mSecondRV;
     BottomSheetDialog bottomSheetDialog;
     CommentSecondAdapter bottomSheetAdapter;
@@ -1204,8 +1323,10 @@ public class NewsDetailActivity extends BaseActivity {
     private void showSheetDialog() {
         View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
         mSecondRV = view.findViewById(R.id.recycler);
+        second_close = view.findViewById(R.id.second_close);
+        second_close.setOnClickListener(view12 -> bottomSheetDialog.dismiss());
         totalk = view.findViewById(R.id.totalk);
-        totalk.setOnClickListener(view1 -> showTalkDialog(-1,"111","second"));
+        totalk.setOnClickListener(view1 -> showTalkDialog(-1,"111","second",""));
 
         bottomSheetAdapter = new CommentSecondAdapter(list);
         mSecondRV.setHasFixedSize(true);
@@ -1249,26 +1370,66 @@ public class NewsDetailActivity extends BaseActivity {
         bottomSheetAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                showTalkDialog(position,"1111","second");
+                showTalkDialog(position,"1111","second","");
             }
         });
     }
 
 
 
-    //参数一 用于数据更新      参数三 评论一级 还是 评论二级
-    private void showTalkDialog(int position,String talkCid,String from) {
+    String words;
+    CommentBean.FirstComment oneComment;
+    //参数一 用于数据更新  参数二 评论id 或 ""表示文章id  参数三 评论一级 还是 评论二级
+    private void showTalkDialog(int position,String talkCid,String from,String replyWho) {
         final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
+        if(!TextUtils.isEmpty(replyWho)){
+            talkAlertDialog.setHint(replyWho);
+        }
+        talkAlertDialog.setIsneedtotrans(true);
         talkAlertDialog.setTalkLisenter((position1, words) -> {
             KLog.d("tag","接受到的文字是 " + words);
-            commentBulletin(position,words,talkCid,from);
+            this.words = words;
+            commentBulletinNew(position,words,talkCid,from);
+
         });
         talkAlertDialog.show();
     }
 
 
-    //追加一条数据，在之前的集合上
+
+    //target_id一直是文章的id  reply_id 为空则是文章评论  不为空为一级评论id
+    private void commentBulletinNew(int position,String content,String talkCid,String from) {
+        String target_id = mNewsDetailBean.getAid();
+        Map<String,String> map = new HashMap<>();
+        map.put("target_id",target_id);
+        map.put("content",content);
+        map.put("reply_id",talkCid);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().createComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<CommentOkBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<CommentOkBean> response) {
+                        KLog.d(response.getReturn_code());
+                        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                        ToastUtils.showShort("评论发布成功，审核后即可展示。优质评论将获得5羽毛");
+                        //直接刷新
+                        getCommentData();
+
+                        //TODO 10.12 评论成功不给与展示
+//                        CommentOkBean bean = response.getReturn_data();
+//                        updateListDataStatus(position,bean);
+                    }
+
+                });
+
+    }
+
+
+    //测试数据
     private void commentBulletin(int position,String content,String talkCid,String from) {
         if("first".equals(from)){
             //本地测试
@@ -1289,6 +1450,13 @@ public class NewsDetailActivity extends BaseActivity {
             list.add(bean);
             bottomSheetAdapter.notifyItemChanged(position);
         }
+
+        //勾选了转发到圈子选项
+        blog = words;
+        article_id = mNewsDetailBean.getAid();
+        article_title = mNewsDetailBean.getTitle();
+        article_image = mNewsDetailBean.getPic();
+        createBlog();
     }
 
 
@@ -1506,6 +1674,41 @@ public class NewsDetailActivity extends BaseActivity {
             intent.putExtras(bundle);
             context.startActivity(intent);
         }
+    }
+
+    String blog;
+    //文章Id
+    String article_id;
+    //文字标题
+    String article_title = "";
+    //文字图片
+    String article_image = "";
+
+    //评论成功并发布帖子 article_image 给pic字段
+    private void createBlog(){
+
+        Map<String,String> map = new HashMap<>();
+        map.put("blog",blog + "");
+        map.put("images",  "");
+        map.put("link", "");
+        map.put("link_title", "");
+        map.put("type",0 + "");
+        map.put("pid",  "");
+        map.put("is_comment","");
+        map.put("article_id", article_id + "");
+        map.put("article_title", article_title + "");
+        map.put("article_image",article_image + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().createBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
     }
 
 

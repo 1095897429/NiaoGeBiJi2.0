@@ -22,10 +22,12 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.TalkAlertDialog;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -66,7 +68,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class CommentDetailActivity extends BaseActivity {
 
-
     @BindView(R.id.sender_name)
     TextView sender_name;
 
@@ -106,6 +107,37 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.more_comment_recycler)
     RecyclerView mRecyclerView;
 
+
+    @BindView(R.id.part_yc_pic)
+    LinearLayout part_yc_pic;
+
+    @BindView(R.id.part_yc_link)
+    LinearLayout part_yc_link;
+
+    @BindView(R.id.part_zf_pic)
+    LinearLayout part_zf_pic;
+
+    @BindView(R.id.part_zf_link)
+    LinearLayout part_zf_link;
+
+
+    //转发图片
+    @BindView(R.id.transfer_content)
+    TextView transfer_content;
+
+    @BindView(R.id.transfer_name)
+    TextView transfer_name;
+
+    @BindView(R.id.transfer_two_img_imgs)
+    ImageView transfer_two_img_imgs;
+
+    @BindView(R.id.transfer_one_img_imgs)
+    ImageView transfer_one_img_imgs;
+
+    @BindView(R.id.transfer_three_img_imgs)
+    ImageView transfer_three_img_imgs;
+
+
     //1级 适配器
     CommentAdapterByNewBean mCommentAdapter;
     //组合集合
@@ -117,18 +149,18 @@ public class CommentDetailActivity extends BaseActivity {
 
     private String blog_id = "5";
 
-    //点击1级评论的id
-    private String blog_comment_id;
-
+    //点击1级评论的id,此id就是整个item的id
+    private String blog_comment_id = "32";
+    //圈子明细
     private CircleBean mCircleBean;
-
-    //被评论动态发布人ID
-    private String create_uid;
-
+    //评论内容
+    String commentString;
     //一级集合
     private List<CommentBeanNew> mCommentBeanNewList;
     //二级集合
-    private List<CommentBeanNew.SecondComment> mCommentSList;
+    private List<CommentBeanNew> mCommentSList;
+    //布局类型
+    private String layoutType;
 
     @Override
     protected int getLayoutId() {
@@ -138,12 +170,449 @@ public class CommentDetailActivity extends BaseActivity {
     @Override
     protected void initView() {
         blog_id = getIntent().getExtras().getString("blog_id");
+        layoutType= getIntent().getExtras().getString("layoutType");
         initLayout();
         blogDetail();
         getBlogCommentList();
     }
 
 
+
+    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+
+    private void setImageStatus( List<String> imgs) {
+        int size = imgs.size();
+        if(size < 3 ){
+            if(1 == size){
+                ImageUtil.load(mContext,imgs.get(0) + scaleSize,transfer_one_img_imgs);
+                transfer_one_img_imgs.setVisibility(View.VISIBLE);
+                transfer_two_img_imgs.setVisibility(View.GONE);
+                transfer_three_img_imgs.setVisibility(View.GONE);
+            }
+            if(2 == size){
+                ImageUtil.load(mContext,imgs.get(0) + scaleSize,transfer_one_img_imgs);
+                ImageUtil.load(mContext,imgs.get(1) + scaleSize,transfer_two_img_imgs);
+                transfer_one_img_imgs.setVisibility(View.VISIBLE);
+                transfer_two_img_imgs.setVisibility(View.VISIBLE);
+                transfer_three_img_imgs.setVisibility(View.GONE);
+            }
+
+        }else{
+            ImageUtil.load(mContext,imgs.get(0) + scaleSize,transfer_one_img_imgs);
+            ImageUtil.load(mContext,imgs.get(1) + scaleSize,transfer_two_img_imgs);
+            ImageUtil.load(mContext,imgs.get(2) + scaleSize,transfer_three_img_imgs);
+            transfer_one_img_imgs.setVisibility(View.VISIBLE);
+            transfer_two_img_imgs.setVisibility(View.VISIBLE);
+            transfer_three_img_imgs.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+
+
+
+
+
+    public void showDeteleCircle(){
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
+        iosAlertDialog.setPositiveButton("删除", v -> {
+            deleteBlog();
+        }).setNegativeButton("再想想", v -> {
+
+        }).setMsg("删除帖子?").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+
+    private void deleteBlog() {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",blog_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().deleteBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        ToastUtils.showShort("删除成功");
+                    }
+                });
+    }
+
+
+
+    @OnClick({R.id.toComment,R.id.circle_comment,
+            R.id.iv_back
+
+    })
+    public void clicks(View view){
+        switch (view.getId()){
+            case R.id.iv_back:
+                finish();
+                break;
+            case R.id.circle_comment:
+            case R.id.toComment:
+                showTalkDialog(-1,"","aimtodynamic","");
+                break;
+            default:
+        }
+    }
+
+
+
+    /** --------------------------------- 二级评论列表 及 点击事件---------------------------------*/
+    int secondPage = 1;
+    RelativeLayout totalk;
+    ImageView second_close;
+    RecyclerView mSecondRV;
+    ImageView head_second_icon;
+    View headView;
+    BottomSheetDialog bottomSheetDialog;
+    CommentSecondAdapter bottomSheetAdapter;
+    BottomSheetBehavior mDialogBehavior;
+
+    List<MulSecondCommentBean> list = new ArrayList<>();
+    TextView nickname_second;
+    TextView comment_text_second;
+    TextView time_publish_second;
+    TextView zan_second_num_second;
+    TextView comment_num_second;
+
+
+    //临时需要评论数据
+    private CommentBeanNew secondComment;
+
+    private void showSheetDialog() {
+        View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
+        mSecondRV = view.findViewById(R.id.recycler);
+        comment_num_second = view.findViewById(R.id.comment_num_second);
+        second_close = view.findViewById(R.id.second_close);
+        second_close.setOnClickListener(view12 -> bottomSheetDialog.dismiss());
+        totalk = view.findViewById(R.id.totalk);
+        totalk.setOnClickListener(view1 -> {
+            showTalkDialogSecondComment(-1,secondComment);
+        });
+
+        bottomSheetAdapter = new CommentSecondAdapter(list);
+        mSecondRV.setHasFixedSize(true);
+        mSecondRV.setLayoutManager(new LinearLayoutManager(this));
+        mSecondRV.setItemAnimator(new DefaultItemAnimator());
+        mSecondRV.setAdapter(bottomSheetAdapter);
+
+        bottomSheetDialog = new BottomSheetDialog(this, R.style.MyCommentDialog);
+        bottomSheetDialog.setContentView(view);
+
+        mDialogBehavior = BottomSheetBehavior.from((View) view.getParent());
+        mDialogBehavior.setPeekHeight(ScreenUtils.getScreenHeight());
+        mDialogBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetDialog.dismiss();
+                    mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+
+                //手指移动布局的高度
+                if(newState == BottomSheetBehavior.STATE_SETTLING){
+                    KLog.d("tag","屏幕的高度减去状态栏高度是 : " +  (ScreenUtils.getScreenHeight() - SizeUtils.dp2px(25)) +  "   " + bottomSheet.getTop() + "");
+                    if(bottomSheet.getTop() >= 200){
+                        bottomSheetDialog.dismiss();
+                        mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+        bottomSheetDialog.show();
+        blogCommentDetail();
+        initScondEvent();
+    }
+
+
+    private void blogCommentDetail() {
+        blog_comment_id = oneComment.getId();
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_comment_id",blog_comment_id + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().blogCommentDetail(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<CommentBeanNew>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<CommentBeanNew> response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        secondComment = response.getReturn_data();
+                        setSecondHeadData(secondComment);
+                        getSecondCommentComment();
+                    }
+                });
+    }
+
+
+    private void setSecondHeadData(CommentBeanNew temp) {
+        zan_second_num_second = headView.findViewById(R.id.zan_second_num_second);
+        nickname_second = headView.findViewById(R.id.nickname_second);
+        comment_text_second = headView.findViewById(R.id.comment_text_second);
+        time_publish_second = headView.findViewById(R.id.time_publish_second);
+        head_second_icon = headView.findViewById(R.id.head_second_icon);
+        bottomSheetAdapter.setHeaderView(headView);
+
+        comment_num_second.setText(temp.getComment_num() + "条回复");
+        nickname_second.setText(temp.getUser_info().getName());
+        comment_text_second.setText(temp.getComment());
+        ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
+
+    }
+
+
+    private void getSecondCommentComment() {
+        blog_comment_id = oneComment.getId();
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_comment_id",blog_comment_id + "");
+        map.put("page",page + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getCommentComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<CommentBeanNew>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<CommentBeanNew>> response) {
+                        mCommentSList = response.getReturn_data();
+                        if(null != mCommentSList){
+                            if(1 == page){
+                                list.clear();
+                                setData2(mCommentSList);
+                                bottomSheetAdapter.setNewData(list);
+                                //如果第一次返回的数据不满10条，则显示无更多数据
+                                if(mCommentSList.size() < Constant.SEERVER_NUM){
+                                    bottomSheetAdapter.loadMoreEnd();
+                                }
+                            }else{
+                                //已为加载更多有数据
+                                if(mCommentSList != null && mCommentSList.size() > 0){
+                                    setData2(mCommentSList);
+                                    bottomSheetAdapter.loadMoreComplete();
+                                    bottomSheetAdapter.addData(list);
+                                }else{
+                                    //已为加载更多无更多数据
+                                    bottomSheetAdapter.loadMoreEnd();
+                                }
+                            }
+                        }
+                    }
+
+                    //{"return_code":"200","return_msg":"success","return_data":{}} -- 后台空集合返回{}，那么会出现解析异常，在这里所判断
+                    @Override
+                    public void onNetFail(String msg) {
+                        if("解析错误".equals(msg)){
+                            if(page == 1){
+                                setData2(mCommentSList);
+                            }else{
+                                bottomSheetAdapter.loadMoreComplete();
+                                bottomSheetAdapter.loadMoreEnd();
+                            }
+                        }
+                    }
+
+                });
+    }
+
+
+    private void setData2(List<CommentBeanNew> commentSList) {
+        MulSecondCommentBean bean;
+        if (!commentSList.isEmpty()) {
+            CommentBeanNew bean11;
+            for (int i = 0; i < commentSList.size(); i++) {
+                bean = new MulSecondCommentBean();
+                bean11 = commentSList.get(i);
+                bean.setSecondComment(bean11);
+                bean.setItemType(1);
+                list.add(bean);
+            }
+        }
+    }
+
+    private void initScondEvent() {
+        bottomSheetAdapter.setOnLoadMoreListener(() -> {
+            ++secondPage;
+            KLog.d("tag","加载更多");
+        },mSecondRV);
+
+        //设置一些头信息
+        headView = LayoutInflater.from(this).inflate(R.layout.second_comment_head,null);
+
+        setEmpty(bottomSheetAdapter);
+
+        bottomSheetAdapter.setOnItemClickListener((adapter, view, position) -> {
+            secondComment = bottomSheetAdapter.getData().get(position).getSecondComment();
+            showTalkDialogSecondComment(position,secondComment);
+        });
+    }
+
+
+    /** --------------------------------- 一级评论列表 及 点击事件---------------------------------*/
+
+    private void initLayout() {
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        //设置适配器
+        mCommentAdapter = new CommentAdapterByNewBean(mAllList);
+        mRecyclerView.setAdapter(mCommentAdapter);
+        //解决数据加载不完
+        mRecyclerView.setNestedScrollingEnabled(true);
+        mRecyclerView.setHasFixedSize(true);
+        initEvent();
+    }
+
+
+    private void getBlogCommentList() {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",blog_id + "");
+        map.put("page",page + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getBlogComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<CommentBeanNew>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<CommentBeanNew>> response) {
+                        mCommentBeanNewList = response.getReturn_data();
+                        if(null != mCommentBeanNewList){
+                            if(1 == page){
+                                setCommentListData();
+                                mCommentAdapter.setNewData(mAllList);
+                                //如果第一次返回的数据不满10条，则显示无更多数据
+                                if(mCommentBeanNewList.size() < Constant.SEERVER_NUM){
+                                    mCommentAdapter.loadMoreEnd();
+                                }
+                            }else{
+                                //已为加载更多有数据
+                                if(mCommentBeanNewList != null && mCommentBeanNewList.size() > 0){
+                                    setCommentListData();
+                                    mCommentAdapter.loadMoreComplete();
+                                    mCommentAdapter.addData(mAllList);
+                                }else{
+                                    //已为加载更多无更多数据
+                                    mCommentAdapter.loadMoreEnd();
+                                }
+                            }
+                        }
+                    }
+
+
+                    //{"return_code":"200","return_msg":"success","return_data":{}} -- 后台空集合返回{}，那么会出现解析异常，在这里所判断
+                    @Override
+                    public void onNetFail(String msg) {
+                        if("解析错误".equals(msg)){
+                            if(page == 1){
+                                setCommentListData();
+                            }else{
+                                mCommentAdapter.loadMoreComplete();
+                                mCommentAdapter.loadMoreEnd();
+                            }
+                        }
+                    }
+                });
+    }
+
+
+
+    private void setCommentListData() {
+
+        if(!mCommentBeanNewList.isEmpty()){
+            CommentBeanNew bean1 ;
+            for (int i = 0; i < mCommentBeanNewList.size(); i++) {
+                bean1 = mCommentBeanNewList.get(i);
+                mAllList.add(bean1);
+            }
+        }
+    }
+
+    //临时需要评论数据
+    private CommentBeanNew oneComment;
+    private void initEvent() {
+        mCommentAdapter.setOnItemClickListener((adapter, view, position) -> {
+            oneComment = mCommentAdapter.getData().get(position);
+            showTalkDialogFirstComment(position,oneComment);
+        });
+
+        mCommentAdapter.setOnLoadMoreListener(() -> {
+            ++page;
+            KLog.d("tag","加载更多");
+        },mRecyclerView);
+
+        setEmpty(mCommentAdapter);
+
+
+        mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+            switch (view.getId()){
+                case R.id.comment_delete:
+                    blog_id = mCommentAdapter.getData().get(position).getId();
+                    KLog.d("tag","删除自己的帖子");
+                    showDeteleCircle();
+
+
+                    break;
+                case R.id.toSecondComment:
+                case R.id.ll_has_second_comment:
+                    oneComment = mCommentAdapter.getData().get(position);
+                    showSheetDialog();
+                    break;
+                case R.id.comment_priase:
+                    KLog.d("tag","帖子点赞");
+                    break;
+
+                default:
+            }
+        });
+    }
+
+    /** --------------------------------- 一级评论弹框 ---------------------------------*/
+
+    private void showTalkDialogFirstComment(int position,CommentBeanNew beanNew) {
+        final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
+        talkAlertDialog.setMyPosition(position);
+        talkAlertDialog.setHint(beanNew.getUser_info().getName());
+        talkAlertDialog.setTalkLisenter((position1, words) -> {
+            commentString = words;
+            createCommentComment(oneComment);
+        });
+        talkAlertDialog.show();
+    }
+
+
+    private void createCommentComment(CommentBeanNew temp) {
+        Map<String,String> map = new HashMap<>();
+        map.put("comment",commentString);
+        map.put("class",temp.getComment_class());
+        map.put("comment_id",temp.getId());
+        map.put("create_uid",temp.getUid());
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().createCommentComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        KLog.d("tag","response " + response.getReturn_code());
+                        ToastUtils.showShort("评论成功");
+                    }
+                });
+    }
+
+
+    /** --------------------------------- 一级圈子列表 及 点击事件---------------------------------*/
     private void blogDetail() {
         Map<String,String> map = new HashMap<>();
         map.put("blog_id",blog_id + "");
@@ -163,38 +632,21 @@ public class CommentDetailActivity extends BaseActivity {
     }
 
 
-    private void getBlogCommentList() {
-        Map<String,String> map = new HashMap<>();
-        map.put("blog_id",blog_id + "");
-        map.put("page",page + "");
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().getBlogComment(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<CommentBeanNew>>>() {
-                    @Override
-                    public void onSuccess(HttpResponse<List<CommentBeanNew>> response) {
-                        mCommentBeanNewList = response.getReturn_data();
-                        setCommentListData();
-                    }
-                });
-    }
-
-    private void setCommentListData() {
-        CommentBeanNew bean1 ;
-        for (int i = 0; i < mCommentBeanNewList.size(); i++) {
-            bean1 = mCommentBeanNewList.get(i);
-            mAllList.add(bean1);
-        }
-        mCommentAdapter.setNewData(mAllList);
-    }
-
-
     private void setData() {
-
         //正文
         content.setText(mCircleBean.getBlog());
+        //布局
+        if("1".equals(layoutType)){
+
+        }else if("2".equals(layoutType)){
+            //转发图片
+            part_zf_pic.setVisibility(View.VISIBLE);
+            CircleBean.P_blog pBlog = mCircleBean.getP_blog();
+            CircleBean.P_user_info pUserInfo = pBlog.getP_user_info();
+            transfer_content.setText(pBlog.getBlog());
+            transfer_name.setText(pUserInfo.getName() + pUserInfo.getCompany_name());
+            setImageStatus(pBlog.getImages());
+        }
         //发布时间
         if(null != mCircleBean.getCreated_at()){
             if(!TextUtils.isEmpty(mCircleBean.getCreated_at())){
@@ -210,7 +662,6 @@ public class CommentDetailActivity extends BaseActivity {
         }else{
             publish_time.setText("");
         }
-
         //发帖人
         sender_name.setText(mCircleBean.getUser_info().getName());
         //头像
@@ -243,7 +694,6 @@ public class CommentDetailActivity extends BaseActivity {
             comment.setText(mCircleBean.getComment_num() + "");
             first_comment_num.setText("全部 " + mCircleBean.getComment_num() +" 条评论");
         }
-
         //点赞数
         zan_num.setTypeface(typeface);
         if(mCircleBean.getLike_num().equals("0")){
@@ -261,139 +711,30 @@ public class CommentDetailActivity extends BaseActivity {
     }
 
 
-    private void initLayout() {
-        mLinearLayoutManager = new LinearLayoutManager(this);
-        //设置布局管理器
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        //设置适配器
-        mCommentAdapter = new CommentAdapterByNewBean(mAllList);
-        mRecyclerView.setAdapter(mCommentAdapter);
-        //解决数据加载不完
-        mRecyclerView.setNestedScrollingEnabled(true);
-        mRecyclerView.setHasFixedSize(true);
-        initEvent();
-    }
-
-    private void initEvent() {
-        mCommentAdapter.setOnItemClickListener((adapter, view, position) -> {
-            KLog.d("tag","点击一级评论去二级评论");
-            showSheetDialog();
-            getCommentData();
-            create_uid = mCommentAdapter.getData().get(position).getUid();
-        });
-
-        mCommentAdapter.setOnLoadMoreListener(() -> {
-            ++page;
-            KLog.d("tag","加载更多");
-        },mRecyclerView);
-
-        setEmpty(mCommentAdapter);
-
-
-
-        mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            switch (view.getId()){
-                case R.id.comment_delete:
-                    blog_id = mCommentAdapter.getData().get(position).getId();
-                    KLog.d("tag","删除自己的帖子");
-                    showDeteleCircle();
-
-
-                    break;
-                case R.id.toSecondComment:
-                case R.id.ll_has_second_comment:
-                    create_uid = mCommentAdapter.getData().get(position).getUid();
-                    KLog.d("tag","点击一级评论去二级评论");
-                    showSheetDialog();
-                    getCommentData();
-                    getCommentComment();
-                    break;
-                case R.id.comment_priase:
-                    KLog.d("tag","帖子点赞");
-                    break;
-
-                    default:
-            }
-        });
-    }
-
-
-    public void showDeteleCircle(){
-        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
-        iosAlertDialog.setPositiveButton("删除", v -> {
-            deleteBlog();
-        }).setNegativeButton("再想想", v -> {
-
-        }).setMsg("删除帖子?").setCanceledOnTouchOutside(false);
-        iosAlertDialog.show();
-    }
-
-
-
-    private void deleteBlog() {
-        Map<String,String> map = new HashMap<>();
-        map.put("blog_id",blog_id);
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().deleteBlog(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        KLog.d("tag","response " + response.getReturn_code());
-                        ToastUtils.showShort("删除成功");
-                    }
-                });
-    }
-
-    private void getCommentComment() {
-        Map<String,String> map = new HashMap<>();
-        map.put("blog_comment_id",blog_id + "");
-        map.put("page",page + "");
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().getCommentComment(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<CommentBeanNew.SecondComment>>>() {
-                    @Override
-                    public void onSuccess(HttpResponse<List<CommentBeanNew.SecondComment>> response) {
-                        mCommentSList = response.getReturn_data();
-                        setCommentSecondListData();
-                    }
-                });
-    }
-
-
-    @OnClick({R.id.toComment,R.id.circle_comment,
-            R.id.iv_back
-
-    })
-    public void clicks(View view){
-        switch (view.getId()){
-            case R.id.iv_back:
-                finish();
-                break;
-            case R.id.circle_comment:
-            case R.id.toComment:
-                showTalkDialog(-1,"","first");
-                break;
-            default:
-        }
-    }
-
-
-
-    String commentString;
-
-    //参数一 用于数据更新      参数三 评论一级 还是 评论二级
-    private void showTalkDialog(int position,String talkCid,String from) {
+    /** --------------------------------- 二级评论弹框 ---------------------------------*/
+    private void showTalkDialogSecondComment(int position,CommentBeanNew beanNew) {
         final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
+        talkAlertDialog.setHint(beanNew.getUser_info().getName());
+        talkAlertDialog.setTalkLisenter((position1, words) -> {
+            commentString = words;
+            createCommentComment(secondComment);
+        });
+        talkAlertDialog.show();
+    }
+
+
+    /** --------------------------------- 动态评论弹框 ---------------------------------*/
+
+    //参数一 用于数据更新      参数三 评论一级 还是 评论二级
+    private void showTalkDialog(int position,String talkCid,String from,String replyWho) {
+        final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
+        talkAlertDialog.setMyPosition(position);
+        if(!TextUtils.isEmpty(replyWho)){
+            talkAlertDialog.setHint(replyWho);
+        }
         talkAlertDialog.setTalkLisenter((position1, words) -> {
             KLog.d("tag","接受到的文字是 " + words);
-//            commentBulletin(position,words,talkCid,from);
             commentString = words;
             createBlogComment();
         });
@@ -419,177 +760,6 @@ public class CommentDetailActivity extends BaseActivity {
                 });
     }
 
-
-    //追加一条数据，在之前的集合上
-//    private void commentBulletin(int position,String content,String talkCid,String from) {
-//        if("first".equals(from)){
-//            //本地测试
-//            CommentBean.FirstComment firstComment = new CommentBean.FirstComment();
-//            firstComment.setMessage(content);
-//            mAllList.add(firstComment);
-//            mCommentAdapter.notifyItemChanged(position);
-//        }else if("second".equals(from)){
-//            MulSecondCommentBean bean;
-//            bean = new MulSecondCommentBean();
-//
-//            CommentBean.FirstComment  bean1 = new CommentBean.FirstComment();
-//            //TODO 这里是相当于二级评论中的一级评论
-//            bean1.setMessage(content);
-//            bean.setFirstComment(bean1);
-//
-//            bean.setItemType(1);
-//            list.add(bean);
-//            bottomSheetAdapter.notifyItemChanged(position);
-//        }
-//    }
-
-
-    private void updateListDataStatus(int position,CommentOkBean bean) {
-//            if(null == bean){
-//                bean = new CommentOkBean();
-//                bean.setCid("1");
-//                bean.setContent("我是帅哥");
-//                bean.setUsername("周六");
-//            }
-
-//             CommentBean.FirstComment bean1 =  new CommentBean.FirstComment();
-//
-//             mAllList.add(bean1);
-//
-//            mCommentAdapter.notifyItemChanged(position);
-    }
-
-
-    /** --------------------------------- 二级弹框 评论  ---------------------------------*/
-    int secondPage = 1;
-    RelativeLayout totalk;
-    RecyclerView mSecondRV;
-    BottomSheetDialog bottomSheetDialog;
-    CommentSecondAdapter bottomSheetAdapter;
-    BottomSheetBehavior mDialogBehavior;
-
-    List<MulSecondCommentBean> list = new ArrayList<>();
-
-
-
-
-    private void setCommentSecondListData() {
-
-        list.clear();
-
-        MulSecondCommentBean bean;
-        bean = new MulSecondCommentBean();
-        bean.setItemType(2);
-        list.add(bean);
-
-        //模拟评论数据
-        CommentBean.FirstComment  bean1 ;
-        for (int i = 0; i < mCommentSList.size(); i++) {
-            bean = new MulSecondCommentBean();
-            bean1 = new CommentBean.FirstComment();
-            bean1.setMessage("我是二级评论 " + i);
-            bean.setFirstComment(bean1);
-            bean.setItemType(1);
-            list.add(bean);
-
-        }
-
-        bottomSheetAdapter.setNewData(list);
-    }
-
-
-    private void getCommentData() {
-        list.clear();
-
-        MulSecondCommentBean bean;
-        bean = new MulSecondCommentBean();
-        bean.setItemType(2);
-        list.add(bean);
-
-        //模拟评论数据
-        CommentBean.FirstComment  bean1 ;
-        for (int i = 0; i < 4; i++) {
-            bean = new MulSecondCommentBean();
-            bean1 = new CommentBean.FirstComment();
-            bean1.setMessage("我是二级评论 " + i);
-            bean.setFirstComment(bean1);
-            bean.setItemType(1);
-            list.add(bean);
-
-        }
-
-        bottomSheetAdapter.setNewData(list);
-
-    }
-
-    private void showSheetDialog() {
-        View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
-        mSecondRV = view.findViewById(R.id.recycler);
-        totalk = view.findViewById(R.id.totalk);
-        totalk.setOnClickListener(view1 -> showTalkDialog(-1,"111","second"));
-
-        bottomSheetAdapter = new CommentSecondAdapter(list);
-        mSecondRV.setHasFixedSize(true);
-        mSecondRV.setLayoutManager(new LinearLayoutManager(this));
-        mSecondRV.setItemAnimator(new DefaultItemAnimator());
-        mSecondRV.setAdapter(bottomSheetAdapter);
-
-        bottomSheetDialog = new BottomSheetDialog(this, R.style.MyCommentDialog);
-        bottomSheetDialog.setContentView(view);
-
-        mDialogBehavior = BottomSheetBehavior.from((View) view.getParent());
-        mDialogBehavior.setPeekHeight(ScreenUtils.getScreenHeight());
-        mDialogBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    bottomSheetDialog.dismiss();
-                    mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-
-                if(newState == BottomSheetBehavior.STATE_DRAGGING){
-                    KLog.d("tag",bottomSheet.getTop() + "");
-                }
-
-                //手指移动布局的高度
-                if(newState == BottomSheetBehavior.STATE_SETTLING){
-
-                    KLog.d("tag11","屏幕的高度减去状态栏高度是 : " +  (ScreenUtils.getScreenHeight() - SizeUtils.dp2px(25)) +  "   " + bottomSheet.getTop() + "");
-
-                    if(bottomSheet.getTop() >= 200){
-                        bottomSheetDialog.dismiss();
-                        mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        });
-
-
-        bottomSheetDialog.show();
-
-        initScondEvent();
-    }
-
-    private void initScondEvent() {
-
-        bottomSheetAdapter.setOnLoadMoreListener(() -> {
-            ++secondPage;
-            KLog.d("tag","加载更多");
-        },mSecondRV);
-
-        setEmpty(bottomSheetAdapter);
-
-        bottomSheetAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                showTalkDialog(position,"1111","second");
-            }
-        });
-    }
 
 
 }

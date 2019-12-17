@@ -6,7 +6,6 @@
 
 
 
-
     <LinearLayout
         android:background="@color/white"
         android:id="@+id/part2222"
@@ -31,7 +30,7 @@
                 android:orientation="vertical">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/head_icon"
+                    android:id="@+id/head_second_icon"
                     android:src="@mipmap/icon_fenxiang"
                     android:layout_width="32dp"
                     android:layout_height="32dp" />
@@ -57,7 +56,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/nickname"
+                            android:id="@+id/nickname_second"
                             android:text="张俊介  上海青墨网络科技有限公司产品经理"
                             android:textSize="13sp"
                             android:textColor="@color/text_second_color"
@@ -73,7 +72,7 @@
 
 
                     <TextView
-                        android:id="@+id/comment_text"
+                        android:id="@+id/comment_text_second"
                         android:textColor="@color/text_first_color"
                         android:layout_below="@+id/nickname"
                         android:layout_marginTop="2dp"
@@ -93,7 +92,7 @@
 
                         <TextView
                             android:layout_centerVertical="true"
-                            android:id="@+id/time"
+                            android:id="@+id/time_publish_second"
                             android:text="11分钟前"
                             android:textSize="11sp"
                             android:layout_marginTop="14dp"
@@ -124,7 +123,7 @@
 
 
                             <TextView
-                                android:id="@+id/zan_num"
+                                android:id="@+id/zan_second_num_second"
                                 android:text="99+"
                                 android:textSize="13sp"
                                 android:textColor="#555962"

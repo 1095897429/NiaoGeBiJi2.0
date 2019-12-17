@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:ratingbar="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
     android:background="@color/white">
 
     <RelativeLayout
@@ -272,6 +273,7 @@
 
             <RelativeLayout
                 android:id="@+id/rl_audio"
+                android:visibility="gone"
                 android:background="@drawable/bg_corners_8_gray"
                 android:paddingLeft="10dp"
                 android:paddingRight="15dp"
@@ -291,6 +293,7 @@
 
 
                 <TextView
+                    android:id="@+id/audio_summary"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/news_play"
                     android:layout_centerVertical="true"
@@ -309,6 +312,29 @@
                 android:layout_width="30dp"
                 android:layout_height="8dp" />
 
+            <TextView
+                android:id="@+id/summary_text"
+                android:visibility="gone"
+                android:layout_margin="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@color/text_first_color"
+                android:textSize="16sp" />
+
+
+            <com.qmkj.niaogebiji.module.widget.RCImageView
+                android:id="@+id/big_pic"
+                android:layout_margin="16dp"
+                android:scaleType="centerCrop"
+                app:round_as_circle="false"
+                app:round_corner="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="189dp" />
+
 
 
             <com.qmkj.niaogebiji.module.widget.MyWebView
@@ -323,7 +349,8 @@
 
 
             <LinearLayout
-                android:visibility="visible"
+                android:id="@+id/ll_data"
+                android:visibility="gone"
                 android:layout_marginTop="21dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -352,6 +379,7 @@
                         android:layout_height="match_parent" />
 
                     <TextView
+                        android:id="@+id/data_link_num_down"
                         android:text="下载数 20238"
                         android:textSize="11sp"
                         android:textColor="#818386"
@@ -400,7 +428,7 @@
 
 
                         <TextView
-                            android:id="@+id/one_img_title"
+                            android:id="@+id/data_link_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
@@ -421,7 +449,7 @@
 
 
                             <TextView
-                                android:id="@+id/num_feather"
+                                android:id="@+id/data_link_num_feather"
                                 android:textSize="18sp"
                                 android:textColor="#FF5040"
                                 android:layout_centerVertical="true"
@@ -535,6 +563,8 @@
 
 
                 <LinearLayout
+                    android:id="@+id/allready_remark"
+                    android:visibility="gone"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="24dp"
                     android:background="@drawable/bg_corners_8_gray"

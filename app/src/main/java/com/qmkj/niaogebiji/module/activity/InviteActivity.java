@@ -18,10 +18,15 @@ import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
@@ -29,8 +34,10 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
@@ -38,6 +45,7 @@ import com.qmkj.niaogebiji.module.adapter.ViewPagerAdapter;
 import com.qmkj.niaogebiji.module.bean.InviteBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.widget.AlphaTransformer;
+import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ScaleTransformer;
 import com.socks.library.KLog;
 import com.umeng.socialize.ShareAction;
@@ -77,6 +85,10 @@ public class InviteActivity extends BaseActivity {
     @BindView(R.id.viewpager)
     ViewPager viewpager;
 
+    @BindView(R.id.webview)
+    MyWebView mMyWebView;
+
+
     private InviteBean mInviteBean;
     private String picLink;
 
@@ -112,7 +124,46 @@ public class InviteActivity extends BaseActivity {
         initViewPage();
         initDot();
         mExecutorService = Executors.newFixedThreadPool(2);
+
+        //webview
+        getWebData();
     }
+
+
+
+    private void getWebData() {
+
+        mMyWebView.setDrawingCacheEnabled(false);
+        mMyWebView.setLayerType(View.LAYER_TYPE_NONE, null);
+
+        mMyWebView.loadUrl(StringUtil.getLink("invitationrule"));
+
+        mMyWebView.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                if(100 == newProgress){
+                }
+            }
+        });
+
+        mMyWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
+
+        mMyWebView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onGlobalLayout() {
+                mMyWebView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+    }
+
+
 
     @Override
     public void initData() {
@@ -196,6 +247,7 @@ public class InviteActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.iv_text:
                 KLog.d("tag","去 h5界面");
+                UIHelper.toWebViewActivity(InviteActivity.this,StringUtil.getLink("invitationrecords"));
                 break;
             case R.id.iv_back:
                 finish();

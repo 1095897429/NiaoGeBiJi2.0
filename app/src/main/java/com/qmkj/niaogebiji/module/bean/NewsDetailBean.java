@@ -22,6 +22,11 @@ public class NewsDetailBean extends BaseBean {
     private String fromurl;
     private String summary;
     private String pic;
+    //文章主图2（主要APP使用）
+    private String pic2;
+    private String pic3;
+    //1-单图小，2-单图大，3-三图
+    private String pic_type;
     private String search_keywords;
     private String showindex;
     private String status;
@@ -35,12 +40,19 @@ public class NewsDetailBean extends BaseBean {
     private String published_at;
     private String upnum;
     private List<Relate> relate;
+    private String dl_mat_title;
     private String dl_link;
     private String dl_link_code;
     private String dl_point;
     private String que_title;
+    private String dl_times;
     private List<Que_answer_json> que_answer_json;
     private String right_answer;
+    //早报语音链接
+    private String video;
+    //
+    private String content;
+    private int is_content_empty;
     private String app_content_url;
     private String my_answer;
 
@@ -66,8 +78,82 @@ public class NewsDetailBean extends BaseBean {
     //是否本篇评分过：1-已评分过，0-未评分
     private String is_add_point;
 
+    private String my_add_point;
+
+
+    public String getMy_add_point() {
+        return my_add_point;
+    }
+
+    public void setMy_add_point(String my_add_point) {
+        this.my_add_point = my_add_point;
+    }
+
+    public String getDl_times() {
+        return dl_times;
+    }
+
+    public void setDl_times(String dl_times) {
+        this.dl_times = dl_times;
+    }
+
+    public String getDl_mat_title() {
+        return dl_mat_title;
+    }
+
+    public void setDl_mat_title(String dl_mat_title) {
+        this.dl_mat_title = dl_mat_title;
+    }
 
     private int is_show_tip;
+
+    public String getPic2() {
+        return pic2;
+    }
+
+    public void setPic2(String pic2) {
+        this.pic2 = pic2;
+    }
+
+    public String getPic3() {
+        return pic3;
+    }
+
+    public void setPic3(String pic3) {
+        this.pic3 = pic3;
+    }
+
+    public String getPic_type() {
+        return pic_type;
+    }
+
+    public void setPic_type(String pic_type) {
+        this.pic_type = pic_type;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public int getIs_content_empty() {
+        return is_content_empty;
+    }
+
+    public void setIs_content_empty(int is_content_empty) {
+        this.is_content_empty = is_content_empty;
+    }
 
     public int getIs_show_tip() {
         return is_show_tip;

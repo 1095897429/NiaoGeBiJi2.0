@@ -31,6 +31,7 @@ import io.reactivex.functions.Consumer;
  * 版本 1.0
  * 创建时间 2019-11-21
  * 描述:转发帖子
+ *  1. 图片 + 文本 显示
  */
 public class TranspondActivity extends BaseActivity {
 

@@ -73,9 +73,10 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         }
 
         //图片
+        String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
         if(!TextUtils.isEmpty(mBean.getPic())){
             helper.setVisible(R.id.flash_img,true);
-            ImageUtil.load(mContext,mBean.getPic(),helper.getView(R.id.flash_img));
+            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.flash_img));
         }else{
             helper.setVisible(R.id.flash_img,false);
         }

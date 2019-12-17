@@ -30,7 +30,9 @@
                android:layout_height="wrap_content"
                android:orientation="vertical">
 
-               <include layout="@layout/first_circle_item1"/>
+               <include
+                   layout="@layout/first_circle_item_all"/>
+
 
                <View
                    android:layout_width="match_parent"
@@ -128,7 +130,7 @@
                    android:textSize="16sp"
                    android:textColor="@color/text_second_color"
                    android:layout_centerVertical="true"
-                   android:text="回复 作者"
+                   android:text="回复一下"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content" />
 

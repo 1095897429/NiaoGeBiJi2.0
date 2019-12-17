@@ -7,14 +7,18 @@ import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,14 +38,17 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -55,6 +62,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -66,15 +74,16 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class UserInfoActivity extends BaseActivity {
 
-
-    @BindView(R.id.send_article_num)
-    TextView send_article_num;
-
     @BindView(R.id.iv_text)
     TextView iv_text;
 
-    @BindView(R.id.medal_count)
+    TextView send_article_num;
     TextView medal_count;
+    TextView sender_name;
+    TextView user_des;
+    CircleImageView head_icon;
+    LinearLayout ll_badge;
+    TextView sender_not_verticity;
 
     @BindView(R.id.iv_right)
     ImageView iv_right;
@@ -108,15 +117,92 @@ public class UserInfoActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        myUid = getIntent().getStringExtra("uid");
+
         iv_text.setVisibility(View.GONE);
         iv_right.setVisibility(View.VISIBLE);
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
-        getData();
+
+        getPersonInfo();
+
+    }
+
+
+
+
+    private String  myUid;
+    private  PersonUserInfoBean temp;
+    private void getPersonInfo() {
+        Map<String,String> map = new HashMap<>();
+        map.put("uid",myUid);
+        map.put("page",page + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getPersonInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<PersonUserInfoBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
+                        temp = response.getReturn_data();
+                        if(temp != null){
+                            setData1();
+                        }
+                    }
+                });
+    }
+
+    private void setData1() {
+        //头部信息
+        send_article_num = headView.findViewById(R.id.send_article_num);
+        medal_count = headView.findViewById(R.id.medal_count);
+        sender_name = headView.findViewById(R.id.sender_name);
+        user_des = headView.findViewById(R.id.user_des);
+        head_icon = headView.findViewById(R.id.head_icon);
+        ll_badge = headView.findViewById(R.id.ll_badge);
+        sender_not_verticity = headView.findViewById(R.id.ll_badge);
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
         medal_count.setTypeface(typeface);
         send_article_num.setTypeface(typeface);
+
+        sender_not_verticity.setOnClickListener((v)->{
+            showProfessionAuthen();
+        });
+
+        head_icon.setOnClickListener((v)->{
+            toPicPrewView();
+
+        });
+
+
+        sender_name.setText(temp.getName());
+        send_article_num.setText(temp.getBlog_count() + "");
+        medal_count.setText(temp.getFans_count() + "");
+
+        ImageUtil.load(this,temp.getAvatar(),head_icon);
+
+        if(temp.getBadges() != null && !temp.getBadges().isEmpty()){
+               ll_badge.removeAllViews();
+                for (int i = 0; i < temp.getBadges().size(); i++) {
+                    ImageView imageView = new ImageView(mContext);
+                    String icon = temp.getBadges().get(i).getIcon();
+                    if(!TextUtils.isEmpty(icon)){
+                        ImageUtil.load(mContext,icon,imageView);
+                    }
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.width = SizeUtils.dp2px(22);
+                    lp.height = SizeUtils.dp2px(22);
+                    lp.gravity = Gravity.CENTER;
+                    lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+                    imageView.setLayoutParams(lp);
+                    ll_badge.addView(imageView);
+                }
+            }
     }
 
 
@@ -174,12 +260,18 @@ public class UserInfoActivity extends BaseActivity {
     }
 
 
+    View headView;
     @SuppressLint("CheckResult")
     private void initEvent() {
+
         mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
             ++page;
             getData();
         }, mRecyclerView);
+
+        headView = LayoutInflater.from(this).inflate(R.layout.person_head_view,null);
+
+
 
 
         mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
@@ -238,10 +330,6 @@ public class UserInfoActivity extends BaseActivity {
 
     @OnClick({R.id.iv_back,
             R.id.iv_text,R.id.iv_right,
-            R.id.tobadge,
-            R.id.sender_not_verticity,
-            R.id.head_icon,
-            R.id.part2222_2,
             R.id.noFocus,
             R.id.alreadFocus
     })
@@ -259,18 +347,6 @@ public class UserInfoActivity extends BaseActivity {
             case R.id.iv_right:
                 showPopupWindow2(iv_right,"屏蔽");
                 setBackgroundAlpha(this, 0.6f);
-                break;
-            case R.id.part2222_2:
-                KLog.d("tag","h5 关注列表  ");
-                break;
-            case R.id.head_icon:
-                toPicPrewView();
-                break;
-            case R.id.sender_not_verticity:
-                showProfessionAuthen();
-                break;
-            case R.id.tobadge:
-                KLog.d("tag","去徽章  ");
                 break;
             case R.id.iv_text:
                 UIHelper.toSettingActivity(this);

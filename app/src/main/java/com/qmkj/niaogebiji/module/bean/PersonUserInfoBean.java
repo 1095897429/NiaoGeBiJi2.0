@@ -22,7 +22,7 @@ public class PersonUserInfoBean extends BaseBean {
         private List<Badges> badges;
         private String blog_count;
         private int fans_count;
-        private List<Blog_list> blog_list;
+        private List<CircleBean> blog_list;
         private int follow_status;
         public void setUid(String uid) {
             this.uid = uid;
@@ -94,13 +94,6 @@ public class PersonUserInfoBean extends BaseBean {
             return fans_count;
         }
 
-        public void setBlog_list(List<Blog_list> blog_list) {
-            this.blog_list = blog_list;
-        }
-        public List<Blog_list> getBlog_list() {
-            return blog_list;
-        }
-
         public void setFollow_status(int follow_status) {
             this.follow_status = follow_status;
         }
@@ -108,8 +101,13 @@ public class PersonUserInfoBean extends BaseBean {
             return follow_status;
         }
 
+    public List<CircleBean> getBlog_list() {
+        return blog_list;
+    }
 
-
+    public void setBlog_list(List<CircleBean> blog_list) {
+        this.blog_list = blog_list;
+    }
 
     public static class Blog_list {
         private String id;

@@ -27,6 +27,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
@@ -40,6 +41,7 @@ import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
@@ -59,6 +61,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -103,12 +107,6 @@ public class UserInfoActivity extends BaseActivity {
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
-    //先用这个bean代替
-    NewsDetailBean mNewsDetailBean;
-
-    private int myPosition;
-
-
 
     @Override
     protected int getLayoutId() {
@@ -119,17 +117,13 @@ public class UserInfoActivity extends BaseActivity {
     protected void initView() {
 
         myUid = getIntent().getStringExtra("uid");
-
         iv_text.setVisibility(View.GONE);
         iv_right.setVisibility(View.VISIBLE);
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
-
         getPersonInfo();
 
     }
-
-
 
 
     private String  myUid;
@@ -149,13 +143,105 @@ public class UserInfoActivity extends BaseActivity {
                     public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
                         temp = response.getReturn_data();
                         if(temp != null){
-                            setData1();
+                            setHeadData();
+                            setBlogList(temp.getBlog_list());
                         }
                     }
                 });
     }
 
-    private void setData1() {
+    private void setBlogList(List<CircleBean> blog_list) {
+        if(page == 1){
+            if(!blog_list.isEmpty()){
+                setData2(blog_list);
+                mCircleRecommendAdapter.setNewData(mAllList);
+                //如果第一次返回的数据不满10条，则显示无更多数据
+                if(blog_list.size() < Constant.SEERVER_NUM){
+                    mCircleRecommendAdapter.loadMoreEnd();
+                }
+            }else{
+//                setEmpty(mCircleRecommendAdapter);
+            }
+        }else{
+            //已为加载更多有数据
+            if(blog_list != null && blog_list.size() > 0){
+                setData2(blog_list);
+                mCircleRecommendAdapter.loadMoreComplete();
+                mCircleRecommendAdapter.addData(teList);
+            }else{
+                //已为加载更多无更多数据
+                mCircleRecommendAdapter.loadMoreComplete();
+                mCircleRecommendAdapter.loadMoreEnd();
+            }
+        }
+    }
+
+    //转移数据
+    List<MultiCircleNewsBean> teList = new ArrayList<>();
+    private void setData2(List<CircleBean> blog_list) {
+        CircleBean temp;
+        String type;
+        String link;
+        String content;
+        List<String> imgs;
+        MultiCircleNewsBean mulBean;
+        for (int i = 0; i < blog_list.size(); i++) {
+            mulBean = new MultiCircleNewsBean();
+            temp = blog_list.get(i);
+            type = temp.getType();
+            link = temp.getLink();
+            imgs =  temp.getImages();
+            //1 是 转发
+            if(!TextUtils.isEmpty(type) && "1".equals(type)){
+                //内部图片
+                List<String> imgsss = temp.getP_blog().getImages();
+                if(imgsss != null &&  !imgsss.isEmpty()){
+                    mulBean.setItemType(2);
+                }
+                //link
+                String linked = temp.getP_blog().getLink();
+                if(!TextUtils.isEmpty(linked)){
+                    mulBean.setItemType(3);
+                }
+
+                if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
+                    mulBean.setItemType(5);
+                }
+            }else{
+                //原创图片
+                if(imgs != null &&  !imgs.isEmpty()){
+                    mulBean.setItemType(1);
+                }
+
+                //原创link
+                if(!TextUtils.isEmpty(link)){
+                    mulBean.setItemType(4);
+                }
+
+                if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
+                    mulBean.setItemType(5);
+                }
+
+                content = temp.getBlog();
+                //判断内容是否中link
+                String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+                Matcher matcher = Pattern.compile(regex).matcher(content);
+                while (matcher.find()){
+                    KLog.d("tag","url  " + matcher.group(0));
+                }
+            }
+
+            mulBean.setCircleBean(temp);
+            teList.add(mulBean);
+        }
+
+        if(page == 1){
+            mAllList.addAll(teList);
+        }
+
+    }
+
+    private void setHeadData() {
         //头部信息
         send_article_num = headView.findViewById(R.id.send_article_num);
         medal_count = headView.findViewById(R.id.medal_count);
@@ -163,7 +249,7 @@ public class UserInfoActivity extends BaseActivity {
         user_des = headView.findViewById(R.id.user_des);
         head_icon = headView.findViewById(R.id.head_icon);
         ll_badge = headView.findViewById(R.id.ll_badge);
-        sender_not_verticity = headView.findViewById(R.id.ll_badge);
+        sender_not_verticity = headView.findViewById(R.id.sender_not_verticity);
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
         medal_count.setTypeface(typeface);
@@ -271,11 +357,10 @@ public class UserInfoActivity extends BaseActivity {
 
         headView = LayoutInflater.from(this).inflate(R.layout.person_head_view,null);
 
-
+        mCircleRecommendAdapter.setHeaderView(headView);
 
 
         mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            myPosition = position;
             switch (view.getId()) {
                 case R.id.circle_remove:
                     break;

@@ -82,7 +82,7 @@ public class LoginActivity extends BaseActivity {
 
                                 loginType = "phone";
 
-                                UIHelper.toPhoneInputActivity(LoginActivity.this,loginType);
+                                UIHelper.toPhoneInputActivity(LoginActivity.this,"",loginType);
                             });
     }
 

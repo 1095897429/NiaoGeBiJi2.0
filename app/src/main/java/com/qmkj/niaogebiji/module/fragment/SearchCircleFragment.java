@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,11 +38,13 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllAuthorBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllCircleBean;
+import com.qmkj.niaogebiji.module.event.SearchWordEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
@@ -74,11 +75,10 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * @author zhouliang
  * 版本 1.0
- * 创建时间 2019-11-14
- * 描述:圈子推荐
- *  1.列表图片最多显示3张，多余的用 + n 表示
+ * 创建时间 2019-12-18
+ * 描述: 搜索动态
  */
-public class CircleRecommendFragment extends BaseLazyFragment {
+public class SearchCircleFragment extends BaseLazyFragment {
 
     @BindView(R.id.allpart)
     LinearLayout allpart;
@@ -117,8 +117,12 @@ public class CircleRecommendFragment extends BaseLazyFragment {
     private String blog_id;
 
 
-    public static CircleRecommendFragment getInstance(String chainId, String chainName) {
-        CircleRecommendFragment newsItemFragment = new CircleRecommendFragment();
+    private int pageSize = 10;
+    private String myKeyword;
+
+
+    public static SearchCircleFragment getInstance(String chainId, String chainName) {
+        SearchCircleFragment newsItemFragment = new SearchCircleFragment();
         Bundle args = new Bundle();
         args.putString("catid", chainId);
         args.putString("chainName", chainName);
@@ -144,54 +148,69 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        recommendBlogList();
+        searchBlog();
     }
 
-    private void recommendBlogList() {
+
+
+    private void searchBlog() {
         Map<String,String> map = new HashMap<>();
+        map.put("keyword",myKeyword);
         map.put("page",page + "");
+        map.put("page_size",pageSize + "");
         String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().recommendBlogList(result)
+        RetrofitHelper.getApiService().searchBlog(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
+                .subscribe(new BaseObserver<HttpResponse<SearchAllCircleBean>>() {
                     @Override
-                    public void onSuccess(HttpResponse<List<CircleBean>> response) {
+                    public void onSuccess(HttpResponse<SearchAllCircleBean> response) {
 
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
-
-                        serverData = response.getReturn_data();
-                        if(null != serverData){
-                            if(1 == page){
-                                setData2(serverData);
-                                mCircleRecommendAdapter.setNewData(mAllList);
-                                //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(serverData.size() < Constant.SEERVER_NUM){
-                                    mCircleRecommendAdapter.loadMoreEnd();
+                        SearchAllCircleBean temp  = response.getReturn_data();
+                        if(null != temp){
+                            List<CircleBean> tempList = temp.getList();
+                            if(page == 1){
+                                if(!tempList.isEmpty()){
+                                    setData2(tempList);
+                                    mCircleRecommendAdapter.setNewData(mAllList);
+                                    //如果第一次返回的数据不满10条，则显示无更多数据
+                                    if(tempList.size() < Constant.SEERVER_NUM){
+                                        mCircleRecommendAdapter.loadMoreEnd();
+                                    }
+                                }else{
+                                    KLog.d("tag","显示空布局");
+                                    setEmpty(mCircleRecommendAdapter);
                                 }
                             }else{
                                 //已为加载更多有数据
-                                if(serverData != null && serverData.size() > 0){
-                                    setData2(serverData);
+                                if(tempList != null && tempList.size() > 0){
+                                    setData2(tempList);
                                     mCircleRecommendAdapter.loadMoreComplete();
-                                    mCircleRecommendAdapter.addData(mAllList);
+                                    mCircleRecommendAdapter.addData(teList);
                                 }else{
                                     //已为加载更多无更多数据
+                                    mCircleRecommendAdapter.loadMoreComplete();
                                     mCircleRecommendAdapter.loadMoreEnd();
                                 }
                             }
                         }
+
                     }
 
                     //{"return_code":"200","return_msg":"success","return_data":{}} -- 后台空集合返回{}，那么会出现解析异常，在这里所判断
                     @Override
                     public void onNetFail(String msg) {
+
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
                         if("解析错误".equals(msg)){
                             if(page == 1){
-                                setData2(serverData);
+                                setEmpty(mCircleRecommendAdapter);
                             }else{
                                 mCircleRecommendAdapter.loadMoreComplete();
                                 mCircleRecommendAdapter.loadMoreEnd();
@@ -204,73 +223,83 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
 
     //先判断原创 再判断图片 再判断link，最后只剩下全文本
+    List<MultiCircleNewsBean> teList = new ArrayList<>();
     public void setData2(List<CircleBean> list) {
-        if(!list.isEmpty()){
-            CircleBean temp;
-            String type;
-            String link;
-            String content;
-            List<String> imgs;
-            MultiCircleNewsBean mulBean;
-            for (int i = 0; i < list.size(); i++) {
-                mulBean = new MultiCircleNewsBean();
-                temp = list.get(i);
-                type = temp.getType();
-                link = temp.getLink();
-                imgs =  temp.getImages();
-                //1 是 转发
-                if(!TextUtils.isEmpty(type) && "1".equals(type)){
-                    //内部图片
-                    List<String> imgsss = temp.getP_blog().getImages();
-                    if(imgsss != null &&  !imgsss.isEmpty()){
-                        mulBean.setItemType(2);
-                    }
-                    //link
-                    String linked = temp.getP_blog().getLink();
-                    if(!TextUtils.isEmpty(linked)){
-                        mulBean.setItemType(3);
-                    }
-
-                    if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
-                        mulBean.setItemType(5);
-                    }
-                }else{
-                    //原创图片
-                    if(imgs != null &&  !imgs.isEmpty()){
-                        mulBean.setItemType(1);
-                    }
-
-                    //原创link
-                    if(!TextUtils.isEmpty(link)){
-                         mulBean.setItemType(4);
-                    }
-
-                    if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
-                        mulBean.setItemType(5);
-                    }
-
-                    content = temp.getBlog();
-                    //判断内容是否中link
-                    String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
-                    Matcher matcher = Pattern.compile(regex).matcher(content);
-                    while (matcher.find()){
-                        KLog.d("tag","url  " + matcher.group(0));
-                    }
-
-
+        CircleBean temp;
+        String type;
+        String link;
+        String content;
+        List<String> imgs;
+        MultiCircleNewsBean mulBean;
+        for (int i = 0; i < list.size(); i++) {
+            mulBean = new MultiCircleNewsBean();
+            temp = list.get(i);
+            type = temp.getType();
+            link = temp.getLink();
+            imgs =  temp.getImages();
+            //1 是 转发
+            if(!TextUtils.isEmpty(type) && "1".equals(type)){
+                //内部图片
+                List<String> imgsss = temp.getP_blog().getImages();
+                if(imgsss != null &&  !imgsss.isEmpty()){
+                    mulBean.setItemType(2);
+                }
+                //link
+                String linked = temp.getP_blog().getLink();
+                if(!TextUtils.isEmpty(linked)){
+                    mulBean.setItemType(3);
                 }
 
-                mulBean.setCircleBean(temp);
-                mAllList.add(mulBean);
+                if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
+                    mulBean.setItemType(5);
+                }
+            }else{
+                //原创图片
+                if(imgs != null &&  !imgs.isEmpty()){
+                    mulBean.setItemType(1);
+                }
+
+                //原创link
+                if(!TextUtils.isEmpty(link)){
+                    mulBean.setItemType(4);
+                }
+
+                if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
+                    mulBean.setItemType(5);
+                }
+
+                content = temp.getBlog();
+                //判断内容是否中link
+                String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+                Matcher matcher = Pattern.compile(regex).matcher(content);
+                while (matcher.find()){
+                    KLog.d("tag","url  " + matcher.group(0));
+                }
+
+
             }
 
-        }else{
-            //第一次加载无数据
-            View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
-            mCircleRecommendAdapter.setEmptyView(emptyView);
-            ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有搜索结果哦～");
+            mulBean.setCircleBean(temp);
+            teList.add(mulBean);
         }
 
+        if(page == 1){
+            mAllList.addAll(teList);
+        }
+
+    }
+
+
+
+
+    protected void setEmpty(BaseQuickAdapter adapter){
+        //不需要可以配置加载更多
+        adapter.disableLoadMoreIfNotFullPage();
+        //TODO 预加载，当列表滑动到倒数第N个Item的时候(默认是1)回调onLoadMoreRequested方法
+        adapter.setPreLoadNumber(2);
+        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
+        adapter.setEmptyView(emptyView);
+        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有数据");
     }
 
 
@@ -345,7 +374,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            recommendBlogList();
+            searchBlog();
         });
     }
 
@@ -357,7 +386,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
     private void initEvent() {
         mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            recommendBlogList();
+            searchBlog();
         }, mRecyclerView);
 
         mRecyclerView.addOnScrollListener(new RvScrollListener());
@@ -759,6 +788,14 @@ public class CircleRecommendFragment extends BaseLazyFragment {
 
     }
 
+
+    //点击全部里的查看更多事件
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSearchWordEvent(SearchWordEvent event) {
+        myKeyword = event.getWord();
+        KLog.d("tag","myKeyword = " + myKeyword);
+    }
+
+
+
 }
-
-

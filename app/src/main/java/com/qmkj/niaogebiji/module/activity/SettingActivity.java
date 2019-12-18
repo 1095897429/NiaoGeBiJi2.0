@@ -20,21 +20,29 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.HeadAlertDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.Base64;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -90,7 +98,8 @@ public class SettingActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.iv_back,R.id.change_head})
+    @OnClick({R.id.iv_back,R.id.change_head,
+            R.id.exit_ll})
     public void clicks(View view){
         switch (view.getId()){
             case R.id.change_head:
@@ -99,9 +108,32 @@ public class SettingActivity extends BaseActivity {
             case R.id.iv_back:
                 finish();
                 break;
+            case R.id.exit_ll:
+
+                showExitDialog();
+
+                break;
             default:
         }
     }
+
+
+    public void showExitDialog(){
+        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(SettingActivity.this).builder();
+        iosAlertDialog.setPositiveButton("退出", v -> {
+            exit();
+        }).setNegativeButton("再想想", v -> {}).setMsg("退出当前账号?").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+    private void exit() {
+        //清数据
+        SPUtils.getInstance().put(Constant.IS_LOGIN,false);
+        StringUtil.removeUserInfoBean();
+        BaseApp.getApplication().exitApp();
+        UIHelper.toLoginActivity(this);
+    }
+
 
 
     private void showHeadDialog(){

@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextUtils;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -7,17 +9,24 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.MultSearchBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.PeopleBean;
+import com.qmkj.niaogebiji.module.bean.RecommendBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.bean.SearchAllBaiduBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
 import com.socks.library.KLog;
 
 import java.util.ArrayList;
@@ -55,25 +64,34 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
     public static final int BAIDU = 10;
     public static final int TEST = 11;
 
-    private ToMoreListenerListener mToMoreListenerListener;
-
     public SearchAllAdapter(List<MultSearchBean> data) {
         super(data);
         //干货
         addItemType(SEACHER_GANHUO, R.layout.first_search_item1);
+        //人脉
+        addItemType(SEACHER_PEOPLE,R.layout.first_search_item1);
+        //动态
+        addItemType(SEACHER_DYNAMIC,R.layout.first_search_item1);
+        //百科
+        addItemType(SEACHER_BAIDU,R.layout.first_search_item1);
+        //资料
+        addItemType(SEACHER_DATA,R.layout.first_search_item1);
+        //作者
+        addItemType(SEACHER_AUTHOR,R.layout.first_search_item1);
+
+
         //活动
         addItemType(SEACHER_ACTION,R.layout.first_search_item1);
         //快讯
         addItemType(SEACHER_FLASH,R.layout.first_search_item1);
-        //资料
-        addItemType(SEACHER_DATA,R.layout.first_search_item1);
+
         //工具
         addItemType(SEACHER_TOOL,R.layout.first_search_item1);
-        addItemType(SEACHER_DYNAMIC,R.layout.first_search_item1);
-        addItemType(SEACHER_AUTHOR,R.layout.first_search_item1);
-        addItemType(SEACHER_PEOPLE,R.layout.first_search_item1);
+
+
+
         addItemType(SEACHER_SCHOOL,R.layout.first_search_item1);
-        addItemType(SEACHER_BAIDU,R.layout.first_search_item1);
+
         addItemType(SEACHER_TEST,R.layout.first_search_item1);
     }
 
@@ -82,7 +100,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
     FirstItemNewAdapter mFirstItemNewAdapter;
     FlashSeacherItemAdapter mFlashSeacherItemAdapter;
     ActionAdapter mActionAdapter;
-    DataItemAdapter mDataItemAdapter;
+    ThingsAdapter mThingsAdapter;
     ToolRecommentItemAdapter mToolRecommentItemAdapter;
     CircleRecommendAdapter mCircleRecommendAdapter;
     AuthorAdapter mAuthorAdapter;
@@ -97,239 +115,112 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
     @Override
     protected void convert(BaseViewHolder helper, MultSearchBean item) {
 
+        //通用数据
+        recyclerView = helper.getView(R.id.recycler00);
+        //二级
+        talkManager = new LinearLayoutManager(mContext);
+        talkManager.setOrientation(RecyclerView.VERTICAL);
+        recyclerView.setLayoutManager(talkManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(true);
+        //禁用change动画
+        ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
         //查看更多
         helper.addOnClickListener(R.id.toMoreList);
 
         switch (helper.getItemViewType()){
-            case SEACHER_FLASH:
-
-                helper.setText(R.id.text_name,"快讯");
-
-                List<FlashBulltinBean.BuilltinBean> temps = item.getFlashBulltinBeanList();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mFlashSeacherItemAdapter = new FlashSeacherItemAdapter(temps);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-                recyclerView.setAdapter(mFlashSeacherItemAdapter);
-
-                //事件
-                mFlashSeacherItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去快讯明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(FLASH,"快讯 查看更多");
-                    }
-                });
-
-                break;
-            case SEACHER_ACTION:
-                helper.setText(R.id.text_name,"活动");
-                List<ActionBean.Act_list> tempsss = item.getActionBeanList();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mActionAdapter = new ActionAdapter(tempsss);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-                recyclerView.setAdapter(mActionAdapter);
-
-                //事件
-                mActionAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去活动明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(ACTION,"活动 查看更多");
-                    }
-                });
-
-                break;
 
             case SEACHER_GANHUO:
-                //采用的思路：公用一个Adapter,设置不同的type即可
-                List<NewsItemBean> temps11 = item.getNewsItemBeanList();
+                //根据类型添加数据
+                List<RecommendBean.Article_list> temps11 = item.getNewsItemBeanList();
                 List<MultiNewsBean> mAllList = new ArrayList<>();
+
+                if(temps11.size() > 3){
+                    temps11 = temps11.subList(0,3);
+                }
+
                 MultiNewsBean bean1 ;
-                for (int i = 0; i < temps11.size(); i++) {
+                int  size = temps11.size();
+                String pic_type;
+                for (int i = 0; i < size; i++) {
                     bean1 = new MultiNewsBean();
-                    bean1.setItemType(1);
-                    bean1.setNewsItemBean(temps11.get(i));
+                    pic_type = temps11.get(i).getPic_type();
+                    if("1".equals(pic_type)){
+                        bean1.setItemType(1);
+                    }else if("2".equals(pic_type)){
+                        bean1.setItemType(3);
+                    }else if("3".equals(pic_type)){
+                        bean1.setItemType(2);
+                    }else{
+                        bean1.setItemType(1);
+                    }
+                    bean1.setNewsActicleList(temps11.get(i));
                     mAllList.add(bean1);
                 }
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
+
                 mFirstItemNewAdapter = new FirstItemNewAdapter(mAllList);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mFirstItemNewAdapter);
-
                 //事件
                 mFirstItemNewAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去新闻明细页");
-                });
-
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(GANHUO,"干货 查看更多");
+                    KLog.d("tag","去干货明细页" + position);
+                    String aid = mFirstItemNewAdapter.getData().get(position).getNewsActicleList().getAid();
+                    if (!TextUtils.isEmpty(aid)) {
+                        UIHelper.toNewsDetailActivity(mContext, aid);
                     }
                 });
-
 
                 break;
 
             case  SEACHER_DATA:
                 helper.setText(R.id.text_name,"资料");
-                List<ToolBean> toolBeanList = item.getToolBeanList();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mDataItemAdapter = new DataItemAdapter(toolBeanList);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-                recyclerView.setAdapter(mDataItemAdapter);
-
-                //事件
-                mDataItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去资料明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(DATA,"资料 查看更多");
-                    }
-                });
+                List<RecommendBean.Article_list> toolBeanList = item.getThings();
+                if(toolBeanList.size() > 3){
+                    toolBeanList = toolBeanList.subList(0,3);
+                }
+                mThingsAdapter = new ThingsAdapter(toolBeanList);
+                recyclerView.setAdapter(mThingsAdapter);
 
                 break;
-            case  SEACHER_TOOL:
-                helper.setText(R.id.text_name,"工具");
-                List<ToolBean> toolBeanList2 = item.getToolBeanList();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mToolRecommentItemAdapter = new ToolRecommentItemAdapter(toolBeanList2);
 
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-                recyclerView.setAdapter(mToolRecommentItemAdapter);
-
-                //事件
-                mToolRecommentItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去工具明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(TOOL,"工具 查看更多");
-                    }
-                });
-
-                break;
             case  SEACHER_DYNAMIC:
                 helper.setText(R.id.text_name,"动态");
-                List<MultiCircleNewsBean> itemToolBeanList = new ArrayList<>();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mCircleRecommendAdapter = new CircleRecommendAdapter(itemToolBeanList);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+                List<CircleBean> circleBeans = item.getCircleBeanList();
+                if(circleBeans.size() > 3){
+                    circleBeans = circleBeans.subList(0,3);
+                }
+                List<MultiCircleNewsBean> list1 = StringUtil.setCircleData(circleBeans);
+                mCircleRecommendAdapter = new CircleRecommendAdapter(list1);
                 recyclerView.setAdapter(mCircleRecommendAdapter);
-
                 //事件
                 mCircleRecommendAdapter.setOnItemClickListener((adapter, view, position) -> {
                     KLog.d("tag","去动态明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(DYNAMIC,"动态 查看更多");
-                    }
                 });
 
                 break;
             case  SEACHER_AUTHOR:
                 helper.setText(R.id.text_name,"作者");
-                List<AuthorBean.Author> authors = new ArrayList<>();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
+                List<AuthorBean.Author> authors = item.getAuthorBeanList();
+                if(authors.size() > 3){
+                    authors =  authors.subList(0,3);
+                }
                 mAuthorAdapter = new AuthorAdapter(authors);
 
-                //禁用change动画
                 ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mAuthorAdapter);
-
-                //事件
-                mAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去作者明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(AUTHOR,"作者 查看更多");
-                    }
-                });
 
                 break;
 
             case  SEACHER_PEOPLE:
                 helper.setText(R.id.text_name,"人脉");
-                List<PeopleBean> peopleBeans = new ArrayList<>();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mPeopleItemAdapter = new PeopleItemAdapter(peopleBeans);
+                List<RegisterLoginBean.UserInfo> peopleBeans = item.getUserInfos();
+                if(peopleBeans.size() > 3){
+                    peopleBeans = peopleBeans.subList(0,3);
+                }
 
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+                mPeopleItemAdapter = new PeopleItemAdapter(peopleBeans);
                 recyclerView.setAdapter(mPeopleItemAdapter);
 
-                //事件
-                mPeopleItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去人脉明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(PEOPLE,"人脉 查看更多");
-                    }
-                });
 
                 break;
             case  SEACHER_SCHOOL:
@@ -348,70 +239,18 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mSchoolBookAdapter);
 
-                //事件
-                mSchoolBookAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去课程明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(SCHOOL,"课程 查看更多");
-                    }
-                });
 
                 break;
             case  SEACHER_BAIDU:
                 helper.setText(R.id.text_name,"百科");
-                List<PeopleBean> schoolBooks111 = new ArrayList<>();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mBaiduItemAdapter = new BaiduItemAdapter(schoolBooks111);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+                List<SearchAllBaiduBean.Wiki> wikis  = item.getWikis();
+                if(wikis.size() > 3){
+                    wikis =  wikis.subList(0,3);
+                }
+                mBaiduItemAdapter = new BaiduItemAdapter(wikis);
                 recyclerView.setAdapter(mBaiduItemAdapter);
 
-                //事件
-                mBaiduItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去百科明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(BAIDU,"百科 查看更多");
-                    }
-                });
 
-                break;
-            case  SEACHER_TEST:
-                helper.setText(R.id.text_name,"测试");
-//                List<TestBean> testList = new ArrayList<>();
-                List<SchoolBean.SchoolTest> testList = new ArrayList<>();
-                recyclerView = helper.getView(R.id.recycler00);
-                //二级
-                talkManager = new LinearLayoutManager(mContext);
-                talkManager.setOrientation(RecyclerView.VERTICAL);
-                recyclerView.setLayoutManager(talkManager);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setNestedScrollingEnabled(true);
-                mTestItemAdapter = new TestItemAdapter(testList);
-
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-                recyclerView.setAdapter(mTestItemAdapter);
-
-                //事件
-                mTestItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去测试明细页");
-                });
-                helper.getView(R.id.toMoreList).setOnClickListener(view -> {
-                    if(null != mToMoreListenerListener){
-                        mToMoreListenerListener.toMoreList(TEST,"测试 查看更多");
-                    }
-                });
 
                 break;
             default:
@@ -421,13 +260,4 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
 
 
 
-    //参数表示是哪个部分
-    public interface ToMoreListenerListener{
-         void toMoreList(int partPosition,String des);
-    }
-
-
-    public void setToMoreListenerListener(ToMoreListenerListener toMoreListenerListener) {
-        mToMoreListenerListener = toMoreListenerListener;
-    }
 }

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:ratingbar="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
     <RelativeLayout
@@ -892,6 +892,10 @@
 
     </com.qmkj.niaogebiji.module.widget.ObservableScrollView>
 
+
+    <include
+        layout="@layout/dialog_waiting"
+        android:visibility="gone" />
 
 
     <ImageView

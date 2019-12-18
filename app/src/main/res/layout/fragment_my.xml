@@ -72,13 +72,14 @@
                            <de.hdodenhof.circleimageview.CircleImageView
                                android:id="@+id/head_icon"
                                android:layout_centerVertical="true"
-                               android:layout_width="72dp"
-                               android:layout_height="72dp"
+                               android:layout_width="78dp"
+                               android:layout_height="78dp"
                                android:src="@mipmap/icon_fenxiang"/>
 
                            <LinearLayout
                                android:layout_marginLeft="16dp"
                                android:layout_toRightOf="@+id/head_icon"
+                               android:layout_alignTop="@+id/head_icon"
                                android:layout_centerVertical="true"
                                android:layout_width="match_parent"
                                android:layout_height="wrap_content"
@@ -104,6 +105,23 @@
                                    android:layout_width="wrap_content"
                                    android:layout_height="wrap_content" />
 
+                               <Space
+                                   android:layout_width="match_parent"
+                                   android:layout_height="6dp" />
+
+                               <LinearLayout
+                                   android:id="@+id/ll_badge"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="match_parent"
+                                   android:orientation="horizontal">
+                                   <TextView
+                                       android:text="sssssjk"
+                                       android:textSize="11sp"
+                                       android:textColor="#AAAEB3"
+                                       android:layout_width="wrap_content"
+                                       android:layout_height="wrap_content" />
+
+                               </LinearLayout>
 
                            </LinearLayout>
 

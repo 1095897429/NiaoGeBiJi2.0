@@ -7,38 +7,14 @@
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/smartRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-
-
-        <!--<com.scwang.smartrefresh.layout.header.ClassicsHeader-->
-            <!--android:visibility="gone"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-        <!--</com.scwang.smartrefresh.layout.header.ClassicsHeader>-->
-
-
-
-
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="100dp"-->
-            <!--android:visibility="gone"-->
-            <!--android:gravity="center"-->
-            <!--android:background="@color/bg_black"-->
-            <!--android:textColor="#fff"-->
-            <!--android:text="看看我会不会变成Header"/>-->
-
-
-
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
             android:visibility="visible"
             android:overScrollMode="never"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 

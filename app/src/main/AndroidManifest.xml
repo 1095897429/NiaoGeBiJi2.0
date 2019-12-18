@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
 
     <!-- 华为权限 -->
@@ -65,7 +66,9 @@
             android:name="UMENG_APPKEY"
             android:value="5d64dd3e3fc1954178000034" />
 
-        <activity android:name=".module.activity.HomeActivity">
+        <activity
+            android:name=".module.activity.HomeActivity"
+            android:launchMode="singleTask">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,6 +98,7 @@
 
 
         <activity android:name=".module.activity.LoginActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
 
 

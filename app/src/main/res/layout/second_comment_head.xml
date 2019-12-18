@@ -113,13 +113,10 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:src="@mipmap/icon_flash_priase"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp" />
-
-                            <Space
-                                android:layout_width="2dp"
-                                android:layout_height="match_parent" />
+                                android:id="@+id/zan_second_img_second"
+                                android:src="@mipmap/icon_flash_priase_28"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp" />
 
 
                             <TextView

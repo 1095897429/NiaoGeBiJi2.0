@@ -37,10 +37,36 @@ public class SearchAllBaiduBean extends BaseBean {
 
         private String id;
         private String cate_id;
-        private String word;
+        private String title;
+        private String content;
+        private String word_id;
         private String first_char;
         private String detail_id;
         private String created_at;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public String getWord_id() {
+            return word_id;
+        }
+
+        public void setWord_id(String word_id) {
+            this.word_id = word_id;
+        }
 
         public String getId() {
             return id;
@@ -58,13 +84,6 @@ public class SearchAllBaiduBean extends BaseBean {
             this.cate_id = cate_id;
         }
 
-        public String getWord() {
-            return word;
-        }
-
-        public void setWord(String word) {
-            this.word = word;
-        }
 
         public String getFirst_char() {
             return first_char;

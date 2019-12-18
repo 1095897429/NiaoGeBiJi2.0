@@ -83,6 +83,8 @@ public class VertifyCodeActivity extends BaseActivity {
 
     private String loginType;
 
+    private String wechat_token = "";
+
 
     @Override
     protected int getLayoutId() {
@@ -93,6 +95,8 @@ public class VertifyCodeActivity extends BaseActivity {
     protected void initView() {
 
         loginType = getIntent().getStringExtra("loginType");
+
+        wechat_token = getIntent().getStringExtra("wechat_token");
 
         KeyboardUtils.showSoftInput(et);
 
@@ -107,6 +111,8 @@ public class VertifyCodeActivity extends BaseActivity {
             public void inputComplete() {
                 inputContent = editText.getEditContent();
                 KLog.d("tag","请输入验证码 : " + inputContent);
+                //隐藏软键盘
+                KeyboardUtils.hideSoftInput(et);
                 if("weixin".equals(loginType)){
                     WechatBindAccountViaCode();
                 }else if("phone".equals(loginType)){
@@ -125,8 +131,10 @@ public class VertifyCodeActivity extends BaseActivity {
         });
     }
 
+
     private void WechatBindAccountViaCode() {
         Map<String,String> map = new HashMap<>();
+        map.put("wechat_token",wechat_token);
         map.put("mobile",phone);
         map.put("verify_code",inputContent);
         String result = RetrofitHelper.commonParam(map);
@@ -134,10 +142,15 @@ public class VertifyCodeActivity extends BaseActivity {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
                     @Override
-                    public void onSuccess(HttpResponse response) {
-
+                    public void onSuccess(HttpResponse< RegisterLoginBean.UserInfo> response) {
+                        RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                        UIHelper.toHomeActivity(VertifyCodeActivity.this,0);
+                        //保存一个对象
+                        StringUtil.setUserInfoBean(mUserInfo);
+                        SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                        finish();
                     }
 
                     @Override
@@ -171,6 +184,7 @@ public class VertifyCodeActivity extends BaseActivity {
                             UIHelper.toHomeActivity(VertifyCodeActivity.this,0);
                             //保存一个对象
                             StringUtil.setUserInfoBean(mUserInfo);
+                            SPUtils.getInstance().put(Constant.IS_LOGIN,true);
                             finish();
                         }
 
@@ -195,7 +209,7 @@ public class VertifyCodeActivity extends BaseActivity {
     //验证码类型：1-短信（默认），2-语音
     private String mType = "1";
     //操作类型： 1-注册 2-绑定微信账号 3-微信绑定已有账号 4-密码重置 5-极速登录 6-更换手机之验证旧手机 7-更换手机之验证新手机
-    private String mOpeType = "1";
+    private String mOpeType = "5";
 
     private void sendverifycode() {
         Map<String,String> map = new HashMap<>();

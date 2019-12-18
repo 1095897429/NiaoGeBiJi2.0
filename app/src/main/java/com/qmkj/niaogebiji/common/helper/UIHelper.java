@@ -77,16 +77,18 @@ public class UIHelper {
     }
 
     /** 打开输入手机界面 */
-    public static void toPhoneInputActivity(Context ctx,String loginType) {
+    public static void toPhoneInputActivity(Context ctx,String wechat_token,String loginType) {
         Intent intent = new Intent(ctx, PhoneInputActivity.class);
         intent.putExtra("loginType",loginType);
+        intent.putExtra("wechat_token",wechat_token);
         ctx.startActivity(intent);
     }
 
     /** 打开验证码界面 */
-    public static void toVertifyCodeActivity(Context ctx,String phone,String loginType) {
+    public static void toVertifyCodeActivity(Context ctx,String phone,String wechat_token,String loginType) {
         Intent intent = new Intent(ctx, VertifyCodeActivity.class);
         intent.putExtra("loginType",loginType);
+        intent.putExtra("wechat_token",wechat_token);
         intent.putExtra("phone",phone);
         ctx.startActivity(intent);
     }
@@ -138,8 +140,9 @@ public class UIHelper {
 
 
     /** 打开分类列表 界面 */
-    public static void toCategoryListActivity(Context ctx) {
+    public static void toCategoryListActivity(Context ctx,String catid) {
         Intent intent = new Intent(ctx, CategoryListActivity.class);
+        intent.putExtra("catid",catid);
         ctx.startActivity(intent);
     }
 

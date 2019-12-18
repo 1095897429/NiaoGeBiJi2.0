@@ -14,26 +14,32 @@ import java.util.List;
  */
 public class MultSearchBean extends BaseBean implements MultiItemEntity {
 
-    //干货
-    private List<NewsItemBean> mNewsItemBeanList;
+    //干货 ①
+    private List<RecommendBean.Article_list> mNewsItemBeanList;
+    //人脉 ②
+    private List<RegisterLoginBean.UserInfo> userInfos;
+    //动态 ③
+    private List<CircleBean> mCircleBeanList;
+    //百科
+    private List<SearchAllBaiduBean.Wiki> wikis;
+    //资料
+    private List<RecommendBean.Article_list> mThings;
+    //作者
+    private List<AuthorBean.Author> mAuthorBeanList;
+
+
+
     //快讯
     private List<FlashBulltinBean.BuilltinBean> mFlashBulltinBeanList;
-    //资料
-    private List<NewsItemBean> mDataItemBeanList;
+
     //工具
     private List<ToolBean> mToolBeanList;
     //活动
     private List<ActionBean.Act_list> mActionBeanList;
-    //动态
-    private List<CircleBean> mCircleBeanList;
-    //作者
-    private List<AuthorBean> mAuthorBeanList;
-    //人脉
-    private List<PersonConnectionBean> mPersonConnectionBeanList;
+
+
     //课程
     private List<CourseBean> mCourseBeanList;
-    //百科
-    private List<BaiduBean> mBaiduBeanList;
     //测试
     private List<TestBean> mTestBeanList;
     //类型
@@ -49,11 +55,11 @@ public class MultSearchBean extends BaseBean implements MultiItemEntity {
     }
 
 
-    public List<NewsItemBean> getNewsItemBeanList() {
+    public List<RecommendBean.Article_list> getNewsItemBeanList() {
         return mNewsItemBeanList;
     }
 
-    public void setNewsItemBeanList(List<NewsItemBean> newsItemBeanList) {
+    public void setNewsItemBeanList(List<RecommendBean.Article_list> newsItemBeanList) {
         mNewsItemBeanList = newsItemBeanList;
     }
 
@@ -65,12 +71,12 @@ public class MultSearchBean extends BaseBean implements MultiItemEntity {
         mFlashBulltinBeanList = flashBulltinBeanList;
     }
 
-    public List<NewsItemBean> getDataItemBeanList() {
-        return mDataItemBeanList;
+    public List<RecommendBean.Article_list> getThings() {
+        return mThings;
     }
 
-    public void setDataItemBeanList(List<NewsItemBean> dataItemBeanList) {
-        mDataItemBeanList = dataItemBeanList;
+    public void setThings(List<RecommendBean.Article_list> things) {
+        mThings = things;
     }
 
     public List<ToolBean> getToolBeanList() {
@@ -97,20 +103,20 @@ public class MultSearchBean extends BaseBean implements MultiItemEntity {
         mCircleBeanList = circleBeanList;
     }
 
-    public List<AuthorBean> getAuthorBeanList() {
+    public List<AuthorBean.Author> getAuthorBeanList() {
         return mAuthorBeanList;
     }
 
-    public void setAuthorBeanList(List<AuthorBean> authorBeanList) {
+    public void setAuthorBeanList(List<AuthorBean.Author> authorBeanList) {
         mAuthorBeanList = authorBeanList;
     }
 
-    public List<PersonConnectionBean> getPersonConnectionBeanList() {
-        return mPersonConnectionBeanList;
+    public List<RegisterLoginBean.UserInfo> getUserInfos() {
+        return userInfos;
     }
 
-    public void setPersonConnectionBeanList(List<PersonConnectionBean> personConnectionBeanList) {
-        mPersonConnectionBeanList = personConnectionBeanList;
+    public void setUserInfos(List<RegisterLoginBean.UserInfo> userInfos) {
+        this.userInfos = userInfos;
     }
 
     public List<CourseBean> getCourseBeanList() {
@@ -121,12 +127,12 @@ public class MultSearchBean extends BaseBean implements MultiItemEntity {
         mCourseBeanList = courseBeanList;
     }
 
-    public List<BaiduBean> getBaiduBeanList() {
-        return mBaiduBeanList;
+    public List<SearchAllBaiduBean.Wiki> getWikis() {
+        return wikis;
     }
 
-    public void setBaiduBeanList(List<BaiduBean> baiduBeanList) {
-        mBaiduBeanList = baiduBeanList;
+    public void setWikis(List<SearchAllBaiduBean.Wiki> wikis) {
+        this.wikis = wikis;
     }
 
     public List<TestBean> getTestBeanList() {

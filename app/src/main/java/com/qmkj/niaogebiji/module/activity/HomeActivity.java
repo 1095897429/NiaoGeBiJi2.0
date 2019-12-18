@@ -1,9 +1,16 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.http.SslError;
+import android.os.Build;
+import android.text.TextUtils;
 import android.view.View;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -21,6 +28,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
@@ -28,6 +36,7 @@ import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
 import com.qmkj.niaogebiji.module.fragment.SchoolFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolFragment;
+import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -79,7 +88,6 @@ public class HomeActivity extends BaseActivity {
     @BindView(R.id.index_my)
     LinearLayout index_my;
 
-
     @BindView(R.id.oldguide)
     LinearLayout oldguide;
 
@@ -118,6 +126,9 @@ public class HomeActivity extends BaseActivity {
     //每个cell的大小
     int perWidth;
 
+
+    MyWebView mMyWebView;
+
     @Override
     protected boolean regEvent() {
         return true;
@@ -128,8 +139,68 @@ public class HomeActivity extends BaseActivity {
         return R.layout.activity_home;
     }
 
+
+
+    private String token;
+    public void toGiveToken() {
+
+        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
+        if(null != userInfo){
+            token = userInfo.getAccess_token();
+        }
+
+        if (!TextUtils.isEmpty(token)) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                String result = "javascript:" +"localStorage.setItem('accessToken',\"" + token + "\")";
+                String re11 = "android";
+                String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";;
+                KLog.d("tag",result);
+                KLog.d("tag",result + "");
+                if (mMyWebView != null){
+                    //传递参数
+                    mMyWebView.loadUrl(result);
+                    mMyWebView.loadUrl(sss);
+                }
+            } else {//4.4以上 包括4.4
+                String result = "javascript:" +"localStorage.setItem('accessToken',\"" + token + "\")";
+                String re11 = "android";
+                String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";;
+                KLog.d("tag",result);
+                if (mMyWebView != null){
+                    mMyWebView.evaluateJavascript(result, value -> {});
+                    mMyWebView.evaluateJavascript(sss, value -> {});
+                }
+            }
+        }
+    }
+
+
+
     @Override
     protected void initView() {
+        mMyWebView = new MyWebView(getApplicationContext());
+        mMyWebView.loadUrl(StringUtil.getLink("myactivity"));
+        toGiveToken();
+        mMyWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed(); // 接受所有网站的证书
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                KLog.d("tag","onPageStarted");
+
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                KLog.d("tag","onPageFinished");
+                toGiveToken();
+            }
+        });
 
         int screenWidth = ScreenUtils.getScreenWidth();
         perWidth = screenWidth / 5;

@@ -14,13 +14,13 @@ import java.util.List;
 public class ActicleAllBean extends BaseBean {
 
 
-    private List<Article> list;
+    private List<RecommendBean.Article_list> list;
 
-    public List<Article> getList() {
+    public List<RecommendBean.Article_list> getList() {
         return list;
     }
 
-    public void setList(List<Article> list) {
+    public void setList(List<RecommendBean.Article_list> list) {
         this.list = list;
     }
 

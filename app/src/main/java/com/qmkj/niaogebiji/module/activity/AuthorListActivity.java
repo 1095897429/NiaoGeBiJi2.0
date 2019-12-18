@@ -16,6 +16,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
@@ -164,19 +165,20 @@ public class AuthorListActivity extends BaseActivity {
         },mRecyclerView);
 
         //点击事件
-        mAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {
-            AuthorBean.Author mAuthor = mAuthorAdapter.getData().get(position);
-            KLog.d("tag","点击的是 position " + position );
+//        mAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {
+//            AuthorBean.Author mAuthor = mAuthorAdapter.getData().get(position);
+//            KLog.d("tag","点击的是 position " + position );
+////            String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
+//
+//            String test = "http://192.168.14.103:8081/" + "authordetail/" + mAuthor.getId();
+//            UIHelper.toWebViewActivity(AuthorListActivity.this,test);
+//        });
 
-//            String link = Constant.TEST_URL + "authordetail/" + mAuthor.getId();
-            String link = "http://192.168.14.103:8081/"+ "authordetail/" + mAuthor.getId();
-            UIHelper.toWebViewActivity(AuthorListActivity.this,link);
-        });
 
         //关注事件
-        mAuthorAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            showCancelFocusDialog(position);
-        });
+//        mAuthorAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+//            showCancelFocusDialog(position);
+//        });
     }
 
 

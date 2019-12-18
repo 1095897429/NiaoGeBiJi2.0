@@ -41,6 +41,9 @@ public class ClearableEditText extends AppCompatEditText {
         init();
     }
 
+
+
+
     private void init() {
         mClearDrawable = getResources().getDrawable(R.mipmap.icon_et_delete);
     }

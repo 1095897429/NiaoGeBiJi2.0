@@ -8,6 +8,7 @@ import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CateAllBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
@@ -24,7 +25,6 @@ import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
-import com.qmkj.niaogebiji.module.bean.ProfressionBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -39,9 +39,7 @@ import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
-import com.qmkj.niaogebiji.module.bean.ToolNewBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
-import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 
 import java.util.List;
@@ -355,11 +353,6 @@ public interface ApiEncryptService{
     Observable<HttpResponse<MoringAllBean>> mplist(@Field("params") String param);
 
 
-    /* 2019.12.14 分类文章列表接口 */
-    @FormUrlEncoded
-    @POST("app/article/catlist")
-    Observable<HttpResponse<ActicleAllBean>> catlist(@Field("params") String param);
-
 
     /* 2019.12.14 文章详情页接口 */
     @FormUrlEncoded
@@ -485,7 +478,7 @@ public interface ApiEncryptService{
 
     /* 2019.12.17 更懂你职位信息 */
     @FormUrlEncoded
-    @POST("app//my/getProfession")
+    @POST("app/my/getProfession")
     Observable<HttpResponse<List<ProBean>>> getProfession(@Field("params") String param);
 
     /* 2019.12.17 职业工作年限记录 */
@@ -497,7 +490,39 @@ public interface ApiEncryptService{
     /* 2019.12.17 微信登录绑定帐号 */
     @FormUrlEncoded
     @POST("/app/auth/WechatBindAccountViaCode")
-    Observable<HttpResponse> WechatBindAccountViaCode(@Field("params") String param);
+    Observable<HttpResponse<RegisterLoginBean.UserInfo>> WechatBindAccountViaCode(@Field("params") String param);
+
+
+    /* 2019.12.18 所有文章分类接口 */
+    @FormUrlEncoded
+    @POST("/app/article/allCategory")
+    Observable<HttpResponse<CateAllBean>> allCategory(@Field("params") String param);
+
+
+
+    /* 2019.12.18 分类文章列表接口 */
+    @FormUrlEncoded
+    @POST("app/article/catlist")
+    Observable<HttpResponse<ActicleAllBean>> catlist(@Field("params") String param);
+
+    /* 2019.12.18 文章子评论列表接口 */
+    @FormUrlEncoded
+    @POST("app/article/subCommentList")
+    Observable<HttpResponse<CommentBean>> subCommentList(@Field("params") String param);
+
+
+    /* 2019.12.18 文章评论点赞接口 */
+    @FormUrlEncoded
+    @POST("app/my/goodArticle")
+    Observable<HttpResponse> goodArticle(@Field("params") String param);
+
+
+    /* 2019.12.18 文章评论取消点赞接口 */
+    @FormUrlEncoded
+    @POST("app/my/cancelGoodArticle")
+    Observable<HttpResponse> cancelGoodArticle(@Field("params") String param);
+
+
 
 
 

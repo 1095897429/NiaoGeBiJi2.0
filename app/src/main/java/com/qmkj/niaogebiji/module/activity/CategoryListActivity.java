@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.animation.ObjectAnimator;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -10,18 +11,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
+import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
+import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
+import com.qmkj.niaogebiji.module.event.toFlashEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -50,6 +59,10 @@ public class CategoryListActivity extends BaseActivity {
     @BindView(R.id.tv_title)
     TextView tv_title;
 
+    private int pageSize = 10 ;
+
+    private String catid;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_catogory_list;
@@ -62,13 +75,88 @@ public class CategoryListActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        catid = getIntent().getStringExtra("catid");
         tv_title.setText("内容运营");
         initLayout();
         initSamrtLayout();
-        getData();
+        catlist();
     }
 
 
+    private void catlist() {
+        KLog.e("tag","当前的页数是 " + page + "");
+        Map<String,String> map = new HashMap<>();
+        map.put("page_no",page + "");
+        map.put("page_size",pageSize + "");
+        map.put("catid",catid + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().catlist(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<ActicleAllBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<ActicleAllBean> response) {
+
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
+                        ActicleAllBean temp  = response.getReturn_data();
+                        List<RecommendBean.Article_list> articles = temp.getList();
+                        if(null != articles && !articles.isEmpty()){
+                            if(1 == page){
+                                setActicleData(articles);
+                                mFirstItemNewAdapter.setNewData(mAllList);
+                                //如果第一次返回的数据不满10条，则显示无更多数据
+                                if(articles.size() < Constant.SEERVER_NUM){
+                                    mFirstItemNewAdapter.loadMoreEnd();
+                                }
+                            }else{
+                                //已为加载更多有数据
+                                if(articles != null && articles.size() > 0){
+                                    setActicleData(articles);
+                                    mFirstItemNewAdapter.addData(tempList);
+                                    mFirstItemNewAdapter.loadMoreComplete();
+                                }else{
+                                    //已为加载更多无更多数据
+                                    mFirstItemNewAdapter.loadMoreEnd();
+                                }
+                            }
+                        }
+                    }
+                });
+    }
+
+    List<MultiNewsBean> tempList = new ArrayList<>();
+    private void setActicleData(List<RecommendBean.Article_list> article_lists) {
+
+        tempList.clear();
+        RecommendBean.Article_list itemBean;
+        MultiNewsBean bean1 ;
+
+        String pic_type;
+        for (int i = 0; i < article_lists.size(); i++) {
+            itemBean = article_lists.get(i);
+            bean1 = new MultiNewsBean();
+            pic_type = article_lists.get(i).getPic_type();
+            if("1".equals(pic_type)){
+                bean1.setItemType(1);
+            }else if("2".equals(pic_type)){
+                bean1.setItemType(3);
+            }else if("3".equals(pic_type)){
+                bean1.setItemType(2);
+            }else{
+                bean1.setItemType(1);
+            }
+            bean1.setNewsActicleList(itemBean);
+            tempList.add(bean1);
+        }
+
+        if(page == 1){
+            mAllList.addAll(tempList);
+        }
+    }
 
 
     private void getData() {
@@ -126,23 +214,37 @@ public class CategoryListActivity extends BaseActivity {
 
         mFirstItemNewAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            getData();
+            catlist();
         },mRecyclerView);
 
         //点击事件
         mFirstItemNewAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的是 position " + position );
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            int type = mFirstItemNewAdapter.getData().get(position).getItemType();
+            if(type == 1){
+                String aid = mFirstItemNewAdapter.getData().get(position).getNewsActicleList().getAid();
+                if (!TextUtils.isEmpty(aid)) {
+                    UIHelper.toNewsDetailActivity(this, aid);
+                }
+            }
+
         });
 
     }
 
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            getData();
+            catlist();
         });
     }
 

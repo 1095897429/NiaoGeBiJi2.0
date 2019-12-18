@@ -1,15 +1,23 @@
 package com.qmkj.niaogebiji.common.net.helper;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
+import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PhoneUtils;
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.Utils;
 import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.qmkj.niaogebiji.BuildConfig;
@@ -20,10 +28,13 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.socks.library.KLog;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.Manifest.permission.READ_PHONE_STATE;
 
 /**
  * @author zhouliang
@@ -91,18 +102,18 @@ public class RetrofitHelper {
     public static String commonParam(Map<String, String> map) {
         //1-iOS, 2-Android
         map.put("device_type","2");
-        if(ActivityCompat.checkSelfPermission(BaseApp.getApplication(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
-
-            String result = PhoneUtils.getIMEI();
-
-            if(!TextUtils.isEmpty(result)){
-                map.put("device_serial", PhoneUtils.getIMEI());
-            }else{
-                //android 10上用👇的方式
-                String deviceId = Settings.System.getString(BaseApp.getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
-                map.put("device_serial", deviceId);
-            }
-        }
+//        if(ActivityCompat.checkSelfPermission(BaseApp.getApplication(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
+//
+//            String result = getIMEI();
+//
+//            if(!TextUtils.isEmpty(result)){
+//                map.put("device_serial", getIMEI());
+//            }else{
+//                //android 10上用👇的方式
+//                String deviceId = Settings.System.getString(BaseApp.getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
+//                map.put("device_serial", deviceId);
+//            }
+//        }
 
         map.put("version_no", AppUtils.getAppVersionName());
         map.put("version_code", AppUtils.getAppVersionCode() + "");
@@ -113,6 +124,8 @@ public class RetrofitHelper {
         String token = "";
         if(null != userInfo){
             token = userInfo.getAccess_token();
+        }else{
+            token = "LX23ahEplKM3S934JzuOKtTkpx6WxZDj";
         }
         map.put("access_token",token);
 
@@ -135,5 +148,29 @@ public class RetrofitHelper {
 
     }
 
+
+
+    @SuppressLint("HardwareIds")
+    @RequiresPermission(READ_PHONE_STATE)
+    public static String getIMEI() {
+        TelephonyManager tm = (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                Class clazz = tm.getClass();
+                //noinspection unchecked
+                Method getImeiMethod = clazz.getDeclaredMethod("getImei");
+                getImeiMethod.setAccessible(true);
+                String imei = (String) getImeiMethod.invoke(tm);
+                if (imei != null) return imei;
+            } catch (Exception e) {
+                Log.e("PhoneUtils", "getIMEI: ", e);
+            }
+        }
+        String imei = tm.getDeviceId();
+        if (imei != null && imei.length() == 15) {
+            return imei;
+        }
+        return "";
+    }
 
 }

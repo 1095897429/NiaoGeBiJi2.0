@@ -109,7 +109,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        followBlogList();
+//        followBlogList();
     }
 
     private void followBlogList() {

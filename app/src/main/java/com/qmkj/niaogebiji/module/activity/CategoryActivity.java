@@ -1,27 +1,31 @@
 package com.qmkj.niaogebiji.module.activity;
 
-import android.text.TextUtils;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.CategoryAdapter;
-import com.qmkj.niaogebiji.module.bean.ChannelBean;
-import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.bean.CateAllBean;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -36,7 +40,7 @@ public class CategoryActivity extends BaseActivity {
     //适配器
     CategoryAdapter mCategoryAdapter;
     //集合
-    List<ChannelBean> mList = new ArrayList<>();
+    List<CateAllBean.CateBean> mList = new ArrayList<>();
     //布局管理器
     GridLayoutManager mGridLayoutManager;
 
@@ -48,13 +52,37 @@ public class CategoryActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        ChannelBean channelBean;
-        for (int i = 0; i < 10; i++) {
-            channelBean = new ChannelBean();
-            mList.add(channelBean);
-        }
-        
         initLayout();
+
+        allCategory();
+
+    }
+
+    private void allCategory() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().allCategory(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<CateAllBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<CateAllBean> response) {
+                        CateAllBean bean = response.getReturn_data();
+                        if(bean != null){
+                            setData(bean.getList());
+                        }
+                    }
+                });
+    }
+
+    private void setData(List<CateAllBean.CateBean> list) {
+
+        if(null != list && !list.isEmpty()){
+            mList.addAll(list);
+        }
+
+        mCategoryAdapter.setNewData(mList);
     }
 
 
@@ -84,7 +112,8 @@ public class CategoryActivity extends BaseActivity {
     private void initEvent() {
         mCategoryAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的索引 " + position);
-            UIHelper.toCategoryListActivity(this);
+            int catid = mCategoryAdapter.getData().get(position).getCatid();
+            UIHelper.toCategoryListActivity(this,catid + "");
         });
     }
 

@@ -2,117 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:id="@+id/part1111"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/head_icon"
-            android:layout_centerVertical="true"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@mipmap/icon_fenxiang"/>
-
-        <LinearLayout
-            android:layout_marginLeft="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignTop="@+id/head_icon"
-            android:layout_toRightOf="@+id/head_icon"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/sender_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lineSpacingExtra="2dp"
-                        android:maxLines="1"
-                        android:text="名称0"
-                        android:textColor="@color/text_first_color"
-                        android:textSize="16sp" />
-
-                    <Space
-                        android:layout_width="8dp"
-                        android:layout_height="match_parent" />
-
-                    <ImageView
-                        android:background="#D8D8D8"
-                        android:layout_width="28dp"
-                        android:layout_height="20dp" />
-
-                    <Space
-                        android:layout_width="4dp"
-                        android:layout_height="match_parent" />
-
-                    <ImageView
-                        android:background="#D8D8D8"
-                        android:layout_width="28dp"
-                        android:layout_height="20dp" />
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="4dp" />
-
-
-            <TextView
-                android:id="@+id/sender_tag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:drawableRight="@mipmap/icon_authen_company"
-                android:drawablePadding="4dp"
-                android:lineSpacingExtra="2dp"
-                android:maxLines="1"
-                android:text="上海青墨网络科技有限公司产品经理"
-                android:textColor="#AAAEB3"
-                android:textSize="13sp" />
-
-
-        </LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/focus"
-            android:textColor="@color/text_news_title_color"
-            android:textSize="13sp"
-            android:visibility="visible"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:text="关注"
-            android:textStyle="bold"
-            android:paddingLeft="21dp"
-            android:paddingRight="21dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:background="@drawable/bg_corners_8_yellow"
-            android:layout_width="70dp"
-            android:layout_height="34dp" />
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="1"
+            android:text="名称0"
+            android:textColor="@color/text_first_color"
+            android:textSize="17sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8sp" />
+
+        <TextView
+            android:id="@+id/des"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="2"
+            android:text="名称0"
+            android:textColor="@color/text_second_color"
+            android:textSize="13sp" />
 
 
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/divider_line"/>
+    </LinearLayout>
 
 </LinearLayout>

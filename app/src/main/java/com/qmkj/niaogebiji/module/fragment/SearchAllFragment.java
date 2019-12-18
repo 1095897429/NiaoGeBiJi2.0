@@ -9,8 +9,10 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -19,6 +21,7 @@ import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.SearchAllAdapter;
 import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
+import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
@@ -37,6 +40,7 @@ import com.qmkj.niaogebiji.module.bean.SearchAllPeopleBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.event.LookMoreEvent;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -60,18 +64,16 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-18
  * 描述:搜索结果第一个界面
+ *  *  1.搜索文章 + 人脉
+ *  *  2.搜索动态
  */
 public class SearchAllFragment extends BaseLazyFragment {
 
-    //搜索类型：1-文章。2-作者
-    private String mType = "1";
     private String myKeyword = "抖音";
 
-    private SearchResultBean mSearchResultBean;
     //人脉 + 文章
-    private List<RecommendBean.Article_list> mArticle_lists;
-    private List<RegisterLoginBean.UserInfo> mUserInfos;
-
+    private List<RecommendBean.Article_list> mArticle_lists = new ArrayList<>();
+    private List<RegisterLoginBean.UserInfo> mPeopleList  = new ArrayList<>();
 
     public static SearchAllFragment getInstance(String chainId, String chainName) {
         SearchAllFragment newsItemFragment = new SearchAllFragment();
@@ -99,17 +101,11 @@ public class SearchAllFragment extends BaseLazyFragment {
         initLayout();
     }
 
-
-
-
     @Override
     protected void lazyLoadData() {
-//        searchArticlePeople();
-//        searchArticle();
-//        searchPeople();
-        searchAuthor();
+        searchArticlePeople();
     }
-
+    //人脉(没有) + 文章(直接拿取)
     ActiclePeopleBean temp;
     private void searchArticlePeople() {
         Map<String,String> map = new HashMap<>();
@@ -124,44 +120,24 @@ public class SearchAllFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<ActiclePeopleBean> response) {
 
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         temp = response.getReturn_data();
                         if(null != temp){
                             mArticle_lists = temp.getArticle_list();
-                            mUserInfos = temp.getRenmai_list();
-                            setData1();
+                            mPeopleList = temp.getRenmai_list();
+                            setData1(mArticle_lists);
+                            setData11(mPeopleList);
                         }
+
+                        searchPeople();
                     }
                 });
     }
 
 
-    private List<RecommendBean.Article_list> mArticleListList;
-    private void searchArticle() {
-        Map<String,String> map = new HashMap<>();
-        map.put("keyword",myKeyword);
-        map.put("page",page + "");
-        map.put("page_size",page_size + "");
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().searchArticle(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<SearchAllActicleBean>>() {
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onSuccess(HttpResponse<SearchAllActicleBean> response) {
-                        SearchAllActicleBean temp  = response.getReturn_data();
-                        if(null != temp){
-                            mArticleListList = temp.getList();
-                            setData2();
-                        }
-
-                    }
-                });
-    }
-
-
-    private List<RegisterLoginBean.UserInfo> mUserInfoList;
     private void searchPeople() {
         Map<String,String> map = new HashMap<>();
         map.put("keyword",myKeyword);
@@ -178,15 +154,15 @@ public class SearchAllFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<SearchAllPeopleBean> response) {
                         SearchAllPeopleBean temp  = response.getReturn_data();
                         if(null != temp){
-                            mUserInfoList = temp.getList();
-                            setData3();
+                            setData8(temp.getList());
                         }
-
+                        searchBlog();
                     }
                 });
     }
 
-    private List<CircleBean> mCircleBeanList;
+
+
     private void searchBlog() {
         Map<String,String> map = new HashMap<>();
         map.put("keyword",myKeyword);
@@ -203,15 +179,21 @@ public class SearchAllFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<SearchAllCircleBean> response) {
                         SearchAllCircleBean temp  = response.getReturn_data();
                         if(null != temp){
-                            mCircleBeanList = temp.getList();
-                            setData4();
+                            setData4(temp.getList());
                         }
+                        searchWiki();
+                    }
 
+                    @Override
+                    public void onNetFail(String msg) {
+                        KLog.d("tag","解析错误继续发送请求");
+                        if("解析错误".equals(msg)){
+                            searchWiki();
+                        }
                     }
                 });
     }
 
-    private List<SearchAllBaiduBean.Wiki> mWikis;
     private void searchWiki() {
         Map<String,String> map = new HashMap<>();
         map.put("keyword",myKeyword);
@@ -228,16 +210,14 @@ public class SearchAllFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<SearchAllBaiduBean> response) {
                         SearchAllBaiduBean temp  = response.getReturn_data();
                         if(null != temp){
-                            mWikis = temp.getList();
-                            setData5();
+                            setData5( temp.getList());
                         }
-
+                        searchMaterial();
                     }
                 });
     }
 
 
-    private List<RecommendBean.Article_list> mThings;
     private void searchMaterial() {
         Map<String,String> map = new HashMap<>();
         map.put("keyword",myKeyword);
@@ -254,16 +234,14 @@ public class SearchAllFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<SearchAllActicleBean> response) {
                         SearchAllActicleBean temp  = response.getReturn_data();
                         if(null != temp){
-                            mThings = temp.getList();
-                            setData6();
+                            setData6(temp.getList());
                         }
-
+                        searchAuthor();
                     }
                 });
     }
 
 
-    private List<SearchAllAuthorBean.SearchAuthor> mSearchAuthors;
     private void searchAuthor() {
         Map<String,String> map = new HashMap<>();
         map.put("keyword",myKeyword);
@@ -278,119 +256,117 @@ public class SearchAllFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<SearchAllAuthorBean> response) {
-                        SearchAllAuthorBean temp = response.getReturn_data();
+
+                        SearchAllAuthorBean temp  = response.getReturn_data();
                         if(null != temp){
-                            mSearchAuthors = temp.getList();
-                            setData7();
+                            setData7(temp.getList());
                         }
                     }
                 });
     }
 
-    private void setData7() {
-
-    }
-
-    private void setData6() {
-
-    }
-
-    private void setData5() {
-
-    }
-
-    private void setData4() {
-
-    }
 
 
-    private void setData3() {
 
-    }
+    private void setData7(List<AuthorBean.Author> authors) {
 
-    private void setData2() {
+        List<AuthorBean.Author> mT = new ArrayList<>();
+        mT.clear();
+        //可能字段不一样，以前是name,现在给的是author
+        AuthorBean.Author author;
+        for (int i = 0; i < authors.size(); i++) {
+            author = new AuthorBean.Author();
+            author.setId(authors.get(i).getAid());
+            author.setName(authors.get(i).getAuthor());
+            author.setImg(authors.get(i).getPic());
+            author.setIs_follow(authors.get(i).getIs_follow());
+            mT.add(author);
+        }
 
-    }
-
-    private void setData1() {
-        if(null != mArticle_lists &&  !mArticle_lists.isEmpty()){
-
+        tempMul.clear();
+        if(null != authors &&  !authors.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setAuthorBeanList(mT);
+            bean1.setItemType(SearchAllAdapter.AUTHOR);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
         }
     }
 
 
-    private void getData() {
 
-        List<NewsItemBean>  list = new ArrayList<>();
-        NewsItemBean newsItemBean;
-        MultSearchBean bean1 ;
-
-        //模拟第1条干货
-        bean1 = new MultSearchBean();
-        bean1.setItemType(1);
-        for (int j = 0; j < 3; j++) {
-            newsItemBean = new NewsItemBean();
-            list.add(newsItemBean);
+    private void setData8(List<RegisterLoginBean.UserInfo> list) {
+        tempMul.clear();
+        if(null != list &&  !list.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setUserInfos(list);
+            bean1.setItemType(SearchAllAdapter.PEOPLE);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
         }
-        bean1.setNewsItemBeanList(list);
-        mAllList.add(bean1);
+    }
 
-
-        //模拟第2条活动
-        MultSearchBean bean2 ;
-        ActionBean.Act_list actionBean;
-        List<ActionBean.Act_list>  list2 = new ArrayList<>();
-        bean2 = new MultSearchBean();
-        bean2.setItemType(2);
-        for (int j = 0; j < 2; j++) {
-            actionBean = new ActionBean.Act_list();
-            list2.add(actionBean);
+    private void setData6(List<RecommendBean.Article_list> things) {
+        tempMul.clear();
+        if(null != things &&  !things.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setThings(things);
+            bean1.setItemType(4);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
         }
-        bean2.setActionBeanList(list2);
-        mAllList.add(bean2);
+    }
 
-        //模拟第3条快讯
-        MultSearchBean bean3 ;
-        FlashBulltinBean.BuilltinBean flashBulltinBean;
-        List<FlashBulltinBean.BuilltinBean>  list3 = new ArrayList<>();
-        bean3 = new MultSearchBean();
-        bean3.setItemType(3);
-        for (int j = 0; j < 2; j++) {
-            flashBulltinBean = new FlashBulltinBean.BuilltinBean();
-            list3.add(flashBulltinBean);
+    private void setData5(List<SearchAllBaiduBean.Wiki> wikis) {
+        tempMul.clear();
+        if(null != wikis &&  !wikis.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setWikis(wikis);
+            bean1.setItemType(SearchAllAdapter.BAIDU);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
         }
-        bean3.setFlashBulltinBeanList(list3);
-        mAllList.add(bean3);
+    }
+
+    private void setData4(List<CircleBean> circleBeanList) {
+        tempMul.clear();
+        if(null != circleBeanList &&  !circleBeanList.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setCircleBeanList(circleBeanList);
+            bean1.setItemType(SearchAllAdapter.DYNAMIC);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
+        }
+    }
 
 
-        //模拟第4条快讯
-        MultSearchBean bean4 ;
-        bean4 = new MultSearchBean();
-        bean4.setItemType(4);
-        mAllList.add(bean4);
+    private void setData11(List<RegisterLoginBean.UserInfo> peopleList) {
+        tempMul.clear();
+        if(null != peopleList &&  !peopleList.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setUserInfos(peopleList);
+            bean1.setItemType(SearchAllAdapter.SEACHER_PEOPLE);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
+        }
+    }
 
-        //模拟第4条快讯
-        MultSearchBean bea54 ;
-        bea54 = new MultSearchBean();
-        bea54.setItemType(5);
-        mAllList.add(bea54);
-
-
-        //模拟第4条快讯
-        MultSearchBean bean6 ;
-        bean6 = new MultSearchBean();
-        bean6.setItemType(6);
-        mAllList.add(bean6);
-
-
-        //模拟第4条快讯
-        MultSearchBean bean7 ;
-        bean7 = new MultSearchBean();
-        bean7.setItemType(7);
-        mAllList.add(bean7);
-
-
-        mSearchAllAdapter.setNewData(mAllList);
+    private void setData1(List<RecommendBean.Article_list> article_lists){
+        tempMul.clear();
+        if(null != article_lists &&  !article_lists.isEmpty()) {
+            MultSearchBean bean1 ;
+            bean1 = new MultSearchBean();
+            bean1.setNewsItemBeanList(article_lists);
+            bean1.setItemType(SearchAllAdapter.SEACHER_GANHUO);
+            tempMul.add(bean1);
+            mSearchAllAdapter.addData(tempMul);
+        }
     }
 
 
@@ -402,6 +378,8 @@ public class SearchAllFragment extends BaseLazyFragment {
     SearchAllAdapter mSearchAllAdapter;
     //组合集合
     List<MultSearchBean> mAllList = new ArrayList<>();
+    //临时数据
+    List<MultSearchBean> tempMul = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
     private int page = 1;
@@ -434,24 +412,44 @@ public class SearchAllFragment extends BaseLazyFragment {
             }
         });
 
-        mSearchAllAdapter.setToMoreListenerListener((partPosition, des) -> {
-            if(partPosition  == SearchAllAdapter.GANHUO){
-                KLog.d("tag","点击的干货查看更多 ");
-                EventBus.getDefault().post(new LookMoreEvent(1));
-            }else if(partPosition  == SearchAllAdapter.ACTION){
-                KLog.d("tag","点击的活动查看更多 ");
-                EventBus.getDefault().post(new LookMoreEvent(2));
-            }else if(partPosition  == SearchAllAdapter.FLASH){
-                KLog.d("tag","点击的快讯查看更多 ");
-                EventBus.getDefault().post(new LookMoreEvent(3));
+        mSearchAllAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+            int  type = mSearchAllAdapter.getData().get(position).getItemType();
+            switch (type){
+                case SearchAllAdapter.GANHUO:
+                    EventBus.getDefault().post(new LookMoreEvent(1));
+                    break;
+                case SearchAllAdapter.PEOPLE:
+                    EventBus.getDefault().post(new LookMoreEvent(2));
+                    break;
+                case SearchAllAdapter.DYNAMIC:
+                    EventBus.getDefault().post(new LookMoreEvent(3));
+                    break;
+                case SearchAllAdapter.BAIDU:
+                    EventBus.getDefault().post(new LookMoreEvent(4));
+                    break;
+                case SearchAllAdapter.DATA:
+                    EventBus.getDefault().post(new LookMoreEvent(5));
+                    break;
+                case SearchAllAdapter.AUTHOR:
+                    EventBus.getDefault().post(new LookMoreEvent(6));
+                    break;
+                default:
             }
         });
+
     }
 
 
     private void initSamrtLayout() {
-        smartRefreshLayout.setEnableRefresh(false);
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mAllList.clear();
+            page = 1;
+            searchArticlePeople();
+        });
     }
 
 

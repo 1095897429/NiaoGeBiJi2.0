@@ -16,6 +16,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
@@ -143,8 +144,7 @@ public class FocusFragment extends BaseLazyFragment {
 
         mFocusAdapter.setAuthorDetailListener(position -> {
 
-            String link = Constant.TEST_URL + "authordetail/" + mAuther_lists.get(position);
-            UIHelper.toWebViewActivity(getActivity(),link);
+            UIHelper.toWebViewActivity(getActivity(), StringUtil.getLink("authordetail/" + mAuther_lists.get(position).getId()));
         });
 
         mFocusAdapter.setOnItemChildClickListener((adapter, view, position) -> {

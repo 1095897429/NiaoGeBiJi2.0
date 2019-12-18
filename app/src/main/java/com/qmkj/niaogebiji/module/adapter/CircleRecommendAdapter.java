@@ -111,12 +111,12 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
                 .addOnClickListener(R.id.ll_report);
 
         CircleBean bean  = item.getCircleBean();
-        User_info userInfo;
         //测试 uid = 300579
-        if(null!= bean.getUser_info()){
-            userInfo = bean.getUser_info();
+        RegisterLoginBean.UserInfo temp = StringUtil.getUserInfoBean();
+        if(null!= temp){
+            User_info userInfo = bean.getUser_info();
             //uid 判断
-            if("300579".equals(bean.getUid())){
+            if(temp.getUid().equals(userInfo.getUid())){
                 helper.setVisible(R.id.circle_remove,true);
                 helper.setVisible(R.id.circle_report,false);
             }else{

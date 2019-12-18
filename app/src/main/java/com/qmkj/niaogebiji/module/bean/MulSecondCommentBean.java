@@ -11,12 +11,11 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  */
 public class MulSecondCommentBean extends BaseBean implements MultiItemEntity {
 
-    //有这个对象的时候设置type 为 2，其他情况可不设置1
-    private CommentBean.FirstComment mFirstComment;
+    //文章评论 真实的
+    private CommentBean.FirstComment mActicleComment;
 
-    private CircleBean mSecondCircle;
-
-    private CommentBeanNew mSecondComment;
+    //圈子评论 真实的
+    private CommentBeanNew mCircleComment;
 
     //类型
     private int itemType;
@@ -30,27 +29,19 @@ public class MulSecondCommentBean extends BaseBean implements MultiItemEntity {
         return itemType;
     }
 
-    public CommentBeanNew getSecondComment() {
-        return mSecondComment;
+    public CommentBean.FirstComment getActicleComment() {
+        return mActicleComment;
     }
 
-    public void setSecondComment(CommentBeanNew secondComment) {
-        mSecondComment = secondComment;
+    public void setActicleComment(CommentBean.FirstComment acticleComment) {
+        mActicleComment = acticleComment;
     }
 
-    public CommentBean.FirstComment getFirstComment() {
-        return mFirstComment;
+    public CommentBeanNew getCircleComment() {
+        return mCircleComment;
     }
 
-    public void setFirstComment(CommentBean.FirstComment firstComment) {
-        mFirstComment = firstComment;
-    }
-
-    public CircleBean getSecondCircle() {
-        return mSecondCircle;
-    }
-
-    public void setSecondCircle(CircleBean secondCircle) {
-        mSecondCircle = secondCircle;
+    public void setCircleComment(CommentBeanNew circleComment) {
+        mCircleComment = circleComment;
     }
 }

@@ -149,6 +149,24 @@
             android:background="@color/bg_color"/>
 
 
+        <LinearLayout
+            android:id="@+id/exit_ll"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/exit_txt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="退出登录"
+                android:textColor="#FF4D4F"
+                android:textSize="16dp" />
+
+
+        </LinearLayout>
 
 
     </LinearLayout>

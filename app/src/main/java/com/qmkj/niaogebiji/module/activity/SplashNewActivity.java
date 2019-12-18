@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.LaunchPermissDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidPhoneDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidStorageDialog;
@@ -251,12 +252,17 @@ public class SplashNewActivity extends BaseActivity {
     //动画完成时间是1400
     public void toNext(){
         new Handler().postDelayed(() -> {
-            boolean firstCome = SPUtils.getInstance().getBoolean("isFirstCome",true);
+            boolean firstCome = SPUtils.getInstance().getBoolean("isFirstCome",false);
+            boolean isLogin  = SPUtils.getInstance().getBoolean(Constant.IS_LOGIN,false);
             if(firstCome){
-                UIHelper.toHomeActivity(SplashNewActivity.this,0);
+                if(isLogin){
+                    UIHelper.toHomeActivity(SplashNewActivity.this,0);
+                }else{
+                    UIHelper.toLoginActivity(SplashNewActivity.this);
+                }
                 finish();
             }else{
-                UIHelper.toLoginActivity(SplashNewActivity.this);
+                UIHelper.toWelcomeActivity(SplashNewActivity.this);
                 finish();
             }
 

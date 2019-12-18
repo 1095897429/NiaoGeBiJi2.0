@@ -51,7 +51,12 @@ public class MyWebView extends WebView {
             return;
         }
 
-        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+
+        //开启 js交互功能
+        webSettings.setJavaScriptEnabled(true);
+
+//        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setDefaultTextEncodingName("utf-8");
         webSettings.setAllowContentAccess(true);
         webSettings.setAllowFileAccess(true);
@@ -65,8 +70,7 @@ public class MyWebView extends WebView {
 
         //开启 database storage API 功能
         webSettings.setDatabaseEnabled(true);
-        //开启 js交互功能
-        webSettings.setJavaScriptEnabled(true);
+
         //开启DomStorage缓存
         webSettings.setDomStorageEnabled(true);
         //开启 H5缓存 功能
@@ -95,8 +99,6 @@ public class MyWebView extends WebView {
         } else {
             setLayerType(View.LAYER_TYPE_NONE, null);
         }
-
-
     }
 
 

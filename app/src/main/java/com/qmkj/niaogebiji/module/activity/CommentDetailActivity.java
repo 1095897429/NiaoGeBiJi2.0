@@ -433,8 +433,8 @@ public class CommentDetailActivity extends BaseActivity {
             for (int i = 0; i < commentSList.size(); i++) {
                 bean = new MulSecondCommentBean();
                 bean11 = commentSList.get(i);
-                bean.setSecondComment(bean11);
-                bean.setItemType(1);
+                bean.setCircleComment(bean11);
+                bean.setItemType(2);
                 list.add(bean);
             }
         }
@@ -452,7 +452,7 @@ public class CommentDetailActivity extends BaseActivity {
         setEmpty(bottomSheetAdapter);
 
         bottomSheetAdapter.setOnItemClickListener((adapter, view, position) -> {
-            secondComment = bottomSheetAdapter.getData().get(position).getSecondComment();
+            secondComment = bottomSheetAdapter.getData().get(position).getCircleComment();
             showTalkDialogSecondComment(position,secondComment);
         });
     }

@@ -237,6 +237,72 @@ public class RecommendBean extends BaseBean {
         //1-单图小，2-单图大，3-三图
         private String pic_type;
 
+
+        private String video;
+        private String app_content_url;
+        private String share_url;
+        private String share_title;
+        private String share_summary;
+        private String share_pic;
+        private String article_point;
+
+
+        public String getVideo() {
+            return video;
+        }
+
+        public void setVideo(String video) {
+            this.video = video;
+        }
+
+        public String getApp_content_url() {
+            return app_content_url;
+        }
+
+        public void setApp_content_url(String app_content_url) {
+            this.app_content_url = app_content_url;
+        }
+
+        public String getShare_url() {
+            return share_url;
+        }
+
+        public void setShare_url(String share_url) {
+            this.share_url = share_url;
+        }
+
+        public String getShare_title() {
+            return share_title;
+        }
+
+        public void setShare_title(String share_title) {
+            this.share_title = share_title;
+        }
+
+        public String getShare_summary() {
+            return share_summary;
+        }
+
+        public void setShare_summary(String share_summary) {
+            this.share_summary = share_summary;
+        }
+
+        public String getShare_pic() {
+            return share_pic;
+        }
+
+        public void setShare_pic(String share_pic) {
+            this.share_pic = share_pic;
+        }
+
+        public String getArticle_point() {
+            return article_point;
+        }
+
+        public void setArticle_point(String article_point) {
+            this.article_point = article_point;
+        }
+
         public String getPic2() {
             return pic2;
         }

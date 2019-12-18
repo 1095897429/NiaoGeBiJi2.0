@@ -27,12 +27,18 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -82,7 +88,7 @@ public class WebViewActivity extends BaseActivity {
         mMyWebView = new MyWebView(getApplicationContext());
 
         //js交互 -- 给js调用app的方法，xnNative是协调的对象
-//        mMyWebView.addJavascriptInterface(new AndroidtoJs(), "xnNative");
+        mMyWebView.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
 
         mMyWebView.setWebViewClient(new WebViewClient(){
 
@@ -188,6 +194,44 @@ public class WebViewActivity extends BaseActivity {
             Toast.makeText(WebViewActivity.this, text + "复制成功", Toast.LENGTH_SHORT).show();
         }
 
+        //跳转文章详情
+        @JavascriptInterface
+        public void toActicleDetail(String articleId) {
+            if(!TextUtils.isEmpty(articleId)){
+                try {
+                    JSONObject b= new JSONObject(articleId);
+                    String result = b.optString("id");
+                    UIHelper.toNewsDetailActivity(WebViewActivity.this,result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            KLog.d("tag","articleId " + articleId);
+        }
+
+
+        //通用方法
+        @JavascriptInterface
+        public void sendMessage(String param) {
+            KLog.d("tag","param " + param);
+            if(!TextUtils.isEmpty(param)){
+                try {
+                    JSONObject b= new JSONObject(param);
+                    String result = b.optString("type");
+                    //去文章详情
+                    if("toArticleDetail".equals(result)){
+                        JSONObject object  = b.getJSONObject("params");
+                        String article = object.optString("id");
+                        UIHelper.toNewsDetailActivity(WebViewActivity.this,article);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
     }
 
 
@@ -221,7 +265,7 @@ public class WebViewActivity extends BaseActivity {
                         mMyWebView.loadUrl(result);
                     }
                 } else {//4.4以上 包括4.4
-                    String result = "javascript:" + "localStorage.setItem('accessToken',\"" + token + "\")";
+                    String result =  "javascript:" + "localStorage.setItem('accessToken',\"" + token + "\")";
                     KLog.d("tag",result);
                     if (mMyWebView != null){
                         mMyWebView.evaluateJavascript(result, value -> {});

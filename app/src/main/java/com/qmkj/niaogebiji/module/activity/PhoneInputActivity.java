@@ -56,6 +56,8 @@ public class PhoneInputActivity extends BaseActivity {
     //登录方式
     private String loginType;
 
+    private String wechat_token = "";
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_phoneinput;
@@ -66,6 +68,8 @@ public class PhoneInputActivity extends BaseActivity {
     protected void initView() {
 
         loginType = getIntent().getStringExtra("loginType");
+
+        wechat_token = getIntent().getStringExtra("wechat_token");
 
         typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
 
@@ -99,7 +103,7 @@ public class PhoneInputActivity extends BaseActivity {
 
         //2 否 手机号今天是否已经获取超过5次验证码 - 显示错误信息
 
-        UIHelper.toVertifyCodeActivity(PhoneInputActivity.this,mobile,loginType);
+        UIHelper.toVertifyCodeActivity(PhoneInputActivity.this,mobile,wechat_token,loginType);
     }
 
 

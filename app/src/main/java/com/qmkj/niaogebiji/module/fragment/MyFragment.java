@@ -104,7 +104,7 @@ public class MyFragment extends BaseLazyFragment {
     private int [] images = new int[]{R.mipmap.icon_my_feather,R.mipmap.icon_my_invite,R.mipmap.icon_my_medal,
             R.mipmap.icon_my_dynamic,R.mipmap.icon_my_focus,R.mipmap.icon_my_circle};
 
-    private String [] names = new String[]{"羽毛任务","邀请好友","徽章中心","我的动态","我的收藏","圈子关注"};
+    private String [] names = new String[]{"羽毛任务","邀请好友","徽章中心","我的动态","干货收藏","圈子关注"};
 
     public static MyFragment getInstance() {
         return new MyFragment();
@@ -302,9 +302,7 @@ public class MyFragment extends BaseLazyFragment {
         switch (view.getId()){
             case R.id.toUserInfo:
 
-                UIHelper.toLoginActivity(getActivity());
-
-//                UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
+                UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
 
                 break;
             case R.id.advice_ll:

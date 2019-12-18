@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -16,12 +17,24 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -45,7 +58,7 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         helper.addOnClickListener(R.id.comment_delete)
                 .addOnClickListener(R.id.ll_has_second_comment)
                 .addOnClickListener(R.id.comment_priase)
-                .addOnClickListener(R.id.toSecondComment);
+                .addOnClickListener(R.id.toFirstComment);
         //评论时间
         if(!TextUtils.isEmpty(item.getDateline())){
             String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(item.getDateline()) * 1000L);
@@ -70,39 +83,27 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         }
         //评论正文
         helper.setText(R.id.comment_text,item.getMessage());
+
         //点赞数
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
         TextView zan_num = helper.getView(R.id.zan_num);
-        zan_num.setTypeface(typeface);
-        if("0".equals(item.getGood_num())){
-            zan_num.setText("赞");
-        }else{
-            int size = Integer.parseInt(item.getGood_num());
-            if(size > 99){
-                zan_num.setText(99 + "+");
-            }else{
-                zan_num.setText(size + "");
-            }
-        }
+        ImageView imageView =  helper.getView( R.id.iamge_priase);
+        zanChange(zan_num,imageView,item.getGood_num(),item.getIs_good());
 
-        //点赞
-        LottieAnimationView lottie = helper.getView(R.id.lottieAnimationView);
-        ImageView animationIV = helper.getView(R.id.iamge_priase);
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
-            lottie.setImageAssetsFolder("images");
-            lottie.setAnimation("images/new_like_28.json");
-            //硬件加速，解决lottie卡顿问题
-//            lottie.useHardwareAcceleration(true);
-            lottie.playAnimation();
-
-
-            zan_num.setTextColor(mContext.getResources().getColor(R.color.prise_select_color));
+            if("0".equals(item.getIs_good() + "")){
+                goodArticle(item,helper.getAdapterPosition());
+            }else if("1".equals(item.getIs_good() + "")){
+                cancelGoodArticle(item,helper.getAdapterPosition());
+            }
         });
 
 
         //二级评论数据
         List<CommentBean.SecondComment> list = item.getCommentslist();
         mLimitComments = list;
+        if(mLimitComments.size() > 2){
+            mLimitComments = mLimitComments.subList(0,2);
+        }
         //二级评论布局
         LinearLayoutManager talkManager = new LinearLayoutManager(mContext);
         talkManager.setOrientation(RecyclerView.VERTICAL);
@@ -123,5 +124,78 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         }
 
     }
+
+    private void zanChange(TextView zan_num,ImageView imageView, String good_num, int is_good) {
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
+        zan_num.setTypeface(typeface);
+        if("0".equals(good_num)){
+            zan_num.setText("赞");
+        }else{
+            int size = Integer.parseInt(good_num);
+            if(size > 99){
+                zan_num.setText(99 + "+");
+            }else{
+                zan_num.setText(size + "");
+            }
+        }
+        //点赞图片
+        if("0".equals(is_good + "")){
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
+        }else if("1".equals(is_good + "")){
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
+        }
+    }
+
+
+    private void goodArticle(CommentBean.FirstComment bean, int position) {
+        Map<String,String> map = new HashMap<>();
+        map.put("type","4");
+        map.put("id",bean.getCid());
+
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().goodArticle(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        //手动修改
+                        CommentBean.FirstComment t =  mData.get(position);
+                        t.setIs_good(1);
+                        t.setGood_num((Integer.parseInt(t.getGood_num()) + 1) + "");
+                        notifyItemChanged(position);
+                    }
+                });
+    }
+
+
+    private void cancelGoodArticle(CommentBean.FirstComment bean, int position) {
+        Map<String,String> map = new HashMap<>();
+        map.put("type","4");
+        map.put("id",bean.getCid());
+
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().cancelGoodArticle(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        //手动修改
+                        CommentBean.FirstComment t =  mData.get(position);
+                        t.setIs_good(0);
+                        t.setGood_num((Integer.parseInt(t.getGood_num()) - 1) + "");
+
+                        notifyItemChanged(position);
+                    }
+                });
+    }
+
+
+
 }
 

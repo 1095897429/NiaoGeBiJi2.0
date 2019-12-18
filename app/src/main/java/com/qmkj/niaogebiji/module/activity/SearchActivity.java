@@ -4,7 +4,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SearchEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -31,13 +30,13 @@ import com.qmkj.niaogebiji.module.db.DBManager;
 import com.qmkj.niaogebiji.module.event.LookMoreEvent;
 import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
-import com.qmkj.niaogebiji.module.fragment.ActionFragment;
-import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
-import com.qmkj.niaogebiji.module.fragment.FirstItemFragment;
-import com.qmkj.niaogebiji.module.fragment.FlashFragment;
-import com.qmkj.niaogebiji.module.fragment.PeopletemFragment;
+import com.qmkj.niaogebiji.module.fragment.SearchActicleItemFragment;
+import com.qmkj.niaogebiji.module.fragment.SeachThinsItemFragment;
 import com.qmkj.niaogebiji.module.fragment.SearchAllFragment;
-import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
+import com.qmkj.niaogebiji.module.fragment.SearchAuthorItemFragment;
+import com.qmkj.niaogebiji.module.fragment.SearchBaiDuItemFragment;
+import com.qmkj.niaogebiji.module.fragment.SearchCircleFragment;
+import com.qmkj.niaogebiji.module.fragment.SearchPeopleItemFragment;
 import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -230,16 +229,6 @@ public class SearchActivity extends BaseActivity {
 
     private void searchIndex() {
 
-        //测试
-//        mHot_searches = new ArrayList<>();
-//        for (int i = 0; i < mVals.length; i++) {
-//            mHot_search = new SearchBean.Hot_search();
-//            mHot_search.setSearch_string(mVals[i]);
-//            mHot_searches.add(mHot_search);
-//        }
-//        initTagData();
-
-
         Map<String,String> map = new HashMap<>();
         String result = RetrofitHelper.commonParam(map);
 
@@ -302,6 +291,7 @@ public class SearchActivity extends BaseActivity {
 
 
 
+    //点击删除回调的事件
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchBackEvent(SearchCleanEvent event) {
         if(null != this){
@@ -316,6 +306,10 @@ public class SearchActivity extends BaseActivity {
                 initHistoryData();
                 ll_history.setVisibility(View.VISIBLE);
             }
+
+            //更新tablayout
+            mViewPager.setCurrentItem(0);
+            pager_title.setCurrentItem(0);
         }
     }
 
@@ -350,14 +344,6 @@ public class SearchActivity extends BaseActivity {
         bean = new ChannelBean("6","作者");
         mChannelBeanList.add(bean);
 
-//        bean = new ChannelBean("8","人脉");
-//        mChannelBeanList.add(bean);
-//        bean = new ChannelBean("9","课程");
-//        mChannelBeanList.add(bean);
-//        bean = new ChannelBean("10","百科");
-//        mChannelBeanList.add(bean);
-//        bean = new ChannelBean("11","测试");
-//        mChannelBeanList.add(bean);
 
 
         if(null != mChannelBeanList){
@@ -376,27 +362,27 @@ public class SearchActivity extends BaseActivity {
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(searchAllFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("干货")){
-                FirstItemFragment firstItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                SearchActicleItemFragment firstItemFragment = SearchActicleItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(firstItemFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("人脉")){
-                ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                SearchPeopleItemFragment actionFragment = SearchPeopleItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("动态")){
-                FlashFragment flashFragment = FlashFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                SearchCircleFragment flashFragment = SearchCircleFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(flashFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("百科")){
-                FirstItemFragment firstItemFragment = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                SearchBaiDuItemFragment firstItemFragment = SearchBaiDuItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(firstItemFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("资料")){
-                CircleRecommendFragment circleRecommendFragment = CircleRecommendFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                SeachThinsItemFragment newsThinsItemFragment = SeachThinsItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
-                mFragmentList.add(circleRecommendFragment);
+                mFragmentList.add(newsThinsItemFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("作者")){
-                PeopletemFragment peopletemFragment = PeopletemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                SearchAuthorItemFragment peopletemFragment = SearchAuthorItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(peopletemFragment);
             }

@@ -248,7 +248,7 @@ public class MoreKnowYouActivity extends BaseActivity {
         animation.setInterpolator(new LinearInterpolator());
         animation.addUpdateListener(valueAnimator -> {
             int value = (int) animation.getAnimatedValue();
-            KLog.e("tag", "value is " + value);
+//            KLog.e("tag", "value is " + value);
             if(text_progress != null){
                 text_progress.setText(value + "%");
             }

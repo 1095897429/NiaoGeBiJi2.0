@@ -31,7 +31,56 @@ public class AuthorBean extends BaseBean {
         private String hit_count;
         private int is_follow;
 
+
+        //搜索中的部分
+        private String aid;
+        private String title;
+        private String author;
+        private String published_at;
+        private String pic;
+
         public Author() {
+        }
+
+
+        public String getAid() {
+            return aid;
+        }
+
+        public void setAid(String aid) {
+            this.aid = aid;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+
+        public String getPublished_at() {
+            return published_at;
+        }
+
+        public void setPublished_at(String published_at) {
+            this.published_at = published_at;
+        }
+
+        public String getPic() {
+            return pic;
+        }
+
+        public void setPic(String pic) {
+            this.pic = pic;
         }
 
         public void setId(String id) {

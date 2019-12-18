@@ -14,7 +14,7 @@ public class SearchAllAuthorBean extends BaseBean {
 
     private String num;
 
-    private List<SearchAuthor> list;
+    private List<AuthorBean.Author> list;
 
     public String getNum() {
         return num;
@@ -24,11 +24,12 @@ public class SearchAllAuthorBean extends BaseBean {
         this.num = num;
     }
 
-    public List<SearchAuthor> getList() {
+
+    public List<AuthorBean.Author> getList() {
         return list;
     }
 
-    public void setList(List<SearchAuthor> list) {
+    public void setList(List<AuthorBean.Author> list) {
         this.list = list;
     }
 

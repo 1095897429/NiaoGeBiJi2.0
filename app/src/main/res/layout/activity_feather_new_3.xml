@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/bg_color"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/smartRefreshLayout"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.qmkj.niaogebiji.module.widget.MyNestedScrollView
+                        android:id="@+id/scrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/ll"
+                                android:background="@mipmap/bg_feather_new"
+                                android:layout_width="match_parent"
+                                android:paddingTop="@dimen/status_bar_height"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="16dp"
+                                    android:orientation="vertical">
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="50dp">
+
+                                    </RelativeLayout>
+
+
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginLeft="16dp"
+                                    android:layout_marginRight="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:id="@+id/text_feather"
+                                            android:text="可用羽毛"
+                                            android:textSize="14sp"
+                                            android:textStyle="bold"
+                                            android:textColor="@color/text_first_color"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+
+
+                                        <TextView
+                                            android:id="@+id/my_feather"
+                                            android:text="--"
+                                            android:textColor="@color/text_first_color"
+                                            android:textSize="40sp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+
+                                    <TextView
+                                        android:id="@+id/rule_feather"
+                                        android:layout_centerVertical="true"
+                                        android:layout_alignParentRight="true"
+                                        android:drawableRight="@mipmap/icon_feather_rule_right"
+                                        android:drawableTint="@color/text_first_color"
+                                        android:drawablePadding="6dp"
+                                        android:text="羽毛规则"
+                                        android:textStyle="bold"
+                                        android:textSize="11sp"
+                                        android:textColor="@color/text_first_color"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                </RelativeLayout>
+
+                                <TextView
+                                    android:layout_marginLeft="16dp"
+                                    android:layout_marginBottom="30dp"
+                                    android:text="消耗羽毛时优先选择即将过期的羽毛"
+                                    android:textSize="11sp"
+                                    android:textColor="#242629"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+
+                            </LinearLayout>
+
+                            <com.qmkj.niaogebiji.common.tab.TabLayout
+                                android:id="@+id/tabLayout"
+                                android:visibility="gone"
+                                app:tabIndicatorHeight="0dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp">
+
+                            </com.qmkj.niaogebiji.common.tab.TabLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_center"
+                                android:visibility="visible"
+                                android:background="@color/bg_color"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:orientation="vertical">
+
+
+                                <com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather
+                                    android:id="@+id/pager_title"
+                                    android:visibility="visible"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="50dp">
+                                    >
+
+                                </com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather>
+
+                            </LinearLayout>
+
+
+                            <RelativeLayout
+                                android:descendantFocusability="blocksDescendants"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+
+                                <com.qmkj.niaogebiji.module.widget.CustomScrollViewPager
+                                    android:id="@+id/viewpager"
+                                    android:background="@color/white"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                </com.qmkj.niaogebiji.module.widget.CustomScrollViewPager>
+
+
+
+                            </RelativeLayout>
+
+
+
+                        </LinearLayout>
+
+
+                    </com.qmkj.niaogebiji.module.widget.MyNestedScrollView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/rl_top"
+                android:visibility="visible"
+                android:alpha="0"
+                android:background="@color/white"
+                android:paddingTop="@dimen/status_bar_height"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <RelativeLayout
+                    android:id="@+id/titleLayout"
+                    android:alpha="0"
+                    android:layout_width="match_parent"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="20dp"
+                    android:layout_height="50dp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/iv_back2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/icon_common_left"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone" />
+
+
+
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_centerInParent="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="我的羽毛"
+                        android:alpha="0"
+                        android:maxLength="20"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="18sp"
+                        android:textColor="@color/text_news_title_color"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+
+
+
+                </RelativeLayout>
+
+
+                <com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather
+                    android:id="@+id/pager_title2"
+                    android:background="@color/bg_color"
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                </com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/status_bar_height"
+                android:paddingLeft="16dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_back"
+                        android:visibility="visible"
+                        android:src="@mipmap/icon_common_left"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/loading_dialog"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieAnimationView"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:lottie_loop="true"
+                    app:lottie_autoPlay="true" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
+
+
+
+
+
+
+
+</RelativeLayout>

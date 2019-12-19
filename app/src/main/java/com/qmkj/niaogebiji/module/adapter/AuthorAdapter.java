@@ -15,6 +15,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
@@ -78,13 +79,10 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
 
         helper.itemView.setOnClickListener(view -> {
-
-
             AuthorBean.Author mAuthor = mData.get(helper.getAdapterPosition());
             KLog.d("tag","点击的是 position " + helper.getAdapterPosition() );
-//            String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
-            String test = "http://192.168.14.103:8080/" + "authordetail/" + mAuthor.getId();
-            UIHelper.toWebViewActivity(mContext,test);
+            String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
+            UIHelper.toWebViewActivity(mContext,link);
         });
 
     }
@@ -103,9 +101,9 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
             name = "取消";
             focus_type = "0";
             final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(mContext).builder();
-            iosAlertDialog.setPositiveButton("确定", v -> {
+            iosAlertDialog.setPositiveButton("取消关注", v -> {
                 followAuthor(position);
-            }).setNegativeButton("取消", v -> {}).setMsg("确定要 " + name +"关注「" + author  +"」").setCanceledOnTouchOutside(false);
+            }).setNegativeButton("再想想", v -> {}).setMsg("取消关注?").setCanceledOnTouchOutside(false);
             iosAlertDialog.show();
         }else{
             focus_type = "1";

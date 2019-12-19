@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_share_bg"
+
+
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_common_left"
+            android:layout_gravity="left|center"
+            android:visibility="visible" />
+
+        <TextView
+            android:text="确认收货信息"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:textColor="@color/text_news_title_color"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
+
+
+
+    <LinearLayout
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_marginTop="40dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/name_1"
+                android:text="收货人 "
+                android:textSize="13sp"
+                android:textColor="@color/text_first_color"
+                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.qmkj.niaogebiji.module.widget.ClearableEditText
+                android:id="@+id/name_et"
+                android:layout_toRightOf="@+id/name_1"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="38dp"
+                android:hint="请输入收货人名称 "
+                android:singleLine="true"
+                android:textSize="13sp"
+                android:text=""
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_below="@+id/phone_et"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/name_2"
+                android:text="请输入手机号 "
+                android:textSize="13sp"
+                android:textColor="@color/text_first_color"
+                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.qmkj.niaogebiji.module.widget.ClearableEditText
+                android:id="@+id/phone_et"
+                android:layout_toRightOf="@+id/name_2"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="28dp"
+                android:hint="联系电话"
+                android:textSize="13sp"
+                android:maxLength="11"
+                android:inputType="phone"
+                android:text=""
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+
+        </RelativeLayout>
+
+
+        <View
+            android:layout_below="@+id/psw_et"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/name_3"
+                android:text="联系地址 "
+                android:textSize="13sp"
+                android:textColor="@color/text_first_color"
+                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.qmkj.niaogebiji.module.widget.ClearableEditText
+                android:id="@+id/location_et"
+                android:layout_toRightOf="@+id/name_3"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="28dp"
+                android:maxLines="2"
+                android:hint="请输入收货地址，尽量详细哦 "
+                android:textSize="13sp"
+                android:text=""
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+
+        </RelativeLayout>
+
+
+        <View
+            android:layout_below="@+id/psw_et"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+
+        <TextView
+            android:id="@+id/submit"
+            android:layout_marginTop="32dp"
+            android:text="提交"
+            android:textSize="13sp"
+            android:background="@drawable/bg_login_select"
+            android:textColor="@color/text_news_title_color"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

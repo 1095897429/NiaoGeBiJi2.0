@@ -22,6 +22,13 @@ import java.lang.reflect.Field;
 public class MyWebView extends WebView {
 
 
+    private boolean isNoShowSetting;
+
+    public MyWebView(Context context,boolean isNoShowSetting) {
+        this(context,null);
+    }
+
+
     public MyWebView(Context context) {
         this(context,null);
     }

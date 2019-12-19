@@ -27,10 +27,13 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.adapter.CirclePicItemAdapter;
 import com.qmkj.niaogebiji.module.bean.MulMediaFile;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.event.SayHiEvent;
 import com.qmkj.niaogebiji.module.widget.GlideLoader;
 import com.socks.library.KLog;
 import com.xzh.imagepicker.ImagePicker;
 import com.xzh.imagepicker.bean.MediaFile;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,15 +111,25 @@ public class HelloMakeActivity extends BaseActivity {
     @OnClick({R.id.cancel,R.id.send})
     public void clicks(View view){
         KeyboardUtils.hideSoftInput(mEditText);
-        finishWithAnim(R.anim.activity_alpha_enter,R.anim.activity_exit_bottom);
         switch (view.getId()){
             case R.id.send:
-                KLog.d("tag","发布");
+
+                EventBus.getDefault().post(new SayHiEvent(mString));
+
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("message",mString);
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
+                finishWithAnim(R.anim.activity_alpha_enter,R.anim.activity_exit_bottom);
                 break;
             case R.id.cancel:
+                finishWithAnim(R.anim.activity_alpha_enter,R.anim.activity_exit_bottom);
                 break;
             default:
         }
+
+
     }
 
     @Override

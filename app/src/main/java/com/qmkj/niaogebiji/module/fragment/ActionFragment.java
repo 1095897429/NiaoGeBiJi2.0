@@ -2,24 +2,18 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
-import com.qmkj.niaogebiji.common.base.RefreshFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.ActionAdapter;
-import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
-import com.qmkj.niaogebiji.module.bean.MoringNewsBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -132,8 +126,8 @@ public class ActionFragment extends BaseLazyFragment {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }

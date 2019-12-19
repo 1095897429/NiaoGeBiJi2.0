@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingTop="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="104dp">
+
+
+    <com.qmkj.niaogebiji.module.widget.RCImageView
+        android:id="@+id/img_1"
+        android:layout_width="71dp"
+        android:layout_height="71dp"
+        android:src="@mipmap/icon_fenxiang"
+        android:scaleType="centerCrop"
+        app:round_as_circle="false"
+        app:round_corner="6dp" />
+
+
+    <TextView
+        android:id="@+id/content"
+        android:textSize="14sp"
+        android:lineSpacingExtra="2dp"
+        android:layout_marginLeft="12dp"
+        android:layout_toRightOf="@+id/img_1"
+        android:textColor="@color/text_news_title_color"
+        android:text="流量攻坚战 • 鸟哥笔记APP推广公开课|北京/广州/杭州/上海"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/money"
+        android:textSize="18sp"
+        android:layout_marginLeft="12dp"
+        android:layout_toRightOf="@+id/img_1"
+        app:layout_constraintLeft_toRightOf="@+id/img_1"
+        android:layout_alignBottom="@+id/img_1"
+        android:textColor="@color/zan_select"
+        android:text="300"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/tag"
+        android:textSize="11sp"
+        android:layout_marginLeft="4dp"
+        android:layout_toRightOf="@+id/money"
+        android:layout_alignBottom="@+id/img_1"
+        android:layout_marginBottom="2dp"
+        android:textColor="@color/zan_select"
+        android:text="羽毛"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <View
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_line"/>
+
+
+</RelativeLayout>

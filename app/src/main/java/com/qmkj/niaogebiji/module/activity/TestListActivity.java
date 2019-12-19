@@ -12,15 +12,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.TestItemAdapter;
-import com.qmkj.niaogebiji.module.bean.AuthorBean;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
-import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
-import com.qmkj.niaogebiji.module.bean.TestBean;
-import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.TestListEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -111,8 +104,8 @@ public class TestListActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }

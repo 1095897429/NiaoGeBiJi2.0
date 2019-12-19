@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -142,18 +144,6 @@ public class FirstItemFragment extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
-
-        //明天提醒 + 是否完成 -- ok
-        long time = SPUtils.getInstance().getLong("today_time",0);
-        boolean isDone = SPUtils.getInstance().getBoolean("is_done",false);
-        if(time != 0){
-           if(!TimeUtils.isToday(time) && !isDone){
-               KLog.d("tag","不是今天且没有做过测试，提示弹框");
-               part3333.setVisibility(View.VISIBLE);
-           }
-        }else{
-            part3333.setVisibility(View.VISIBLE);
-        }
     }
 
 
@@ -161,7 +151,45 @@ public class FirstItemFragment extends BaseLazyFragment {
     protected void lazyLoadData() {
         //实时快讯
         getIndexBulltin();
+        //更懂你
+        isPersonal();
 
+    }
+
+    //{"return_code":"200","return_msg":"success","return_data":false}
+    private void isPersonal() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().isPersonal(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                     //	false展示 true不展示
+                     boolean result = (boolean) response.getReturn_data();
+                        if(!result){
+                            //明天提醒  -- ok
+                            long time = SPUtils.getInstance().getLong("today_time",0);
+                            // boolean isDone = SPUtils.getInstance().getBoolean("is_done",false);且没有做过测试，提示弹框
+                            if(time != 0){
+                                if(!TimeUtils.isToday(time)){
+                                    KLog.d("tag","不是今天");
+                                    part3333.setVisibility(View.VISIBLE);
+                                }
+                            }else{
+                                //没有点击了明天再说按钮
+                                part3333.setVisibility(View.VISIBLE);
+                            }
+
+                        }else{
+                            part3333.setVisibility(View.GONE);
+                        }
+                    KLog.d("tag","---" + response.getReturn_data().toString());
+                    }
+                });
     }
 
     private List<RecommendBean.Article_list> mArticle_lists;
@@ -181,6 +209,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
+
 
                         RecommendBean temp = response.getReturn_data();
 
@@ -341,7 +370,9 @@ public class FirstItemFragment extends BaseLazyFragment {
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            recommendlist();
+            getIndexBulltin();
+            //更懂你
+            isPersonal();
         });
     }
 
@@ -378,19 +409,6 @@ public class FirstItemFragment extends BaseLazyFragment {
         mFirstItemAdapter.setNewData(mAllList);
 
         initAnimate();
-    }
-
-
-    //点击切换fragement会调用
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(hidden){
-            //pause
-
-        }else{
-            //resume
-        }
     }
 
 
@@ -437,9 +455,11 @@ public class FirstItemFragment extends BaseLazyFragment {
 
             int type = mFirstItemAdapter.getData().get(position).getItemType();
             //快讯
-            if(type == 4){
+            if(type == FirstItemNewAdapter.FLASH_TYPE){
                 EventBus.getDefault().post(new toFlashEvent("去快讯信息流"));
-            }else if(type == 1){
+            }else if(type == FirstItemNewAdapter.RIGHT_IMG_TYPE ||
+                    type == FirstItemNewAdapter.LONG_IMG_TYPE ||
+                    type == FirstItemNewAdapter.THREE_IMG_TYPE ){
                 String aid = mFirstItemAdapter.getData().get(position).getNewsActicleList().getAid();
                 if (!TextUtils.isEmpty(aid)) {
                     UIHelper.toNewsDetailActivity(getActivity(), aid);

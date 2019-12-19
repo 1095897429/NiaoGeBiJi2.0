@@ -12,12 +12,15 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPUtils;
@@ -51,6 +54,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -78,6 +82,18 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.profile_info_text)
     TextView profile_info_text;
 
+    @BindView(R.id.open_push)
+    ImageView open_push;
+
+    @BindView(R.id.exit_txt)
+    TextView exit_txt;
+
+    @BindView(R.id.push_tx)
+    TextView push_tx;
+
+    @BindView(R.id.clean_text)
+    TextView clean_text;
+
 
     private Uri imageUri;
     public static final int CHOOSE_PHOTO = 1;
@@ -95,13 +111,33 @@ public class SettingActivity extends BaseActivity {
     @Override
     protected void initView() {
         tv_title.setText("设置");
+
+        boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
+        if(isOpen){
+            open_push.setImageResource(R.mipmap.icon_push_open);
+            push_tx.setText("已开启");
+        }else{
+            open_push.setImageResource(R.mipmap.icon_push_close);
+            push_tx.setText("已关闭");
+        }
+
+        Random rand = new Random();
+        int i = rand.nextInt(15) + 1;
+        clean_text.setText("当前缓存" + i + "M");
     }
 
 
     @OnClick({R.id.iv_back,R.id.change_head,
-            R.id.exit_ll})
+            R.id.exit_ll,
+            R.id.open_push,
+            R.id.change_cache,
+            R.id.change_resetData
+    })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.change_resetData:
+                showReSetDataDialog();
+                break;
             case R.id.change_head:
                 showHeadDialog();
                 break;
@@ -113,8 +149,67 @@ public class SettingActivity extends BaseActivity {
                 showExitDialog();
 
                 break;
+            case R.id.open_push:
+                boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
+                if(isOpen){
+                    open_push.setImageResource(R.mipmap.icon_push_close);
+                    push_tx.setText("已关闭");
+                    SPUtils.getInstance().put("push_open",false);
+                }else{
+                    open_push.setImageResource(R.mipmap.icon_push_open);
+                    push_tx.setText("已开启");
+                    SPUtils.getInstance().put("push_open",true);
+                }
+
+                break;
+            case R.id.change_cache:
+
+                showCacheDialog();
+
+                break;
             default:
         }
+    }
+
+    private void resetPersonal() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().resetPersonal(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
+    }
+
+
+    private void showReSetDataDialog() {
+        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(SettingActivity.this).builder();
+        iosAlertDialog.setPositiveButton("是的", v -> {
+            resetPersonal();
+        }).setNegativeButton("取消", v -> {}).setMsg("是否重置个性化数据?\n重置后，可在首页重新选择").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+
+    }
+
+
+
+    private void showCacheDialog() {
+        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(SettingActivity.this).builder();
+        iosAlertDialog.setPositiveButton("确定", v -> {
+            //清除历史，刷新界面
+            clean_text.setText("当前缓存0M");
+            SPUtils.getInstance().put("is_cached", true);
+            ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+            ToastUtils.showShort("清除成功");
+        }).setNegativeButton("取消", v -> {}).setMsg("确认要清空缓存?").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+
     }
 
 

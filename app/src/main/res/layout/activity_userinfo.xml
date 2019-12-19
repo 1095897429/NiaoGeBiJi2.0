@@ -21,6 +21,10 @@
             android:layout_height="wrap_content">
         </androidx.recyclerview.widget.RecyclerView>
 
+        <include
+            android:visibility="gone"
+            layout="@layout/empty_layout"/>
+
 
     </LinearLayout>
 
@@ -36,6 +40,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- 未关注 -->
         <TextView
             android:id="@+id/noFocus"
             android:text="关注"
@@ -47,6 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp" />
 
+        <!-- 已关注 -->
         <TextView
             android:id="@+id/alreadFocus"
             android:text="已关注"
@@ -58,8 +64,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp" />
 
+        <!-- 他屏蔽你 -->
         <TextView
-            android:id="@+id/othernoFocus"
+            android:id="@+id/himcloseme"
             android:text="TA屏蔽了你，不能关注"
             android:visibility="gone"
             android:gravity="center"

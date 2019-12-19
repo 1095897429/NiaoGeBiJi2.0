@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:scaleType="centerCrop"
+                    android:background="@color/bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="375dp" />
+
+                <ImageView
+                    android:id="@+id/iv_back"
+                    android:src="@mipmap/icon_left_arrow"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="@dimen/status_bar_height_1"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
+
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:textSize="22sp"
+                    android:textColor="@color/text_first_color"
+                    android:text="《小红书》18篇干货，增长知识全覆盖！"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:src="@mipmap/icon_news_detail_diver"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_width="30dp"
+                    android:layout_height="8dp" />
+
+                <TextView
+                    android:id="@+id/content"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_first_color"
+                    android:text="《小红书》18篇干货，增长知识全覆盖！"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+
+
+
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="84dp">
+
+        <RelativeLayout
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:background="@color/white"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+
+            <TextView
+                android:id="@+id/num_feather"
+                android:textSize="30sp"
+                android:textColor="#FF5040"
+                android:layout_centerVertical="true"
+                android:text="300"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_toRightOf="@+id/num_feather"
+                android:layout_alignBottom="@+id/num_feather"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FF5040"
+                android:layout_marginLeft="4dp"
+                android:layout_marginBottom="4dp"
+                android:text="羽毛"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:id="@+id/buy"
+                android:background="@drawable/bg_corners_100_yellow"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="@color/text_news_title_color"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:text="立即兑换"
+                android:textStyle="bold"
+                android:layout_width="160dp"
+                android:layout_height="46dp" />
+
+        </RelativeLayout>
+
+
+        <ImageView
+            android:src="@mipmap/icon_feather_detail_fuceng"
+            android:layout_width="match_parent"
+            android:scaleType="centerCrop"
+            android:layout_height="18dp" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

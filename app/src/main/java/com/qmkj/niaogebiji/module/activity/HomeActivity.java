@@ -190,7 +190,6 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                KLog.d("tag","onPageStarted");
 
             }
 
@@ -302,7 +301,6 @@ public class HomeActivity extends BaseActivity {
     })
     public void bottomClick(android.view.View layout){
         switch (layout.getId()){
-
 
             case R.id.index_first:
 

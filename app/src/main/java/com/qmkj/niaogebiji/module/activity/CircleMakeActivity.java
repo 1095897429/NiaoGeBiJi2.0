@@ -189,7 +189,7 @@ public class CircleMakeActivity extends BaseActivity {
                 .textChanges(mEditText)
                 .subscribe(charSequence -> {
                     //英文单词占1个字符  表情占2个字符 中文占1个字符
-                    KLog.d("tag", "accept: " + charSequence.toString() );
+//                    KLog.d("tag", "accept: " + charSequence.toString() );
                     //　trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
@@ -239,7 +239,6 @@ public class CircleMakeActivity extends BaseActivity {
                 overridePendingTransition(R.anim.activity_enter_right,R.anim.activity_alpha_exit);
                 break;
             case R.id.send:
-                KLog.d("tag","发布");
                 sendPicToQiuNiu();
                 break;
             case R.id.cancel:
@@ -414,7 +413,6 @@ public class CircleMakeActivity extends BaseActivity {
             if(!pathList.isEmpty()){
                 mTempMsgBean.setImgPath2(pathList);
             }
-            KLog.d("tag","=====");
         }
     }
 

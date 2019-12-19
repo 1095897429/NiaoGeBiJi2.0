@@ -150,6 +150,135 @@
 
 
         <LinearLayout
+            android:id="@+id/part2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="vertical">
+
+
+
+            <LinearLayout
+                android:id="@+id/change_resetData"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="重置个性化数据"
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="16dp" />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/icon_my_right" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"/>
+
+
+            <RelativeLayout
+                android:id="@+id/push_ll"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="接受推送消息"
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="16dp" />
+
+
+                <ImageView
+                    android:id="@+id/open_push"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="53dp"
+                    android:layout_height="36dp"
+                    android:src="@mipmap/icon_push_open" />
+
+                <TextView
+                    android:id="@+id/push_tx"
+                    android:layout_toLeftOf="@+id/open_push"
+                    android:layout_marginRight="4dp"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="已开启"
+                    android:textColor="@color/setting_text_default"
+                    android:textSize="11sp"
+                    />
+
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"/>
+
+            <LinearLayout
+                android:id="@+id/change_cache"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:gravity="center_vertical"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|left"
+                    android:text="清除缓存"
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="16dp" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/clean_text"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:layout_height="wrap_content"
+                    android:text="当前缓存20M"
+                    android:textColor="@color/setting_text_default"
+                    android:textSize="16sp"
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/icon_my_right" />
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
             android:id="@+id/exit_ll"
             android:layout_width="match_parent"
             android:layout_height="62dp"

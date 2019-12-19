@@ -10,19 +10,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
-import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
@@ -75,13 +72,13 @@ public class FocusFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
         initSamrtLayout();
-        getIndexArticle();
+
         initLayout();
     }
 
     @Override
     protected void lazyLoadData() {
-
+        getIndexArticle();
     }
 
 
@@ -217,8 +214,8 @@ public class FocusFragment extends BaseLazyFragment {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
@@ -335,9 +332,9 @@ public class FocusFragment extends BaseLazyFragment {
             name = "取消";
             focus_type = "0";
             final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(getActivity()).builder();
-            iosAlertDialog.setPositiveButton("确定", v -> {
+            iosAlertDialog.setPositiveButton("取消关注", v -> {
                 followAuthor();
-            }).setNegativeButton("取消", v -> {}).setMsg("确定要 " + name +"关注「" + author  +"」").setCanceledOnTouchOutside(false);
+            }).setNegativeButton("再想想", v -> {}).setMsg("取消关注？").setCanceledOnTouchOutside(false);
             iosAlertDialog.show();
         }else{
             focus_type = "1";

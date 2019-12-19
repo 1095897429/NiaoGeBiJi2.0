@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.bean;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
 import java.util.List;

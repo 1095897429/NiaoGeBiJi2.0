@@ -15,6 +15,8 @@ public class ToollndexBean extends BaseBean {
     private String icon;
     private String url;
     private int resid;
+    //跳转类型 0外链 1小程序
+    private String type;
 
 
     private boolean isSelect;
@@ -27,6 +29,14 @@ public class ToollndexBean extends BaseBean {
         isSelect = select;
     }
 
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public int getResid() {
         return resid;

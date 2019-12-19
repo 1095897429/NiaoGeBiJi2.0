@@ -1,18 +1,17 @@
 package com.qmkj.niaogebiji.module.activity;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.KeyboardUtils;
-import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
@@ -25,14 +24,11 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.SystemUtil;
-import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.SecurityCodeView;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +50,13 @@ import udesk.core.UdeskConst;
  * 版本 1.0
  * 创建时间 2019-11-08
  * 描述:验证码
+ *
+ * 1.进入页面判断 上次保存的倒计时 + 号码 【如果一样则显示倒计时，不发送请求】 - ok
+ * 2.进入页面判断 上次保存的倒计时 + 号码 【不一样先发送验证码】  - ok
+ * 3.点击3次重新发送 【全局保存，换文本显示 】 -- ok
+ * 4.验证码全局保存 【超过提示联系客服】-- ok
+ * 5.30001  :  用户已封禁
+ * 6.20058  : 验证码发送次数过多
  */
 public class VertifyCodeActivity extends BaseActivity {
 
@@ -76,7 +79,7 @@ public class VertifyCodeActivity extends BaseActivity {
 
     Disposable disposable;
 
-    //倒计时60秒
+    //倒计时60秒,单位是秒
     public static int COUNT = 2;
 
     private String phone;
@@ -84,6 +87,13 @@ public class VertifyCodeActivity extends BaseActivity {
     private String loginType;
 
     private String wechat_token = "";
+
+    //输入验证码的次数
+    private int doCount;
+    //重新发送次数
+    private int doReSendCount;
+    //发送验证码次数
+    private int doSendCode;
 
 
     @Override
@@ -93,6 +103,14 @@ public class VertifyCodeActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        //每天清空数据
+        long time = System.currentTimeMillis();
+        if(!TimeUtils.isToday(time)){
+            KLog.d("tag","不是今天");
+            SPUtils.getInstance().put("doSendCode",0);
+        }
+
 
         loginType = getIntent().getStringExtra("loginType");
 
@@ -104,13 +122,33 @@ public class VertifyCodeActivity extends BaseActivity {
         phone = getIntent().getStringExtra("phone");
         phone_text.setText("已向" + phone +" 发送验证码");
 
-        toGetCode();
+
+        String oldPhone = SPUtils.getInstance().getString("oldPhone","");
+        if(!phone.equals(oldPhone)){
+            sendverifycode("");
+            SPUtils.getInstance().put("lastTime",-1);
+        }else{
+            initRxTime();
+        }
+
+
 
         editText.setInputCompleteListener(new SecurityCodeView.InputCompleteListener() {
             @Override
             public void inputComplete() {
                 inputContent = editText.getEditContent();
                 KLog.d("tag","请输入验证码 : " + inputContent);
+
+                ++doCount;
+
+                //输入次数判断
+                if(doCount >= 5){
+                    Toast.makeText(VertifyCodeActivity.this,"你尝试了太多次，请稍后重试",Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                    return;
+                }
+
                 //隐藏软键盘
                 KeyboardUtils.hideSoftInput(et);
                 if("weixin".equals(loginType)){
@@ -127,7 +165,9 @@ public class VertifyCodeActivity extends BaseActivity {
         });
 
         reget_code.setOnClickListener(view -> {
-            toGetCode();
+
+            sendverifycode("reget");
+
         });
     }
 
@@ -154,10 +194,11 @@ public class VertifyCodeActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
+                    public void onHintError(String return_code, String errorMes) {
                         ToastUtils.setGravity(Gravity.CENTER,0,0);
                         ToastUtils.showShort(errorMes);
                         ToastUtils.setGravity(Gravity.BOTTOM,0,0);
+
                     }
 
                 });
@@ -189,7 +230,7 @@ public class VertifyCodeActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onHintError(String errorMes) {
+                        public void onHintError(String return_code, String errorMes) {
                             ToastUtils.setGravity(Gravity.CENTER,0,0);
                             ToastUtils.showShort(errorMes);
                             ToastUtils.setGravity(Gravity.BOTTOM,0,0);
@@ -200,10 +241,6 @@ public class VertifyCodeActivity extends BaseActivity {
     }
 
 
-    private void toGetCode(){
-        sendverifycode();
-    }
-
 
 
     //验证码类型：1-短信（默认），2-语音
@@ -211,7 +248,23 @@ public class VertifyCodeActivity extends BaseActivity {
     //操作类型： 1-注册 2-绑定微信账号 3-微信绑定已有账号 4-密码重置 5-极速登录 6-更换手机之验证旧手机 7-更换手机之验证新手机
     private String mOpeType = "5";
 
-    private void sendverifycode() {
+
+    /** 测试数据 */
+    private void sendverifycodetest(String type){
+        if("reget".equals(type)){
+            ++doReSendCount;
+            SPUtils.getInstance().put("doReSendCount",doReSendCount);
+        }
+
+        KLog.d("tag","重新发送的次数 " + SPUtils.getInstance().getInt("doReSendCount"));
+        ++doSendCode;
+        SPUtils.getInstance().put("doSendCode",doSendCode);
+
+        initRxTime();
+    }
+
+    private void sendverifycode(String type) {
+
         Map<String,String> map = new HashMap<>();
         map.put("mobile",phone);
         map.put("type", mType);
@@ -226,8 +279,30 @@ public class VertifyCodeActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse response) {
                         KLog.e("tag",response.getReturn_msg());
+                        //恢复默认
+                        mType = "1";
                         //设置倒计时
                         initRxTime();
+                        //保存此次登录的手机号
+                        SPUtils.getInstance().put("oldPhone",phone);
+                        //保存发送验证码的次数
+                        ++doSendCode;
+                        SPUtils.getInstance().put("doSendCode",doSendCode);
+
+
+                        if("reget".equals(type)){
+                            ++doReSendCount;
+                            SPUtils.getInstance().put("doReSendCount",doReSendCount);
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                       if("20058".equals(return_code)){
+                           showMesCountOverDialog();
+                       }else if("30001".equals(return_code)){
+                           showFobbidUserDialog();
+                       }
                     }
                 });
     }
@@ -262,11 +337,16 @@ public class VertifyCodeActivity extends BaseActivity {
                         reget_code.setEnabled(false);
                     }
                 }).doOnComplete(() -> {
-                    reget_code.setEnabled(true);
-//                    KLog.d("tag","完成之后跳转到主页面");
-                    SPUtils.getInstance().put("lastTime",COUNT);
-                    reget_code.setText("获取验证码");
-                    reget_code.setTextColor(Color.parseColor("#5675A7"));
+                    //如果发送短信验证3次，换文本
+                    if(SPUtils.getInstance().getInt("doReSendCount",0) >=  3){
+                        noget_code.setVisibility(View.VISIBLE);
+                        reget_code.setVisibility(View.GONE);
+                    }else{
+                        reget_code.setEnabled(true);
+                        SPUtils.getInstance().put("lastTime",COUNT);
+                        reget_code.setText("重新获取");
+                        reget_code.setTextColor(Color.parseColor("#5675A7"));
+                    }
                 })
                 .subscribe();
     }
@@ -287,6 +367,13 @@ public class VertifyCodeActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.noget_code:
 
+                if(SPUtils.getInstance().getInt("doSendCode",0) >= 5){
+                    showMesCountOverDialog();
+                    return;
+                }
+
+                mType = "2";
+                sendverifycode("");
                 break;
             case R.id.iv_back:
                 finish();

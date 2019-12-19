@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
@@ -26,13 +27,16 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
+import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.DynamicLine;
 import com.qmkj.niaogebiji.module.widget.MyLinearLayout;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
@@ -78,8 +82,13 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.moring_content)
     TextView moring_content;
 
+    @BindView(R.id.moring_time)
+    TextView moring_time;
 
 
+
+    @BindView(R.id.first_search)
+    TextView first_search;
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -117,10 +126,12 @@ public class FirstFragment extends BaseLazyFragment {
 
         pager_title.initData(titile,mViewPager,1);
 
-
         initEvent();
 
         getTopPost();
+
+        searchIndex();
+
     }
 
     DynamicLine dynamicLine;
@@ -199,7 +210,9 @@ public class FirstFragment extends BaseLazyFragment {
     private void setData() {
         if(!TextUtils.isEmpty(mMoringBean.getTitle()) &&
                 !TextUtils.isEmpty(mMoringBean.getVideo())){
-            moring_content.setText(mMoringBean.getTitle());
+            moring_content.setText(mMoringBean.getSummary());
+            //早报时间
+            StringUtil.setPublishTime(moring_time,mMoringBean.getPublished_at());
             ll_moring.setVisibility(View.VISIBLE);
         }
     }
@@ -266,21 +279,21 @@ public class FirstFragment extends BaseLazyFragment {
 
 
 
-
-
-    @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content,R.id.rl_sign})
+    @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content,R.id.rl_sign,
+        R.id.ll_moring
+    })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.moring_content:
+            case R.id.ll_moring:
+                String aid = mMoringBean.getAid();
+                UIHelper.toNewsDetailActivity(getActivity(),aid);
+                break;
             case R.id.rl_sign:
-                KLog.d("tag","去签到界面");
-
-                UIHelper.toWelcomeActivity(getActivity());
+                UIHelper.toFeatherNewActivity(getActivity());
                 break;
             case R.id.search_part:
                 UIHelper.toSearchActivity(getActivity());
-                break;
-            case R.id.moring_content:
-                KLog.d("tag","去明细页");
                 break;
             case R.id.icon_catogory:
                 UIHelper.toCategoryActivity(getActivity());
@@ -288,10 +301,9 @@ public class FirstFragment extends BaseLazyFragment {
                 getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                 break;
             case R.id.listenMoring:
-
-
-                    EventBus.getDefault().post(new AudioEvent(MediaService.musicPath[0]));
-
+                    String audio =  mMoringBean.getVideo();
+                    String title = mMoringBean.getSummary();
+                    EventBus.getDefault().post(new AudioEvent(audio,title));
 
                 break;
             case R.id.toMoreMoring:
@@ -318,8 +330,44 @@ public class FirstFragment extends BaseLazyFragment {
 
 
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshBus(toRefreshEvent event){
+        if(getUserVisibleHint()){
+            KLog.d("tag","我是First界面，我需要刷新了");
+            getTopPost();
+        }
+    }
 
 
+
+    /** --------------------------------- 热搜  ---------------------------------*/
+    private SearchBean mSearchBean;
+    private List<SearchBean.Hot_search> mHot_searches;
+    private SearchBean.Hot_search mHot_search;
+
+    private void searchIndex() {
+
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchIndex(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<SearchBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<SearchBean> response) {
+                        mSearchBean = response.getReturn_data();
+                        if(null != mSearchBean){
+                            mHot_searches = mSearchBean.getHot_search();
+
+                            if(null != mHot_searches && !mHot_searches.isEmpty()){
+                                String defaultHotKey = mHot_searches.get(0).getSearch_string();
+                                first_search.setHint(defaultHotKey);
+                            }
+                        }
+                    }
+                });
+    }
 
 
 

@@ -239,8 +239,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onAudioEvent(AudioEvent event){
 
         String url = event.getUrl();
-        KLog.e("tag","播放视频的路径是 " + url );
+        KLog.e("tag","播放视频的路径是 " + url  + " 播放名称 " + event.getTitle());
         part_audio.setVisibility(View.VISIBLE);
+        audio_title.setText("今日早报｜" + event.getTitle());
         isAudaioShow = true;
 
         //有资源时 先关闭之前资源

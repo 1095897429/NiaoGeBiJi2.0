@@ -50,8 +50,9 @@
                     android:layout_height="match_parent" />
 
                 <TextView
+                    android:id="@+id/first_search"
                     android:layout_width="wrap_content"
-                    android:text="什么渠道没假量"
+                    android:text=""
                     android:textSize="13sp"
                     android:textColor="#AAAEB3"
                     android:layout_gravity="center|left"
@@ -152,6 +153,7 @@
 
 
                     <TextView
+                        android:id="@+id/moring_time"
                         android:text="2019/01/01"
                         android:textSize="11sp"
                         android:layout_centerVertical="true"

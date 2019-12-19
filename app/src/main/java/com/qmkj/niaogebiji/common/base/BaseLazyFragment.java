@@ -43,6 +43,7 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-07-03
  * 描述:视频的懒加载基类
+ * 1.12.18 晚 多个fragment基本上都走了onViewCreate生命周期 -- 可以初始化一些界面的数据(initData函数中请求方法)
  */
 public abstract class BaseLazyFragment extends Fragment {
 
@@ -74,9 +75,11 @@ public abstract class BaseLazyFragment extends Fragment {
         if (getUserVisibleHint()) {
             isVisible = true;
             onVisible();
+//            KLog.e(TAG,getClass().getSimpleName() + " -- setUserVisibleHint -- " +isVisibleToUser);
         } else {
             isVisible = false;
             onInvisible();
+//            KLog.e(TAG,getClass().getSimpleName() + " -- setUserVisibleHint -- " +isVisibleToUser);
         }
     }
 
@@ -135,7 +138,10 @@ public abstract class BaseLazyFragment extends Fragment {
     /** 第一次都会走这里，不过后续通过Fragment是否可见判断 */
     public void finishCreateView() {
         isPrepared = true;
-        lazyLoad();
+
+        //TODO 2019.12.18 晚 -- 通过debug，发现问题：第一个中的lazyload请求方法会加载 -- 没有注释下面的方法
+        //TODO 2019.12.18 晚 -- 分析：当将第二个作为首展示页，那么第一个大概率的会走 懒加载方法
+//        lazyLoad();
     }
 
     protected void onInvisible() {

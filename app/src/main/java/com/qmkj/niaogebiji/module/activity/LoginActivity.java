@@ -1,6 +1,9 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -8,6 +11,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -17,20 +21,38 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.module.event.LoginErrEvent;
+import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
+import com.qmkj.niaogebiji.module.event.SearchWordEvent;
+import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.udesk.UdeskSDKManager;
+import cn.udesk.config.UdeskConfig;
+import udesk.core.UdeskConst;
 
 /**
  * @author zhouliang
@@ -137,12 +159,20 @@ public class LoginActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.weixinLogin:
-                loginType  = "weixin";
-                if(!mCheckBox.isChecked()){
-                    Toast.makeText(this,"请先同意用户协议与隐私政策",Toast.LENGTH_SHORT).show();
-                    return;
+
+                if(isWeixinAvilible(this)){
+                    loginType  = "weixin";
+                    if(!mCheckBox.isChecked()){
+                        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                        ToastUtils.showShort("请先同意用户协议与隐私政策");
+                        return;
+                    }
+                    weChatAuth();
+                }else{
+                    ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                    ToastUtils.showShort("您还未安装微信");
                 }
-                weChatAuth();
+
                 break;
             default:
         }
@@ -164,4 +194,69 @@ public class LoginActivity extends BaseActivity {
     }
 
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void toLoginErrEvent(LoginErrEvent event) {
+        showFobbidUserDialog();
+    }
+
+
+    public void showFobbidUserDialog(){
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
+        iosAlertDialog.setPositiveButton("联系客服", v -> {
+            toUDesk();
+        }).setNegativeButton("取消", v -> {}).setMsg("你的账户已被封禁\n" +
+                "请联系客服处理").setBold().setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    /** --------------------------------- 联系客服  ---------------------------------*/
+    //没有登录的时候，userinfo不传，登录，就传
+    private void toUDesk(){
+        UdeskConfig.Builder builder = new UdeskConfig.Builder();
+        //token为随机获取的，如 UUID.randomUUID().toString()
+        String sdktoken = UUID.randomUUID().toString();
+        KLog.d("tag",sdktoken + "");
+        Map<String, String> info = new HashMap<>();
+        info.put(UdeskConst.UdeskUserInfo.USER_SDK_TOKEN, sdktoken);
+        info.put(UdeskConst.UdeskUserInfo.DESCRIPTION,"描述信息");
+        builder.setUsephoto(true);
+        builder.setUseEmotion(true);
+        builder.setUseMore(true);
+        builder.setUserForm(true);
+        builder.setUserSDkPush(true);
+        builder.setFormCallBack(context -> KLog.d("tag","jkkkk"));
+        builder.setDefualtUserInfo(info);
+        UdeskSDKManager.getInstance().entryChat(BaseApp.getApplication(), builder.build(), sdktoken);
+    }
+
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginGoodEvent(LoginGoodEvent event){
+        if(this !=  null){
+            this.finish();
+        }
+    }
+
+
+
+
+
+    //判断是否安装了微信
+    public static boolean isWeixinAvilible(Context context) {
+        final PackageManager packageManager = context.getPackageManager();// 获取packagemanager
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);// 获取所有已安装程序的包信息
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equals("com.tencent.mm")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

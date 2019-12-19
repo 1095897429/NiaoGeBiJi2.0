@@ -17,7 +17,10 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
+import com.qmkj.niaogebiji.module.event.LoginErrEvent;
+import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -101,6 +104,12 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                     if(FlashFragment.isFlashShare){
                         EventBus.getDefault().post(new FlashShareEvent("快讯分享"));
                     }
+
+                    //文章分享成功
+                    if(Constant.isActicleShare){
+                        EventBus.getDefault().post(new ActicleShareEvent("文章分享"));
+                    }
+
                 }
 
                 finish();
@@ -147,8 +156,10 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                                 UIHelper.toPhoneInputActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
                             }else{
                                 RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
-                                UIHelper.toHomeActivity(WXEntryActivity.this,0);
                                 StringUtil.setUserInfoBean(mUserInfo);
+                                SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                                UIHelper.toHomeActivity(WXEntryActivity.this,0);
+                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
                             }
 
                             finish();
@@ -156,12 +167,15 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                     }
 
 
-
                     @Override
-                    public void onError(Throwable t) {
-                        super.onError(t);
-                        finish();
+                    public void onHintError(String return_code, String errorMes) {
+                        if("20058".equals(return_code)){
+                            KLog.d("tag","不用管");
+                        }else if("30001".equals(return_code)){
+                            EventBus.getDefault().post(new LoginErrEvent("封禁用户"));
+                        }
                     }
+
 
                     @Override
                     public void onNetFail(String mes) {

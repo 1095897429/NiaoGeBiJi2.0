@@ -1,8 +1,12 @@
 package com.qmkj.niaogebiji.common.utils;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -10,10 +14,14 @@ import android.widget.TextView;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.TimeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -133,6 +141,26 @@ public class StringUtil {
 
 
 
+    public static void setPublishTime(TextView tx,String publishTime){
+        //作者发布时间
+        if(null != publishTime){
+            tx.setText(TimeUtils.millis2String(Long.parseLong(publishTime)* 1000L,"yyyy/MM/dd"));
+        }
+    }
+
+
+    public static void copyLink(String share_url) {
+        //获取剪贴板管理器：
+        ClipboardManager cm = (ClipboardManager) BaseApp.getApplication().getSystemService(Context.CLIPBOARD_SERVICE);
+        // 创建普通字符型ClipData
+        ClipData mClipData = ClipData.newPlainText("Label",share_url);
+        // 将ClipData内容放到系统剪贴板里。
+        cm.setPrimaryClip(mClipData);
+        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+        ToastUtils.showShort("链接复制成功！");
+    }
+
+
 
     public static List<MultiCircleNewsBean> setCircleData(List<CircleBean> list) {
         if(!list.isEmpty()){
@@ -198,9 +226,6 @@ public class StringUtil {
 
         return null;
     }
-
-
-
 
 
 }

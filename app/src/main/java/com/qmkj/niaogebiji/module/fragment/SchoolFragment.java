@@ -15,6 +15,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.SchoolBaiduAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolBookAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolTestAdapter;
@@ -152,10 +153,10 @@ public class SchoolFragment extends BaseLazyFragment {
         mSchoolBaiduAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","根据cateid 去wiki");
             SchoolBean.SchoolBaiDu temp =  mSchoolBaiduAdapter.getData().get(position);
-            if(!TextUtils.isEmpty(temp.getCated_id())){
-
+            if(!TextUtils.isEmpty(temp.getCate_id() + "")){
+                String link = StringUtil.getLink("wikilist/" + temp.getCate_id());
+                UIHelper.toWebViewActivity(getActivity(),link);
             }
-
         });
 
         mSchoolTestAdapter.setOnItemClickListener((adapter, view, position) -> {

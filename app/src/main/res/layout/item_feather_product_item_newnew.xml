@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/part1111"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+
+                android:layout_width="wrap_content"
+                android:layout_height="24dp">
+
+                <View
+                    android:layout_alignRight="@+id/id_name"
+                    android:background="#FFDC00"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="8dp">
+
+                </View>
+
+                <TextView
+                    android:id="@+id/id_name"
+                    android:text="猜你喜欢"
+                    android:textSize="17sp"
+                    android:textColor="@color/text_first_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/all_part1111"
+                android:text="全部"
+                android:textSize="13sp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:drawableRight="@mipmap/icon_all_right"
+                android:drawablePadding="1dp"
+                android:textColor="@color/text_three_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler1111"
+            android:overScrollMode="never"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_corners_10"
+            android:layout_width="match_parent"
+            android:layout_height="146dp" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

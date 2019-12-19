@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -141,10 +142,7 @@ public class ToolFragment extends BaseLazyFragment {
             mAllList.add(bean1);
         }
 
-
     }
-
-
 
 
     private void initLayout() {
@@ -163,12 +161,13 @@ public class ToolFragment extends BaseLazyFragment {
     private void initEvent() {
         mToolItemAdapter.setOnItemClickListener((adapter, view, position) -> {
 
-            if(position == adapter.getData().size() - 1){
-                UIHelper.toToolEditActivity(getActivity());
-                return;
-            }
+           ToollndexBean temp =  mToolItemAdapter.getData().get(position);
+           if("0".equals(temp.getType())){
+               Toast.makeText(getContext(),"去 webview",Toast.LENGTH_SHORT).show();
+           }else if("1".equals(temp.getType())){
+               Toast.makeText(getContext(),"去 小程序",Toast.LENGTH_SHORT).show();
+           }
 
-            KLog.d("tag","去webview");
         });
     }
 

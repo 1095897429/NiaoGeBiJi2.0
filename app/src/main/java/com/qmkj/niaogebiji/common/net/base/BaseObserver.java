@@ -33,7 +33,7 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
         if("200".equals(response.getReturn_code())){
             onSuccess(response);
         }else{
-            onHintError(response.getReturn_msg());
+            onHintError(response.getReturn_code(),response.getReturn_msg());
         }
 
     }
@@ -126,7 +126,7 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
     public abstract void onSuccess(T t);
 
     //如果code 不是200 ,则toast显示
-    public void onHintError(String errorMes){
+    public void onHintError(String return_code, String errorMes){
         ToastUtils.showShort(errorMes);
     }
 

@@ -48,7 +48,7 @@ public class SchoolBean extends BaseBean {
 
         private String title;
         private String icon;
-        private String cated_id;
+        private int cate_id;
         private String desc;
 
         public String getTitle() {
@@ -67,12 +67,12 @@ public class SchoolBean extends BaseBean {
             this.icon = icon;
         }
 
-        public String getCated_id() {
-            return cated_id;
+        public int getCate_id() {
+            return cate_id;
         }
 
-        public void setCated_id(String cated_id) {
-            this.cated_id = cated_id;
+        public void setCate_id(int cate_id) {
+            this.cate_id = cate_id;
         }
 
         public String getDesc() {

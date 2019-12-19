@@ -37,6 +37,7 @@ import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.adapter.FlashItemAdapter;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
+import com.qmkj.niaogebiji.module.event.FlashSpecificEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.MyLoadMoreView;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
@@ -366,8 +367,8 @@ public class FlashFragment extends BaseLazyFragment  {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                             smartRefreshLayout.finishLoadMore();
@@ -559,4 +560,34 @@ public class FlashFragment extends BaseLazyFragment  {
         isFlashShare = false;
         addBulletinSharePoint();
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void toFlashSpecificEvent(FlashSpecificEvent event){
+        String po =  event.getTag();
+        KLog.d("tag","定位到具体flash 的位置 ,快讯索引是 " + po);
+        toFixLoaction(po);
+    }
+
+
+    //跳转到固定的位置
+    public void toFixLoaction(String flashid) {
+        int mPosition = 0;
+        if (!mBuilltinBeans.isEmpty()) {
+            for (int i = 0; i < mBuilltinBeans.size(); i++) {
+                if (mBuilltinBeans.get(i).getId().equals(flashid)) {
+                    mPosition = i;
+                    break;
+                }
+            }
+
+            LinearLayoutManager mLayoutManager =
+                    (LinearLayoutManager) mRecyclerView.getLayoutManager();
+            mLayoutManager.scrollToPositionWithOffset(mPosition, 0);
+        }
+    }
+
+
+
+
 }

@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PhoneUtils;
 import com.blankj.utilcode.util.StringUtils;
@@ -32,6 +33,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import retrofit2.Retrofit;
+import retrofit2.converter.fastjson.FastJsonConverterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_PHONE_STATE;
@@ -74,6 +76,8 @@ public class RetrofitHelper {
 
 
 
+
+
     //获取Retrofit
     public Retrofit getRetrofit(){
         if(null == mRetrofit){
@@ -81,6 +85,7 @@ public class RetrofitHelper {
                     .baseUrl(BuildConfig.URL)
                     .client(OkHttpHelper.getInstance().getOkHttpClient())
                     .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(FastJsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
             mRetrofit = builder.build();
         }

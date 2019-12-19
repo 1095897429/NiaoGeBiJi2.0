@@ -1,8 +1,17 @@
 package com.qmkj.niaogebiji.common.net.helper;
 
+import com.socks.library.KLog;
+
+import net.sf.json.JSONArray;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
@@ -24,6 +33,23 @@ public class OkHttpHelper {
     private OkHttpClient mOkHttpClient;
 
 
+    class ResponseBodyInterceptor implements Interceptor{
+
+        @NotNull
+        @Override
+        public Response intercept(@NotNull Chain chain) throws IOException {
+            Response response = chain.proceed(chain.request());
+            String json = response.body().string();
+            KLog.d("tag","json " +  json);
+
+            JSONArray myJsonArray = JSONArray.fromObject(json);
+            KLog.d("tag","myJsonArray " +  myJsonArray);
+            // 对 json 进行解析判断状态码是失败的情况就抛出异常
+            return response;
+        }
+    }
+
+
     private OkHttpHelper(){
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         mOkHttpClient = builder
@@ -34,6 +60,7 @@ public class OkHttpHelper {
                 .retryOnConnectionFailure(true)
                 //请求log
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+//                .addInterceptor(new ResponseBodyInterceptor())
                 .build();
     }
 

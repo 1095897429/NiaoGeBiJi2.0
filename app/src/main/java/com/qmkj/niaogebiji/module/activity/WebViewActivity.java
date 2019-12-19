@@ -50,6 +50,7 @@ import butterknife.OnClick;
  * 版本 1.0
  * 创建时间 2019-11-20
  * 描述:
+ * 1.android 调用 js  参数 --  编辑徽章完成调用方法名 finish
  */
 public class WebViewActivity extends BaseActivity {
 
@@ -108,14 +109,16 @@ public class WebViewActivity extends BaseActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
 //                KLog.d("tag","---- " + url);
-                toGiveToken();
+//                toGiveToken();
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                String title = view.getTitle();
+                KLog.d("tag","title: " + title);
                 //js交互
-                toGiveToken();
+//                toGiveToken();
             }
         });
 
@@ -223,7 +226,28 @@ public class WebViewActivity extends BaseActivity {
                         JSONObject object  = b.getJSONObject("params");
                         String article = object.optString("id");
                         UIHelper.toNewsDetailActivity(WebViewActivity.this,article);
+                    }else if("toHome".equals(result)){
+                        //去文章首页
+//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+
+                    }else if("toKnow".equals(result)){
+                        //去更懂你
+//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                    }else if("toConfirmOk".equals(result)){
+                        // id 1 职业认证成功  id 2  审核认证成功
+//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                    }else if("toTestList".equals(result)){
+                        //徽章 尚未获得，立即前往获取
+//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                    }else if("toEditBadge".equals(result)){
+                        //去编辑徽章页面
+//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                    }else if("toUserDetail".equals(result)){
+                        //关注列表去跳转
+//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
                     }
+
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();

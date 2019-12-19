@@ -48,7 +48,7 @@ public class MoringAllBean extends BaseBean {
         private String published_at;
         private String created_at;
         private String upnum;
-        private List<String> relate;
+        private List<Relate> relate;
         private String dl_mat_title;
         private String dl_link;
         private String dl_link_code;
@@ -280,12 +280,13 @@ public class MoringAllBean extends BaseBean {
             return upnum;
         }
 
-        public void setRelate(List<String> relate) {
-            this.relate = relate;
+
+        public List<Relate> getRelate() {
+            return relate;
         }
 
-        public List<String> getRelate() {
-            return relate;
+        public void setRelate(List<Relate> relate) {
+            this.relate = relate;
         }
 
         public void setDl_mat_title(String dl_mat_title) {
@@ -401,6 +402,60 @@ public class MoringAllBean extends BaseBean {
         }
     }
 
+
+
+    //相关文章
+    public static class Relate {
+
+        private String aid;
+        private String title;
+        private String pic;
+        private String author;
+        private String created_at;
+        private String published_at;
+        public void setAid(String aid) {
+            this.aid = aid;
+        }
+        public String getAid() {
+            return aid;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+        public String getTitle() {
+            return title;
+        }
+
+        public void setPic(String pic) {
+            this.pic = pic;
+        }
+        public String getPic() {
+            return pic;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setCreated_at(String created_at) {
+            this.created_at = created_at;
+        }
+        public String getCreated_at() {
+            return created_at;
+        }
+
+        public void setPublished_at(String published_at) {
+            this.published_at = published_at;
+        }
+        public String getPublished_at() {
+            return published_at;
+        }
+
+    }
 
 
     public class Que_answer_json {

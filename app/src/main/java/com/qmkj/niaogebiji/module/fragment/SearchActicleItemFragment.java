@@ -444,7 +444,7 @@ public class SearchActicleItemFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
-        KLog.d("tag","myKeyword = " + myKeyword);
+//        KLog.d("tag","myKeyword = " + myKeyword);
     }
 
 

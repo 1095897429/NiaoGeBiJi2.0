@@ -13,7 +13,7 @@ public class MessageBean extends BaseBean {
     private String text;
     private String mins;
     private String hour;
-
+    //快讯索引
     private String flash_id;
 
     public String getFlash_id() {

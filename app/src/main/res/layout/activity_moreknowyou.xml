@@ -187,7 +187,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="选择职位"
+                android:text="选择职业阶段"
                 android:textSize="26sp"
                 android:textColor="@color/text_first_color"
                 android:layout_width="wrap_content"
@@ -198,7 +198,7 @@
                 android:layout_height="8dp" />
 
             <TextView
-                android:text="请选择你的职位，开启个性化定制"
+                android:text="请选择你的阶段，让内容能更精准匹配"
                 android:textSize="13sp"
                 android:textColor="@color/text_second_color"
                 android:layout_width="wrap_content"

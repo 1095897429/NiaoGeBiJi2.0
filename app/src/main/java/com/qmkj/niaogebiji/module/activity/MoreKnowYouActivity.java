@@ -177,49 +177,76 @@ public class MoreKnowYouActivity extends BaseActivity {
         mProfessionItemAdapter.setNewData(mAllList);
     }
 
-    private void getDynamicData() {
 
+    class MyPickerAdapter implements BubblePickerAdapter{
         final String[] titles = getResources().getStringArray(R.array.countries);
         final TypedArray colors = getResources().obtainTypedArray(R.array.colors);
+        @Override
+        public int getTotalCount() {
+            return list.size();
+        }
 
-        picker.setAdapter(new BubblePickerAdapter() {
-            @Override
-            public int getTotalCount() {
-                return list.size();
-            }
+        @NotNull
+        @Override
+        public PickerItem getItem(int position) {
+            PickerItem item = new PickerItem();
+            item.setTitle(list.get(position).getName());
+            item.setSelected(list.get(position).isSelect());
+            item.setTypeface(mediumTypeface);
+            item.setTextColor(ContextCompat.getColor(MoreKnowYouActivity.this, android.R.color.white));
+            item.setColor(colors.getColor((position * 2) % 8,0));
 
-            @NotNull
-            @Override
-            public PickerItem getItem(int position) {
-                PickerItem item = new PickerItem();
-                item.setTitle(list.get(position).getName());
-                item.setTypeface(mediumTypeface);
-                item.setTextColor(ContextCompat.getColor(MoreKnowYouActivity.this, android.R.color.white));
-                item.setColor(colors.getColor((position * 2) % 8,0));
+            return item;
+        }
+    }
 
-                return item;
-            }
-        });
+    MyPickerAdapter mMyPickerAdapter;
+    private void getDynamicData() {
+
+
+        final TypedArray colors = getResources().obtainTypedArray(R.array.colors);
+        mMyPickerAdapter = new MyPickerAdapter();
+        picker.setAdapter(mMyPickerAdapter);
 
         colors.recycle();
 
         picker.setCenterImmediately(true);
         //单选
-        picker.setMaxSelectedCount(1);
+//        picker.setMaxSelectedCount(1);
 
         picker.setBubbleSize(list.size());
 
         picker.setListener(new BubblePickerListener() {
             @Override
             public void onBubbleSelected(@NotNull PickerItem item) {
+
+
+//                if(mSet.size() > 0) {
+//                    PickerItem temp = mSet.iterator().next();
+//                    temp.setSelected(false);
+//                    onBubbleDeselected(temp);
+//                }
+
                 KLog.d("tag","选择 " + item.getTitle());
+
                 mSet.add(item);
                 toNext.setEnabled(true);
                 toNext.setBackgroundResource(R.drawable.bg_corners_12_yellow);
+
+//                for (ProBean bean:list) {
+//                        if(item.getTitle().equals(bean.getName())){
+//                            bean.setSelect(true);
+//                        }else{
+//                            bean.setSelect(false);
+//                        }
+//                    }
+//
+//                    picker.setAdapter(mMyPickerAdapter);
             }
 
             @Override
             public void onBubbleDeselected(@NotNull PickerItem item) {
+                KLog.d("tag","取消选择 " + item.getTitle());
                 mSet.remove(item);
                 if(mSet.isEmpty()){
                     toNext.setEnabled(false);
@@ -295,15 +322,13 @@ public class MoreKnowYouActivity extends BaseActivity {
                 break;
             case R.id.toCancle2:
 
-                calcate();
+//                calcate();
+                finish();
                 break;
             case R.id.toComplete:
                 part11.setVisibility(View.GONE);
                 part22.setVisibility(View.GONE);
                 calcate_part.setVisibility(View.GONE);
-
-                //保存状态
-                SPUtils.getInstance().put("is_done",true);
 
                 EventBus.getDefault().post(new ProDoneEvent());
 
@@ -316,7 +341,8 @@ public class MoreKnowYouActivity extends BaseActivity {
                 break;
 
             case R.id.toCancle:
-                hidePicker();
+//                hidePicker();
+                finish();
                 break;
             default:
         }
@@ -427,5 +453,13 @@ public class MoreKnowYouActivity extends BaseActivity {
                     }
                 });
     }
+
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();//注释掉这行,back键不退出activity
+        KLog.d("tag","按下了back键   onBackPressed()");
+    }
+
 
 }

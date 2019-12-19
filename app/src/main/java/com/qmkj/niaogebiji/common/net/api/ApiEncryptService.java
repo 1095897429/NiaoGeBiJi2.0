@@ -14,13 +14,18 @@ import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
+import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
+import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
+import com.qmkj.niaogebiji.module.bean.IncomeBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
 import com.qmkj.niaogebiji.module.bean.MoringAllBean;
 import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
+import com.qmkj.niaogebiji.module.bean.NewPointTaskBean;
+import com.qmkj.niaogebiji.module.bean.NewUserTaskBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
@@ -40,6 +45,7 @@ import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
+import com.qmkj.niaogebiji.module.bean.UserRankBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 
 import java.util.List;
@@ -521,6 +527,111 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/cancelGoodArticle")
     Observable<HttpResponse> cancelGoodArticle(@Field("params") String param);
+
+
+    /* 2019.12.19 羽毛任务-新手任务*/
+    @FormUrlEncoded
+    @POST("app/my/newPointTask")
+    Observable<HttpResponse<NewUserTaskBean>> newPointTask(@Field("params") String param);
+
+
+    /* 2019.12.19 积分商品列表接口  */
+    @FormUrlEncoded
+    @POST("app/my/getMallList")
+    Observable<HttpResponse<FeatherProductBean>> getMallList(@Field("params") String param);
+
+
+    /* 2019.12.19 收支明细*/
+    @FormUrlEncoded
+    @POST("app/my/pointlist")
+    Observable<HttpResponse<IncomeBean>> pointlist(@Field("params") String param);
+
+
+    /* 2019.12.19   积分兑换明细接口 */
+    @FormUrlEncoded
+    @POST("app/my/exchDetail")
+    Observable<HttpResponse<ExchageDetailBean>> exchDetail(@Field("params") String param);
+
+
+    /* 2019.12.19  羽毛排行榜*/
+    @FormUrlEncoded
+    @POST("app/my/userRank")
+    Observable<HttpResponse<UserRankBean>> userRank(@Field("params") String param);
+
+
+    /* 2019.12.19 积分商品详情接口  */
+    @FormUrlEncoded
+    @POST("app/my/getItmeDetailt")
+    Observable<HttpResponse<FeatherProductBean>> getItmeDetailt(@Field("params") String param);
+
+
+
+
+    /* 2019.12.19 商品兑换接口*/
+    @FormUrlEncoded
+    @POST("app/my/exchangePoint")
+    Observable<HttpResponse<ExchageDetailBean>> exchangePoint(@Field("params") String param);
+
+
+
+    /* 2019.12.19 获取单个分类商品列表  */
+    @FormUrlEncoded
+    @POST("app/my/getCatList")
+    Observable<HttpResponse<FeatherProductBean>> getCatList(@Field("params") String param);
+
+
+    /* 2019.12.19 领取新手任务奖励*/
+    @FormUrlEncoded
+    @POST("app/my/getNewPointTaskAward")
+    Observable<HttpResponse<NewPointTaskBean>> getNewPointTaskAward(@Field("params") String param);
+
+
+    /* 2019.12.19 签到 */
+    @FormUrlEncoded
+    @POST("app/my/sign")
+    Observable<HttpResponse> sign(@Field("params") String param);
+
+
+
+    /* 2019.12.19 关注用户 */
+    @FormUrlEncoded
+    @POST("app/center/followUser")
+    Observable<HttpResponse> followUser(@Field("params") String param);
+
+
+    /* 2019.12.19 取消关注用户 */
+    @FormUrlEncoded
+    @POST("app/center/unfollowUser")
+    Observable<HttpResponse> unfollowUser(@Field("params") String param);
+
+
+
+    /* 2019.12.19 举报用户 */
+    @FormUrlEncoded
+    @POST("app/center/reportUser")
+    Observable<HttpResponse> reportUser(@Field("params") String param);
+
+
+    /* 2019.12.19 屏蔽用户 */
+    @FormUrlEncoded
+    @POST("app/center/blockUser")
+    Observable<HttpResponse> blockUser(@Field("params") String param);
+
+    /* 2019.12.19 取消屏蔽用户 */
+    @FormUrlEncoded
+    @POST("app/center/unblockUser")
+    Observable<HttpResponse> unblockUser(@Field("params") String param);
+
+    /* 2019.12.19 重置工作信息 */
+    @FormUrlEncoded
+    @POST("app/my/resetPersonal")
+    Observable<HttpResponse> resetPersonal(@Field("params") String param);
+
+    /* 2019.12.19 判断首页是否展示更懂你 */
+    @FormUrlEncoded
+    @POST("app/my/isPersonal")
+    Observable<HttpResponse> isPersonal(@Field("params") String param);
+
 
 
 

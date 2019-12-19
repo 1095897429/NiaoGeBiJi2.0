@@ -267,8 +267,12 @@ public class MyFragment extends BaseLazyFragment {
                 case 1:
                     UIHelper.toInviteActivity(getActivity());
                     break;
+                case 2:
+                    String link2 = Constant.TEST_URL + "mybadge";
+                    UIHelper.toWebViewActivity(getActivity(),link2);
+
+                    break;
                 case 3:
-                    KLog.d("tag","去 h5的我的动态");
                     String link = Constant.TEST_URL + "myactivity/";
                     UIHelper.toWebViewActivity(getActivity(),link);
 
@@ -304,11 +308,14 @@ public class MyFragment extends BaseLazyFragment {
 
                 UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
 
+//                UIHelper.toUserInfoActivity(getActivity(),"300473");
+
                 break;
             case R.id.advice_ll:
                 toUDesk();
                 break;
             case R.id.toQue:
+                UIHelper.toLoginActivity(getActivity());
                 ToastUtils.showShort("h5 页面");
                 break;
             case R.id.about_ll:
@@ -316,13 +323,24 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.toVip:
             case R.id.rl_vip_time:
-                KLog.d("tag","h5 VIP页面");
+//                String link2 = Constant.TEST_URL + "vipmember";
+//                String link2 = Constant.TEST_URL + "viptask";
+//                String link2 = Constant.TEST_URL + "vipshare";
+//                UIHelper.toWebViewActivity(getActivity(),link2);
+
+
+
+                String link2 = Constant.TEST_URL + "mybadge";
+                UIHelper.toWebViewActivity(getActivity(),link2);
+
+
                 break;
             case R.id.toExchange:
                 KLog.d("tag","去羽毛商城");
                 break;
             case R.id.part3333_3:
                 KLog.d("tag","去羽毛任务");
+                UIHelper.toFeatherNewActivity(getActivity());
                 break;
             case R.id.part2222_2:
                 KLog.d("tag","去徽章详情页");

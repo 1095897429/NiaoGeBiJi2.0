@@ -7,26 +7,21 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.blankj.utilcode.util.TimeUtils;
-import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
-import com.qmkj.niaogebiji.common.helper.UIHelper;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
-import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MessageBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.Timmm;
+import com.qmkj.niaogebiji.module.event.toFlashEvent;
+import com.qmkj.niaogebiji.module.event.FlashSpecificEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
-import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -86,7 +81,6 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
                 break;
             case THREE_IMG_TYPE:
-
                 RecommendBean.Article_list bean3 = item.getNewsActicleList();
                 helper.setText(R.id.one_img_title,bean3.getTitle());
                 helper.setText(R.id.one_img_auth,bean3.getAuthor());
@@ -170,11 +164,10 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
             MessageBean info = infos.get(i);
             View v = ((Activity) context).getLayoutInflater().inflate(R.layout.home_flipper_item, null);
             TextView titleTv =  v.findViewById(R.id.home_news_text);
-            titleTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //TODO 回调可能需要改一下 17号
-                }
+            titleTv.setOnClickListener(v1 -> {
+                //TODO 12.18晚修改
+                EventBus.getDefault().post(new toFlashEvent("去快讯信息流"));
+                EventBus.getDefault().post(new FlashSpecificEvent((String) v1.getTag()));
             });
             titleTv.setTag(info.getFlash_id());
             //中文加粗

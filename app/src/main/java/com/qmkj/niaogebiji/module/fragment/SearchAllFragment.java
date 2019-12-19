@@ -101,9 +101,15 @@ public class SearchAllFragment extends BaseLazyFragment {
         initLayout();
     }
 
+
+    @Override
+    protected void initData() {
+        searchArticlePeople();
+    }
+
     @Override
     protected void lazyLoadData() {
-        searchArticlePeople();
+
     }
     //人脉(没有) + 文章(直接拿取)
     ActiclePeopleBean temp;
@@ -132,7 +138,12 @@ public class SearchAllFragment extends BaseLazyFragment {
                             setData11(mPeopleList);
                         }
 
-                        searchPeople();
+                        if(mPeopleList.isEmpty()){
+                            searchPeople();
+                        }else{
+                            searchBlog();
+                        }
+
                     }
                 });
     }
@@ -457,7 +468,7 @@ public class SearchAllFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
-        KLog.d("tag","myKeyword = " + myKeyword);
+//        KLog.d("tag","myKeyword = " + myKeyword);
     }
 
 

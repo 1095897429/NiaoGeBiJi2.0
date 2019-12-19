@@ -4,8 +4,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -19,7 +17,6 @@ import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
@@ -35,10 +32,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -129,8 +124,8 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
@@ -225,9 +220,9 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
             name = "取消";
             focus_type = "0";
             final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(getActivity()).builder();
-            iosAlertDialog.setPositiveButton("确定", v -> {
+            iosAlertDialog.setPositiveButton("取消关注", v -> {
                 followAuthor(position);
-            }).setNegativeButton("取消", v -> {}).setMsg("确定要 " + name +"关注「" + author  +"」").setCanceledOnTouchOutside(false);
+            }).setNegativeButton("再想想", v -> {}).setMsg("取消关注？").setCanceledOnTouchOutside(false);
             iosAlertDialog.show();
         }else{
             focus_type = "1";

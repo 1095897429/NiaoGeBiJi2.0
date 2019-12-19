@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,6 +48,7 @@ import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
@@ -75,6 +77,8 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-25
  * 描述:个人信息界面(个人 + 别人)
+ * 1.自己的信息 -- 底部都不显示，顶部显示编辑
+ * 2.别人的信息 -- 根据状态 显示底部[我屏蔽他，底部不显示]
  */
 public class UserInfoActivity extends BaseActivity {
 
@@ -95,9 +99,23 @@ public class UserInfoActivity extends BaseActivity {
     @BindView(R.id.part3333)
     LinearLayout part3333;
 
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
+
+
+    @BindView(R.id.noFocus)
+    TextView noFocus;
+
+    @BindView(R.id.alreadFocus)
+    TextView alreadFocus;
+
+
+    @BindView(R.id.himcloseme)
+    TextView himcloseme;
+
 
     private int page = 1;
     //适配器
@@ -106,7 +124,10 @@ public class UserInfoActivity extends BaseActivity {
     List<MultiCircleNewsBean> mAllList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
-
+    //关注状态
+    private String follow_status;
+    //认证状态
+    private String auth_com_status;
 
     @Override
     protected int getLayoutId() {
@@ -116,9 +137,8 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void initView() {
 
+//        iv_right.setVisibility(View.VISIBLE);
         myUid = getIntent().getStringExtra("uid");
-        iv_text.setVisibility(View.GONE);
-        iv_right.setVisibility(View.VISIBLE);
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
         getPersonInfo();
@@ -160,7 +180,7 @@ public class UserInfoActivity extends BaseActivity {
                     mCircleRecommendAdapter.loadMoreEnd();
                 }
             }else{
-//                setEmpty(mCircleRecommendAdapter);
+                ll_empty.setVisibility(View.VISIBLE);
             }
         }else{
             //已为加载更多有数据
@@ -241,7 +261,33 @@ public class UserInfoActivity extends BaseActivity {
 
     }
 
+    private void showStateByFollow(int status) {
+        //是自己的话，修改上面的图片
+        RegisterLoginBean.UserInfo u = StringUtil.getUserInfoBean();
+        if(u != null){
+            if(!temp.getUid().equals(u.getUid())){
+                follow_status = status+ "";
+                if("0".equals(follow_status)){
+                    noFocus.setVisibility(View.VISIBLE);
+                }else if("1".equals(follow_status)){
+                    alreadFocus.setVisibility(View.VISIBLE);
+                }else if("3".equals(follow_status)){
+                    himcloseme.setVisibility(View.VISIBLE);
+                }
+                iv_right.setVisibility(View.VISIBLE);
+            }else{
+                iv_text.setVisibility(View.VISIBLE);
+            }
+        }
+
+    }
+
+
     private void setHeadData() {
+        auth_com_status = temp.getAuth_com_status();
+        //底部按钮
+        showStateByFollow(temp.getFollow_status());
+
         //头部信息
         send_article_num = headView.findViewById(R.id.send_article_num);
         medal_count = headView.findViewById(R.id.medal_count);
@@ -264,18 +310,18 @@ public class UserInfoActivity extends BaseActivity {
 
         });
 
-
+        user_des.setText(temp.getPro_summary());
         sender_name.setText(temp.getName());
         send_article_num.setText(temp.getBlog_count() + "");
         medal_count.setText(temp.getFans_count() + "");
 
         ImageUtil.load(this,temp.getAvatar(),head_icon);
 
-        if(temp.getBadges() != null && !temp.getBadges().isEmpty()){
+        if(temp.getBadge() != null && !temp.getBadge().isEmpty()){
                ll_badge.removeAllViews();
-                for (int i = 0; i < temp.getBadges().size(); i++) {
+                for (int i = 0; i < temp.getBadge().size(); i++) {
                     ImageView imageView = new ImageView(mContext);
-                    String icon = temp.getBadges().get(i).getIcon();
+                    String icon = temp.getBadge().get(i).getIcon();
                     if(!TextUtils.isEmpty(icon)){
                         ImageUtil.load(mContext,icon,imageView);
                     }
@@ -290,6 +336,7 @@ public class UserInfoActivity extends BaseActivity {
                 }
             }
     }
+
 
 
     private void initLayout() {
@@ -424,10 +471,13 @@ public class UserInfoActivity extends BaseActivity {
                 showCancelFocusDialog();
                 break;
             case R.id.noFocus:
-//                ToastUtils.showShort("关注成功");
+
+                //判断是否职业认证
+//                if("4".equals(auth_com_status)){
+//                    showProfessionAuthen();
+//                }
+
                 showProfessionAuthen();
-//                UIHelper.toHelloMakeActivity(this);
-//                overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                 break;
             case R.id.iv_right:
                 showPopupWindow2(iv_right,"屏蔽");
@@ -443,14 +493,43 @@ public class UserInfoActivity extends BaseActivity {
         }
     }
 
+    private String message;
+    private void followUser() {
+        Map<String,String> map = new HashMap<>();
+//        map.put("follow_uid",temp.getUid());
+        map.put("follow_uid","300473");
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
+    }
 
 
     public void showProfessionAuthen(){
         final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(this).builder();
         iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
             KLog.d("tag","h5 去验证 ");
-        }).setNegativeButton("下次再说", v -> {
+            //认证h5
+//            String link = Constant.TEST_URL + "professionidsuc";
+//            UIHelper.toWebViewActivity(this,link);
 
+            //人工审核
+            String link = Constant.TEST_URL + "manexaminesuc";
+            UIHelper.toWebViewActivity(this,link);
+
+
+        }).setNegativeButton("下次再说", v -> {
+            UIHelper.toHelloMakeActivity(this);
+            overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
         }).setMsg("你还未职业认证！").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
@@ -537,12 +616,51 @@ public class UserInfoActivity extends BaseActivity {
 
         report.setOnClickListener(view1 -> {
             ToastUtils.showShort("发请求，举报成功");
+             reportUser();
             mPopupWindow.dismiss();
         });
 
         share.setOnClickListener(view1 -> {
+            blockUser();
             mPopupWindow.dismiss();
         });
+    }
+
+    private void blockUser() {
+        Map<String,String> map = new HashMap<>();
+//        map.put("follow_uid",temp.getUid());
+        map.put("follow_uid","300473");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().blockUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
+    }
+
+
+    private void unblockUser() {
+        Map<String,String> map = new HashMap<>();
+//        map.put("follow_uid",temp.getUid());
+        map.put("follow_uid","300473");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().unblockUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
     }
 
 
@@ -575,6 +693,7 @@ public class UserInfoActivity extends BaseActivity {
 
         report.setOnClickListener(view1 -> {
             ToastUtils.showShort("发请求，举报成功");
+            reportUser();
             mPopupWindow.dismiss();
         });
 
@@ -582,6 +701,24 @@ public class UserInfoActivity extends BaseActivity {
             mPopupWindow.dismiss();
             showNotSeeEachOther();
         });
+    }
+
+    private void reportUser() {
+        Map<String,String> map = new HashMap<>();
+//        map.put("follow_uid",temp.getUid());
+        map.put("follow_uid","300473");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().reportUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
     }
 
 
@@ -654,19 +791,39 @@ public class UserInfoActivity extends BaseActivity {
         final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(this).builder();
         iosAlertDialog.setPositiveButton("取消关注", v -> {
 
-        }).setNegativeButton("再想想", v -> {}).setMsg("是否"  +"取消关注「" + author  +"」").setCanceledOnTouchOutside(false);
+            unfollowUser();
+
+        }).setNegativeButton("再想想", v -> {}).setMsg("取消关注？").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
-//        if(mAuthor.getIs_follow() == 1){
-//            name = "取消";
-//            focus_type = "0";
-//            final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(this).builder();
-//            iosAlertDialog.setPositiveButton("取消关注", v -> {
-//
-//            }).setNegativeButton("再想想", v -> {}).setMsg("确定要 " + name +"关注「" + author  +"」").setCanceledOnTouchOutside(false);
-//            iosAlertDialog.show();
-//        }else{
-//            focus_type = "1";
-//
-//        }
+
+    }
+
+    private void unfollowUser() {
+        Map<String,String> map = new HashMap<>();
+//        map.put("follow_uid",temp.getUid());
+        map.put("follow_uid","300473");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().unfollowUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                    }
+                });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 100 && resultCode == RESULT_OK){
+            message = data.getExtras().getString("message");
+            KLog.d("tqg","接收到的文字是 " + message);
+            followUser();
+        }
     }
 }

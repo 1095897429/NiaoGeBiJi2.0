@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.annotation.SuppressLint;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -49,6 +52,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,6 +112,7 @@ public class SearchActivity extends BaseActivity {
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initView() {
 
@@ -124,6 +129,15 @@ public class SearchActivity extends BaseActivity {
            initHistoryData();
            ll_history.setVisibility(View.VISIBLE);
        }
+
+        //编辑框设置触摸监听
+        et_input.setOnTouchListener((v, event) -> {
+            if (MotionEvent.ACTION_DOWN == event.getAction()) {
+                // 再次点击显示光标
+                et_input.setCursorVisible(true);
+            }
+            return false;
+        });
 
         et_input.setOnEditorActionListener((v, actionId, event) -> {
             if(actionId == EditorInfo.IME_ACTION_SEARCH){
@@ -151,6 +165,8 @@ public class SearchActivity extends BaseActivity {
         part1111.setVisibility(View.GONE);
         et_input.setText(keyword);
         et_input.setSelection(keyword.length());
+
+        et_input.setCursorVisible(false);
 
         //初始化tab数据
         initPartData2();

@@ -65,6 +65,7 @@ public class RegisterLoginBean extends BaseBean {
         private String pro_summary;
         private String auth_email_status;
         private String auth_card_status;
+        //企业认证状态：1-正常，2-未提交，3-审核中，4-未通过
         private String auth_com_status;
         private String ban_memo;
         private String ban_time;
@@ -91,6 +92,18 @@ public class RegisterLoginBean extends BaseBean {
         private String vip_start_date;
         private String vip_end_date;
 
+
+        //关注别人状态
+        private int follow_status;
+
+
+        public int getFollow_status() {
+            return follow_status;
+        }
+
+        public void setFollow_status(int follow_status) {
+            this.follow_status = follow_status;
+        }
 
         public String getIs_aso_target() {
             return is_aso_target;

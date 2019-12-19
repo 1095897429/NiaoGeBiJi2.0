@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +25,7 @@ import com.qmkj.niaogebiji.module.adapter.ThingsAdapter;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SearchAllPeopleBean;
+import com.qmkj.niaogebiji.module.event.SayHiEvent;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -216,6 +219,23 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
 
         mPeopleItemAdapter.bindToRecyclerView(mRecyclerView);
 
+        mPeopleItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+            myPosition = position;
+            RegisterLoginBean.UserInfo temp = mPeopleItemAdapter.getData().get(position);
+            switch (view.getId()){
+                case R.id.focus:
+                    follow_uid = temp.getUid();
+                    UIHelper.toHelloMakeActivity((Activity) mContext);
+                    ((Activity) mContext).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+
+                    break;
+                case R.id.already_focus:
+                    unfollowUser();
+                    break;
+                    default:
+            }
+        });
+
     }
 
 
@@ -229,10 +249,58 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
-        KLog.d("tag","myKeyword = " + myKeyword);
+//        KLog.d("tag","myKeyword = " + myKeyword);
     }
 
 
+    //点击全部里的查看更多事件
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void toSayHiEvent(SayHiEvent event) {
+        message = event.getContent();
+        followUser();
+    }
+
+
+    private int myPosition;
+    private String follow_uid;
+    private String message;
+    private void followUser() {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",follow_uid);
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        mPeopleItemAdapter.getData().get(myPosition).setFollow_status(1);
+                        mPeopleItemAdapter.notifyItemChanged(myPosition);
+                    }
+                });
+    }
+
+
+    private void unfollowUser() {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",follow_uid);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().unfollowUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        mPeopleItemAdapter.getData().get(myPosition).setFollow_status(0);
+                        mPeopleItemAdapter.notifyItemChanged(myPosition);
+                    }
+                });
+    }
 
 
 

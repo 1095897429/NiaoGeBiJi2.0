@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#F6F7F9"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/common_title_layout"/>
+
+    <LinearLayout
+        android:id="@+id/part1111"
+        android:visibility="gone"
+        android:layout_margin="12dp"
+        android:padding="20dp"
+        android:background="@drawable/bg_corners_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:id="@+id/image11"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_marginTop="12dp"
+            android:src="@mipmap/icon_fenxiang"
+            android:scaleType="centerCrop"
+            app:round_as_circle="false"
+            app:round_corner="6dp" />
+
+
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_marginTop="8dp"
+            android:text="鸟哥笔记公开课上海站优惠券"
+            android:textColor="@color/text_news_title_color"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+
+        <TextView
+            android:id="@+id/txt_msg"
+            android:background="@drawable/bg_down_text"
+            android:padding="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="下载链接：https://pan.baidu.com/s/18lhzJVZPDlBvoR_9pS5ngQ\n提取码：a68f "
+            android:textColor="@color/text_news_tag_color"
+            android:textSize="11sp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/copy_link"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_corners_10_yellow"
+            android:text="复制链接"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/text_news_title_color"
+            android:textSize="13sp" />
+
+
+        <TextView
+            android:id="@+id/remark"
+            android:layout_marginTop="16dp"
+            android:text="点击复制链接，打开手机浏览器粘贴后即可使用"
+            android:textColor="@color/text_second_color"
+            android:textSize="11sp"
+            android:layout_width="232dp"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/part2222"
+        android:layout_margin="12dp"
+        android:visibility="gone"
+        android:padding="20dp"
+        android:background="@drawable/bg_corners_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:id="@+id/image22"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_marginTop="12dp"
+            android:src="@mipmap/icon_fenxiang"
+            android:scaleType="centerCrop"
+            app:round_as_circle="false"
+            app:round_corner="6dp" />
+
+
+        <TextView
+            android:id="@+id/txt_title_22"
+            android:layout_marginTop="8dp"
+            android:text="--/-- "
+            android:textColor="@color/text_news_title_color"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+        <LinearLayout
+            android:layout_marginTop="32dp"
+            android:padding="16dp"
+            android:background="@drawable/bg_down_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_gravity="center|left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="订单已收到，我们将在每周五统一发货"
+                android:drawablePadding="10dp"
+                android:textStyle="bold"
+                android:drawableLeft="@mipmap/icon_exchange_ok"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="13sp"/>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_gravity="center|left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="收货人    "
+                    android:textColor="@color/text_second_color"
+                    android:textSize="11sp"/>
+
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--/-- "
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="11sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_gravity="center|left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="联系方式"
+                    android:textColor="@color/text_second_color"
+                    android:textSize="11sp"/>
+
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--/-- "
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="11sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_gravity="center|left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="收货地址"
+                    android:textColor="@color/text_second_color"
+                    android:textSize="11sp"/>
+
+
+                <TextView
+                    android:id="@+id/location"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:text="--/--  "
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="11sp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            android:layout_width="239dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_corners_10_yellow"
+            android:text="复制链接"
+            android:gravity="center"
+            android:textColor="@color/text_news_title_color"
+            android:textSize="13sp" />
+
+
+
+        <TextView
+            android:id="@+id/remark_22"
+            android:layout_marginTop="16dp"
+            android:text="若收货信息有误，请尽快添加官方微信“ngbjxtt”进行修改"
+            android:textColor="#FF5040"
+            android:textSize="11sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

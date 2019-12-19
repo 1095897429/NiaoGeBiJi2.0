@@ -94,7 +94,7 @@
             android:id="@+id/focus"
             android:textColor="@color/text_news_title_color"
             android:textSize="13sp"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:text="关注"
@@ -105,6 +105,24 @@
             android:paddingBottom="8dp"
             android:background="@drawable/bg_corners_8_yellow"
             android:layout_width="70dp"
+            android:layout_height="34dp" />
+
+
+        <TextView
+            android:id="@+id/already_focus"
+            android:textColor="@color/text_news_title_color"
+            android:textSize="13sp"
+            android:visibility="gone"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="已关注"
+            android:textStyle="bold"
+            android:paddingLeft="21dp"
+            android:paddingRight="21dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@drawable/bg_corners_8_gray"
+            android:layout_width="85dp"
             android:layout_height="34dp" />
 
 

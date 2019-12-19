@@ -13,6 +13,12 @@ import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
+import com.qmkj.niaogebiji.module.activity.ExchangeAllListActivity;
+import com.qmkj.niaogebiji.module.activity.ExchangeDetailActivity2;
+import com.qmkj.niaogebiji.module.activity.FeatherActivity;
+import com.qmkj.niaogebiji.module.activity.FeatherCatListActivity;
+import com.qmkj.niaogebiji.module.activity.FeatherListActivity;
+import com.qmkj.niaogebiji.module.activity.FeatherListDetailActivity;
 import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.InviteActivity;
@@ -21,6 +27,7 @@ import com.qmkj.niaogebiji.module.activity.MoreKnowYouActivity;
 import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
 import com.qmkj.niaogebiji.module.activity.MyCollectionListActivity;
 import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
+import com.qmkj.niaogebiji.module.activity.NewsThingDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
@@ -38,7 +45,9 @@ import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
+import com.qmkj.niaogebiji.module.activity.WebViewActivityTest;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
+import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
@@ -85,12 +94,12 @@ public class UIHelper {
     }
 
     /** 打开验证码界面 */
-    public static void toVertifyCodeActivity(Context ctx,String phone,String wechat_token,String loginType) {
+    public static void toVertifyCodeActivity(Activity ctx,String phone,String wechat_token,String loginType) {
         Intent intent = new Intent(ctx, VertifyCodeActivity.class);
         intent.putExtra("loginType",loginType);
         intent.putExtra("wechat_token",wechat_token);
         intent.putExtra("phone",phone);
-        ctx.startActivity(intent);
+        ctx.startActivityForResult(intent,100);
     }
 
     /** 打开搜索结果界面 */
@@ -186,6 +195,12 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+    public static void toWebViewActivityTest(Context ctx,String link) {
+        Intent intent = new Intent(ctx, WebViewActivityTest.class);
+        intent.putExtra("link",link);
+        ctx.startActivity(intent);
+    }
+
     /** 打开评论详情界面 */
     public static void toCommentDetailActivity(Context ctx,String blog_id,String layoutType) {
         Intent intent = new Intent(ctx, CommentDetailActivity.class);
@@ -268,9 +283,9 @@ public class UIHelper {
     }
 
     /** 打开打招呼界面 */
-    public static void toHelloMakeActivity(Context ctx) {
+    public static void toHelloMakeActivity(Activity ctx) {
         Intent intent = new Intent(ctx, HelloMakeActivity.class);
-        ctx.startActivity(intent);
+        ctx.startActivityForResult(intent,100);
     }
 
 
@@ -309,5 +324,78 @@ public class UIHelper {
         intent.putExtras(bundle);
         ctx.startActivityForResult(intent,100);
     }
+
+
+    /** 打开羽毛商品列表界面 */
+    public static void toFeatherProductListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, FeatherListActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+
+    /** 打开兑换记录界面 */
+    public static void toExchangeAllListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, ExchangeAllListActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+
+    /** 打开商品cat列表界面 */
+    public static void toFeatherCatListActivity(Context ctx,String id,String name) {
+        Intent intent = new Intent(ctx, FeatherCatListActivity.class);
+        intent.putExtra("cat_id",id);
+        intent.putExtra("name",name);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开商品兑换结果界面 */
+    public static void toExchangeDetailActivity2(Context ctx, ExchageDetailBean bean, String from, String catid) {
+        Intent intent = new Intent(ctx, ExchangeDetailActivity2.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("from",from);
+        bundle.putString("catid",catid);
+        bundle.putSerializable("bean",bean);
+        intent.putExtras(bundle);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开干货明细界面 */
+    public static void toNewsThingDetailActivity(Context ctx,String newsId) {
+        Intent intent = new Intent(ctx, NewsThingDetailActivity.class);
+        intent.putExtra("newsId",newsId);
+        ctx.startActivity(intent);
+    }
+
+
+
+    /** 打开商品详情界面 */
+    public static void toFeatherListDetailActivity(Context ctx,String id) {
+        Intent intent = new Intent(ctx, FeatherListDetailActivity.class);
+        intent.putExtra("product_id",id);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开羽毛界面*/
+    public static void toFeatherNewActivity(Context ctx) {
+        Intent intent = new Intent(ctx, FeatherActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开商品详情界面 */
+    public static void toExchangeDetailActivity(Context ctx, ExchageDetailBean bean, String from, String catid) {
+        Intent intent = new Intent(ctx, ExchangeDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("from",from);
+        bundle.putString("catid",catid);
+        bundle.putSerializable("bean",bean);
+        intent.putExtras(bundle);
+        ctx.startActivity(intent);
+    }
+
 
 }

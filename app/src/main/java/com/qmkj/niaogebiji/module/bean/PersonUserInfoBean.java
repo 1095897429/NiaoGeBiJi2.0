@@ -17,9 +17,10 @@ public class PersonUserInfoBean extends BaseBean {
         private String avatar;
         private String company_name;
         private String position;
+        //企业认证状态：1-正常，2-未提交，3-审核中，4-未通过
         private String auth_com_status;
         private String pro_summary;
-        private List<Badges> badges;
+        private List<Badges> badge;
         private String blog_count;
         private int fans_count;
         private List<CircleBean> blog_list;
@@ -73,14 +74,15 @@ public class PersonUserInfoBean extends BaseBean {
             return pro_summary;
         }
 
-        public void setBadges(List<Badges> badges) {
-            this.badges = badges;
-        }
-        public List<Badges> getBadges() {
-            return badges;
-        }
+    public List<Badges> getBadge() {
+        return badge;
+    }
 
-        public void setBlog_count(String blog_count) {
+    public void setBadge(List<Badges> badge) {
+        this.badge = badge;
+    }
+
+    public void setBlog_count(String blog_count) {
             this.blog_count = blog_count;
         }
         public String getBlog_count() {

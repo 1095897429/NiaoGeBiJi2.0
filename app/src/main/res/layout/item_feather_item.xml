@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="64dp">
+
+    <ImageView
+        android:id="@+id/icon_111"
+        android:src="@color/bg_color"
+        android:layout_centerVertical="true"
+        android:layout_width="34dp"
+        android:layout_height="34dp" />
+
+    <LinearLayout
+        android:layout_toRightOf="@+id/icon_111"
+        android:layout_toLeftOf="@+id/part2222"
+        android:layout_alignTop="@id/icon_111"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="-2dp"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/task_name"
+            android:textSize="16sp"
+            android:text="学习打卡"
+            android:textColor="@color/text_first_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/task_tag"
+            android:textSize="11sp"
+            android:layout_marginTop="2dp"
+            android:visibility="visible"
+            android:text="好友需完成注册和登录"
+            android:textColor="@color/text_second_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+
+    <TextView
+        android:id="@+id/donetask"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textSize="13sp"
+        android:text="已签到"
+        android:background="@drawable/bg_item_task"
+        android:layout_width="70dp"
+        android:layout_height="30dp" />
+
+
+    <LinearLayout
+        android:id="@+id/part2222"
+        android:visibility="gone"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/bg_item_task"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp">
+
+        <TextView
+            android:id="@+id/dotask_text"
+            android:visibility="visible"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="+5000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@mipmap/icon_feather_money"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/part3333"
+        android:visibility="gone"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp">
+
+
+        <TextView
+            android:id="@+id/dotask_text2"
+            android:textColor="#FA541C"
+            android:visibility="visible"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="+ 5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:src="@mipmap/icon_feather_money"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

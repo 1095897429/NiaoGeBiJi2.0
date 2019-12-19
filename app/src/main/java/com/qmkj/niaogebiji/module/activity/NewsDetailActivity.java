@@ -31,8 +31,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
@@ -58,19 +58,18 @@ import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.TestLaunchItemAdapter;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
-import com.qmkj.niaogebiji.module.event.AudioEvent1;
+import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ObservableScrollView;
@@ -80,12 +79,14 @@ import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
 
 import org.greenrobot.eventbus.EventBus;
-import org.w3c.dom.Comment;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,7 +96,6 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.udesk.photoselect.PreviewActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -224,6 +224,9 @@ public class NewsDetailActivity extends BaseActivity {
     @BindView(R.id.ll_data)
     LinearLayout ll_data;
 
+    @BindView(R.id.tv_tag1111)
+    TextView tv_tag1111;
+
 
     private boolean isSecondComment = false;
 
@@ -266,8 +269,6 @@ public class NewsDetailActivity extends BaseActivity {
         return true;
     }
 
-
-
     @OnClick({R.id.backtop,R.id.focus11111,R.id.focus,R.id.love,R.id.iv_back,R.id.toDown,R.id.toRating,
             R.id.test_submit,
             R.id.iv_right,R.id.share,
@@ -282,8 +283,10 @@ public class NewsDetailActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.rl_audio:
                 KLog.d("tag","打开音频");
-                EventBus.getDefault().post(new AudioEvent(MediaService.musicPath[1]));
 
+                String audio =  mNewsDetailBean.getVideo();
+                String title =  mNewsDetailBean.getSummary();
+                EventBus.getDefault().post(new AudioEvent(audio,title));
                 break;
             case R.id.toLlTalk:
                 //回复文章中间参数为 ""
@@ -381,6 +384,8 @@ public class NewsDetailActivity extends BaseActivity {
     String dl_link_code;
     private void commonLogic() {
 
+        StringUtil.setPublishTime(tv_tag1111,mNewsDetailBean.getPublished_at());
+
         //相关资料
         if(!TextUtils.isEmpty(mNewsDetailBean.getDl_mat_title())){
             data_link_title.setText(mNewsDetailBean.getDl_mat_title());
@@ -456,8 +461,6 @@ public class NewsDetailActivity extends BaseActivity {
 
                 }
 
-
-
                 //源头上拦截事件
                 starBar.setOnTouchListener((view, motionEvent) -> true);
                 starMyBar.setOnTouchListener((view, motionEvent) -> true);
@@ -529,8 +532,6 @@ public class NewsDetailActivity extends BaseActivity {
     private void getWebData() {
 
         mMyWebView.addJavascriptInterface(new MJavascriptInterface(this), "imagelistener");
-
-
         mMyWebView.setDrawingCacheEnabled(false);
         mMyWebView.setLayerType(View.LAYER_TYPE_NONE, null);
 
@@ -599,7 +600,6 @@ public class NewsDetailActivity extends BaseActivity {
 
 
     private void unfavorite() {
-
         Map<String,String> map = new HashMap<>();
         if(null != mNewsDetailBean){
             map.put("target_id",mNewsDetailBean.getAid());
@@ -640,15 +640,17 @@ public class NewsDetailActivity extends BaseActivity {
             if("1".equals(mNewsDetailBean.getIs_follow_author())){
                 name = "取消";
                 focus_type = "0";
+                final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(this).builder();
+                iosAlertDialog.setPositiveButton("取消关注", v -> {
+                    followAuthor(focus_type);
+                }).setNegativeButton("再想想", v -> {}).setMsg("取消关注?").setCanceledOnTouchOutside(false);
+                iosAlertDialog.show();
             }else if("0".equals(mNewsDetailBean.getIs_follow_author())){
                 name = "";
                 focus_type = "1";
-            }
-            final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(this).builder();
-            iosAlertDialog.setPositiveButton("确定", v -> {
                 followAuthor(focus_type);
-            }).setNegativeButton("取消", v -> {}).setMsg("确定要 " + name +"关注「" + author  +"」").setCanceledOnTouchOutside(false);
-            iosAlertDialog.show();
+            }
+
         }
     }
 
@@ -676,7 +678,6 @@ public class NewsDetailActivity extends BaseActivity {
                 });
     }
 
-
     private void changeFocusStatus(String is_follow_author) {
         if("1".equals(is_follow_author)){
             focus.setBackgroundResource(R.drawable.bg_corners_4_gray);
@@ -696,7 +697,6 @@ public class NewsDetailActivity extends BaseActivity {
             focus11111.setText("关注");
         }
     }
-
 
 
     /** --------------------------------- 更多阅读  ---------------------------------*/
@@ -793,7 +793,6 @@ public class NewsDetailActivity extends BaseActivity {
 
         showQuestionErrorDialog();
 
-
         Map<String,String> map = new HashMap<>();
         if(null != mNewsDetailBean){
             map.put("aid",mNewsDetailBean.getAid());
@@ -828,8 +827,8 @@ public class NewsDetailActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
 
                     }
                 });
@@ -839,7 +838,6 @@ public class NewsDetailActivity extends BaseActivity {
     private void showQuestionRightDialog() {
         QuestionResultRightDialog iosAlertDialog = new QuestionResultRightDialog(this).builder();
         iosAlertDialog.setNegativeButton("知道了", v -> {
-
         });
         iosAlertDialog.setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
@@ -905,16 +903,9 @@ public class NewsDetailActivity extends BaseActivity {
                 case 2:
                     if(null != mNewsDetailBean){
                         KLog.d("tag","复制链接");
-                        //获取剪贴板管理器：
-                        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        // 创建普通字符型ClipData
-                        ClipData mClipData = ClipData.newPlainText("Label", mNewsDetailBean.getShare_url());
-                        // 将ClipData内容放到系统剪贴板里。
-                        cm.setPrimaryClip(mClipData);
-                        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
-                        ToastUtils.showShort("链接复制成功！");
-                    }
 
+                        StringUtil.copyLink(mNewsDetailBean.getShare_url());
+                    }
 
                     break;
                 default:
@@ -922,7 +913,6 @@ public class NewsDetailActivity extends BaseActivity {
         });
         alertDialog.show();
     }
-
 
 
     // 分享微信（web）
@@ -952,6 +942,7 @@ public class NewsDetailActivity extends BaseActivity {
             //描述
             web.setDescription(summary);
             //传入平台
+            Constant.isActicleShare = true;
             new ShareAction(this)
                     .setPlatform(platform)
                     .withMedia(web)
@@ -986,6 +977,7 @@ public class NewsDetailActivity extends BaseActivity {
             //描述
             web.setDescription(summary);
             //传入平台
+            Constant.isActicleShare = true;
             new ShareAction(this)
                     .setPlatform(platform)
                     .withMedia(web)
@@ -993,6 +985,17 @@ public class NewsDetailActivity extends BaseActivity {
         }
 
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onActicleShareEvent(ActicleShareEvent event){
+        Constant.isActicleShare = false;
+        ToastUtils.showShort("分享成功");
+//        View view = LayoutInflater.from(this).inflate(R.layout.activity_share_success,null);
+//        ((TextView)view.findViewById(R.id.msg)).setText("分享成功！\n被朋友阅读后，你可以获得羽毛奖励！");
+//        ToastUtils.showCustomShort(view);
+    }
+
 
     /** --------------------------------- 评分  ---------------------------------*/
     private void showActiclePointDialog() {
@@ -1306,10 +1309,6 @@ public class NewsDetailActivity extends BaseActivity {
                         bean.setGood_num((Integer.parseInt(bean.getGood_num()) + 1) + "");
                         zanChange(zan_second_num_second,zan_second_img_second,bean.getGood_num(),bean.getIs_good());
 
-                        //手动修改  更新一级列表
-//                        CommentBean.FirstComment t = mCommentAdapter.getData().get(zanPosition);
-//                        t.setIs_good(1);
-//                        t.setGood_num((Integer.parseInt(t.getGood_num()) + 1) + "");
                         mCommentAdapter.notifyItemChanged(zanPosition);
                     }
                 });
@@ -1333,11 +1332,6 @@ public class NewsDetailActivity extends BaseActivity {
                         bean.setGood_num((Integer.parseInt(bean.getGood_num()) - 1) + "");
                         zanChange(zan_second_num_second,zan_second_img_second,bean.getGood_num(),bean.getIs_good());
                         mCommentAdapter.notifyItemChanged(zanPosition);
-
-//                        //手动修改  更新一级列表
-//                        CommentBean.FirstComment t = mCommentAdapter.getData().get(zanPosition);
-//                        t.setIs_good(0);
-//                        t.setGood_num((Integer.parseInt(t.getGood_num()) + 0) + "");
 
                     }
                 });
@@ -1529,8 +1523,8 @@ public class NewsDetailActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onHintError(String errorMes) {
-                        super.onHintError(errorMes);
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
                         isSendOk = false;
                         KLog.d("tag","发送失败");
                     }
@@ -1628,17 +1622,11 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
 
-
-
-
     @BindView(R.id.loading_dialog)
     LinearLayout loading_dialog;
 
     @BindView(R.id.lottieAnimationView)
     LottieAnimationView lottieAnimationView;
-
-
-
 
     public void showWaitingDialog() {
         loading_dialog.setVisibility(View.VISIBLE);
@@ -1659,10 +1647,8 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
 
-
     /** --------------------------------- 文章评论弹框 ---------------------------------*/
 
-    String words;
     CommentBean.FirstComment oneComment;
     private String commentString;
     //参数一 用于数据更新      参数三 评论一级 还是 评论二级
@@ -1781,7 +1767,6 @@ public class NewsDetailActivity extends BaseActivity {
             });
             talkAlertDialog.show();
         }
-
 
 
     /** --------------------------------- 二级评论列表 及 点击事件---------------------------------*/
@@ -1904,7 +1889,6 @@ public class NewsDetailActivity extends BaseActivity {
 
                 });
     }
-
-
+    
 
 }

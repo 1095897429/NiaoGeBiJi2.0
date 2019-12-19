@@ -155,9 +155,6 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
             }
 
 
-
-
-
             //发布时间
             if(!TextUtils.isEmpty(bean.getCreated_at())){
                 String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(bean.getCreated_at()) * 1000L);

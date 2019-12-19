@@ -105,7 +105,7 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
     public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
         switch (newState) {
             case None:
-                KLog.d("tag","刷新None");
+//                KLog.d("tag","刷新None");
                 if(animationDrawable != null && animationDrawable.isRunning()){
                     animationDrawable.stop();
                 }
@@ -116,7 +116,7 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
 //                    mArrowView.animate().rotation(0);//还原箭头方向
 //                mImageView.setVisibility(VISIBLE);
 //                lottie.setVisibility(GONE);
-                KLog.d("tag","下拉开始刷新");
+//                KLog.d("tag","下拉开始刷新");
 
                 break;
             case Refreshing:
@@ -125,7 +125,7 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
 //                    mArrowView.setVisibility(GONE);//隐藏箭头
 //                mImageView.setVisibility(GONE);
 //                lottie.setVisibility(VISIBLE);
-                KLog.d("tag","正在刷新");
+//                KLog.d("tag","正在刷新");
 
                if(animationDrawable != null ){
                    animationDrawable.start();
@@ -143,7 +143,7 @@ public class XnClassicsHeader extends LinearLayout implements RefreshHeader {
                 break;
             case RefreshFinish:
 //                    mHeaderText.setText("刷新结束");
-                KLog.d("tag","刷新结束");
+//                KLog.d("tag","刷新结束");
                 break;
                 default:
         }

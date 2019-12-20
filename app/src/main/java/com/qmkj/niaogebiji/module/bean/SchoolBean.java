@@ -101,6 +101,15 @@ public class SchoolBean extends BaseBean {
         private String comment;
         private Record record;
         private int is_show_badge;
+        private String share_url;
+
+        public String getShare_url() {
+            return share_url;
+        }
+
+        public void setShare_url(String share_url) {
+            this.share_url = share_url;
+        }
 
         public String getPass_score() {
             return pass_score;

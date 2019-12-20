@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -40,24 +39,22 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
-import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
-import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
-import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
+import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
+import com.qmkj.niaogebiji.module.event.ProfessionEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
-import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,8 +74,11 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-25
  * 描述:个人信息界面(个人 + 别人)
- * 1.自己的信息 -- 底部都不显示，顶部显示编辑
+ * 1.自己的信息 -- 底部都不显示，顶部显示编辑，并且显示认证的一些信息 -- 直接去认证
  * 2.别人的信息 -- 根据状态 显示底部[我屏蔽他，底部不显示]
+ *
+ * 3.uid判断显示不同的布局
+ * 4.取消屏蔽 -- 提示屏蔽成功，下方布局消失，同时改变popup中的屏蔽为取消屏蔽
  */
 public class UserInfoActivity extends BaseActivity {
 
@@ -91,7 +91,8 @@ public class UserInfoActivity extends BaseActivity {
     TextView user_des;
     CircleImageView head_icon;
     LinearLayout ll_badge;
-    TextView sender_not_verticity;
+    TextView senderverticity;
+    TextView sender_tag;
 
     @BindView(R.id.iv_right)
     ImageView iv_right;
@@ -126,8 +127,14 @@ public class UserInfoActivity extends BaseActivity {
     LinearLayoutManager mLinearLayoutManager;
     //关注状态
     private String follow_status;
-    //认证状态
-    private String auth_com_status;
+    //自己的uid
+    private String myUid;
+    //传递uid
+    private String  otherUid;
+    //屏蔽 取消屏蔽
+    private String shareContent;
+
+    private  PersonUserInfoBean temp;
 
     @Override
     protected int getLayoutId() {
@@ -137,20 +144,40 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-//        iv_right.setVisibility(View.VISIBLE);
-        myUid = getIntent().getStringExtra("uid");
+        otherUid = getIntent().getStringExtra("uid");
+        myUid = StringUtil.getMyUid();
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
+
         getPersonInfo();
 
     }
+    private void initDifferLogic() {
+        //自己
+        if(myUid.equals(otherUid)){
+            //企业认证状态：1-正常，2-未提交，3-审核中，4-未通过
+            if("1".equals(temp.getAuth_com_status())){
+                sender_name.setVisibility(View.VISIBLE);
+                sender_name.setText(temp.getCompany_name());
+            }else{
+                senderverticity.setVisibility(View.VISIBLE);
+            }
+            iv_text.setVisibility(View.VISIBLE);
+        }else{
+            //别人
+            showStateByFollow(temp.getFollow_status());
+            iv_right.setVisibility(View.VISIBLE);
+            part3333.setVisibility(View.VISIBLE);
+            sender_tag.setVisibility(View.VISIBLE);
+        }
+    }
 
 
-    private String  myUid;
-    private  PersonUserInfoBean temp;
+
+
     private void getPersonInfo() {
         Map<String,String> map = new HashMap<>();
-        map.put("uid",myUid);
+        map.put("uid",otherUid);
         map.put("page",page + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().getPersonInfo(result)
@@ -214,19 +241,26 @@ public class UserInfoActivity extends BaseActivity {
             //1 是 转发
             if(!TextUtils.isEmpty(type) && "1".equals(type)){
                 //内部图片
-                List<String> imgsss = temp.getP_blog().getImages();
-                if(imgsss != null &&  !imgsss.isEmpty()){
-                    mulBean.setItemType(2);
-                }
-                //link
-                String linked = temp.getP_blog().getLink();
-                if(!TextUtils.isEmpty(linked)){
-                    mulBean.setItemType(3);
+
+                if(temp.getP_blog() != null){
+                    List<String> imgsss = temp.getP_blog().getImages();
+                    if(imgsss != null &&  !imgsss.isEmpty()){
+                        mulBean.setItemType(2);
+                    }
+                    //link
+                    String linked = temp.getP_blog().getLink();
+                    if(!TextUtils.isEmpty(linked)){
+                        mulBean.setItemType(3);
+                    }
+
+                    if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
+                        mulBean.setItemType(5);
+                    }
+                }else {
+                    continue;
                 }
 
-                if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
-                    mulBean.setItemType(5);
-                }
+
             }else{
                 //原创图片
                 if(imgs != null &&  !imgs.isEmpty()){
@@ -261,33 +295,24 @@ public class UserInfoActivity extends BaseActivity {
 
     }
 
+    // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
     private void showStateByFollow(int status) {
-        //是自己的话，修改上面的图片
-        RegisterLoginBean.UserInfo u = StringUtil.getUserInfoBean();
-        if(u != null){
-            if(!temp.getUid().equals(u.getUid())){
-                follow_status = status+ "";
-                if("0".equals(follow_status)){
-                    noFocus.setVisibility(View.VISIBLE);
-                }else if("1".equals(follow_status)){
-                    alreadFocus.setVisibility(View.VISIBLE);
-                }else if("3".equals(follow_status)){
-                    himcloseme.setVisibility(View.VISIBLE);
-                }
-                iv_right.setVisibility(View.VISIBLE);
-            }else{
-                iv_text.setVisibility(View.VISIBLE);
-            }
+        follow_status = status + "";
+        shareContent = "屏蔽";
+        if("0".equals(follow_status)){
+            noFocus.setVisibility(View.VISIBLE);
+        }else if("1".equals(follow_status)){
+            alreadFocus.setVisibility(View.VISIBLE);
+        }else if("3".equals(follow_status)){
+            himcloseme.setVisibility(View.VISIBLE);
+        }else if("2".equals(follow_status)){
+            shareContent = "取消屏蔽";
+            part3333.setVisibility(View.GONE);
         }
-
     }
 
 
     private void setHeadData() {
-        auth_com_status = temp.getAuth_com_status();
-        //底部按钮
-        showStateByFollow(temp.getFollow_status());
-
         //头部信息
         send_article_num = headView.findViewById(R.id.send_article_num);
         medal_count = headView.findViewById(R.id.medal_count);
@@ -295,30 +320,36 @@ public class UserInfoActivity extends BaseActivity {
         user_des = headView.findViewById(R.id.user_des);
         head_icon = headView.findViewById(R.id.head_icon);
         ll_badge = headView.findViewById(R.id.ll_badge);
-        sender_not_verticity = headView.findViewById(R.id.sender_not_verticity);
+        sender_tag = headView.findViewById(R.id.sender_tag);
+        senderverticity = headView.findViewById(R.id.sender_not_verticity);
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
         medal_count.setTypeface(typeface);
         send_article_num.setTypeface(typeface);
 
-        sender_not_verticity.setOnClickListener((v)->{
-            showProfessionAuthen();
+        senderverticity.setOnClickListener((v)->{
+           //直接去webview
+            posCertInit();
         });
 
         head_icon.setOnClickListener((v)->{
             toPicPrewView();
-
         });
 
-        user_des.setText(temp.getPro_summary());
-        sender_name.setText(temp.getName());
-        send_article_num.setText(temp.getBlog_count() + "");
-        medal_count.setText(temp.getFans_count() + "");
+        //设置逻辑
+        initDifferLogic();
 
-        ImageUtil.load(this,temp.getAvatar(),head_icon);
 
-        if(temp.getBadge() != null && !temp.getBadge().isEmpty()){
-               ll_badge.removeAllViews();
+        if(temp != null){
+            user_des.setText(temp.getPro_summary());
+            sender_name.setText(temp.getName());
+            send_article_num.setText(temp.getBlog_count() + "");
+            medal_count.setText(temp.getFans_count() + "");
+            ImageUtil.load(this,temp.getAvatar(),head_icon);
+
+            //徽章
+            if(temp.getBadge() != null && !temp.getBadge().isEmpty()){
+                ll_badge.removeAllViews();
                 for (int i = 0; i < temp.getBadge().size(); i++) {
                     ImageView imageView = new ImageView(mContext);
                     String icon = temp.getBadge().get(i).getIcon();
@@ -335,8 +366,49 @@ public class UserInfoActivity extends BaseActivity {
                     ll_badge.addView(imageView);
                 }
             }
+        }
+
+
+
+
+
     }
 
+    private void posCertInit() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+
+        RetrofitHelper.getApiService().posCertInit(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<AutherCertInitBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<AutherCertInitBean> response) {
+                        AutherCertInitBean temp = response.getReturn_data();
+                        if(temp != null){
+                            //1-身份证认证页面，2-邮箱提交页面，3-邮箱已提交页面，4-人工审核提交成功页面，5-人工审核失败页面，6-人工审核通过页面
+                            int step = temp.getFlow_step();
+                            String link = "";
+
+                            if(1 == step){
+                                link = StringUtil.getLink("professionidone");
+                            }else if(2 == step){
+                                link = StringUtil.getLink("professionidthree");
+                            }else if(3 == step){
+                                link = StringUtil.getLink("professionidfour");
+                            }else if(4 == step){
+                                link = StringUtil.getLink("manexaminesuc");
+                            }else if(5 == step){
+                                link = StringUtil.getLink("manexaminefail");
+                            }else if(6 == step){
+                                link = StringUtil.getLink("professionidsuc");
+                            }
+                            UIHelper.toWebViewActivity(UserInfoActivity.this,link);
+                        }
+                    }
+                });
+    }
 
 
     private void initLayout() {
@@ -359,47 +431,13 @@ public class UserInfoActivity extends BaseActivity {
     }
 
 
-
-    private void getData() {
-
-//        NewsItemBean itemBean;
-//        FirstItemBean firstItemBean;
-//        MultiCircleNewsBean bean1;
-//        for (int i = 0; i < 10; i++) {
-//            if (i == 2) {
-//                firstItemBean = new FirstItemBean();
-//                bean1 = new MultiCircleNewsBean();
-//                bean1.setItemType(4);
-//                bean1.setFirstItemBean(firstItemBean);
-//            } else {
-//                itemBean = new NewsItemBean();
-//                itemBean.setTitle("名称 " + i);
-//                bean1 = new MultiCircleNewsBean();
-//                if (i == 4) {
-//                    bean1.setItemType(2);
-//                } else if (i == 5) {
-//                    bean1.setItemType(3);
-//                } else {
-//                    bean1.setItemType(1);
-//                }
-//
-//                bean1.setNewsItemBean(itemBean);
-//            }
-//            mAllList.add(bean1);
-//        }
-
-        mCircleRecommendAdapter.setNewData(mAllList);
-
-    }
-
-
     View headView;
     @SuppressLint("CheckResult")
     private void initEvent() {
 
         mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            getData();
+            getPersonInfo();
         }, mRecyclerView);
 
         headView = LayoutInflater.from(this).inflate(R.layout.person_head_view,null);
@@ -420,7 +458,7 @@ public class UserInfoActivity extends BaseActivity {
                     break;
                 case R.id.circle_comment:
                     KLog.d("tag", "评论去圈子详情");
-                    UIHelper.toCommentDetailActivity(this,"5","1");
+                    UIHelper.toCommentDetailActivity(this,"5","1",position);
                     break;
                 case R.id.circle_share:
                     KLog.d("tag", "圈子分享");
@@ -452,7 +490,7 @@ public class UserInfoActivity extends BaseActivity {
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    UIHelper.toCommentDetailActivity(this,"5","1");
+                    UIHelper.toCommentDetailActivity(this,"5","1",position);
                     break;
                 default:
             }
@@ -471,16 +509,13 @@ public class UserInfoActivity extends BaseActivity {
                 showCancelFocusDialog();
                 break;
             case R.id.noFocus:
-
-                //判断是否职业认证
-//                if("4".equals(auth_com_status)){
-//                    showProfessionAuthen();
-//                }
-
                 showProfessionAuthen();
                 break;
             case R.id.iv_right:
-                showPopupWindow2(iv_right,"屏蔽");
+
+                showStateByFollow(temp.getFollow_status());
+
+                showPopupWindowReport(iv_right,shareContent);
                 setBackgroundAlpha(this, 0.6f);
                 break;
             case R.id.iv_text:
@@ -493,11 +528,10 @@ public class UserInfoActivity extends BaseActivity {
         }
     }
 
-    private String message;
+    private String message = "";
     private void followUser() {
         Map<String,String> map = new HashMap<>();
-//        map.put("follow_uid",temp.getUid());
-        map.put("follow_uid","300473");
+        map.put("follow_uid",otherUid);
         map.put("message",message + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().followUser(result)
@@ -508,7 +542,12 @@ public class UserInfoActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse response) {
-
+                        alreadFocus.setVisibility(View.VISIBLE);
+                        noFocus.setVisibility(View.GONE);
+                        ToastUtils.showShort("关注成功");
+                        // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+                        temp.setFollow_status(1);
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid,1));
                     }
                 });
     }
@@ -628,8 +667,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void blockUser() {
         Map<String,String> map = new HashMap<>();
-//        map.put("follow_uid",temp.getUid());
-        map.put("follow_uid","300473");
+        map.put("follow_uid",otherUid);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().blockUser(result)
                 .subscribeOn(Schedulers.newThread())
@@ -639,7 +677,12 @@ public class UserInfoActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse response) {
+                        ToastUtils.showShort("您已屏蔽对方");
+                        part3333.setVisibility(View.GONE);
 
+                        // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+                        temp.setFollow_status(2);
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid,2));
                     }
                 });
     }
@@ -647,8 +690,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void unblockUser() {
         Map<String,String> map = new HashMap<>();
-//        map.put("follow_uid",temp.getUid());
-        map.put("follow_uid","300473");
+        map.put("follow_uid",otherUid);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().unblockUser(result)
                 .subscribeOn(Schedulers.newThread())
@@ -658,13 +700,22 @@ public class UserInfoActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse response) {
+                        //屏蔽用户成功
+                        part3333.setVisibility(View.VISIBLE);
+                        noFocus.setVisibility(View.VISIBLE);
+                        alreadFocus.setVisibility(View.GONE);
+                        himcloseme.setVisibility(View.GONE);
+                        ToastUtils.showShort("取消屏蔽成功");
 
+                        // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+                        temp.setFollow_status(0);
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid,0));
                     }
                 });
     }
 
 
-    private void showPopupWindow2(View view,String content) {
+    private void showPopupWindowReport(View view,String content) {
         //加载布局
         View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_report, null);
         PopupWindow mPopupWindow = new PopupWindow(inflate);
@@ -675,7 +726,7 @@ public class UserInfoActivity extends BaseActivity {
         mPopupWindow.setHeight(SizeUtils.dp2px(88f));
         //点击其他地方隐藏,false为无反应
         mPopupWindow.setFocusable(true);
-
+        //设置文本
         share.setText(content);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //以view的左下角为原点，xoff为正表示向x轴正方向偏移像素
@@ -692,21 +743,25 @@ public class UserInfoActivity extends BaseActivity {
         });
 
         report.setOnClickListener(view1 -> {
-            ToastUtils.showShort("发请求，举报成功");
             reportUser();
             mPopupWindow.dismiss();
         });
 
         share.setOnClickListener(view1 -> {
             mPopupWindow.dismiss();
-            showNotSeeEachOther();
+
+            if(shareContent.equals("屏蔽")){
+                showNotSeeEachOther();
+            }else if(shareContent.equals("取消屏蔽")){
+                unblockUser();
+            }
+
         });
     }
 
     private void reportUser() {
         Map<String,String> map = new HashMap<>();
-//        map.put("follow_uid",temp.getUid());
-        map.put("follow_uid","300473");
+        map.put("follow_uid",otherUid);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().reportUser(result)
                 .subscribeOn(Schedulers.newThread())
@@ -716,7 +771,7 @@ public class UserInfoActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse response) {
-
+                        ToastUtils.showShort("举报成功");
                     }
                 });
     }
@@ -770,11 +825,11 @@ public class UserInfoActivity extends BaseActivity {
     public void showNotSeeEachOther(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("屏蔽", v -> {
-            ToastUtils.showShort("您已屏蔽对方");
-            part3333.setVisibility(View.GONE);
+            blockUser();
+
         }).setNegativeButton("再想想", v -> {
 
-        }).setMsg("屏蔽小羽毛?").setTitle("屏蔽后，你们不能互相关注且在推荐频道你将看不到他的圈子动态").setCanceledOnTouchOutside(false);
+        }).setMsg("屏蔽" + temp.getName() + "?").setTitle("屏蔽后，你们不能互相关注且在推荐频道你将看不到他的圈子动态").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
 
@@ -800,8 +855,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void unfollowUser() {
         Map<String,String> map = new HashMap<>();
-//        map.put("follow_uid",temp.getUid());
-        map.put("follow_uid","300473");
+        map.put("follow_uid",otherUid);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().unfollowUser(result)
                 .subscribeOn(Schedulers.newThread())
@@ -811,7 +865,12 @@ public class UserInfoActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse response) {
-
+                        noFocus.setVisibility(View.VISIBLE);
+                        alreadFocus.setVisibility(View.GONE);
+                        ToastUtils.showShort("取消关注成功");
+                        // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+                        temp.setFollow_status(0);
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid, 1));
                     }
                 });
     }
@@ -820,10 +879,23 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 100 && resultCode == RESULT_OK){
-            message = data.getExtras().getString("message");
-            KLog.d("tqg","接收到的文字是 " + message);
-            followUser();
+        if(requestCode == 100){
+            if(data != null){
+                message = data.getExtras().getString("message");
+                KLog.d("tqg","接收到的文字是 " + message);
+            }
         }
+
+        followUser();
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onProfessionEvent(ProfessionEvent event){
+       if("2".equals( event.getType())){
+           getPersonInfo();
+       }
+
+    }
+
+
 }

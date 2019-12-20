@@ -23,7 +23,17 @@ public class CommentBeanNew extends BaseBean {
     private User_info user_info;
     private String comment_num;
     private String comment_class;
+    //是否已点赞 1是 0否
+    private int is_like;
     private List<SecondComment> comment_comment;
+
+    public int getIs_like() {
+        return is_like;
+    }
+
+    public void setIs_like(int is_like) {
+        this.is_like = is_like;
+    }
 
     public String getPuid() {
         return puid;

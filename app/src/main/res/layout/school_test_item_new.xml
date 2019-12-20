@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/part1111"
+        android:background="@drawable/bg_corners_8_gray"
+        android:layout_width="99dp"
+        android:orientation="vertical"
+        android:layout_height="84dp">
+
+        <TextView
+            android:background="@drawable/bg_corners_10_left_bottom"
+            android:id="@+id/test_time"
+            android:text="限时"
+            android:gravity="center"
+            android:textColor="@color/text_first_color"
+            android:textSize="9sp"
+            android:layout_width="34dp"
+            android:layout_height="16dp" />
+
+
+
+
+        <RelativeLayout
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_width="52dp"
+            android:layout_height="52dp">
+
+
+            <ImageView
+                android:id="@+id/test_img"
+                android:layout_width="52dp"
+                android:layout_height="52dp" />
+
+        </RelativeLayout>
+
+
+
+        <TextView
+            android:id="@+id/test_title"
+            android:text="ASO初级优化师认证"
+            android:layout_centerInParent="true"
+            android:textColor="@color/text_first_color"
+            android:textSize="13sp"
+            android:layout_width="88dp"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+    
+</LinearLayout>

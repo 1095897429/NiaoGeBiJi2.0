@@ -29,6 +29,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/part3333"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
@@ -44,7 +45,7 @@
         <TextView
             android:id="@+id/noFocus"
             android:text="关注"
-            android:visibility="visible"
+            android:visibility="gone"
             android:gravity="center"
             android:textSize="17sp"
             android:background="@drawable/bg_corners_12_yellow"

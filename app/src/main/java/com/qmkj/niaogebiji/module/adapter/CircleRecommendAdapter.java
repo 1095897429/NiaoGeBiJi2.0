@@ -80,6 +80,8 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
     public static final int LINK_OUT_TYPE = 4;
     public static final int ALL_TEXT = 5;
 
+    public static final int CIRCLE_ACTICLE = 8;
+
     public static final int ALL = 6;
 
 
@@ -97,6 +99,9 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
         //原创 全文本
         addItemType(ALL_TEXT,R.layout.first_circle_item5);
 
+        //文本 + 文章
+        addItemType(CIRCLE_ACTICLE,R.layout.first_circle_itme8);
+
 //        addItemType(ALL,R.layout.first_circle_item_all);ll_report
 
     }
@@ -113,16 +118,16 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
         CircleBean bean  = item.getCircleBean();
         //测试 uid = 300579
         RegisterLoginBean.UserInfo temp = StringUtil.getUserInfoBean();
-        if(null!= temp){
+        if(null!= bean){
             User_info userInfo = bean.getUser_info();
             //uid 判断
-            if(temp.getUid().equals(userInfo.getUid())){
-                helper.setVisible(R.id.circle_remove,true);
-                helper.setVisible(R.id.circle_report,false);
-            }else{
-                helper.setVisible(R.id.circle_report,true);
-                helper.setVisible(R.id.circle_remove,false);
-            }
+//            if(!TextUtils.isEmpty(temp.getUid()) && temp.getUid().equals(userInfo.getUid())){
+//                helper.setVisible(R.id.circle_remove,true);
+//                helper.setVisible(R.id.circle_report,false);
+//            }else{
+//                helper.setVisible(R.id.circle_report,true);
+//                helper.setVisible(R.id.circle_remove,false);
+//            }
             //正文
             TextView content = helper.getView(R.id.content);
             String blogContent = bean.getBlog();
@@ -154,7 +159,6 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
 
             }
 
-
             //发布时间
             if(!TextUtils.isEmpty(bean.getCreated_at())){
                 String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(bean.getCreated_at()) * 1000L);
@@ -167,13 +171,15 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
                 }
             }
 
-            //发帖人
-            helper.setText(R.id.sender_name,bean.getUser_info().getName());
-            //头像
-            ImageUtil.load(mContext,bean.getUser_info().getAvatar(),helper.getView(R.id.head_icon));
-            //职位
-            helper.setText(R.id.sender_tag,bean.getUser_info().getPosition());
-            //徽章
+
+            if(bean.getUser_info() != null){
+                //发帖人
+                helper.setText(R.id.sender_name,bean.getUser_info().getName());
+                //头像
+                ImageUtil.load(mContext,bean.getUser_info().getAvatar(),helper.getView(R.id.head_icon));
+                //职位
+                helper.setText(R.id.sender_tag,bean.getUser_info().getPosition());
+                //徽章
 //            if(userInfo.getBadge() != null && !userInfo.getBadge().isEmpty()){
 //                LinearLayout ll = helper.getView(R.id.ll_badge);
 //                ll.removeAllViews();
@@ -194,38 +200,16 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
 //                }
 //            }
 
-            //评论
-            Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
-            TextView textComment = helper.getView(R.id.comment);
-            textComment.setTypeface(typeface);
-            if(bean.getComment_num().equals("0")){
-                textComment.setText("评论");
-            }else{
-                textComment.setText(bean.getComment_num() + "");
             }
+
+
             //点赞数
+            TextView com_num = helper.getView(R.id.comment);
             TextView zan_num = helper.getView(R.id.zan_num);
-            zan_num.setTypeface(typeface);
-            if(bean.getLike_num().equals("0")){
-                zan_num.setText("赞");
-            }else{
-                zan_num.setText(bean.getLike_num() + "+");
-            }
-            //点赞图片
-            if("0".equals(bean.getIs_like() + "")){
-                helper.setImageResource(R.id.iamge_priase,R.mipmap.icon_flash_priase);
-                zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
-            }else if("1".equals(bean.getIs_like() + "")){
-                helper.setImageResource(R.id.iamge_priase,R.mipmap.icon_flash_priase_select);
-                zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
-            }
+            ImageView imageView =  helper.getView( R.id.iamge_priase);
+            zanCommentChange(com_num,zan_num,imageView,bean.getLike_num(),bean.getIs_like(),bean.getComment_num());
 
             helper.getView(R.id.circle_priase).setOnClickListener(view -> {
-//                LottieAnimationView lottie = helper.getView(R.id.lottieAnimationView);
-//                lottie.setImageAssetsFolder("images");
-//                lottie.setAnimation("images/new_like_20.json");
-//                lottie.playAnimation();
-
                 likeBlog(item.getCircleBean(),helper.getAdapterPosition());
             });
 
@@ -265,6 +249,17 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
                 break;
             case ALL_TEXT:
 
+
+
+
+                break;
+            case CIRCLE_ACTICLE:
+
+                if(!TextUtils.isEmpty(bean.getArticle_image())){
+                    ImageUtil.load(mContext,bean.getArticle_image(),helper.getView(R.id.article_img));
+                }
+
+                helper.setText(R.id.acticle_title,bean.getArticle_title());
 
 
                 break;
@@ -322,11 +317,10 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
     private void likeBlog(CircleBean circleBean,int position) {
         Map<String,String> map = new HashMap<>();
         map.put("blog_id",circleBean.getId());
-
-        int like ;
-        if("0".equals(circleBean.getIs_like())){
+        int like = 0;
+        if("0".equals(circleBean.getIs_like() + "")){
             like = 1;
-        }else{
+        }else if("1".equals(circleBean.getIs_like() + "")){
             like = 0;
         }
         map.put("like",like + "");
@@ -338,19 +332,61 @@ public class CircleRecommendAdapter extends BaseMultiItemQuickAdapter<MultiCircl
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-
                        // 测试的
                        int islike = circleBean.getIs_like();
                        if(islike == 0){
-                           mData.get(position).getCircleBean().setIs_like(1);
+                           circleBean.setIs_like(1);
+                           circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) + 1) + "");
                        }else{
-                           mData.get(position).getCircleBean().setIs_like(0);
+                           circleBean.setIs_like(0);
+                           circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) - 1) + "");
                        }
-                        notifyDataSetChanged();
+                        notifyItemChanged(position);
                     }
                 });
     }
 
 
+    private void zanCommentChange(TextView com_text,TextView zan_num, ImageView zan_img,
+                                  String good_num, int is_good,String com_num) {
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
+        zan_num.setTypeface(typeface);
+        com_text.setTypeface(typeface);
+
+        if(StringUtil.checkNull(good_num)){
+            if("0".equals(good_num)){
+                zan_num.setText("赞");
+            }else{
+                int size = Integer.parseInt(good_num);
+                if(size > 99){
+                    zan_num.setText(99 + "+");
+                }else{
+                    zan_num.setText(size + "");
+                }
+            }
+        }
+        //点赞图片
+        if("0".equals(is_good + "")){
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
+        }else if("1".equals(is_good + "")){
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
+        }
+
+
+        if(StringUtil.checkNull(com_num)){
+            if("0".equals(com_num)){
+                com_text.setText("评论");
+            }else{
+                int size = Integer.parseInt(com_num);
+                if(size > 99){
+                    com_text.setText(99 + "");
+                }else{
+                    com_text.setText(size + "");
+                }
+            }
+        }
+    }
 
 }

@@ -32,79 +32,79 @@
             android:layout_toRightOf="@+id/head_icon"
             android:orientation="vertical">
 
-           <RelativeLayout
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-               <LinearLayout
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                   <TextView
-                       android:id="@+id/sender_name"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:ellipsize="end"
-                       android:lineSpacingExtra="2dp"
-                       android:maxLines="1"
-                       android:text="张俊杰"
-                       android:textColor="@color/text_first_color"
-                       android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/sender_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="1"
+                        android:text="张俊杰"
+                        android:textColor="@color/text_first_color"
+                        android:textSize="16sp" />
 
-                   <LinearLayout
-                       android:id="@+id/ll_badge"
-                       android:layout_marginLeft="8dp"
-                       android:layout_width="wrap_content"
-                       android:layout_height="match_parent"
-                       android:orientation="horizontal">
-
-
-                   </LinearLayout>
-
-               </LinearLayout>
-
-               <LinearLayout
-                   android:gravity="center"
-                   android:layout_alignParentRight="true"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:orientation="horizontal">
-
-                   <TextView
-                       android:id="@+id/publish_time"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:ellipsize="end"
-                       android:lineSpacingExtra="2dp"
-                       android:maxLines="1"
-                       android:text="15分钟前"
-                       android:textColor="#AAAEB3"
-                       android:textSize="11sp" />
-
-                   <Space
-                       android:layout_width="8dp"
-                       android:layout_height="match_parent" />
+                    <LinearLayout
+                        android:id="@+id/ll_badge"
+                        android:layout_marginLeft="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
 
-                   <ImageView
-                       android:visibility="gone"
-                       android:id="@+id/circle_report"
-                       android:src="@mipmap/icon_circle_report"
-                       android:layout_width="16dp"
-                       android:layout_height="16dp" />
+                    </LinearLayout>
 
-                   <ImageView
-                       android:visibility="gone"
-                       android:id="@+id/circle_remove"
-                       android:src="@mipmap/icon_circle_remove"
-                       android:layout_width="16dp"
-                       android:layout_height="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/publish_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="1"
+                        android:text="15分钟前"
+                        android:textColor="#AAAEB3"
+                        android:textSize="11sp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="match_parent" />
 
 
-               </LinearLayout>
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/circle_report"
+                        android:src="@mipmap/icon_circle_report"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp" />
 
-           </RelativeLayout>
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/circle_remove"
+                        android:src="@mipmap/icon_circle_remove"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp" />
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
             <Space
                 android:layout_width="match_parent"
@@ -158,11 +158,11 @@
             android:layout_height="match_parent">
 
             <com.qmkj.niaogebiji.module.widget.RCImageView
-                android:id="@+id/link_img"
+                android:id="@+id/article_img"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/icon_link_logo"
+                android:src="@mipmap/logo_icon"
                 android:layout_centerVertical="true"
                 android:background="@color/bg_color"
                 app:round_as_circle="false"
@@ -171,32 +171,23 @@
             <LinearLayout
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="8dp"
-                android:layout_toRightOf="@+id/link_img"
+                android:layout_toRightOf="@+id/article_img"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/link_text"
+                    android:id="@+id/acticle_title"
+                    android:gravity="center|left"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingExtra="1dp"
-                    android:maxLines="1"
-                    android:text="格力电器公告拟修订公司章程，其中，经…"
+                    android:maxLines="2"
+                    android:text=""
                     android:textColor="@color/text_first_color"
                     android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/link_http"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:lineSpacingExtra="1dp"
-                    android:maxLines="1"
-                    android:text="http://baidu.com"
-                    android:textColor="@color/text_first_color"
-                    android:textSize="14sp" />
 
             </LinearLayout>
 

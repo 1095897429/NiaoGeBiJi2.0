@@ -115,7 +115,7 @@
 
                     <LinearLayout
                         android:layout_marginRight="10dp"
-                        android:layout_toLeftOf="@+id/toSecondComment"
+                        android:layout_toLeftOf="@+id/toFirstComment"
                         android:layout_centerVertical="true"
                         android:gravity="center"
                         android:visibility="visible"
@@ -170,7 +170,7 @@
                     <ImageView
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:id="@+id/toSecondComment"
+                        android:id="@+id/toFirstComment"
                         android:src="@mipmap/icon_comment_mes"
                         android:layout_width="28dp"
                         android:layout_height="28dp" />

@@ -11,13 +11,6 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  */
 public class MultiCircleNewsBean extends BaseBean implements MultiItemEntity {
 
-//    //首页新闻
-//    private NewsItemBean mNewsItemBean;
-//    //首页快讯
-//    private FirstItemBean mFirstItemBean;
-//    //首页关注作者文章
-//    private IndexFocusBean.Article_list mArticleList;
-
     private CircleBean mCircleBean;
 
     //类型

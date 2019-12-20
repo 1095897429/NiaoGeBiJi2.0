@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/item_ys_pic"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/part1111"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:drawableRight="@mipmap/icon_authen_company"
+            android:drawablePadding="4dp"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="1"
+            android:textColor="#AAAEB3"
+            android:textSize="13sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/part1111"
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lineSpacingExtra="2dp"
+        android:maxLines="3"
+        android:textColor="@color/text_first_color"
+        android:textSize="16sp" />
+
+
+    <!-- part2222是总的第二部分 -->
+    <LinearLayout
+        android:id="@+id/part2222"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="visible"
+        android:layout_below="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <RelativeLayout
+            android:background="@drawable/bg_corners_8_gray"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.qmkj.niaogebiji.module.widget.RCImageView
+                android:id="@+id/link_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/icon_link_logo"
+                android:layout_centerVertical="true"
+                android:background="@color/bg_color"
+                app:round_as_circle="false"
+                app:round_corner="6dp" />
+
+            <LinearLayout
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@+id/link_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/link_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="1dp"
+                    android:maxLines="1"
+                    android:text="格力电器公告拟修订公司章程，其中，经…"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/link_http"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="1dp"
+                    android:maxLines="1"
+                    android:text="http://baidu.com"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

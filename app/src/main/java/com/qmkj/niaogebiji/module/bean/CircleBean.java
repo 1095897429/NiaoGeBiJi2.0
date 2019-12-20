@@ -10,6 +10,7 @@ import java.util.List;
  * 版本 1.0
  * 创建时间 2019-11-19
  * 描述:圈子动态bean
+ *  1.12.20 新增搜索中新增的字段，比如文章
  */
 public class CircleBean extends BaseBean {
 
@@ -34,6 +35,71 @@ public class CircleBean extends BaseBean {
         private int is_like;
         //内容
         private String comment;
+
+        //兼容搜索
+        private String name;
+        private String company_name;
+        private String position;
+        private String is_auth;
+        private String article_id;
+        private String article_title;
+        private String article_image;
+
+        public String getIs_auth() {
+            return is_auth;
+        }
+
+        public void setIs_auth(String is_auth) {
+            this.is_auth = is_auth;
+        }
+
+         public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCompany_name() {
+            return company_name;
+        }
+
+        public void setCompany_name(String company_name) {
+            this.company_name = company_name;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+
+        public String getArticle_id() {
+            return article_id;
+        }
+
+        public void setArticle_id(String article_id) {
+            this.article_id = article_id;
+        }
+
+        public String getArticle_title() {
+            return article_title;
+        }
+
+        public void setArticle_title(String article_title) {
+            this.article_title = article_title;
+        }
+
+        public String getArticle_image() {
+            return article_image;
+        }
+
+        public void setArticle_image(String article_image) {
+            this.article_image = article_image;
+        }
 
         public String getComment() {
             return comment;

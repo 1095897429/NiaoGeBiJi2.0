@@ -153,7 +153,6 @@ public class FirstItemFragment extends BaseLazyFragment {
         getIndexBulltin();
         //更懂你
         isPersonal();
-
     }
 
     //{"return_code":"200","return_msg":"success","return_data":false}
@@ -206,10 +205,12 @@ public class FirstItemFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<RecommendBean> response) {
 
+                        //TODO 推荐文章有数据，发送早报接口
+
+
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
-
 
                         RecommendBean temp = response.getReturn_data();
 
@@ -532,9 +533,6 @@ public class FirstItemFragment extends BaseLazyFragment {
             default:
         }
     }
-
-
-    //
 
     private ArrayList<ProBean> temp;
     private void getProfession() {

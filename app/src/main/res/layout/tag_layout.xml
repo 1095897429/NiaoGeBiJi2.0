@@ -6,15 +6,16 @@
     android:orientation="vertical">
 
 
+    <!-- maxEms 限制字符  -->
     <TextView
         android:id="@+id/tag_name"
-        android:text="小程序"
+        android:text="小程序小程序小程序"
         android:textSize="13sp"
         android:textColor="@color/text_first_color"
         android:background="@drawable/bg_corners_8_gray"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:maxLength="7"
+        android:maxLines="7"
         android:singleLine="true"
         android:ellipsize="end"
         android:paddingTop="8dp"
@@ -24,5 +25,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     </TextView>
+
+
+    <TextView
+        android:visibility="gone"
+        android:text="我是不是人"
+        android:maxEms="4"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

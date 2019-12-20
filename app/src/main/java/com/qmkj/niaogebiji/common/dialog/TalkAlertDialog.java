@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ public class TalkAlertDialog {
     private TextView et_input;
     private TextView cancel;
     private TextView send;
+    private CheckBox mCheckBox;
 
     private LinearLayout comment_succuss_transfer;
 
@@ -54,14 +56,14 @@ public class TalkAlertDialog {
     }
 
     /** 回调接口 开始 */
-    public OnDialogItemClickListener mOnDialogItemClickListener;
+    public OnIsToCircleLister mOnIsToCircleLister;
 
-    public interface OnDialogItemClickListener{
-        void func(int position);
+    public interface OnIsToCircleLister{
+        void func(boolean bug);
     }
 
-    public void setOnDialogItemClickListener(OnDialogItemClickListener onDialogItemClickListener) {
-        mOnDialogItemClickListener = onDialogItemClickListener;
+    public void setOnIsToCircleLister(OnIsToCircleLister onIsToCircleLister) {
+        mOnIsToCircleLister = onIsToCircleLister;
     }
 
     /** 回调接口 结束 */
@@ -86,6 +88,7 @@ public class TalkAlertDialog {
         // 获取Dialog布局
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_talk,null);
         et_input = view.findViewById(R.id.et_input);
+        mCheckBox = view.findViewById(R.id.checkbox);
         send = view.findViewById(R.id.send);
         cancel = view.findViewById(R.id.cancel);
         comment_succuss_transfer = view.findViewById(R.id.comment_succuss_transfer);
@@ -168,6 +171,10 @@ public class TalkAlertDialog {
         send.setOnClickListener(view -> {
             if (TextUtils.isEmpty(et_input.getText().toString().trim())) {
                 return;
+            }
+
+            if(null != mOnIsToCircleLister){
+                mOnIsToCircleLister.func(mCheckBox.isChecked());
             }
 
             if(null != mTalkLisenter){

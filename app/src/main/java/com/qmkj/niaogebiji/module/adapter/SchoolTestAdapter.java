@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.text.TextUtils;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class SchoolTestAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, BaseViewHolder> {
 
     public SchoolTestAdapter(@Nullable List<SchoolBean.SchoolTest> data) {
-        super(R.layout.school_test_item,data);
+        super(R.layout.school_test_item_new,data);
     }
 
     @Override
@@ -37,6 +38,8 @@ public class SchoolTestAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, B
 
         if(!TextUtils.isEmpty(item.getIcon())){
             ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.test_img));
+            ImageView imageView= helper.getView(R.id.test_img);
+            imageView.setAlpha(64);
         }
     }
 }

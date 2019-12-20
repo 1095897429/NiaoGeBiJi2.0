@@ -157,7 +157,6 @@
 
         <TextView
             android:text="全部回复"
-
             android:textSize="17sp"
             android:textColor="@color/text_first_color"
             android:layout_width="match_parent"

@@ -93,6 +93,7 @@
                     android:textSize="13sp" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/sender_not_verticity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

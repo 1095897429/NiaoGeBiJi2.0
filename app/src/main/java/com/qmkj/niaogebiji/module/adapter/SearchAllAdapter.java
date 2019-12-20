@@ -1,15 +1,23 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.os.Build;
 import android.text.TextUtils;
+import android.view.View;
 
+import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
@@ -28,9 +36,16 @@ import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -102,7 +117,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
     ActionAdapter mActionAdapter;
     ThingsAdapter mThingsAdapter;
     ToolRecommentItemAdapter mToolRecommentItemAdapter;
-    CircleRecommendAdapter mCircleRecommendAdapter;
+    CircleSearchAdapter mCircleSearchAdapter;
     AuthorAdapter mAuthorAdapter;
     PeopleItemAdapter mPeopleItemAdapter;
     SchoolBookAdapter mSchoolBookAdapter;
@@ -114,6 +129,8 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
 
     @Override
     protected void convert(BaseViewHolder helper, MultSearchBean item) {
+
+
 
         //通用数据
         recyclerView = helper.getView(R.id.recycler00);
@@ -190,11 +207,12 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                     circleBeans = circleBeans.subList(0,3);
                 }
                 List<MultiCircleNewsBean> list1 = StringUtil.setCircleData(circleBeans);
-                mCircleRecommendAdapter = new CircleRecommendAdapter(list1);
-                recyclerView.setAdapter(mCircleRecommendAdapter);
+                mCircleSearchAdapter = new CircleSearchAdapter(list1);
+                recyclerView.setAdapter(mCircleSearchAdapter);
                 //事件
-                mCircleRecommendAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","去动态明细页");
+                mCircleSearchAdapter.setOnItemClickListener((adapter, view, position) -> {
+                    String blog_id = mCircleSearchAdapter.getData().get(position).getCircleBean().getId();
+                    UIHelper.toCommentDetailActivity(mContext,blog_id,"1",position);
                 });
 
                 break;
@@ -250,14 +268,10 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 mBaiduItemAdapter = new BaiduItemAdapter(wikis);
                 recyclerView.setAdapter(mBaiduItemAdapter);
 
-
-
                 break;
             default:
                 break;
         }
     }
-
-
 
 }

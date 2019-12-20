@@ -21,6 +21,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
@@ -128,14 +129,16 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
     private void zanChange(TextView zan_num,ImageView imageView, String good_num, int is_good) {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
         zan_num.setTypeface(typeface);
-        if("0".equals(good_num)){
-            zan_num.setText("赞");
-        }else{
-            int size = Integer.parseInt(good_num);
-            if(size > 99){
-                zan_num.setText(99 + "+");
+        if(StringUtil.checkNull(good_num)){
+            if("0".equals(good_num)){
+                zan_num.setText("赞");
             }else{
-                zan_num.setText(size + "");
+                int size = Integer.parseInt(good_num);
+                if(size > 99){
+                    zan_num.setText(99 + "+");
+                }else{
+                    zan_num.setText(size + "");
+                }
             }
         }
         //点赞图片

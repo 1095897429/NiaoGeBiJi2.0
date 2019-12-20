@@ -134,9 +134,10 @@ public class DBManager {
     }
 
 
+    //descend 降序
     public List<History> queryHistory() {
         HistoryDao historyDao = daoSession.getHistoryDao();
-        QueryBuilder<History> qb = historyDao.queryBuilder();
+        QueryBuilder<History> qb = historyDao.queryBuilder().orderDesc(HistoryDao.Properties.Time);
         List<History> list = qb.list();
         return list;
     }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/item_ys_pic"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/part1111"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:drawableRight="@mipmap/icon_authen_company"
+            android:drawablePadding="4dp"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="1"
+            android:textColor="#AAAEB3"
+            android:textSize="13sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/part1111"
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lineSpacingExtra="2dp"
+        android:maxLines="3"
+        android:textColor="@color/text_first_color"
+        android:textSize="16sp" />
+
+
+
+
+</RelativeLayout>

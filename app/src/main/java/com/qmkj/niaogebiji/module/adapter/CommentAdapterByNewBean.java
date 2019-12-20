@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -15,13 +16,25 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -45,7 +58,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         helper.addOnClickListener(R.id.comment_delete)
                 .addOnClickListener(R.id.ll_has_second_comment)
                 .addOnClickListener(R.id.comment_priase)
-                .addOnClickListener(R.id.toSecondComment);
+                .addOnClickListener(R.id.toFirstComment);
 
         User_info userInfo = item.getUser_info();
 
@@ -72,25 +85,19 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
             helper.setText(R.id.time,"");
         }
 
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
+
         //点赞数
         TextView zan_num = helper.getView(R.id.zan_num);
-        zan_num.setTypeface(typeface);
-        if(item.getLike_num().equals("0")){
-            zan_num.setText("赞");
-        }else{
-            zan_num.setText(item.getLike_num() + "+");
-        }
+        ImageView imageView =  helper.getView( R.id.iamge_priase);
+        zanChange(zan_num,imageView,item.getLike_num(),item.getIs_like());
 
-        //点赞
-        LottieAnimationView lottie = helper.getView(R.id.lottieAnimationView);
+
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
-
-            lottie.setImageAssetsFolder("images");
-            lottie.setAnimation("images/new_like_28.json");
-            //硬件加速，解决lottie卡顿问题
-            lottie.playAnimation();
-            zan_num.setTextColor(mContext.getResources().getColor(R.color.prise_select_color));
+            if("0".equals(item.getIs_like() + "")){
+                likeComment(item,helper.getAdapterPosition());
+            }else if("1".equals(item.getIs_like() + "")){
+                likeComment(item,helper.getAdapterPosition());
+            }
         });
 
 
@@ -119,8 +126,72 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         }else{
             helper.setVisible(R.id.ll_has_second_comment,false);
         }
-
-
     }
+
+
+
+    //显示一些数据
+    private void zanChange(TextView zan_num,ImageView imageView, String good_num, int is_good) {
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
+        zan_num.setTypeface(typeface);
+        if(StringUtil.checkNull(good_num)){
+            if("0".equals(good_num)){
+                zan_num.setText("赞");
+            }else{
+                int size = Integer.parseInt(good_num);
+                if(size > 99){
+                    zan_num.setText(99 + "+");
+                }else{
+                    zan_num.setText(size + "");
+                }
+            }
+        }
+        //点赞图片
+        if("0".equals(is_good + "")){
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
+        }else if("1".equals(is_good + "")){
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
+        }
+    }
+
+
+
+    private void likeComment(CommentBeanNew circleBean, int position) {
+        Map<String,String> map = new HashMap<>();
+        map.put("comment_id",circleBean.getId());
+        int like = 0;
+        if("0".equals(circleBean.getIs_like() + "")){
+            like = 1;
+        }else if("1".equals(circleBean.getIs_like() + "")){
+            like = 0;
+        }
+        map.put("like",like + "");
+        map.put("class",circleBean.getComment_class());
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().likeComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        CommentBeanNew t =  mData.get(position);
+                        // 测试的
+                        int islike = circleBean.getIs_like();
+                        if(islike == 0){
+                            t.setIs_like(1);
+                            t.setLike_num((Integer.parseInt(t.getLike_num()) + 1) + "");
+                        }else{
+                            t.setIs_like(0);
+                            t.setLike_num((Integer.parseInt(t.getLike_num()) - 1) + "");
+                        }
+                        notifyItemChanged(position);
+                    }
+                });
+    }
+
+
 }
 

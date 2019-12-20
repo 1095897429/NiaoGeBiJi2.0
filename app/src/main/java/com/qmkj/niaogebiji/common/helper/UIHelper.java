@@ -202,9 +202,10 @@ public class UIHelper {
     }
 
     /** 打开评论详情界面 */
-    public static void toCommentDetailActivity(Context ctx,String blog_id,String layoutType) {
+    public static void toCommentDetailActivity(Context ctx,String blog_id,String layoutType,int position) {
         Intent intent = new Intent(ctx, CommentDetailActivity.class);
         Bundle  bundle = new Bundle();
+        bundle.putInt("clickPostion",position);
         bundle.putString("blog_id",blog_id);
         bundle.putString("layoutType",layoutType);
         intent.putExtras(bundle);

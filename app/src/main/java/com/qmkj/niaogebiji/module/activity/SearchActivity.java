@@ -101,6 +101,8 @@ public class SearchActivity extends BaseActivity {
 
     private String defaultHotKey;
 
+    private String searchKeyWord;
+
     @Override
     protected boolean regEvent() {
         return true;
@@ -151,6 +153,7 @@ public class SearchActivity extends BaseActivity {
                         myKeyword = defaultHotKey;
                     }
                 }
+                searchKeyWord = myKeyword;
                 insertToDb(myKeyword);
                 // 在这里写搜索的操作,一般都是网络请求数据
                 toSearch(myKeyword);
@@ -187,27 +190,45 @@ public class SearchActivity extends BaseActivity {
         History history = DBManager.getInstance().queryHistory(tag);
         if(null != history){
             history.setName(tag);
+            history.setTime(System.currentTimeMillis());
             DBManager.getInstance().updateHistory(history);
         }else{
             history = new History();
             history.setId(DBManager.getInstance().queryHistory().size() + 1);
             history.setName(tag);
+            history.setTime(System.currentTimeMillis());
             DBManager.getInstance().insertHistory(history);
         }
     }
 
 
     private void initHistoryData() {
+        //只取10个元素
+        if(mList1 != null && !mList1.isEmpty() && mList1.size() > 10){
+            mList1 = mList1.subList(0,10);
+        }
         flowlayout_history.removeAllViews();
         flowlayout_history.setAdapter(new TagAdapter<History>(mList1) {
             @Override
             public View getView(FlowLayout parent, int position, History history) {
                 LinearLayout ll = (LinearLayout) LayoutInflater.from(SearchActivity.this).inflate(R.layout.tag_layout,mTagFlowLayout,false);
                 TextView textView = ll.findViewById(R.id.tag_name);
-                textView.setText(history.getName());
+                //手动判断
+                String name = history.getName();
+                if(name.length() > 7){
+                    name = name.substring(0,7).trim() +"...";
+                }
+                textView.setText(name);
                 textView.setOnClickListener(v -> {
+
+                    searchKeyWord = history.getName().trim();
                     KeyboardUtils.hideSoftInput(et_input);
-                    toSearch(textView.getText().toString());
+                    toSearch(history.getName().trim());
+                    //更新时间
+                    insertToDb(history.getName().trim());
+
+                    //发送事件
+                    EventBus.getDefault().post(new SearchWordEvent(searchKeyWord));
                 });
                 return ll;
             }
@@ -241,7 +262,6 @@ public class SearchActivity extends BaseActivity {
     /** --------------------------------- 热搜  ---------------------------------*/
     private SearchBean mSearchBean;
     private List<SearchBean.Hot_search> mHot_searches;
-    private SearchBean.Hot_search mHot_search;
 
     private void searchIndex() {
 
@@ -259,12 +279,13 @@ public class SearchActivity extends BaseActivity {
                         mSearchBean = response.getReturn_data();
                         if(null != mSearchBean){
                             mHot_searches = mSearchBean.getHot_search();
-                            initTagData();
                             //TODO 10.12设置第一个热搜此默认显示在文本上
                             if(null != mHot_searches && !mHot_searches.isEmpty()){
                                 defaultHotKey = mHot_searches.get(0).getSearch_string();
                                 et_input.setHint(defaultHotKey);
                             }
+                            mHot_searches = mHot_searches.subList(1,mHot_searches.size());
+                            initTagData();
                         }
                     }
                 });
@@ -284,6 +305,7 @@ public class SearchActivity extends BaseActivity {
                     //隐藏软键盘
                     KeyboardUtils.hideSoftInput(et_input);
 
+                    searchKeyWord = bean.getSearch_string();
                     insertToDb(bean.getSearch_string());
 
                     toSearch(bean.getSearch_string());
@@ -368,14 +390,13 @@ public class SearchActivity extends BaseActivity {
     }
 
 
-
     private void setUpAdater() {
         mFragmentList.clear();
         mTitls.clear();
         for (int i = 0; i < mChannelBeanList.size(); i++) {
             if(mChannelBeanList.get(i).getChaname().equals("全部")){
                 SearchAllFragment searchAllFragment = SearchAllFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-                        mChannelBeanList.get(i).getChaname());
+                        searchKeyWord);
                 mFragmentList.add(searchAllFragment);
             }else if(mChannelBeanList.get(i).getChaname().equals("干货")){
                 SearchActicleItemFragment firstItemFragment = SearchActicleItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),

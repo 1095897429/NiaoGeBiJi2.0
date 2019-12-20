@@ -25,24 +25,26 @@
                 android:layout_height="73dp">
 
                 <TextView
-                    android:background="@drawable/bg_corners_3_red"
+                    android:background="@drawable/bg_corners_10_left_bottom"
                     android:layout_centerVertical="true"
                     android:id="@+id/test_time"
                     android:text="限时"
                     android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="9sp"
-                    android:layout_width="28dp"
+                    android:layout_width="34dp"
                     android:layout_height="16dp" />
+
+
+
 
 
 
                 <ImageView
                     android:id="@+id/test_icon"
                     android:layout_gravity="center"
-                    android:background="@color/bg_color"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp" />
+                    android:layout_width="56dp"
+                    android:layout_height="56dp" />
 
             </FrameLayout>
 

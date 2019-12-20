@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.common.utils;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -26,16 +27,23 @@ import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.module.adapter.CircleSearchAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -161,62 +169,138 @@ public class StringUtil {
     }
 
 
+//     之前的方法
+//    public static List<MultiCircleNewsBean> setCircleData(List<CircleBean> list) {
+//        if(!list.isEmpty()){
+//            List<MultiCircleNewsBean> temps = new ArrayList<>();
+//            temps.clear();
+//            CircleBean temp;
+//            String type;
+//            String link;
+//            String content;
+//            List<String> imgs;
+//            MultiCircleNewsBean mulBean;
+//            for (int i = 0; i < list.size(); i++) {
+//                mulBean = new MultiCircleNewsBean();
+//                temp = list.get(i);
+//                type = temp.getType();
+//                link = temp.getLink();
+//                imgs =  temp.getImages();
+//                //1 是 转发
+//                if(!TextUtils.isEmpty(type) && "1".equals(type)){
+//                    //内部图片
+//                    List<String> imgsss = temp.getP_blog().getImages();
+//                    if(imgsss != null &&  !imgsss.isEmpty()){
+//                        mulBean.setItemType(2);
+//                    }
+//                    //link
+//                    String linked = temp.getP_blog().getLink();
+//                    if(!TextUtils.isEmpty(linked)){
+//                        mulBean.setItemType(3);
+//                    }
+//
+//                    if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
+//                        mulBean.setItemType(5);
+//                    }
+//                }else{
+//                    //原创图片
+//                    if(imgs != null &&  !imgs.isEmpty()){
+//                        mulBean.setItemType(1);
+//                    }
+//
+//                    //原创link
+//                    if(!TextUtils.isEmpty(link)){
+//                        mulBean.setItemType(4);
+//                    }
+//
+//                    if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
+//                        mulBean.setItemType(5);
+//                    }
+//
+//                    content = temp.getBlog();
+//                    //判断内容是否中link
+//                    String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+//                    Matcher matcher = Pattern.compile(regex).matcher(content);
+//                    while (matcher.find()){
+//                        KLog.d("tag","url  " + matcher.group(0));
+//                    }
+//                }
+//                mulBean.setCircleBean(temp);
+//                temps.add(mulBean);
+//            }
+//
+//            return temps;
+//        }
+//
+//        return null;
+//    }
 
+
+    /** 判定操作 */
+    public static boolean checkNull(String param){
+        if(TextUtils.isEmpty(param)){
+            return false;
+        }
+
+        if("null".equals(param) || "".equals(param)){
+            return false;
+        }
+        return true;
+    }
+
+
+    /** 返回登录的uid */
+    public static  String getMyUid(){
+        if(getUserInfoBean() != null){
+            return getUserInfoBean().getUid();
+        }
+        return "null";
+    }
+
+
+
+
+
+    //搜索全部中圈子部分
     public static List<MultiCircleNewsBean> setCircleData(List<CircleBean> list) {
         if(!list.isEmpty()){
             List<MultiCircleNewsBean> temps = new ArrayList<>();
             temps.clear();
             CircleBean temp;
-            String type;
             String link;
-            String content;
             List<String> imgs;
             MultiCircleNewsBean mulBean;
             for (int i = 0; i < list.size(); i++) {
                 mulBean = new MultiCircleNewsBean();
                 temp = list.get(i);
-                type = temp.getType();
                 link = temp.getLink();
                 imgs =  temp.getImages();
-                //1 是 转发
-                if(!TextUtils.isEmpty(type) && "1".equals(type)){
-                    //内部图片
-                    List<String> imgsss = temp.getP_blog().getImages();
-                    if(imgsss != null &&  !imgsss.isEmpty()){
-                        mulBean.setItemType(2);
-                    }
-                    //link
-                    String linked = temp.getP_blog().getLink();
-                    if(!TextUtils.isEmpty(linked)){
-                        mulBean.setItemType(3);
-                    }
 
-                    if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
-                        mulBean.setItemType(5);
-                    }
-                }else{
-                    //原创图片
-                    if(imgs != null &&  !imgs.isEmpty()){
-                        mulBean.setItemType(1);
-                    }
-
-                    //原创link
-                    if(!TextUtils.isEmpty(link)){
-                        mulBean.setItemType(4);
-                    }
-
-                    if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
-                        mulBean.setItemType(5);
-                    }
-
-                    content = temp.getBlog();
-                    //判断内容是否中link
-                    String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
-                    Matcher matcher = Pattern.compile(regex).matcher(content);
-                    while (matcher.find()){
-                        KLog.d("tag","url  " + matcher.group(0));
-                    }
+                if(imgs != null &&  !imgs.isEmpty()){
+                    mulBean.setItemType(CircleSearchAdapter.TYPE1);
+                    mulBean.setCircleBean(temp);
+                    temps.add(mulBean);
+                    continue;
                 }
+
+                //原创link
+                if(!TextUtils.isEmpty(link)){
+                    mulBean.setItemType(CircleSearchAdapter.TYPE3);
+                    mulBean.setCircleBean(temp);
+                    temps.add(mulBean);
+                    continue;
+                }
+                //原创link
+                if(!TextUtils.isEmpty(temp.getArticle_id())  && !"0".equals(temp.getArticle_id())){
+                    mulBean.setItemType(CircleSearchAdapter.TYPE4);
+                    mulBean.setCircleBean(temp);
+                    temps.add(mulBean);
+                    continue;
+                }
+
+
+                mulBean.setItemType(CircleSearchAdapter.TYPE2);
+
                 mulBean.setCircleBean(temp);
                 temps.add(mulBean);
             }
@@ -225,6 +309,49 @@ public class StringUtil {
         }
 
         return null;
+    }
+
+
+
+
+
+    /** 分享 link 链接样式*/
+    //分享微信（web) 链接
+    public static void shareWxByWeb(Activity activity ,ShareBean bean) {
+        if(null != bean){
+            String sharepic = bean.getImg();
+            String shareurl = bean.getLink();
+            String title = bean.getTitle();
+            String summary = bean.getContent();
+            SHARE_MEDIA platform = null;
+
+            //判断发送路径
+            if("weixin_link".equals(bean.getShareType())){
+                platform = SHARE_MEDIA.WEIXIN;
+            }else if("circle_link".equals(bean.getShareType())){
+                platform = SHARE_MEDIA.WEIXIN_CIRCLE;
+            }
+
+            UMImage thumb;
+            if (TextUtils.isEmpty(sharepic)) {
+                thumb = new UMImage(activity, R.mipmap.icon_fenxiang);
+            } else {
+                thumb = new UMImage(activity, sharepic);
+            }
+            UMWeb web = new UMWeb(shareurl);
+            //标题
+            web.setTitle(title);
+            //缩略图
+            web.setThumb(thumb);
+            //描述
+            web.setDescription(summary);
+
+            new ShareAction(activity)
+                    .setPlatform(platform)
+                    .withMedia(web)
+                    .share();
+        }
+
     }
 
 

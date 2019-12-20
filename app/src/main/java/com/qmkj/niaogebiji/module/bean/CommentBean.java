@@ -35,6 +35,7 @@ public class CommentBean extends BaseBean {
         private String replyed_username;
         private String commented_username;
         private String dateline;
+        //是否点赞
         private int is_good;
         private String good_num;
         private String avatar;

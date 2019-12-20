@@ -32,8 +32,6 @@ import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
-import com.qmkj.niaogebiji.module.event.SearchWordEvent;
-import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;

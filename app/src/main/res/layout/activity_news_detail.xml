@@ -533,17 +533,16 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_marginRight="15dp"
                         android:id="@+id/acticle_point"
                         android:text=""
+                        android:visibility="gone"
                         android:textColor="#515357"
                         android:gravity="center"
                         android:textSize="40sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
-                    <Space
-                        android:layout_width="15dp"
-                        android:layout_height="match_parent" />
 
 
                     <com.qmkj.niaogebiji.module.widget.StarBar
@@ -886,6 +885,7 @@
 
             <include
                 android:visibility="gone"
+
                 layout="@layout/empty_layout"></include>
 
         </LinearLayout>

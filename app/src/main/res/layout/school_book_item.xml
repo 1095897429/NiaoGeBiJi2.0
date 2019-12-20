@@ -16,7 +16,7 @@
             android:id="@+id/img_1"
             android:layout_width="109dp"
             android:layout_height="84dp"
-            android:src="@mipmap/icon_fenxiang"
+            android:background="@color/bg_color"
             android:scaleType="centerCrop"
             app:round_as_circle="false"
             app:round_corner="8dp" />

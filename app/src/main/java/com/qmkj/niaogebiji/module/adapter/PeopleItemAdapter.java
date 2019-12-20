@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
@@ -18,9 +19,6 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.PeopleBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
-import com.qmkj.niaogebiji.module.bean.ToolBean;
-import com.qmkj.niaogebiji.module.event.SayHiEvent;
-import com.qmkj.niaogebiji.module.event.SearchWordEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -65,6 +63,16 @@ public class PeopleItemAdapter extends BaseQuickAdapter<RegisterLoginBean.UserIn
             UIHelper.toUserInfoActivity(mContext,temp.getUid());
         });
 
+        helper.getView(R.id.focus).setOnClickListener(view -> {
+            followUser(helper,item.getUid());
+        });
+
+        helper.getView(R.id.already_focus).setOnClickListener(view -> {
+
+            unfollowUser(helper,item.getUid());
+        });
+
+
     }
 
 
@@ -82,10 +90,56 @@ public class PeopleItemAdapter extends BaseQuickAdapter<RegisterLoginBean.UserIn
                 }else if("1".equals(follow_status)){
                     helper.setVisible(R.id.focus,false);
                     helper.setVisible(R.id.already_focus,true);
+                }else{
+                    helper.setVisible(R.id.focus,false);
+                    helper.setVisible(R.id.already_focus,false);
                 }
             }
         }
 
+    }
+
+
+    private String message = "";
+    private void followUser(BaseViewHolder helper, String otherUid) {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",otherUid);
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        helper.setVisible(R.id.focus,false);
+                        helper.setVisible(R.id.already_focus,true);
+                        ToastUtils.showShort("关注成功");
+                    }
+                });
+    }
+
+    private void unfollowUser(BaseViewHolder helper, String otherUid) {
+
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",otherUid);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().unfollowUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        helper.setVisible(R.id.focus,true);
+                        helper.setVisible(R.id.already_focus,false);
+
+                        ToastUtils.showShort("取消关注成功");
+                    }
+                });
     }
 
 

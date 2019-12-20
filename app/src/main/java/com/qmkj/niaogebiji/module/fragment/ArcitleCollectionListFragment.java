@@ -56,7 +56,7 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
     private String tartget_id = "1";
     private int page = 1;
     private CollectArticleBean mCollectArticleBean;
-    private List<CollectArticleBean.Collect_list> mCollectLists;
+    private List<CollectArticleBean.Collect_list> mCollectLists = new ArrayList<>();
 
     private NewsCollectItemAdapter mNewsCollectItemAdapter;
 

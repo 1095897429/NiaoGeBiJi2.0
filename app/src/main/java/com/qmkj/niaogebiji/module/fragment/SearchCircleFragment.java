@@ -37,6 +37,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
+import com.qmkj.niaogebiji.module.adapter.CircleSearchAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -100,7 +101,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
     //页数
     private int page = 1;
     //适配器
-    CircleRecommendAdapter mCircleRecommendAdapter;
+    CircleSearchAdapter mCircleSearchAdapter;
     //组合集合
     List<MultiCircleNewsBean> mAllList = new ArrayList<>();
     //布局管理器
@@ -176,25 +177,25 @@ public class SearchCircleFragment extends BaseLazyFragment {
                             if(page == 1){
                                 if(!tempList.isEmpty()){
                                     setData2(tempList);
-                                    mCircleRecommendAdapter.setNewData(mAllList);
+                                    mCircleSearchAdapter.setNewData(mAllList);
                                     //如果第一次返回的数据不满10条，则显示无更多数据
                                     if(tempList.size() < Constant.SEERVER_NUM){
-                                        mCircleRecommendAdapter.loadMoreEnd();
+                                        mCircleSearchAdapter.loadMoreEnd();
                                     }
                                 }else{
                                     KLog.d("tag","显示空布局");
-                                    setEmpty(mCircleRecommendAdapter);
+                                    setEmpty(mCircleSearchAdapter);
                                 }
                             }else{
                                 //已为加载更多有数据
                                 if(tempList != null && tempList.size() > 0){
                                     setData2(tempList);
-                                    mCircleRecommendAdapter.loadMoreComplete();
-                                    mCircleRecommendAdapter.addData(teList);
+                                    mCircleSearchAdapter.loadMoreComplete();
+                                    mCircleSearchAdapter.addData(teList);
                                 }else{
                                     //已为加载更多无更多数据
-                                    mCircleRecommendAdapter.loadMoreComplete();
-                                    mCircleRecommendAdapter.loadMoreEnd();
+                                    mCircleSearchAdapter.loadMoreComplete();
+                                    mCircleSearchAdapter.loadMoreEnd();
                                 }
                             }
                         }
@@ -210,10 +211,10 @@ public class SearchCircleFragment extends BaseLazyFragment {
                         }
                         if("解析错误".equals(msg)){
                             if(page == 1){
-                                setEmpty(mCircleRecommendAdapter);
+                                setEmpty(mCircleSearchAdapter);
                             }else{
-                                mCircleRecommendAdapter.loadMoreComplete();
-                                mCircleRecommendAdapter.loadMoreEnd();
+                                mCircleSearchAdapter.loadMoreComplete();
+                                mCircleSearchAdapter.loadMoreEnd();
                             }
                         }
                     }
@@ -226,58 +227,42 @@ public class SearchCircleFragment extends BaseLazyFragment {
     List<MultiCircleNewsBean> teList = new ArrayList<>();
     public void setData2(List<CircleBean> list) {
         CircleBean temp;
-        String type;
         String link;
         String content;
         List<String> imgs;
         MultiCircleNewsBean mulBean;
+        //遍历
         for (int i = 0; i < list.size(); i++) {
             mulBean = new MultiCircleNewsBean();
             temp = list.get(i);
-            type = temp.getType();
             link = temp.getLink();
             imgs =  temp.getImages();
-            //1 是 转发
-            if(!TextUtils.isEmpty(type) && "1".equals(type)){
-                //内部图片
-                List<String> imgsss = temp.getP_blog().getImages();
-                if(imgsss != null &&  !imgsss.isEmpty()){
-                    mulBean.setItemType(2);
-                }
-                //link
-                String linked = temp.getP_blog().getLink();
-                if(!TextUtils.isEmpty(linked)){
-                    mulBean.setItemType(3);
-                }
 
-                if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
-                    mulBean.setItemType(5);
-                }
-            }else{
-                //原创图片
-                if(imgs != null &&  !imgs.isEmpty()){
-                    mulBean.setItemType(1);
-                }
-
-                //原创link
-                if(!TextUtils.isEmpty(link)){
-                    mulBean.setItemType(4);
-                }
-
-                if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
-                    mulBean.setItemType(5);
-                }
-
-                content = temp.getBlog();
-                //判断内容是否中link
-                String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
-                Matcher matcher = Pattern.compile(regex).matcher(content);
-                while (matcher.find()){
-                    KLog.d("tag","url  " + matcher.group(0));
-                }
-
-
+            if(imgs != null &&  !imgs.isEmpty()){
+                mulBean.setItemType(CircleSearchAdapter.TYPE1);
+                mulBean.setCircleBean(temp);
+                teList.add(mulBean);
+                continue;
             }
+
+            //原创link
+            if(!TextUtils.isEmpty(link)){
+                mulBean.setItemType(CircleSearchAdapter.TYPE3);
+                mulBean.setCircleBean(temp);
+                teList.add(mulBean);
+                continue;
+            }
+
+            //原创link
+            if(!TextUtils.isEmpty(temp.getArticle_id())  && !"0".equals(temp.getArticle_id())){
+                mulBean.setItemType(CircleSearchAdapter.TYPE4);
+                mulBean.setCircleBean(temp);
+                teList.add(mulBean);
+                continue;
+            }
+
+
+            mulBean.setItemType(CircleSearchAdapter.TYPE2);
 
             mulBean.setCircleBean(temp);
             teList.add(mulBean);
@@ -333,7 +318,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
 //            mAllList.add(bean1);
 //        }
 //
-//        mCircleRecommendAdapter.setNewData(mAllList);
+//        mCircleSearchAdapter.setNewData(mAllList);
 //
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
@@ -354,8 +339,8 @@ public class SearchCircleFragment extends BaseLazyFragment {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mCircleRecommendAdapter = new CircleRecommendAdapter(mAllList);
-        mRecyclerView.setAdapter(mCircleRecommendAdapter);
+        mCircleSearchAdapter = new CircleSearchAdapter(mAllList);
+        mRecyclerView.setAdapter(mCircleSearchAdapter);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
@@ -384,7 +369,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
 
     @SuppressLint("CheckResult")
     private void initEvent() {
-        mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
+        mCircleSearchAdapter.setOnLoadMoreListener(() -> {
             ++page;
             searchBlog();
         }, mRecyclerView);
@@ -392,13 +377,13 @@ public class SearchCircleFragment extends BaseLazyFragment {
         mRecyclerView.addOnScrollListener(new RvScrollListener());
 
         //item点击事件
-        mCircleRecommendAdapter.setOnItemClickListener((adapter, view, position) -> {
+        mCircleSearchAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag", "评论去圈子详情");
             blog_id = mAllList.get(position).getCircleBean().getId();
-            UIHelper.toCommentDetailActivity(getActivity(),blog_id,"1");
+            UIHelper.toCommentDetailActivity(getActivity(),blog_id,"1",position);
         });
 
-        mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+        mCircleSearchAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             myPosition = position;
             switch (view.getId()) {
 //                case R.id.circle_priase:
@@ -412,8 +397,8 @@ public class SearchCircleFragment extends BaseLazyFragment {
 //                    break;
                 case R.id.ll_report:
                     KLog.d("tag", "举报或分享 或删除");
-                    blog_id = mCircleRecommendAdapter.getData().get(position).getCircleBean().getId();
-                    String clickUid = mCircleRecommendAdapter.getData().get(position).getCircleBean().getUid();
+                    blog_id = mCircleSearchAdapter.getData().get(position).getCircleBean().getId();
+                    String clickUid = mCircleSearchAdapter.getData().get(position).getCircleBean().getUid();
                     if("300579".equals(clickUid)){
                         showRemoveDialog();
                     }else{
@@ -427,7 +412,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
                     KLog.d("tag", "评论去圈子详情");
                     blog_id = mAllList.get(position).getCircleBean().getId();
                     int layoutType=  mAllList.get(position).getItemType();
-                    UIHelper.toCommentDetailActivity(getActivity(),blog_id,layoutType + "");
+                    UIHelper.toCommentDetailActivity(getActivity(),blog_id,layoutType + "",position);
                     break;
                 case R.id.circle_share:
                     KLog.d("tag", "圈子分享");
@@ -435,7 +420,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
                     break;
                 case R.id.part2222:
                     KLog.d("tag", "图片预览");
-                    UIHelper.toCommentDetailActivity(getActivity(),"5","1");
+                    UIHelper.toCommentDetailActivity(getActivity(),"5","1",position);
                     break;
                 case R.id.toMoreActivity:
                     EventBus.getDefault().post(new toActionEvent("去活动界面"));
@@ -449,14 +434,14 @@ public class SearchCircleFragment extends BaseLazyFragment {
         });
 
 
-        mCircleRecommendAdapter.setOnItemClickListener((adapter, view, position) -> {
+        mCircleSearchAdapter.setOnItemClickListener((adapter, view, position) -> {
             if (StringUtil.isFastClick()) {
                 return;
             }
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    UIHelper.toCommentDetailActivity(getActivity(),"5","1");
+                    UIHelper.toCommentDetailActivity(getActivity(),"5","1",position);
                     break;
                 default:
             }
@@ -699,8 +684,8 @@ public class SearchCircleFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        mCircleRecommendAdapter.getData().remove(myPosition);
-                        mCircleRecommendAdapter.notifyDataSetChanged();
+                        mCircleSearchAdapter.getData().remove(myPosition);
+                        mCircleSearchAdapter.notifyDataSetChanged();
                         Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
                     }
                 });

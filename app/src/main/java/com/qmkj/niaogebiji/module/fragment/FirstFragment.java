@@ -334,7 +334,7 @@ public class FirstFragment extends BaseLazyFragment {
     public void onRefreshBus(toRefreshEvent event){
         if(getUserVisibleHint()){
             KLog.d("tag","我是First界面，我需要刷新了");
-            getTopPost();
+//            getTopPost();
         }
     }
 

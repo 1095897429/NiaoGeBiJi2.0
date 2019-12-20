@@ -41,12 +41,13 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-27
  * 描述:二级评论item适配
+ * 1.文章 + 圈子 共用
+ * 2.注意此处有头布局，数据集合的获取数据时 -- position需要减去1
  */
 public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCommentBean, BaseViewHolder> {
 
     public  static final int ACTICLE = 1;
     public static final int  CIRCLE = 2;
-
 
     public CommentSecondAdapter(List<MulSecondCommentBean> data) {
         super(data);
@@ -68,8 +69,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 helper.setText(R.id.nickname,item.getUsername());
                 ImageUtil.load(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
 
-//
-//
 //                StringBuilder sb = new StringBuilder();
 //                //如果回复者 和 被回复者 一样，则不显示 【回复】
 //                User_info p_userInfo = bean.getP_user_info();
@@ -95,6 +94,33 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     }else if("1".equals(item.getIs_good() + "")){
                         cancelGoodArticle(item,helper.getAdapterPosition() );
                     }
+                });
+                break;
+            case CIRCLE:
+                CommentBeanNew comment = bean.getCircleComment();
+                helper.setText(R.id.comment_text,comment.getComment());
+                helper.setText(R.id.nickname,comment.getUser_info().getName());
+                ImageUtil.load(mContext,comment.getUser_info().getAvatar(),helper.getView(R.id.head_icon));
+
+//                StringBuilder sb = new StringBuilder();
+//                //如果回复者 和 被回复者 一样，则不显示 【回复】
+//                User_info p_userInfo = bean.getP_user_info();
+//                if(!TextUtils.isEmpty(userInfo.getName()) &&  !userInfo.getName().equals(p_userInfo.getName())){
+//                    sb.append(userInfo.getName()).append(" 回复 ").append(p_userInfo.getName())
+//                            .append(":").append(bean.getComment());
+//                }else{
+//                    sb.append(userInfo.getName()).append(":").append(bean.getComment());
+//                }
+//                helper.setText(R.id.comment_text,sb.toString());
+//
+//
+                //点赞数
+                TextView zan_num_circle = helper.getView(R.id.zan_num);
+                ImageView imageView_circle =  helper.getView( R.id.iamge_priase);
+                zanChange(zan_num_circle,imageView_circle,comment.getLike_num(),comment.getIs_like());
+
+                helper.getView(R.id.circle_priase).setOnClickListener(view -> {
+                    likeComment(comment,helper.getAdapterPosition());
                 });
 
                 default:
@@ -125,6 +151,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
         }
     }
 
+    //文章评论点赞
     private void goodArticle(CommentBean.FirstComment bean, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("type","4");
@@ -138,7 +165,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     @Override
                     public void onSuccess(HttpResponse response) {
                         //手动修改
-                        KLog.d("tag","-0---");
                         MulSecondCommentBean m = mData.get(position - 1);
                         CommentBean.FirstComment t = m.getActicleComment();
                         t.setIs_good(1);
@@ -148,7 +174,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 });
     }
 
-
+    //文章评论取赞
     private void cancelGoodArticle(CommentBean.FirstComment bean, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("type","4");
@@ -171,4 +197,40 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     }
                 });
     }
+
+    //圈子
+    private void likeComment(CommentBeanNew circleBean, int position) {
+        Map<String,String> map = new HashMap<>();
+        map.put("comment_id",circleBean.getId());
+        int like = 0;
+        if("0".equals(circleBean.getIs_like() + "")){
+            like = 1;
+        }else if("1".equals(circleBean.getIs_like() + "")){
+            like = 0;
+        }
+        map.put("like",like + "");
+        map.put("class",circleBean.getComment_class());
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().likeComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        CommentBeanNew t =  mData.get(position  - 1).getCircleComment();
+                        // 测试的
+                        int islike = circleBean.getIs_like();
+                        if(islike == 0){
+                            t.setIs_like(1);
+                            t.setLike_num((Integer.parseInt(t.getLike_num()) + 1) + "");
+                        }else{
+                            t.setIs_like(0);
+                            t.setLike_num((Integer.parseInt(t.getLike_num()) - 1) + "");
+                        }
+                        notifyItemChanged(position);
+                    }
+                });
+    }
+
 }

@@ -34,9 +34,11 @@ import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.ProfessionEvent;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -221,11 +223,11 @@ public class WebViewActivity extends BaseActivity {
                 try {
                     JSONObject b= new JSONObject(param);
                     String result = b.optString("type");
+                    JSONObject object  = b.getJSONObject("params");
+                    String id = object.optString("id");
                     //去文章详情
                     if("toArticleDetail".equals(result)){
-                        JSONObject object  = b.getJSONObject("params");
-                        String article = object.optString("id");
-                        UIHelper.toNewsDetailActivity(WebViewActivity.this,article);
+                        UIHelper.toNewsDetailActivity(WebViewActivity.this,id);
                     }else if("toHome".equals(result)){
                         //去文章首页
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);
@@ -234,8 +236,9 @@ public class WebViewActivity extends BaseActivity {
                         //去更懂你
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);
                     }else if("toConfirmOk".equals(result)){
-                        // id 1 职业认证成功  id 2  审核认证成功
-//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                        // id 1 职业认证成功(回主界面不刷新)  id 2  审核认证成功(回主界面刷新)
+
+                        EventBus.getDefault().post(new ProfessionEvent("职业认证 or 审核认证",id));
                     }else if("toTestList".equals(result)){
                         //徽章 尚未获得，立即前往获取
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);

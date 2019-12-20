@@ -7,6 +7,7 @@ import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
+import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CateAllBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -633,6 +634,10 @@ public interface ApiEncryptService{
     Observable<HttpResponse> isPersonal(@Field("params") String param);
 
 
+    /* 2019.12.20 职业认证初始化接口， */
+    @FormUrlEncoded
+    @POST("app/my/posCertInit")
+    Observable<HttpResponse<AutherCertInitBean>> posCertInit(@Field("params") String param);
 
 
 

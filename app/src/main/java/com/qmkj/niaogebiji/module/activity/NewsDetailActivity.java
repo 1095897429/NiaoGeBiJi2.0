@@ -1,7 +1,5 @@
 package com.qmkj.niaogebiji.module.activity;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -65,6 +63,7 @@ import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
 import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
@@ -111,6 +110,11 @@ import io.reactivex.schedulers.Schedulers;
  *   2.评论文章成功后，是否显示此条评论
  *   3.评论某条一级评论，并不显示回复
  *   4.评论某条一级评论下的评论，显示【回复】
+ *
+ *
+ *   0.showTalkDialog
+ *   1.showTalkDialogFirstComment
+ *   2.showTalkDialogSecondComment
  */
 public class NewsDetailActivity extends BaseActivity {
 
@@ -228,9 +232,13 @@ public class NewsDetailActivity extends BaseActivity {
     TextView tv_tag1111;
 
 
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+
+
+
     private boolean isSecondComment = false;
-
-
 
     //文章的id
     private String newsId;
@@ -289,6 +297,7 @@ public class NewsDetailActivity extends BaseActivity {
                 EventBus.getDefault().post(new AudioEvent(audio,title));
                 break;
             case R.id.toLlTalk:
+                //TODO 弹框1
                 //回复文章中间参数为 ""
                 isSecondComment = false;
                 showTalkDialog(-1,"","aimToActicle","");
@@ -442,7 +451,11 @@ public class NewsDetailActivity extends BaseActivity {
             //设置样式
             Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
             acticle_point.setTypeface(typeface);
-            acticle_point.setText(mNewsDetailBean.getArticle_point());
+            if(!TextUtils.isEmpty(mNewsDetailBean.getArticle_point()) &&
+                !"0".equals(mNewsDetailBean.getArticle_point())){
+                acticle_point.setText(Float.parseFloat(mNewsDetailBean.getArticle_point()) + "");
+                acticle_point.setVisibility(View.VISIBLE);
+            }
 
             if(null != mNewsDetailBean){
                 starBar.setIntegerMark(true);
@@ -506,7 +519,6 @@ public class NewsDetailActivity extends BaseActivity {
         myAnswer = mNewsDetailBean.getMy_answer();
         rightAnswer = mNewsDetailBean.getRight_answer();
 
-        myAnswer = "1";
 
         if(!TextUtils.isEmpty(myAnswer)){
             //设置不可点击
@@ -671,6 +683,7 @@ public class NewsDetailActivity extends BaseActivity {
                             mNewsDetailBean.setIs_follow_author("0");
                             changeFocusStatus(mNewsDetailBean.getIs_follow_author());
                         }else{
+                            ToastUtils.showShort("关注成功");
                             mNewsDetailBean.setIs_follow_author("1");
                             changeFocusStatus(mNewsDetailBean.getIs_follow_author());
                         }
@@ -687,6 +700,8 @@ public class NewsDetailActivity extends BaseActivity {
             focus11111.setBackgroundResource(R.drawable.bg_corners_8_gray);
             focus11111.setTextColor(getResources().getColor(R.color.text_second_color));
             focus11111.setText("已关注");
+
+
         }else{
             focus.setBackgroundResource(R.drawable.bg_corners_4_yellow);
             focus.setTextColor(getResources().getColor(R.color.text_first_color));
@@ -767,7 +782,6 @@ public class NewsDetailActivity extends BaseActivity {
 
     /** --------------------------------- 问答  ---------------------------------*/
     private boolean isQuestionClick ;
-    private String answer_no;
 
     //问答集合
     private List<NewsDetailBean.Que_answer_json> mQueAnswerJsons;
@@ -791,13 +805,9 @@ public class NewsDetailActivity extends BaseActivity {
 
     private void answerArticleQa() {
 
-        showQuestionErrorDialog();
-
         Map<String,String> map = new HashMap<>();
-        if(null != mNewsDetailBean){
-            map.put("aid",mNewsDetailBean.getAid());
-        }
-        map.put("answer_no",answer_no);
+        map.put("aid",newsId);
+        map.put("answer_no",myAnswer);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().answerArticleQa(result)
                 .subscribeOn(Schedulers.newThread())
@@ -893,17 +903,33 @@ public class NewsDetailActivity extends BaseActivity {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
-                    KLog.d("tag","朋友圈 是张图片");
-                    shareWxCircleByWeb();
+                    //用于验证微信分享成功 显示弹框 判断
+                    Constant.isActicleShare = true;
+
+                    ShareBean bean1 = new ShareBean();
+                    bean1.setShareType("circle_link");
+                    bean1.setImg(mNewsDetailBean.getPic());
+                    bean1.setLink(mNewsDetailBean.getShare_url());
+                    bean1.setTitle(mNewsDetailBean.getShare_title());
+                    bean1.setContent(mNewsDetailBean.getShare_summary());
+                    StringUtil.shareWxByWeb(this,bean1);
                     break;
                 case 1:
+                    //用于验证微信分享成功 显示弹框 判断
+                    Constant.isActicleShare = true;
+
                     KLog.d("tag","朋友 是链接");
-                    shareWxByWeb();
+                    ShareBean bean = new ShareBean();
+                    bean.setShareType("weixin_link");
+                    bean.setImg(mNewsDetailBean.getPic());
+                    bean.setLink(mNewsDetailBean.getShare_url());
+                    bean.setTitle(mNewsDetailBean.getShare_title());
+                    bean.setContent(mNewsDetailBean.getShare_summary());
+                    StringUtil.shareWxByWeb(this,bean);
                     break;
                 case 2:
                     if(null != mNewsDetailBean){
                         KLog.d("tag","复制链接");
-
                         StringUtil.copyLink(mNewsDetailBean.getShare_url());
                     }
 
@@ -915,82 +941,10 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
 
-    // 分享微信（web）
-    public void shareWxCircleByWeb() {
-        if (this == null){
-            return;
-        }
-        if(null != mNewsDetailBean){
-            NewsDetailBean shareBean = mNewsDetailBean;
-            String sharepic = shareBean.getPic();
-            String shareurl = shareBean.getShare_url();
-            String title = shareBean.getShare_title();
-            String summary = shareBean.getShare_summary();
-            SHARE_MEDIA platform;
-            platform = SHARE_MEDIA.WEIXIN_CIRCLE;
-            UMImage thumb;
-            if (TextUtils.isEmpty(sharepic)) {
-                thumb = new UMImage(this, R.mipmap.icon_fenxiang);
-            } else {
-                thumb = new UMImage(this, sharepic);
-            }
-            UMWeb web = new UMWeb(shareurl);
-            //标题
-            web.setTitle(title);
-            //缩略图
-            web.setThumb(thumb);
-            //描述
-            web.setDescription(summary);
-            //传入平台
-            Constant.isActicleShare = true;
-            new ShareAction(this)
-                    .setPlatform(platform)
-                    .withMedia(web)
-                    .share();
-        }
-    }
-
-    //分享微信（web) 链接
-    private void shareWxByWeb() {
-        if(null == this){
-            return;
-        }
-        if(null != mNewsDetailBean){
-            NewsDetailBean shareBean = mNewsDetailBean;
-            String sharepic = shareBean.getPic();
-            String shareurl = shareBean.getShare_url();
-            String title = shareBean.getShare_title();
-            String summary = shareBean.getShare_summary();
-            SHARE_MEDIA platform;
-            platform = SHARE_MEDIA.WEIXIN;
-            UMImage thumb;
-            if (TextUtils.isEmpty(sharepic)) {
-                thumb = new UMImage(this, R.mipmap.icon_fenxiang);
-            } else {
-                thumb = new UMImage(this, sharepic);
-            }
-            UMWeb web = new UMWeb(shareurl);
-            //标题
-            web.setTitle(title);
-            //缩略图
-            web.setThumb(thumb);
-            //描述
-            web.setDescription(summary);
-            //传入平台
-            Constant.isActicleShare = true;
-            new ShareAction(this)
-                    .setPlatform(platform)
-                    .withMedia(web)
-                    .share();
-        }
-
-    }
-
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onActicleShareEvent(ActicleShareEvent event){
         Constant.isActicleShare = false;
-        ToastUtils.showShort("分享成功");
+        ToastUtils.showShort("                           分享成功\n被朋友阅读后，你可以获得羽毛奖励！");
 //        View view = LayoutInflater.from(this).inflate(R.layout.activity_share_success,null);
 //        ((TextView)view.findViewById(R.id.msg)).setText("分享成功！\n被朋友阅读后，你可以获得羽毛奖励！");
 //        ToastUtils.showCustomShort(view);
@@ -1015,9 +969,7 @@ public class NewsDetailActivity extends BaseActivity {
     private void addArticlePoint(double value) {
 
         Map<String,String> map = new HashMap<>();
-        if(null != mNewsDetailBean){
-            map.put("aid",mNewsDetailBean.getAid());
-        }
+        map.put("aid",newsId);
         map.put("point",value + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().addArticlePoint(result)
@@ -1066,8 +1018,10 @@ public class NewsDetailActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse<NewsDetailBean> response) {
                         mNewsDetailBean = response.getReturn_data();
-                        if(null != mNewsDetailBean){
+                        if(null != mNewsDetailBean &&
+                                !"0".equals(mNewsDetailBean.getArticle_point())){
                             acticle_point.setText(mNewsDetailBean.getArticle_point());
+                            acticle_point.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -1135,13 +1089,11 @@ public class NewsDetailActivity extends BaseActivity {
 
     /** --------------------------------- 评论  ---------------------------------*/
     private CommentBean mTempCommentBean;
-    private List<CommentBean.FirstComment> mFirstComments;
+    private List<CommentBean.FirstComment> mFirstComments = new ArrayList<>();
     private List<CommentBean.FirstComment> allFirstList = new ArrayList<>();
     private void getCommentData(){
         Map<String,String> map = new HashMap<>();
-        if(null != mNewsDetailBean){
-            map.put("aid",mNewsDetailBean.getAid());
-        }
+        map.put("aid",newsId);
         map.put("page_no",page + "");
         map.put("page_size",pageSize + "");
         String result = RetrofitHelper.commonParam(map);
@@ -1157,12 +1109,18 @@ public class NewsDetailActivity extends BaseActivity {
                             //后台可能返回list为0
                             mFirstComments = mTempCommentBean.getList();
                             if(1 == page){
-                                setData2(mFirstComments);
-                                mCommentAdapter.setNewData(allFirstList);
-                                //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(mFirstComments.size() < Constant.SEERVER_NUM){
-                                    mCommentAdapter.loadMoreEnd();
+                                if(!mFirstComments.isEmpty()){
+                                    setData2(mFirstComments);
+                                    mCommentAdapter.setNewData(allFirstList);
+                                    //如果第一次返回的数据不满10条，则显示无更多数据
+                                    if(mFirstComments.size() < Constant.SEERVER_NUM){
+                                        mCommentAdapter.loadMoreEnd();
+                                    }
+                                    ll_empty.setVisibility(View.GONE);
+                                }else{
+                                    ll_empty.setVisibility(View.VISIBLE);
                                 }
+
                             }else{
                                 //已为加载更多有数据
                                 if(mFirstComments != null && mFirstComments.size() > 0){
@@ -1308,7 +1266,7 @@ public class NewsDetailActivity extends BaseActivity {
                         bean.setIs_good(1);
                         bean.setGood_num((Integer.parseInt(bean.getGood_num()) + 1) + "");
                         zanChange(zan_second_num_second,zan_second_img_second,bean.getGood_num(),bean.getIs_good());
-
+                        //更新第一列表数据
                         mCommentAdapter.notifyItemChanged(zanPosition);
                     }
                 });
@@ -1339,8 +1297,8 @@ public class NewsDetailActivity extends BaseActivity {
 
 
     //target_id一直是文章的id  reply_id 为空则是文章评论  不为空为一级评论id
-    private void commentBulletinNew(String content,String talkCid) {
-        String target_id = mNewsDetailBean.getAid();
+    private void commentBulletinNew(String content,String talkCid,String from) {
+        String target_id = newsId;
         Map<String,String> map = new HashMap<>();
         map.put("target_id",target_id);
         map.put("content",content);
@@ -1364,6 +1322,21 @@ public class NewsDetailActivity extends BaseActivity {
                             secondPage = 1;
                             allCommentList.clear();
                             getSecondCommentData();
+                        }
+
+                        //TODO 如果评论转发到圈子，则发送请求
+                        if("aimToActicle".equals(from) && isSendToCircle){
+                            article_id  = mNewsDetailBean.getAid();
+                            article_title = mNewsDetailBean.getTitle();
+                            article_image = mNewsDetailBean.getPic();
+                            blog = content;
+                            //字数判断 不能大于140个汉字
+                            if(content.length() > 140){
+                                ToastUtils.showShort("您评论的字数过多");
+                                return;
+                            }
+
+                            createBlog();
                         }
                     }
                 });
@@ -1498,10 +1471,7 @@ public class NewsDetailActivity extends BaseActivity {
 
     private void readArticle() {
         Map<String,String> map = new HashMap<>();
-        if(null != mNewsDetailBean){
-            map.put("aid",mNewsDetailBean.getAid());
-        }
-
+        map.put("aid",newsId);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().readArticle(result)
                 .subscribeOn(Schedulers.newThread())
@@ -1640,8 +1610,8 @@ public class NewsDetailActivity extends BaseActivity {
      * 隐藏等待提示框
      */
     public void hideWaitingDialog() {
-        loading_dialog.setVisibility(View.GONE);
         if(null != lottieAnimationView){
+            loading_dialog.setVisibility(View.GONE);
             lottieAnimationView.cancelAnimation();
         }
     }
@@ -1651,10 +1621,12 @@ public class NewsDetailActivity extends BaseActivity {
 
     CommentBean.FirstComment oneComment;
     private String commentString;
+    private boolean isSendToCircle;
     //参数一 用于数据更新      参数三 评论一级 还是 评论二级
     private void showTalkDialog(int position,String talkCid,String from,String replyWho) {
         final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
         talkAlertDialog.setIsneedtotrans(true);
+        talkAlertDialog.setOnIsToCircleLister(bug -> isSendToCircle = bug);
         talkAlertDialog.setMyPosition(position);
         if(!TextUtils.isEmpty(replyWho)){
             talkAlertDialog.setHint(replyWho);
@@ -1662,7 +1634,7 @@ public class NewsDetailActivity extends BaseActivity {
         talkAlertDialog.setTalkLisenter((position1, words) -> {
             KLog.d("tag","接受到的文字是 " + words);
             commentString = words;
-            commentBulletinNew(commentString,talkCid);
+            commentBulletinNew(commentString,talkCid,from);
         });
         talkAlertDialog.show();
     }
@@ -1747,7 +1719,7 @@ public class NewsDetailActivity extends BaseActivity {
             KLog.d("tag","接受到的文字是 " + words);
             commentString = words;
             //同一个接口，构造参数
-            commentBulletinNew(commentString,beanNew.getCid());
+            commentBulletinNew(commentString,beanNew.getCid(),"");
         });
         talkAlertDialog.show();
     }
@@ -1763,7 +1735,7 @@ public class NewsDetailActivity extends BaseActivity {
                 KLog.d("tag","接受到的文字是 " + words);
                 commentString = words;
                 //同一个接口，构造参数
-                commentBulletinNew(commentString,beanNew.getCid());
+                commentBulletinNew(commentString,beanNew.getCid(),"");
             });
             talkAlertDialog.show();
         }
@@ -1877,7 +1849,7 @@ public class NewsDetailActivity extends BaseActivity {
                                     if (mSecondComments != null && mSecondComments.size() > 0) {
                                         setDataSecond(mSecondComments);
                                         bottomSheetAdapter.loadMoreComplete();
-                                        bottomSheetAdapter.addData(allCommentList);
+                                        bottomSheetAdapter.addData(mMulSecondCommentBeans);
                                     } else {
                                         //已为加载更多无更多数据
                                         bottomSheetAdapter.loadMoreEnd();
@@ -1889,6 +1861,6 @@ public class NewsDetailActivity extends BaseActivity {
 
                 });
     }
-    
+
 
 }

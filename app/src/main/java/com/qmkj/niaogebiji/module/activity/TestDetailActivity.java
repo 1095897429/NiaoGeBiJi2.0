@@ -5,6 +5,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,9 +59,6 @@ public class TestDetailActivity extends BaseActivity {
     @BindView(R.id.iv_right)
     ImageView iv_right;
 
-    @BindView(R.id.part3333_ll)
-    LinearLayout part3333_ll;
-
 
     @BindView(R.id.test_grade)
     ImageView test_grade;
@@ -74,13 +73,8 @@ public class TestDetailActivity extends BaseActivity {
     @BindView(R.id.test_count)
     TextView test_count;
 
-
-
-
-    private String [] contents = new String[]{"本测试一共有10道题，每道题答题时间为1分钟,测试时间为10分钟。超过答题时间算为答错并自动切换到下一题",
-        "每道题分值10分，总分100分。答对得10分，答错不得分。本测试需要达到60分以上才能获得认证徽章",
-            "完成全部题目后将看到分数。达到80分以上可以获得鸟哥笔记认证的“初级ASO优化师”徽章。该认证将在圈子与渠道点评工具中展示",
-              "未达到分数可以预约在3天之后重考。重考没有次数限制。"};
+    @BindView(R.id.summary)
+    TextView summary;
 
 
     private SchoolBean.SchoolTest mSchoolTest;
@@ -113,18 +107,9 @@ public class TestDetailActivity extends BaseActivity {
 
         test_count.setText(mSchoolTest.getNum() +"人已测");
 
-//        TextView textView;
-//        LinearLayout.LayoutParams lp;
-//        for (int i = 0; i < contents.length; i++) {
-//            textView = new TextView(this);
-//            textView.setTag(i);
-//            textView.setText((i + 1) + " " + contents[i]);
-//            lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-//            lp.setMargins(0,0,0, SizeUtils.dp2px(20));
-//            textView.setLayoutParams(lp);
-//            part3333_ll.addView(textView);
-//        }
-
+        if(!TextUtils.isEmpty(mSchoolTest.getComment())){
+            summary.setText(Html.fromHtml(mSchoolTest.getComment()));
+        }
     }
 
 
@@ -185,6 +170,7 @@ public class TestDetailActivity extends BaseActivity {
     private void showShareDialog() {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(this).builder();
         alertDialog.setSharelinkView();
+        alertDialog.setTitleGone();
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){

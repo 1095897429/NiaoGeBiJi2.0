@@ -132,21 +132,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="测试须知"
+                android:id="@+id/summary"
+                android:text=""
                 android:textSize="14sp"
                 android:textColor="@color/text_first_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <LinearLayout
-                android:id="@+id/part3333_ll"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-
-
-            </LinearLayout>
 
         </LinearLayout>
 

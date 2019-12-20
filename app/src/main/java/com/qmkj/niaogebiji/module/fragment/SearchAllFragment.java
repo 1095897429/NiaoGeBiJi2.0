@@ -39,6 +39,7 @@ import com.qmkj.niaogebiji.module.bean.SearchAllCircleBean;
 import com.qmkj.niaogebiji.module.bean.SearchAllPeopleBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.event.LookMoreEvent;
+import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -66,10 +67,12 @@ import io.reactivex.schedulers.Schedulers;
  * 描述:搜索结果第一个界面
  *  *  1.搜索文章 + 人脉
  *  *  2.搜索动态
+ *
+ *  1.这里将chainName作为关键字对象传入
  */
 public class SearchAllFragment extends BaseLazyFragment {
 
-    private String myKeyword = "抖音";
+    private String myKeyword = "";
 
     //人脉 + 文章
     private List<RecommendBean.Article_list> mArticle_lists = new ArrayList<>();
@@ -97,6 +100,7 @@ public class SearchAllFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+        myKeyword = getArguments().getString("chainName");
         initSamrtLayout();
         initLayout();
     }
@@ -464,11 +468,34 @@ public class SearchAllFragment extends BaseLazyFragment {
     }
 
 
-    //点击全部里的查看更多事件
+    //第一次不会进入，等第二次就会走这个方法了
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
-//        KLog.d("tag","myKeyword = " + myKeyword);
+    }
+
+
+
+    //点击全部里的查看更多事件
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPeopleFocusEvent(PeopleFocusEvent event) {
+        KLog.d("tag","用户的uid是 "  + event.getUid() +  " 状态  "  + event.getStatus());
+//        int  position  = -1 ;
+//        for (int i = 0; i < mAllList.size(); i++) {
+//            if(event.getUid().equals(mAllList.get(i).getUserInfos().get(i).getUid())){
+//                position = i;
+//                break;
+//            }
+//        }
+//
+//        if(position != -1){
+//            // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+//            mSearchAllAdapter.getData().get(position).getUserInfos().get(position).setFollow_status(event.getStatus());
+//            mSearchAllAdapter.notifyItemChanged(position);
+//        }
+
+        searchArticlePeople();
+
     }
 
 

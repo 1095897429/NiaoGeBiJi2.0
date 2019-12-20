@@ -57,6 +57,9 @@ import udesk.core.UdeskConst;
  * 4.验证码全局保存 【超过提示联系客服】-- ok
  * 5.30001  :  用户已封禁
  * 6.20058  : 验证码发送次数过多
+ *
+ * 测试出现错误：
+ *  微信 + 新手机号 -- 未知错误
  */
 public class VertifyCodeActivity extends BaseActivity {
 

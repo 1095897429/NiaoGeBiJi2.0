@@ -57,7 +57,7 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
     private int page = 1;
     private CollectArticleBean mCollectArticleBean;
     private List<CollectArticleBean.Collect_list> mCollectLists = new ArrayList<>();
-
+    private List<CollectArticleBean.Collect_list> mAllList = new ArrayList<>();
     private NewsCollectItemAdapter mNewsCollectItemAdapter;
 
     private CollectArticleBean.Collect_list mCollectList;
@@ -85,7 +85,7 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
     }
 
     @Override
-    protected void lazyLoadData() {
+    protected void initData() {
         favoriteList();
     }
 
@@ -112,7 +112,8 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
                             mCollectLists = mCollectArticleBean.getList();
 
                             if(1 == page){
-                                mNewsCollectItemAdapter.setNewData(mCollectLists);
+                                setData(mCollectLists);
+                                mNewsCollectItemAdapter.setNewData(mAllList);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
                                 if(mNewsCollectItemAdapter.getData().size() < Constant.SEERVER_NUM){
                                     mNewsCollectItemAdapter.loadMoreEnd();
@@ -120,8 +121,9 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
                             }else{
                                 //已为加载更多有数据
                                 if(mCollectLists != null && mCollectLists.size() > 0){
+                                    setData(mCollectLists);
                                     mNewsCollectItemAdapter.loadMoreComplete();
-                                    mNewsCollectItemAdapter.addData(mCollectLists);
+                                    mNewsCollectItemAdapter.addData(templist);
                                 }else{
                                     //已为加载更多无更多数据
                                     mNewsCollectItemAdapter.loadMoreEnd();
@@ -148,6 +150,15 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
 
     }
 
+    private List<CollectArticleBean.Collect_list> templist = new ArrayList<>();
+    private void setData(List<CollectArticleBean.Collect_list> collectLists) {
+        templist.clear();
+        templist.addAll(collectLists);
+        if(page == 1){
+            mAllList.addAll(templist);
+        }
+    }
+
 
     /** --------------------------------- 通用的配置  ---------------------------------*/
     @BindView(R.id.smartRefreshLayout)
@@ -162,7 +173,7 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mNewsCollectItemAdapter = new NewsCollectItemAdapter(mCollectLists);
+        mNewsCollectItemAdapter = new NewsCollectItemAdapter(mAllList);
         mRecyclerView.setAdapter(mNewsCollectItemAdapter);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
@@ -185,8 +196,8 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
 
         mNewsCollectItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             KLog.d("点击图片，请求取消接口，刷新界面");
-            if(null != mCollectLists && !mCollectLists.isEmpty()){
-                mCollectList = mCollectLists.get(position);
+            if(null != mAllList && !mAllList.isEmpty()){
+                mCollectList = mAllList.get(position);
                 myPosition = position;
                 showCancelFocusDialog();
             }
@@ -197,11 +208,10 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
 
             KLog.d("点击图片，请求取消接口，刷新界面");
             if(null != mCollectLists && !mCollectLists.isEmpty()){
-                mCollectList = mCollectLists.get(position);
+                mCollectList = mAllList.get(position);
                 myPosition = position;
                 showCancelFocusDialog();
             }
-
 
             return false;
         });
@@ -211,10 +221,10 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
             if(StringUtil.isFastClick()){
                 return;
             }
-//            String aid = mNewsCollectItemAdapter.getData().get(position);
-//            if (!TextUtils.isEmpty(aid)) {
-//                UIHelper.toNewsDetailActivity(getActivity(), aid);
-//            }
+            String aid = mNewsCollectItemAdapter.getData().get(position).getAid();
+            if (!TextUtils.isEmpty(aid)) {
+                UIHelper.toNewsDetailActivity(getActivity(), aid);
+            }
         });
 
 
@@ -226,7 +236,7 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
-            mCollectLists.clear();
+            mAllList.clear();
             page = 1;
             favoriteList();
         });

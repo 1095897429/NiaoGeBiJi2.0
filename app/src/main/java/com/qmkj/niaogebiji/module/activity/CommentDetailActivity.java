@@ -1,6 +1,8 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.annotation.SuppressLint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,8 +16,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
@@ -31,11 +35,15 @@ import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.TalkAlertDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.adapter.CirclePicAdapter;
+import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
+import com.qmkj.niaogebiji.module.adapter.CircleTransferPicAdapter;
 import com.qmkj.niaogebiji.module.adapter.CommentAdapter;
 import com.qmkj.niaogebiji.module.adapter.CommentAdapterByNewBean;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
@@ -90,6 +98,10 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.head_icon)
     ImageView head_icon;
 
+    @BindView(R.id.user_head_icon)
+    ImageView user_head_icon;
+
+
     @BindView(R.id.publish_time)
     TextView publish_time;
 
@@ -128,28 +140,51 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.part_yc_link)
     LinearLayout part_yc_link;
 
+    @BindView(R.id.part_yc_acticle)
+    LinearLayout part_yc_acticle;
+
+    @BindView(R.id.transfer_zf_ll)
+    LinearLayout transfer_zf_ll;
+
     @BindView(R.id.part_zf_pic)
     LinearLayout part_zf_pic;
+
+
+    @BindView(R.id.link_text)
+    TextView link_text;
+
+    @BindView(R.id.link_http)
+    TextView link_http;
+
 
     @BindView(R.id.part_zf_link)
     LinearLayout part_zf_link;
 
+    @BindView(R.id.part_zf_article)
+    LinearLayout part_zf_article;
 
-    //转发图片
-    @BindView(R.id.transfer_content)
-    TextView transfer_content;
 
-    @BindView(R.id.transfer_name)
-    TextView transfer_name;
+    @BindView(R.id.transfer_link_text)
+    TextView transfer_link_text;
 
-    @BindView(R.id.transfer_two_img_imgs)
-    ImageView transfer_two_img_imgs;
+    @BindView(R.id.transfer_link_http)
+    TextView transfer_link_http;
 
-    @BindView(R.id.transfer_one_img_imgs)
-    ImageView transfer_one_img_imgs;
 
-    @BindView(R.id.transfer_three_img_imgs)
-    ImageView transfer_three_img_imgs;
+    @BindView(R.id.transfer_zf_content)
+    TextView transfer_zf_content;
+
+    @BindView(R.id.transfer_zf_author)
+    TextView transfer_zf_author;
+
+    @BindView(R.id.pic_recyler_transfer)
+    RecyclerView pic_recyler_transfer;
+
+    @BindView(R.id.pic_recyler)
+    RecyclerView pic_recyler;
+
+
+
 
 
     //1级 适配器
@@ -158,6 +193,7 @@ public class CommentDetailActivity extends BaseActivity {
     List<CommentBeanNew> mAllList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
+
 
     private int page = 1;
 
@@ -172,7 +208,7 @@ public class CommentDetailActivity extends BaseActivity {
     //一级集合
     private List<CommentBeanNew> mCommentBeanNewList = new ArrayList<>();
     //布局类型
-    private String layoutType;
+    private int layoutType;
     //评论的是 一级评论还是二级评论
     private boolean isSecondComment = false;
 
@@ -187,45 +223,14 @@ public class CommentDetailActivity extends BaseActivity {
     protected void initView() {
         myPotion = getIntent().getExtras().getInt("clickPostion");
         blog_id = getIntent().getExtras().getString("blog_id");
-        layoutType= getIntent().getExtras().getString("layoutType");
+        layoutType = getIntent().getExtras().getInt("layoutType");
+
         initLayout();
+        initPicLayout();
+        initTransferPicLayout();
         blogDetail();
         getBlogCommentList();
     }
-
-
-
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
-
-    private void setImageStatus( List<String> imgs) {
-        int size = imgs.size();
-        if(size < 3 ){
-            if(1 == size){
-                ImageUtil.load(mContext,imgs.get(0) + scaleSize,transfer_one_img_imgs);
-                transfer_one_img_imgs.setVisibility(View.VISIBLE);
-                transfer_two_img_imgs.setVisibility(View.GONE);
-                transfer_three_img_imgs.setVisibility(View.GONE);
-            }
-            if(2 == size){
-                ImageUtil.load(mContext,imgs.get(0) + scaleSize,transfer_one_img_imgs);
-                ImageUtil.load(mContext,imgs.get(1) + scaleSize,transfer_two_img_imgs);
-                transfer_one_img_imgs.setVisibility(View.VISIBLE);
-                transfer_two_img_imgs.setVisibility(View.VISIBLE);
-                transfer_three_img_imgs.setVisibility(View.GONE);
-            }
-
-        }else{
-            ImageUtil.load(mContext,imgs.get(0) + scaleSize,transfer_one_img_imgs);
-            ImageUtil.load(mContext,imgs.get(1) + scaleSize,transfer_two_img_imgs);
-            ImageUtil.load(mContext,imgs.get(2) + scaleSize,transfer_three_img_imgs);
-            transfer_one_img_imgs.setVisibility(View.VISIBLE);
-            transfer_two_img_imgs.setVisibility(View.VISIBLE);
-            transfer_three_img_imgs.setVisibility(View.VISIBLE);
-        }
-    }
-
-
-
 
 
 
@@ -261,12 +266,26 @@ public class CommentDetailActivity extends BaseActivity {
 
 
 
-    @OnClick({R.id.toComment,R.id.circle_comment,
-            R.id.iv_back
+    @OnClick({R.id.toComment,
+            R.id.circle_comment,
+            R.id.iv_back,
+            R.id.part_zf_link,
+            R.id.part_yc_link,
+            R.id.part1111
 
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.part1111:
+                UIHelper.toUserInfoActivity(this,mCircleBean.getUid());
+                break;
+            case R.id.part_yc_link:
+                UIHelper.toWebViewActivity(this,mCircleBean.getLink());
+
+                break;
+            case R.id.part_zf_link:
+                UIHelper.toWebViewActivity(this,mCircleBean.getP_blog().getLink());
+                break;
             case R.id.iv_back:
                 finish();
                 break;
@@ -289,6 +308,7 @@ public class CommentDetailActivity extends BaseActivity {
     ImageView head_second_icon;
     LinearLayout comment_priase;
     ImageView zan_second_img_second;
+    ImageView icon;
     View headView;
     BottomSheetDialog bottomSheetDialog;
     CommentSecondAdapter bottomSheetAdapter;
@@ -301,13 +321,10 @@ public class CommentDetailActivity extends BaseActivity {
     TextView zan_second_num_second;
     TextView comment_num_second;
 
-
-    //临时需要评论数据
-    private CommentBeanNew secondComment;
-
     private void showSheetDialog() {
         View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
         mSecondRV = view.findViewById(R.id.recycler);
+        icon = view.findViewById(R.id.icon);
         comment_num_second = view.findViewById(R.id.comment_num_second);
         second_close = view.findViewById(R.id.second_close);
         second_close.setOnClickListener(view12 -> bottomSheetDialog.dismiss());
@@ -321,6 +338,7 @@ public class CommentDetailActivity extends BaseActivity {
 
         bottomSheetAdapter = new CommentSecondAdapter(allSecondComments);
         mSecondRV.setHasFixedSize(true);
+        ((SimpleItemAnimator)mSecondRV.getItemAnimator()).setSupportsChangeAnimations(false);
         mSecondRV.setLayoutManager(new LinearLayoutManager(this));
         mSecondRV.setItemAnimator(new DefaultItemAnimator());
         mSecondRV.setAdapter(bottomSheetAdapter);
@@ -354,6 +372,14 @@ public class CommentDetailActivity extends BaseActivity {
         });
         bottomSheetDialog.show();
 
+        bottomSheetAdapter.setOnItemClickListener((adapter, view1, position) -> {
+            //此处逻辑和点击一级评论item一样
+            isSecondComment = true;
+            oneComment = bottomSheetAdapter.getData().get(position).getCircleComment();
+            KLog.d("tag","点击此评论的id 为  " + oneComment.getId() + " 被回复的人事 " + oneComment.getUser_info().getName());
+            showTalkDialogSecondComment(position, oneComment);
+        });
+
         initScondEvent();
         allSecondComments.clear();
         getSecondCommentComment();
@@ -362,6 +388,8 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     private void setSecondHeadData(CommentBeanNew temp) {
+        //底部使用者头像
+        ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),icon);
         //设置一些头信息
         headView = LayoutInflater.from(this).inflate(R.layout.second_comment_head,null);
         zan_second_num_second = headView.findViewById(R.id.zan_second_num_second);
@@ -379,13 +407,13 @@ public class CommentDetailActivity extends BaseActivity {
         ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
 
 
-        comment_num_second.setText(temp.getComment_num() + "条回复");
+
         nickname_second.setText(temp.getUser_info().getName());
         comment_text_second.setText(temp.getComment());
         ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
 
         //点赞
-        zanChange(zan_num,image_circle_priase,temp.getLike_num(),temp.getIs_like());
+        zanChange(zan_second_num_second,zan_second_img_second,temp.getLike_num(),temp.getIs_like());
 
         comment_priase.setOnClickListener((view)->{
             likeComment(temp);
@@ -472,13 +500,6 @@ public class CommentDetailActivity extends BaseActivity {
 
 
         setSecondHeadData(oneComment);
-
-        bottomSheetAdapter.setOnItemClickListener((adapter, view, position) -> {
-            //此处逻辑和点击一级评论item一样
-            isSecondComment = true;
-            KLog.d("tag","点击此评论的id 为  " + oneComment.getId());
-            showTalkDialogSecondComment(position, oneComment);
-        });
     }
 
 
@@ -488,6 +509,50 @@ public class CommentDetailActivity extends BaseActivity {
 
     //用于记录在二级评论点赞后，一级界面数据没有刷新
     private int zanPosition;
+
+
+    private void zanCommentChange(TextView com_text,TextView zan_num, ImageView zan_img,
+                                  String good_num, int is_good,String com_num) {
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
+        zan_num.setTypeface(typeface);
+        com_text.setTypeface(typeface);
+
+        if(StringUtil.checkNull(good_num)){
+            if("0".equals(good_num)){
+                zan_num.setText("赞");
+            }else{
+                int size = Integer.parseInt(good_num);
+                if(size > 99){
+                    zan_num.setText(99 + "+");
+                }else{
+                    zan_num.setText(size + "");
+                }
+            }
+        }
+        //点赞图片
+        if("0".equals(is_good + "")){
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
+        }else if("1".equals(is_good + "")){
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
+        }
+
+
+        if(StringUtil.checkNull(com_num)){
+            if("0".equals(com_num)){
+                com_text.setText("评论");
+            }else{
+                int size = Integer.parseInt(com_num);
+                if(size > 99){
+                    com_text.setText(99 + "");
+                }else{
+                    com_text.setText(size + "");
+                }
+            }
+        }
+    }
+
 
     private void zanChange(TextView zan_num,ImageView imageView, String good_num, int is_good) {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
@@ -527,6 +592,7 @@ public class CommentDetailActivity extends BaseActivity {
         //设置适配器
         mCommentAdapter = new CommentAdapterByNewBean(mAllList);
         mRecyclerView.setAdapter(mCommentAdapter);
+        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
@@ -613,8 +679,6 @@ public class CommentDetailActivity extends BaseActivity {
             KLog.d("tag","加载更多");
         },mRecyclerView);
 
-        //第一部分设置空布局
-        setEmpty(mCommentAdapter);
 
 
         mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
@@ -710,74 +774,131 @@ public class CommentDetailActivity extends BaseActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void setData() {
-        //正文
-        content.setText(mCircleBean.getBlog());
-        //布局
-        if("1".equals(layoutType)){
 
-        }else if("2".equals(layoutType)){
-            //转发图片
-            part_zf_pic.setVisibility(View.VISIBLE);
-            CircleBean.P_blog pBlog = mCircleBean.getP_blog();
-            CircleBean.P_user_info pUserInfo = pBlog.getP_user_info();
-            transfer_content.setText(pBlog.getBlog());
-            transfer_name.setText(pUserInfo.getName() + pUserInfo.getCompany_name());
-            setImageStatus(pBlog.getImages());
-        }
-        //发布时间
-        if(null != mCircleBean.getCreated_at()){
-            if(!TextUtils.isEmpty(mCircleBean.getCreated_at())){
-                String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(mCircleBean.getCreated_at()) * 1000L);
-                if(!TextUtils.isEmpty(s)){
-                    if("天前".contains(s)){
-                        publish_time.setText(TimeUtils.millis2String(Long.parseLong(mCircleBean.getCreated_at()) * 1000L,"yyyy/MM/dd"));
-                    }else{
-                        publish_time.setText(s);
+        //通用配置
+        if(mCircleBean.getUser_info() != null){
+            //正文
+            content.setText(mCircleBean.getBlog());
+            //发帖人
+            sender_name.setText(mCircleBean.getUser_info().getName() );
+            //头像
+            ImageUtil.load(mContext,mCircleBean.getUser_info().getAvatar(),head_icon);
+            //底部使用者头像
+            ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),user_head_icon);
+
+
+            //职位
+            sender_tag.setText(mCircleBean.getUser_info().getCompany_name() + mCircleBean.getUser_info().getPosition());
+
+            //是否认证
+            if("0".equals(mCircleBean.getIs_auth())){
+                sender_name.setCompoundDrawables(null,null,null,null);
+            }else if("1".equals(mCircleBean.getIs_auth())){
+                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                sender_name.setCompoundDrawables(null,null,drawable,null);
+            }
+
+            //发布时间
+            if(null != mCircleBean.getCreated_at()){
+                if(!TextUtils.isEmpty(mCircleBean.getCreated_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(mCircleBean.getCreated_at()) * 1000L);
+                    if(!TextUtils.isEmpty(s)){
+                        if("天前".contains(s)){
+                            publish_time.setText(TimeUtils.millis2String(Long.parseLong(mCircleBean.getCreated_at()) * 1000L,"yyyy/MM/dd"));
+                        }else{
+                            publish_time.setText(s);
+                        }
                     }
                 }
+            }else{
+                publish_time.setText("");
             }
-        }else{
-            publish_time.setText("");
-        }
-        //发帖人
-        sender_name.setText(mCircleBean.getUser_info().getName());
-        //头像
-        ImageUtil.load(mContext,mCircleBean.getUser_info().getAvatar(),head_icon);
-        //职位
-        sender_tag.setText(mCircleBean.getUser_info().getPosition());
-        //徽章
-        if(null != mCircleBean.getUser_info().getBadge() && !mCircleBean.getUser_info().getBadge().isEmpty()){
-            ll_badge.removeAllViews();
-            for (int i = 0; i < mCircleBean.getUser_info().getBadge().size(); i++) {
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.mipmap.icon_test_detail_icon1);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                lp.width = SizeUtils.dp2px(22);
-                lp.height = SizeUtils.dp2px(22);
-                lp.gravity = Gravity.CENTER;
-                lp.setMargins(0,0,SizeUtils.dp2px(8),0);
-                imageView.setLayoutParams(lp);
-                ll_badge.addView(imageView);
-            }
-        }
-        //评论
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
-        comment.setTypeface(typeface);
-        if(mCircleBean.getComment_num().equals("0")){
-            comment.setText("评论");
-            first_comment_num.setText("全部0条评论");
-        }else{
-            comment.setText(mCircleBean.getComment_num() + "");
-            first_comment_num.setText("全部 " + mCircleBean.getComment_num() +" 条评论");
-        }
-        //点赞数
-        zanChange(zan_num,image_circle_priase,mCircleBean.getLike_num() + "",mCircleBean.getIs_like());
+            //点赞数
+            zanCommentChange(comment,zan_num,image_circle_priase,
+                    mCircleBean.getLike_num() + "",mCircleBean.getIs_like(),mCircleBean.getComment_num());
 
-        circle_priase.setOnClickListener(view -> {
-            likeBlog(mCircleBean);
-        });
+            //评论数
+            first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条回复");
+
+            //点赞事件
+            circle_priase.setOnClickListener(view -> {
+              likeBlog(mCircleBean);
+             });
+        }
+
+        if(CircleRecommentAdapterNew.YC_PIC == layoutType){
+            part_yc_pic.setVisibility(View.VISIBLE);
+            mPicList = mCircleBean.getImages();
+            if(mPicList != null && mPicList.size() > 3){
+                mPicList = mPicList.subList(0,3);
+            }
+            mCirclePicAdapter.setNewData(mPicList);
+        }else if(CircleRecommentAdapterNew.YC_LINK == layoutType){
+            part_yc_link.setVisibility(View.VISIBLE);
+            link_http.setText(mCircleBean.getLink());
+            link_text.setText(mCircleBean.getLink_title());
+        }else if(CircleRecommentAdapterNew.YC_ACTICLE == layoutType){
+            part_yc_acticle.setVisibility(View.VISIBLE);
+        }else if(CircleRecommentAdapterNew.YC_TEXT == layoutType){
+            KLog.d("tag","纯文本");
+        }else{
+
+            if(mCircleBean.getP_blog() != null && mCircleBean.getP_blog().getP_user_info() != null){
+
+                transfer_zf_content.setText(mCircleBean.getP_blog().getBlog());
+
+                CircleBean.P_user_info temp = mCircleBean.getP_blog().getP_user_info();
+                transfer_zf_author.setText(temp.getName()  + "  " + temp.getCompany_name() +
+                        temp.getPosition());
+            }
+
+
+            transfer_zf_ll.setVisibility(View.VISIBLE);
+            if(CircleRecommentAdapterNew.ZF_PIC == layoutType){
+                part_zf_pic.setVisibility(View.VISIBLE);
+
+                mPicList = mCircleBean.getP_blog().getImages();
+                if(mPicList != null && mPicList.size() > 3){
+                    mPicList = mPicList.subList(0,3);
+                }
+                mCircleTransferPicAdapter.setNewData(mPicList);
+
+            }else if(CircleRecommentAdapterNew.ZF_LINK == layoutType){
+                part_zf_link.setVisibility(View.VISIBLE);
+                transfer_link_text.setText(mCircleBean.getP_blog().getLink_title());
+                transfer_link_http.setText(mCircleBean.getP_blog().getLink_title());
+            }else if(CircleRecommentAdapterNew.ZF_ACTICLE == layoutType){
+                part_zf_article.setVisibility(View.VISIBLE);
+            }
+        }
+
+
+
+
+
+
+//        //徽章
+//        if(null != mCircleBean.getUser_info().getBadge() && !mCircleBean.getUser_info().getBadge().isEmpty()){
+//            ll_badge.removeAllViews();
+//            for (int i = 0; i < mCircleBean.getUser_info().getBadge().size(); i++) {
+//                ImageView imageView = new ImageView(mContext);
+//                imageView.setImageResource(R.mipmap.icon_test_detail_icon1);
+//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                        ViewGroup.LayoutParams.WRAP_CONTENT);
+//                lp.width = SizeUtils.dp2px(22);
+//                lp.height = SizeUtils.dp2px(22);
+//                lp.gravity = Gravity.CENTER;
+//                lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+//                imageView.setLayoutParams(lp);
+//                ll_badge.addView(imageView);
+//            }
+//        }
+
+
+
     }
 
 
@@ -906,7 +1027,7 @@ public class CommentDetailActivity extends BaseActivity {
                         circleBean.setIs_like(0);
                         circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) - 1) + "");
                     }
-                    //更新头部数据
+                    //只更新头部赞数据
                     zanChange(zan_num,image_circle_priase,circleBean.getLike_num(),circleBean.getIs_like());
                     //TODO 更新首页数据 12.20
                     if(myPotion != -1){
@@ -917,6 +1038,36 @@ public class CommentDetailActivity extends BaseActivity {
     }
 
 
+
+    /** --------------------------------- 圈子上图片的展示 ---------------------------------*/
+    private GridLayoutManager mGridLayoutManager;
+    private CirclePicAdapter mCirclePicAdapter;
+    private CircleTransferPicAdapter mCircleTransferPicAdapter;
+    private List<String> mPicList;
+    private void initTransferPicLayout() {
+        mGridLayoutManager = new GridLayoutManager(this,3);
+        //设置布局管理器
+        pic_recyler_transfer.setLayoutManager(mGridLayoutManager);
+        //设置适配器
+        mCircleTransferPicAdapter = new CircleTransferPicAdapter(mPicList);
+        pic_recyler_transfer.setAdapter(mCircleTransferPicAdapter);
+        //解决数据加载不完
+        pic_recyler_transfer.setNestedScrollingEnabled(true);
+        pic_recyler_transfer.setHasFixedSize(true);
+    }
+
+
+    private void initPicLayout() {
+        mGridLayoutManager = new GridLayoutManager(this,3);
+        //设置布局管理器
+        pic_recyler.setLayoutManager(mGridLayoutManager);
+        //设置适配器
+        mCirclePicAdapter = new CirclePicAdapter(mPicList);
+        pic_recyler.setAdapter(mCirclePicAdapter);
+        //解决数据加载不完
+        pic_recyler.setNestedScrollingEnabled(true);
+        pic_recyler.setHasFixedSize(true);
+    }
 
 }
 

@@ -310,21 +310,20 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPeopleFocusEvent(PeopleFocusEvent event) {
         KLog.d("tag","用户的uid是 "  + event.getUid() +  " 状态  "  + event.getStatus());
-//        int  position  = -1 ;
-//        for (int i = 0; i < mList.size(); i++) {
-//            if(event.getUid().equals(mList.get(i).getUid())){
-//                position = i;
-//                break;
-//            }
-//        }
-//
-//        if(position != -1){
-//            // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
-//            mPeopleItemAdapter.getData().get(position).setFollow_status(event.getStatus());
-//            mPeopleItemAdapter.notifyItemChanged(position);
-//        }
+        int  position  = -1 ;
+        for (int i = 0; i < mList.size(); i++) {
+            if(event.getUid().equals(mList.get(i).getUid())){
+                position = i;
+                break;
+            }
+        }
 
-        searchPeople();
+        if(position != -1){
+            // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+            mPeopleItemAdapter.getData().get(position).setFollow_status(event.getStatus());
+            mPeopleItemAdapter.notifyItemChanged(position);
+        }
+
     }
 
 

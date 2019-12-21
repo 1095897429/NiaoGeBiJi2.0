@@ -63,5 +63,7 @@
     <color name="tab_select">#FFDC00</color>
     <color name="bg">#fff</color>
 
+    <color name="text_blue">#5675A7</color>
+
 
 </resources>

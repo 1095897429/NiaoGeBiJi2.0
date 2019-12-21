@@ -28,14 +28,14 @@
         <RelativeLayout
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_width="52dp"
-            android:layout_height="52dp">
+            android:layout_width="40dp"
+            android:layout_height="40dp">
 
 
             <ImageView
                 android:id="@+id/test_img"
-                android:layout_width="52dp"
-                android:layout_height="52dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
 
         </RelativeLayout>
 

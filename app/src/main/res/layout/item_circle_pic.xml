@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:id="@+id/pic_ll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.qmkj.niaogebiji.module.widget.RCImageView
+        android:id="@+id/pic"
+        android:src="@color/bg_color"
+        android:layout_width="109dp"
+        android:layout_height="109dp"
+        android:layout_weight="1"
+        android:scaleType="centerCrop"
+        app:round_as_circle="false"
+        app:round_corner="8dp" />
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

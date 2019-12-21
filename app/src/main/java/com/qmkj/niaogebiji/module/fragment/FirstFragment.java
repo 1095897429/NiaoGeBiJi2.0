@@ -290,7 +290,7 @@ public class FirstFragment extends BaseLazyFragment {
                 UIHelper.toNewsDetailActivity(getActivity(),aid);
                 break;
             case R.id.rl_sign:
-                UIHelper.toFeatherNewActivity(getActivity());
+                UIHelper.toFeatherctivity(getActivity());
                 break;
             case R.id.search_part:
                 UIHelper.toSearchActivity(getActivity());

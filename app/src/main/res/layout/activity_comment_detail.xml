@@ -56,7 +56,7 @@
 
                       <TextView
                           android:id="@+id/first_comment_num"
-                          android:text="全部20条评论"
+                          android:text="全部条评论"
                           android:textStyle="bold"
                           android:gravity="center|left"
                           android:textSize="17sp"
@@ -117,7 +117,7 @@
                android:layout_height="match_parent">
 
                <de.hdodenhof.circleimageview.CircleImageView
-                   android:id="@+id/head_icon"
+                   android:id="@+id/user_head_icon"
                    android:layout_centerVertical="true"
                    android:layout_width="40dp"
                    android:layout_height="40dp"
@@ -125,7 +125,7 @@
 
                <TextView
                    android:layout_marginLeft="8dp"
-                   android:layout_toRightOf="@+id/head_icon"
+                   android:layout_toRightOf="@+id/user_head_icon"
                    android:id="@+id/num_feather"
                    android:textSize="16sp"
                    android:textColor="@color/text_second_color"

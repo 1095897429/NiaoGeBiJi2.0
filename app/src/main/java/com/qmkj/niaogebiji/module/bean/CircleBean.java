@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.bean;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class CircleBean extends BaseBean {
         private String id;
         private String uid;
         private String blog;
-        private List<String> images;
+        private ArrayList<String> images;
         private String link;
         private String link_title;
         private String type;
@@ -30,6 +31,7 @@ public class CircleBean extends BaseBean {
         private String comment_num;
         private User_info user_info;
         private P_blog p_blog;
+        //圈子分享link
         private String share_url;
         //是否已点赞 1是 0否
         private int is_like;
@@ -44,6 +46,28 @@ public class CircleBean extends BaseBean {
         private String article_id;
         private String article_title;
         private String article_image;
+
+
+        //圈子类型 12.21
+        private int circleType;
+        //记住自己的位置
+        private int mSlefPosition;
+
+        public int getSlefPosition() {
+            return mSlefPosition;
+        }
+
+        public void setSlefPosition(int slefPosition) {
+            mSlefPosition = slefPosition;
+        }
+
+        public int getCircleType() {
+            return circleType;
+        }
+
+        public void setCircleType(int circleType) {
+            this.circleType = circleType;
+        }
 
         public String getIs_auth() {
             return is_auth;
@@ -138,14 +162,15 @@ public class CircleBean extends BaseBean {
             return blog;
         }
 
-        public void setImages(List<String> images) {
-            this.images = images;
-        }
-        public List<String> getImages() {
-            return images;
-        }
+    public ArrayList<String> getImages() {
+        return images;
+    }
 
-        public void setLink(String link) {
+    public void setImages(ArrayList<String> images) {
+        this.images = images;
+    }
+
+    public void setLink(String link) {
             this.link = link;
         }
         public String getLink() {
@@ -230,7 +255,7 @@ public class CircleBean extends BaseBean {
         }
 
    //转发动态详情
-   static public class P_blog {
+   static public class P_blog extends BaseBean{
         private String id;
         private String uid;
         private String blog;
@@ -243,7 +268,46 @@ public class CircleBean extends BaseBean {
         private String repost_num;
         private String sort;
         private P_user_info p_user_info;
-        public void setId(String id) {
+        //文章
+        private String article_id;
+        private String article_title;
+        private String article_image;
+       //圈子类型 12.21
+       private int circleType;
+
+       public int getCircleType() {
+           return circleType;
+       }
+
+       public void setCircleType(int circleType) {
+           this.circleType = circleType;
+       }
+
+       public String getArticle_id() {
+           return article_id;
+       }
+
+       public void setArticle_id(String article_id) {
+           this.article_id = article_id;
+       }
+
+       public String getArticle_title() {
+           return article_title;
+       }
+
+       public void setArticle_title(String article_title) {
+           this.article_title = article_title;
+       }
+
+       public String getArticle_image() {
+           return article_image;
+       }
+
+       public void setArticle_image(String article_image) {
+           this.article_image = article_image;
+       }
+
+       public void setId(String id) {
             this.id = id;
         }
         public String getId() {
@@ -330,7 +394,7 @@ public class CircleBean extends BaseBean {
     }
 
 
-   static public class P_user_info {
+   static public class P_user_info extends BaseBean{
 
         private String uid;
         private String name;

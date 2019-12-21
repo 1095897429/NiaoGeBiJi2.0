@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.bean;
 
+import com.qmkj.niaogebiji.common.base.BaseBean;
+
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
  * 创建时间 2019-12-09
  * 描述:用户信息带徽章部分
  */
- public class User_info {
+ public class User_info extends BaseBean {
 
     private String uid;
     private String name;

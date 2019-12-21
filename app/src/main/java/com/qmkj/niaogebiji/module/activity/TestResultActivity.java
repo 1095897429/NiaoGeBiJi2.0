@@ -101,9 +101,9 @@ public class TestResultActivity extends BaseActivity {
                     break;
                 case 4:
                     KLog.d("tag", "转发到动态");
-                    UIHelper.toTranspondActivity(this);
-                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
-                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+//                    UIHelper.toTranspondActivity(this);
+//                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+//                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                     break;
                 default:
             }

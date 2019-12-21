@@ -91,13 +91,13 @@ public class CircleSearchAdapter extends BaseMultiItemQuickAdapter<MultiCircleNe
         }else if("1".equals(bean.getIs_auth())){
             Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
             drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-            name.setCompoundDrawables(null,null,null,null);
+            name.setCompoundDrawables(null,null,drawable,null);
         }
 
         //事件
         helper.itemView.setOnClickListener(view -> {
             String blog_id = bean.getId();
-            UIHelper.toCommentDetailActivity(mContext,blog_id,"1",helper.getAdapterPosition());
+//            UIHelper.toCommentDetailActivity(mContext,blog_id,"1",helper.getAdapterPosition());
         });
 
         switch (helper.getItemViewType()){

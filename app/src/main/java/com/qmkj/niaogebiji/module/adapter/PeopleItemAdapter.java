@@ -19,11 +19,13 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.PeopleBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -39,6 +41,7 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-12-2
  * 描述:搜索人脉适配器
+ * 1.adater中并不能用eventbus接受事件
  */
 public class PeopleItemAdapter extends BaseQuickAdapter<RegisterLoginBean.UserInfo, BaseViewHolder> {
 
@@ -117,6 +120,8 @@ public class PeopleItemAdapter extends BaseQuickAdapter<RegisterLoginBean.UserIn
                         helper.setVisible(R.id.focus,false);
                         helper.setVisible(R.id.already_focus,true);
                         ToastUtils.showShort("关注成功");
+                        // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid,1));
                     }
                 });
     }
@@ -138,10 +143,12 @@ public class PeopleItemAdapter extends BaseQuickAdapter<RegisterLoginBean.UserIn
                         helper.setVisible(R.id.already_focus,false);
 
                         ToastUtils.showShort("取消关注成功");
+                        // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid,0));
+
                     }
                 });
     }
-
 
 
 }

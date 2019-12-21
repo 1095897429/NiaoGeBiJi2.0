@@ -15,6 +15,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FeatherProductItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -172,7 +173,8 @@ public class FeatherListActivity extends BaseActivity {
 
 
     private void initSamrtLayout() {
-
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setDisableContentWhenRefresh(true);
         smartRefreshLayout.setDisableContentWhenLoading(true);
         smartRefreshLayout.setEnableLoadMore(false);

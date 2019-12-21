@@ -1,6 +1,10 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -23,6 +27,9 @@ public class Limit2ReplyCircleAdapter extends BaseQuickAdapter<CommentBeanNew.Se
         super(R.layout.item_limit2,data);
     }
 
+
+    SpannableString spannableString ;
+
     @Override
     protected void convert(BaseViewHolder helper,CommentBeanNew.SecondComment item) {
         StringBuilder sb = new StringBuilder();
@@ -34,7 +41,33 @@ public class Limit2ReplyCircleAdapter extends BaseQuickAdapter<CommentBeanNew.Se
                     .append(":").append(item.getComment());
         }else{
             sb.append(userInfo.getName()).append(":").append(item.getComment());
+
         }
-        helper.setText(R.id.textlimit,sb.toString());
+
+
+        if(!TextUtils.isEmpty(userInfo.getName()) &&  !userInfo.getName().equals(p_userInfo.getName())){
+            int userNamelength = userInfo.getName().length();
+            int authorNamelength = p_userInfo.getName().length();
+            spannableString = new SpannableString(sb.toString());
+            ForegroundColorSpan fCs1 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+            spannableString.setSpan(fCs1, 0, userNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            //中间有 回复 两个字 + 2个空格
+            spannableString.setSpan(fCs2, userNamelength + 4, userNamelength + 4 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }else{
+            int userNamelength = userInfo.getName().length();
+            spannableString = new SpannableString(sb.toString());
+            ForegroundColorSpan fCs1 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+            spannableString.setSpan(fCs1, 0, userNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        helper.setText(R.id.textlimit,spannableString);
+
+
+
+
+
+
+
+
     }
 }

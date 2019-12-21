@@ -121,7 +121,7 @@
 
                             <TextView
                                 android:id="@+id/zan_second_num_second"
-                                android:text="99+"
+                                android:text="赞"
                                 android:textSize="13sp"
                                 android:textColor="#555962"
                                 android:gravity="center"

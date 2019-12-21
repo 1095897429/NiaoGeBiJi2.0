@@ -212,7 +212,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 //事件
                 mCircleSearchAdapter.setOnItemClickListener((adapter, view, position) -> {
                     String blog_id = mCircleSearchAdapter.getData().get(position).getCircleBean().getId();
-                    UIHelper.toCommentDetailActivity(mContext,blog_id,"1",position);
+//                    UIHelper.toCommentDetailActivity(mContext,blog_id,"1",position);
                 });
 
                 break;

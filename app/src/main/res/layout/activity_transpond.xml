@@ -90,14 +90,14 @@
                 android:hint=""
                 android:textColorHint="#AAAEB3"
                 android:textSize="16sp"
-                android:text="转发了"
+                android:text="转发动态"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
 
             <LinearLayout
-                android:id="@+id/part2222"
-                android:visibility="gone"
+                android:id="@+id/acticle_part"
+                android:visibility="visible"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -133,14 +133,15 @@
                         android:layout_height="match_parent">
 
                         <TextView
-                            android:id="@+id/link_title"
-                            android:text="格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发…"
+                            android:id="@+id/acticle_title"
+                            android:text=""
                             android:ellipsize="end"
                             android:maxLines="2"
+                            android:gravity="center|left"
                             android:textSize="14sp"
                             android:textColor="@color/text_first_color"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="match_parent" />
 
 
                     </LinearLayout>
@@ -193,6 +194,7 @@
                     android:gravity="center"
                     style="@style/CustomCheckBoxTheme"
                     android:padding="5dp"
+                    android:checked="true"
                     android:background="@null"
                     android:text="同时评论"
                     android:textSize="14sp"

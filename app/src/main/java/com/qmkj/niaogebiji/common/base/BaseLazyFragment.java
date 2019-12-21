@@ -75,7 +75,7 @@ public abstract class BaseLazyFragment extends Fragment {
         if (getUserVisibleHint()) {
             isVisible = true;
             onVisible();
-//            KLog.e(TAG,getClass().getSimpleName() + " -- setUserVisibleHint -- " +isVisibleToUser);
+            KLog.e(TAG,getClass().getSimpleName() + " -- setUserVisibleHint -- " +isVisibleToUser);
         } else {
             isVisible = false;
             onInvisible();

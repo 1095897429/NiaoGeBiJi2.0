@@ -181,15 +181,9 @@ public class MyFragment extends BaseLazyFragment {
     private void setUserInfo() {
         if(null != mUserInfo){
 
-            //vip时间 20191216
-            String vipstart = mUserInfo.getVip_start_date();
-            vipstart = "2019-12-16";
-            String vipend = mUserInfo.getVip_end_date();
-            vipend = "2019-12-18";
-
-            //TODO 计算时间差
-            int space =  TimeAppUtils.stringDaysBetween(vipstart,vipend);
-            vip_time.setText("鸟哥笔记VIP剩余"+ space + "天");
+            if(!TextUtils.isEmpty(mUserInfo.getVip_last_time())){
+                vip_time.setText("鸟哥笔记VIP剩余"+ mUserInfo.getVip_last_time() + "天");
+            }
 
             TextPaint paint = name.getPaint();
             paint.setFakeBoldText(true);
@@ -264,22 +258,28 @@ public class MyFragment extends BaseLazyFragment {
     private void initEvent() {
         mMyItemAdapter.setOnItemClickListener((adapter, view, position) -> {
             switch (position){
+                case 0:
+                   UIHelper.toFeatherctivity(getActivity());
+                    break;
                 case 1:
                     UIHelper.toInviteActivity(getActivity());
                     break;
                 case 2:
-                    String link2 = Constant.TEST_URL + "mybadge";
-                    UIHelper.toWebViewActivity(getActivity(),link2);
+                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("mybadge"));
 
                     break;
                 case 3:
-                    String link = Constant.TEST_URL + "myactivity/";
-                    UIHelper.toWebViewActivity(getActivity(),link);
+                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
 
                     break;
                 case 4:
                     UIHelper.toMyCollectionListActivity(getActivity());
                     break;
+                case 5:
+                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("favorite"));
+                    break;
+
+
                     default:
             }
         });
@@ -293,7 +293,8 @@ public class MyFragment extends BaseLazyFragment {
     }
 
 
-    @OnClick({R.id.toSet,R.id.toMsg,R.id.about_ll,
+    @OnClick({R.id.toSet,
+                R.id.about_ll,
                 R.id.name_tag,
                 R.id.part2222_2,
                 R.id.part3333_3,
@@ -301,14 +302,17 @@ public class MyFragment extends BaseLazyFragment {
                 R.id.rl_vip_time,
                 R.id.toVip,
                 R.id.toQue,R.id.advice_ll,
-                R.id.toUserInfo})
+                R.id.toUserInfo,
+                R.id.toMsg})
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.toMsg:
+
+                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("messagecenter"));
+                break;
             case R.id.toUserInfo:
 
                 UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
-
-//                UIHelper.toUserInfoActivity(getActivity(),"300473");
 
                 break;
             case R.id.advice_ll:
@@ -323,34 +327,24 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.toVip:
             case R.id.rl_vip_time:
-//                String link2 = Constant.TEST_URL + "vipmember";
-//                String link2 = Constant.TEST_URL + "viptask";
-//                String link2 = Constant.TEST_URL + "vipshare";
-//                UIHelper.toWebViewActivity(getActivity(),link2);
 
-
-
-                String link2 = Constant.TEST_URL + "mybadge";
-                UIHelper.toWebViewActivity(getActivity(),link2);
+                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("vipmember"));
 
 
                 break;
             case R.id.toExchange:
                 KLog.d("tag","去羽毛商城");
+                UIHelper.toFeatherProductListActivity(getActivity());
                 break;
             case R.id.part3333_3:
                 KLog.d("tag","去羽毛任务");
-                UIHelper.toFeatherNewActivity(getActivity());
+                UIHelper.toFeatherctivity(getActivity());
                 break;
             case R.id.part2222_2:
                 KLog.d("tag","去徽章详情页");
                 break;
             case R.id.name_tag:
                 KLog.d("tag","h5 职业认证");
-                break;
-            case R.id.toMsg:
-
-                UIHelper.toLoginActivity(getActivity());
                 break;
             case R.id.toSet:
                 UIHelper.toSettingActivity(getActivity());

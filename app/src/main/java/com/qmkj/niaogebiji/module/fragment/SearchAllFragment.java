@@ -480,21 +480,28 @@ public class SearchAllFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPeopleFocusEvent(PeopleFocusEvent event) {
         KLog.d("tag","用户的uid是 "  + event.getUid() +  " 状态  "  + event.getStatus());
-//        int  position  = -1 ;
-//        for (int i = 0; i < mAllList.size(); i++) {
-//            if(event.getUid().equals(mAllList.get(i).getUserInfos().get(i).getUid())){
-//                position = i;
-//                break;
-//            }
-//        }
-//
-//        if(position != -1){
-//            // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
-//            mSearchAllAdapter.getData().get(position).getUserInfos().get(position).setFollow_status(event.getStatus());
-//            mSearchAllAdapter.notifyItemChanged(position);
-//        }
 
-        searchArticlePeople();
+        int  position  = -1 ;
+        int  firstPosition = -1;
+        for (int i = 0; i < mAllList.size(); i++) {
+            if(null != mAllList.get(i).getUserInfos()){
+                int size = mAllList.get(i).getUserInfos().size();
+                for (int j = 0; j < size; j++) {
+                    if(event.getUid().equals(mAllList.get(i).getUserInfos().get(j).getUid())){
+                        position = j;
+                        firstPosition = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(position != -1){
+            // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
+            mSearchAllAdapter.getData().get(firstPosition).getUserInfos().get(position).setFollow_status(event.getStatus());
+            mSearchAllAdapter.notifyItemChanged(firstPosition);
+        }
+
 
     }
 

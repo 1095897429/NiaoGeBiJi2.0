@@ -51,7 +51,7 @@
                             android:ellipsize="end"
                             android:lineSpacingExtra="2dp"
                             android:maxLines="1"
-                            android:text="张俊杰"
+                            android:text=""
                             android:textColor="@color/text_first_color"
                             android:textSize="22sp" />
 
@@ -114,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
-                    android:text="10年运营从业经验，现任公司运营负责人，《超级运营术》作者；曾任猫眼电影运营专家、百度高级产品运营。"
+                    android:text=""
                     android:textColor="@color/text_second_color"
                     android:textSize="13sp" />
 
@@ -137,7 +137,7 @@
 
                         <TextView
                             android:id="@+id/send_article_num"
-                            android:text="1400"
+                            android:text="0"
                             android:layout_gravity="left"
                             android:textSize="18sp"
                             android:textColor="@color/text_first_color"
@@ -173,7 +173,7 @@
 
                         <TextView
                             android:id="@+id/medal_count"
-                            android:text="2.1w"
+                            android:text=""
                             android:layout_gravity="left"
                             android:textSize="18sp"
                             android:textColor="@color/text_first_color"

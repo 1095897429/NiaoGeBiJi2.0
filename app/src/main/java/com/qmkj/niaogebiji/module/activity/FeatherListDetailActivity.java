@@ -213,7 +213,7 @@ public class FeatherListDetailActivity  extends BaseActivity {
 
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("赚羽毛", v -> {
-            UIHelper.toFeatherNewActivity(this);
+            UIHelper.toFeatherctivity(this);
         }).setNegativeButton("再想想", v -> {
 
         }).setMsg("当前羽毛不足哦~").setCanceledOnTouchOutside(false);

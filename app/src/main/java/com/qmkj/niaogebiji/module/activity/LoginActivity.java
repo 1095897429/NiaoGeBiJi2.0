@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -29,6 +30,7 @@ import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.dialog.SecretAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
@@ -88,22 +90,31 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        KLog.d("tag",mCheckBox.isChecked() + "");
+
+        boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
+        if (!isAgree) {
+            showSecretDialog(this);
+        } else {
+
+        }
+
+
+        KLog.d("tag", mCheckBox.isChecked() + "");
         initEvent();
 
         RxView.clicks(phoneLogin)
-                            //每1秒中只处理第一个元素
-                            .throttleFirst(500, TimeUnit.MILLISECONDS)
-                            .subscribe(object -> {
-                                if(!mCheckBox.isChecked()){
-                                    Toast.makeText(this,"请先同意用户协议与隐私政策",Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
+                //每1秒中只处理第一个元素
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                    if (!mCheckBox.isChecked()) {
+                        Toast.makeText(this, "请先同意用户协议与隐私政策", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                                loginType = "phone";
+                    loginType = "phone";
 
-                                UIHelper.toPhoneInputActivity(LoginActivity.this,"",loginType);
-                            });
+                    UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                });
     }
 
     private void initEvent() {
@@ -111,15 +122,14 @@ public class LoginActivity extends BaseActivity {
         ForegroundColorSpan fCs1 = new ForegroundColorSpan(Color.parseColor("#82A9C1"));
         ForegroundColorSpan fCs2 = new ForegroundColorSpan(Color.parseColor("#82A9C1"));
 
-        spannableString.setSpan(fCs1,9,19, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(fCs2,20,30, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
+        spannableString.setSpan(fCs1, 9, 19, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(fCs2, 20, 30, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
 
         ClickableSpan user_ll = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View view) {
-                ((TextView)view).setHighlightColor(mContext.getResources().getColor(android.R.color.transparent));
+                ((TextView) view).setHighlightColor(mContext.getResources().getColor(android.R.color.transparent));
                 UIHelper.toUserAgreeActivity(mContext);
             }
 
@@ -131,17 +141,18 @@ public class LoginActivity extends BaseActivity {
         ClickableSpan secret_ll = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View view) {
-                ((TextView)view).setHighlightColor(mContext.getResources().getColor(android.R.color.transparent));
+                ((TextView) view).setHighlightColor(mContext.getResources().getColor(android.R.color.transparent));
                 UIHelper.toSecretActivity(mContext);
             }
+
             @Override
             public void updateDrawState(TextPaint ds) {
                 //设置颜色
                 ds.setUnderlineText(false);
             }
         };
-        spannableString.setSpan(user_ll,9,19, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(secret_ll,20,30, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(user_ll, 9, 19, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(secret_ll, 20, 30, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         //必须设置才能响应点击事件
         user_text.setMovementMethod(LinkMovementMethod.getInstance());
@@ -150,7 +161,7 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.weixinLogin,R.id.iv_back})
+    @OnClick({R.id.weixinLogin, R.id.iv_back})
     public void login(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -158,16 +169,16 @@ public class LoginActivity extends BaseActivity {
                 break;
             case R.id.weixinLogin:
 
-                if(isWeixinAvilible(this)){
-                    loginType  = "weixin";
-                    if(!mCheckBox.isChecked()){
-                        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                if (isWeixinAvilible(this)) {
+                    loginType = "weixin";
+                    if (!mCheckBox.isChecked()) {
+                        ToastUtils.setGravity(Gravity.BOTTOM, 0, SizeUtils.dp2px(40));
                         ToastUtils.showShort("请先同意用户协议与隐私政策");
                         return;
                     }
                     weChatAuth();
-                }else{
-                    ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                } else {
+                    ToastUtils.setGravity(Gravity.BOTTOM, 0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("您还未安装微信");
                 }
 
@@ -177,11 +188,12 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-
-    /** --------------------------------- 微信原生登录  ---------------------------------*/
+    /**
+     * --------------------------------- 微信原生登录  ---------------------------------
+     */
     private IWXAPI api;
 
-    private void weChatAuth(){
+    private void weChatAuth() {
         if (api == null) {
             api = WXAPIFactory.createWXAPI(LoginActivity.this, Constant.WXAPPKEY, true);
         }
@@ -198,48 +210,46 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    public void showFobbidUserDialog(){
+    public void showFobbidUserDialog() {
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("联系客服", v -> {
             toUDesk();
-        }).setNegativeButton("取消", v -> {}).setMsg("你的账户已被封禁\n" +
+        }).setNegativeButton("取消", v -> {
+        }).setMsg("你的账户已被封禁\n" +
                 "请联系客服处理").setBold().setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
 
 
-    /** --------------------------------- 联系客服  ---------------------------------*/
+    /**
+     * --------------------------------- 联系客服  ---------------------------------
+     */
     //没有登录的时候，userinfo不传，登录，就传
-    private void toUDesk(){
+    private void toUDesk() {
         UdeskConfig.Builder builder = new UdeskConfig.Builder();
         //token为随机获取的，如 UUID.randomUUID().toString()
         String sdktoken = UUID.randomUUID().toString();
-        KLog.d("tag",sdktoken + "");
+        KLog.d("tag", sdktoken + "");
         Map<String, String> info = new HashMap<>();
         info.put(UdeskConst.UdeskUserInfo.USER_SDK_TOKEN, sdktoken);
-        info.put(UdeskConst.UdeskUserInfo.DESCRIPTION,"描述信息");
+        info.put(UdeskConst.UdeskUserInfo.DESCRIPTION, "描述信息");
         builder.setUsephoto(true);
         builder.setUseEmotion(true);
         builder.setUseMore(true);
         builder.setUserForm(true);
         builder.setUserSDkPush(true);
-        builder.setFormCallBack(context -> KLog.d("tag","jkkkk"));
+        builder.setFormCallBack(context -> KLog.d("tag", "jkkkk"));
         builder.setDefualtUserInfo(info);
         UdeskSDKManager.getInstance().entryChat(BaseApp.getApplication(), builder.build(), sdktoken);
     }
 
 
-
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onLoginGoodEvent(LoginGoodEvent event){
-        if(this !=  null){
+    public void onLoginGoodEvent(LoginGoodEvent event) {
+        if (this != null) {
             this.finish();
         }
     }
-
-
-
 
 
     //判断是否安装了微信
@@ -257,4 +267,25 @@ public class LoginActivity extends BaseActivity {
 
         return false;
     }
+
+
+    private void showSecretDialog(Context ctx) {
+        final SecretAlertDialog iosAlertDialog = new SecretAlertDialog(ctx).builder();
+        iosAlertDialog.setMsg(ctx.getResources().getString(R.string.secret_hint))
+                .setPositiveButton("同意", v -> {
+                    SPUtils.getInstance().put("isAgree", true);
+                    KLog.d("tag", "同意");
+                })
+                .setNegativeButton("不同意", v -> {
+                    KLog.d("tag","弹框内部做了二次弹框的操作");
+                }).setCanceledOnTouchOutside(false);
+        iosAlertDialog.setCancelable(false);
+        iosAlertDialog.show();
+
+    }
+
+
 }
+
+
+

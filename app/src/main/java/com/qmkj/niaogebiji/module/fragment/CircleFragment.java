@@ -173,7 +173,7 @@ public class CircleFragment extends BaseLazyFragment {
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(focusFragment);
             }else if(i == 1){
-                CircleRecommendFragment actionFragment = CircleRecommendFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                CircleRecommendFragmentNew actionFragment = CircleRecommendFragmentNew.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
             }
@@ -212,10 +212,12 @@ public class CircleFragment extends BaseLazyFragment {
 
 
 
-    @OnClick({R.id.icon_send_msg,R.id.rl_newmsg,
+    @OnClick({R.id.icon_send_msg,
+            R.id.rl_newmsg,
         R.id.search_part,
         R.id.toReSend,
-        R.id.icon_send_cancel
+        R.id.icon_send_cancel,
+
     })
     public void clicks(View view){
         switch (view.getId()){
@@ -229,8 +231,7 @@ public class CircleFragment extends BaseLazyFragment {
                 UIHelper.toSearchActivity(getActivity());
                 break;
             case R.id.rl_newmsg:
-                KLog.d("tag","去消息界面");
-
+                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("messagecenter"));
                 break;
             case R.id.icon_send_msg:
                 if(StringUtil.isFastClick()){
@@ -269,6 +270,10 @@ public class CircleFragment extends BaseLazyFragment {
         ll_circle_send.setVisibility(View.VISIBLE);
         mediaFiles = mTempMsgBean.getImgPath();
         pathList = mTempMsgBean.getImgPath2();
+
+        //TODO 12.21发现一张图片多次提交 需重新赋值
+        picbycomma = new StringBuilder();
+        qiniuPic = new StringBuilder();
 
         if(mediaFiles != null && !mediaFiles.isEmpty()){
             for (int i = 0; i < mediaFiles.size(); i++) {
@@ -585,4 +590,7 @@ public class CircleFragment extends BaseLazyFragment {
         }).setNegativeButton("再想想", v -> {}).setMsg("取消发布动态").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
+
+
+
 }

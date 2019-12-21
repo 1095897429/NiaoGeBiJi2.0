@@ -344,7 +344,10 @@ public class UserInfoActivity extends BaseActivity {
             user_des.setText(temp.getPro_summary());
             sender_name.setText(temp.getName());
             send_article_num.setText(temp.getBlog_count() + "");
+
+            //后台会直接给2.1w还是我们自己算
             medal_count.setText(temp.getFans_count() + "");
+
             ImageUtil.load(this,temp.getAvatar(),head_icon);
 
             //徽章
@@ -458,7 +461,7 @@ public class UserInfoActivity extends BaseActivity {
                     break;
                 case R.id.circle_comment:
                     KLog.d("tag", "评论去圈子详情");
-                    UIHelper.toCommentDetailActivity(this,"5","1",position);
+//                    UIHelper.toCommentDetailActivity(this,"5","1",position);
                     break;
                 case R.id.circle_share:
                     KLog.d("tag", "圈子分享");
@@ -490,7 +493,7 @@ public class UserInfoActivity extends BaseActivity {
             int type = adapter.getItemViewType(position);
             switch (type) {
                 case FirstItemNewAdapter.RIGHT_IMG_TYPE:
-                    UIHelper.toCommentDetailActivity(this,"5","1",position);
+//                    UIHelper.toCommentDetailActivity(this,"5","1",position);
                     break;
                 default:
             }
@@ -667,7 +670,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void blockUser() {
         Map<String,String> map = new HashMap<>();
-        map.put("follow_uid",otherUid);
+        map.put("block_uid",otherUid);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().blockUser(result)
                 .subscribeOn(Schedulers.newThread())
@@ -690,7 +693,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void unblockUser() {
         Map<String,String> map = new HashMap<>();
-        map.put("follow_uid",otherUid);
+        map.put("block_uid",otherUid);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().unblockUser(result)
                 .subscribeOn(Schedulers.newThread())
@@ -811,9 +814,9 @@ public class UserInfoActivity extends BaseActivity {
                     break;
                 case 4:
                     KLog.d("tag", "转发到动态");
-                    UIHelper.toTranspondActivity(this);
-                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
-                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+//                    UIHelper.toTranspondActivity(this);
+//                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+//                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                     break;
                 default:
             }
@@ -870,7 +873,7 @@ public class UserInfoActivity extends BaseActivity {
                         ToastUtils.showShort("取消关注成功");
                         // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
                         temp.setFollow_status(0);
-                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid, 1));
+                        EventBus.getDefault().post(new PeopleFocusEvent(otherUid, 0));
                     }
                 });
     }

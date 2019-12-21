@@ -47,6 +47,7 @@ import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityTest;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
@@ -136,8 +137,13 @@ public class UIHelper {
 
 
     /** 打开图片预览界面 */
-    public static void toPicPreViewActivity(Context ctx) {
+    public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos) {
         Intent intent = new Intent(ctx, PicPreviewActivity.class);
+        Bundle bundle = new Bundle ();
+        bundle.putStringArrayList ("imageList", photos);
+        bundle.putBoolean("fromNet",true);
+        bundle.putInt("index",0);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
@@ -202,20 +208,23 @@ public class UIHelper {
     }
 
     /** 打开评论详情界面 */
-    public static void toCommentDetailActivity(Context ctx,String blog_id,String layoutType,int position) {
+    public static void toCommentDetailActivity(Context ctx,String blog_id,int layoutType,int position) {
         Intent intent = new Intent(ctx, CommentDetailActivity.class);
         Bundle  bundle = new Bundle();
         bundle.putInt("clickPostion",position);
         bundle.putString("blog_id",blog_id);
-        bundle.putString("layoutType",layoutType);
+        bundle.putInt("layoutType",layoutType);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
 
     /** 打开转发界面 */
-    public static void toTranspondActivity(Context ctx) {
+    public static void toTranspondActivity(Context ctx, CircleBean item) {
         Intent intent = new Intent(ctx, TranspondActivity.class);
+        Bundle  bundle = new Bundle();
+        bundle.putSerializable("circle",item);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
@@ -381,7 +390,7 @@ public class UIHelper {
     }
 
     /** 打开羽毛界面*/
-    public static void toFeatherNewActivity(Context ctx) {
+    public static void toFeatherctivity(Context ctx) {
         Intent intent = new Intent(ctx, FeatherActivity.class);
         ctx.startActivity(intent);
     }

@@ -91,11 +91,21 @@ public class RegisterLoginBean extends BaseBean {
         private String per_career;
         private String vip_start_date;
         private String vip_end_date;
+        //vip_last_time
+        private String vip_last_time;
 
 
         //关注别人状态
         private int follow_status;
 
+
+        public String getVip_last_time() {
+            return vip_last_time;
+        }
+
+        public void setVip_last_time(String vip_last_time) {
+            this.vip_last_time = vip_last_time;
+        }
 
         public int getFollow_status() {
             return follow_status;

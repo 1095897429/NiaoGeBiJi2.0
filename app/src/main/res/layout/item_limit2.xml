@@ -6,8 +6,11 @@
 
     <TextView
         android:id="@+id/textlimit"
-        android:text="13sp"
+        android:text=""
+        android:textSize="13sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+
 
 </LinearLayout>

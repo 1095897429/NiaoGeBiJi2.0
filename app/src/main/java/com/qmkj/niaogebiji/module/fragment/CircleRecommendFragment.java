@@ -404,7 +404,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
             KLog.d("tag", "评论去圈子详情");
             mMultiCircleNewsBean = mCircleRecommendAdapter.getData().get(position);
             blog_id = mMultiCircleNewsBean.getCircleBean().getId();
-            UIHelper.toCommentDetailActivity(getActivity(),blog_id,"1",position);
+//            UIHelper.toCommentDetailActivity(getActivity(),blog_id,"1",position);
         });
 
         mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
@@ -437,7 +437,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                     KLog.d("tag", "评论去圈子详情");
                     blog_id = mAllList.get(position).getCircleBean().getId();
                     int layoutType=  mAllList.get(position).getItemType();
-                    UIHelper.toCommentDetailActivity(getActivity(),blog_id,layoutType + "",position);
+//                    UIHelper.toCommentDetailActivity(getActivity(),blog_id,layoutType + "",position);
                     break;
                 case R.id.circle_share:
                     KLog.d("tag", "圈子分享");
@@ -445,7 +445,7 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                     break;
                 case R.id.part2222:
                     KLog.d("tag", "图片预览");
-                    UIHelper.toCommentDetailActivity(getActivity(),"5","1",position);
+//                    UIHelper.toCommentDetailActivity(getActivity(),"5","1",position);
                     break;
                 case R.id.toMoreActivity:
                     EventBus.getDefault().post(new toActionEvent("去活动界面"));
@@ -524,9 +524,9 @@ public class CircleRecommendFragment extends BaseLazyFragment {
                     break;
                 case 4:
                     KLog.d("tag", "转发到动态");
-                    UIHelper.toTranspondActivity(getActivity());
-                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
-                    getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+//                    UIHelper.toTranspondActivity(getActivity());
+//                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+//                    getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                     break;
                 default:
             }

@@ -94,12 +94,12 @@ public class ToolRecommentListFragment extends BaseLazyFragment {
         initSamrtLayout();
     }
 
+
     @Override
-    protected void lazyLoadData() {
-
+    protected void initData() {
         toollist();
-
     }
+
     private void toollist() {
         Map<String,String> map = new HashMap<>();
         map.put("cate",cate);

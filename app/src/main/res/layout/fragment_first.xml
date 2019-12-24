@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:id="@+id/coordinator"
     android:paddingTop="@dimen/status_bar_height"
     android:background="@color/white"
     android:layout_width="match_parent"
@@ -97,20 +98,19 @@
 
         <LinearLayout
             android:id="@+id/ll_moring"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/icon_shadows"
             android:padding="16dp"
             android:orientation="vertical">
 
             <LinearLayout
-                android:background="@drawable/bg_corners_12"
+                android:background="@drawable/bg_corners_14_gradient"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:paddingTop="16dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
                 android:paddingBottom="5dp"
                 android:orientation="vertical">
 
@@ -118,15 +118,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
                     <ImageView
-                        android:src="@mipmap/icon_moring"
-                        android:layout_width="94dp"
-                        android:layout_height="18dp" />
+                        android:id="@+id/moring1"
+                        android:src="@mipmap/icon_moring_1"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp" />
+
+                    <TextView
+                        android:layout_marginLeft="9dp"
+                        android:layout_toRightOf="@+id/moring1"
+                        android:id="@+id/moring_time"
+                        android:text=""
+                        android:textSize="11sp"
+                        android:layout_centerVertical="true"
+                        android:textColor="#AAAEB3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
 
                     <TextView
                         android:id="@+id/toMoreMoring"
                         android:text="查看更多"
+                        android:layout_marginRight="14dp"
                         android:textSize="11sp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
@@ -136,46 +149,51 @@
 
                 </RelativeLayout>
 
-
-                <TextView
-                    android:id="@+id/moring_content"
-                    android:layout_marginTop="9dp"
-                    android:text="贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_first_color"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/moring_time"
-                        android:text="2019/01/01"
-                        android:textSize="11sp"
+                        android:layout_toLeftOf="@+id/listenMoring"
                         android:layout_centerVertical="true"
-                        android:textColor="#AAAEB3"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/moring_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="14sp"
+                        android:maxLines="2"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-
 
                     <ImageView
                         android:id="@+id/listenMoring"
-                        android:src="@mipmap/icon_listen_moring"
+                        android:src="@mipmap/icon_moring_play"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_width="108dp"
-                        android:layout_height="50dp" />
-
-
+                        android:layout_width="72dp"
+                        android:layout_height="64dp" />
 
                 </RelativeLayout>
 
 
             </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tool_recycler"
+                android:overScrollMode="never"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
 
@@ -220,7 +238,7 @@
 
         <ImageView
             android:id="@+id/icon_catogory"
-            android:src="@mipmap/icon_catogory"
+            android:src="@mipmap/icon_category_1"
             android:visibility="visible"
             android:layout_gravity="center"
             android:layout_width="28dp"

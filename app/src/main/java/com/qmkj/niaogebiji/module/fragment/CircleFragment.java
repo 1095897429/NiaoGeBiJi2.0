@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -12,6 +13,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -22,14 +25,19 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCancellationSignal;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -43,6 +51,7 @@ import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.db.DBManager;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.event.SendingCircleEvent;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.socks.library.KLog;
@@ -50,11 +59,14 @@ import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.xzh.imagepicker.bean.MediaFile;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -96,8 +108,6 @@ public class CircleFragment extends BaseLazyFragment {
     @BindView(R.id.part33)
     RelativeLayout part33;
 
-
-
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<String> mTitls = new ArrayList<>();
@@ -126,23 +136,10 @@ public class CircleFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
         String [] titile = new String[]{"关注","推荐"};
-
         pager_title.initData(titile,mViewPager,1);
         mExecutorService = Executors.newFixedThreadPool(2);
     }
 
-
-    //点击切换fragement会调用
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(hidden){
-            //pause
-
-        }else{
-            //resume
-        }
-    }
 
     @Override
     public void initData() {
@@ -153,7 +150,6 @@ public class CircleFragment extends BaseLazyFragment {
         bean = new ChannelBean("1","推荐");
         mChannelBeanList.add(bean);
 
-
         if(null != mChannelBeanList){
             setUpAdater();
         }
@@ -161,18 +157,15 @@ public class CircleFragment extends BaseLazyFragment {
     }
 
 
-
-
-
     private void setUpAdater() {
         mFragmentList.clear();
         mTitls.clear();
         for (int i = 0; i < mChannelBeanList.size(); i++) {
-            if(i == 0){
+            if (i == 0) {
                 CircleFocusFragment focusFragment = CircleFocusFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(focusFragment);
-            }else if(i == 1){
+            } else if (i == 1) {
                 CircleRecommendFragmentNew actionFragment = CircleRecommendFragmentNew.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
@@ -181,34 +174,14 @@ public class CircleFragment extends BaseLazyFragment {
         }
 
         //设置适配器
-        mFirstFragmentAdapter = new FirstFragmentAdapter(getActivity(),getChildFragmentManager(), mFragmentList, mTitls);
+        mFirstFragmentAdapter = new FirstFragmentAdapter(getActivity(), getChildFragmentManager(), mFragmentList, mTitls);
         mViewPager.setAdapter(mFirstFragmentAdapter);
         mViewPager.setOffscreenPageLimit(mFragmentList.size());
         //设置当前显示标签页为第二页
         mViewPager.setCurrentItem(1);
 
-        initEvent();
     }
 
-    private void initEvent() {
-        //设置事件
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                KLog.d(TAG, "选中的位置 ：" + position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-    }
 
 
 
@@ -231,6 +204,13 @@ public class CircleFragment extends BaseLazyFragment {
                 UIHelper.toSearchActivity(getActivity());
                 break;
             case R.id.rl_newmsg:
+                //TODO 测试布局移动
+
+//                Animation translateAnimation = AnimationUtils.loadAnimation(getActivity(),R.anim.trans);
+//                ll_circle_send.setAnimation(translateAnimation);
+//                ll_circle_send.startAnimation(translateAnimation);
+
+//                initAnim();
                 UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("messagecenter"));
                 break;
             case R.id.icon_send_msg:
@@ -256,20 +236,20 @@ public class CircleFragment extends BaseLazyFragment {
         if(requestCode == 100 && resultCode == 200){
             Bundle bundle = data.getExtras();
             mTempMsgBean = (TempMsgBean) bundle.getSerializable("key");
-            changeData();
 
+            changeData();
         }
     }
 
     private ExecutorService mExecutorService;
 
     private void changeData() {
-        part11.setVisibility(View.VISIBLE);
-        part22.setVisibility(View.GONE);
-        part33.setVisibility(View.GONE);
-        ll_circle_send.setVisibility(View.VISIBLE);
+
         mediaFiles = mTempMsgBean.getImgPath();
         pathList = mTempMsgBean.getImgPath2();
+        blog_link  = mTempMsgBean.getLinkurl();
+        blog_link_title =  mTempMsgBean.getLinkTitle();
+
 
         //TODO 12.21发现一张图片多次提交 需重新赋值
         picbycomma = new StringBuilder();
@@ -291,12 +271,13 @@ public class CircleFragment extends BaseLazyFragment {
         if(!TextUtils.isEmpty(picbycomma.toString())){
             resultPic =  picbycomma.substring(0,picbycomma.length()  - 1);
             KLog.d("tag","以逗号分隔：" + resultPic);
+        }else{
+            resultPic = "";
         }
 
 
         //内容
         blog  = mTempMsgBean.getContent();
-
 
         //判断网络是否链接
         if(NetworkUtils.isConnected()){
@@ -361,8 +342,6 @@ public class CircleFragment extends BaseLazyFragment {
                         if(!TextUtils.isEmpty(qiniuToken)){
                             if(!TextUtils.isEmpty(resultPic)){
                                 uploadPicToQiNiu();
-                            }else{
-                                createBlog();
                             }
                         }
                     }
@@ -370,6 +349,10 @@ public class CircleFragment extends BaseLazyFragment {
     }
 
 
+    UploadManager uploadManager;
+    LinkedList<String> linkedList;
+    //返回图片所有的集合
+    List<String>  tempList;
     private void uploadPicToQiNiu() {
 
         Configuration config = new Configuration.Builder()
@@ -386,15 +369,16 @@ public class CircleFragment extends BaseLazyFragment {
                 .build();
 
         // 重用uploadManager一般地，只需要创建一个uploadManager对象
-        UploadManager uploadManager = new UploadManager(config);
+        uploadManager = new UploadManager(config);
         //data = <File对象、或 文件路径、或 字节数组>
         //String key = <指定七牛服务上的文件名，或 null>;
         //String token = <从服务端获取>;
-        key = System.currentTimeMillis() + "niaogebiji";
+        key = "niaogebiji";
         qiniuToken = qiniuToken.replace("\\s","");
         qiniuToken = qiniuToken.replace("\n","");
 
-        List<String>  tempList = new ArrayList<>();
+        tempList = new ArrayList<>();
+        tempList.clear();
 
         if(null != mediaFiles && !mediaFiles.isEmpty()){
             for (MediaFile fileBean  : mediaFiles) {
@@ -408,36 +392,74 @@ public class CircleFragment extends BaseLazyFragment {
             }
         }
 
-        for (int i = 0; i < tempList.size(); i++) {
-            data = tempList.get(i);
-            uploadManager.put(data, key + i, qiniuToken,
-                    (key, info, res) -> {
+        linkedList = new LinkedList<>();
+        linkedList.clear();
+        linkedList.addAll(tempList);
+
+        progressBar.setMax(tempList.size() * 100);
+        tempProgress = 0;
+        uploadPicToQiNiuByOnePic();
+
+    }
+
+    private void uploadPicToQiNiuByOnePic() {
+
+        //查询并移除第一个元素；
+        if(linkedList.size() > 0){
+            data = linkedList.poll();
+
+            mExecutorService.submit(() -> {
+                KLog.d("tag","data "  + data);
+                uploadManager.put(data, System.currentTimeMillis() + key , qiniuToken, new UpCompletionHandler() {
+                    @Override
+                    public void complete(String key, ResponseInfo info, JSONObject response) {
                         //res包含hash、key等信息，具体字段取决于上传策略的设置
                         if(info.isOK()) {
-                            KLog.i("qiniu", "Upload Success");
+                            KLog.i("tag", key + " Upload Success");
+                            //恢复默认值
+                            data = "";
                         } else {
-                            KLog.i("qiniu", "Upload Fail");
+                            KLog.i("tag", key + " Upload Fail");
                             //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
                         }
-                        KLog.i("qiniu", key + ",  " + info + ", " + res);
-                    }, new UploadOptions(null, null, false, (key, percent) -> {
-                        //上传进度
-                        KLog.i("qiniu", key + ": " + percent);
-                        if(1.0 == percent){
-                            Message message = Message.obtain();
-                            message.what = QI_NIU_UPLOAD_OK;
-                            handler.sendMessage(message);
-                            qiniuPic.append(key).append(",");
-                        }
-
-                    }, new UpCancellationSignal() {
-                        @Override
-                        public boolean isCancelled() {
-                            return isCancelled;
-                        }
-                    }));
+                    }
+                },new UploadOptions(null,"mime_type",true,upProgressHandler,upCancellationSignal));
+            });
         }
+
+
     }
+
+
+    private int tempProgress;
+    UpProgressHandler upProgressHandler = new UpProgressHandler() {
+    /**
+     * @param key 上传时的upKey；
+     * @param percent 上传进度；
+     */
+        @Override
+        public void progress(String key, double percent) {
+//            progressDialog.setProgress((int) (upLoadData.length * percent));
+//            KLog.d("tag","key " + key + "  percent  " + percent);
+
+            progressBar.setProgress(tempProgress + (int) (percent * 100));
+            if(1.0 == percent){
+                Message message = Message.obtain();
+                message.what = QI_NIU_UPLOAD_OK;
+                handler.sendMessage(message);
+                qiniuPic.append(key).append(",");
+                tempProgress += 100;
+            }
+        }
+    };
+
+
+    UpCancellationSignal upCancellationSignal = new UpCancellationSignal() {
+        @Override
+        public boolean isCancelled() {
+            return isCancelled;
+        }
+    };
 
 
     @SuppressLint("HandlerLeak")
@@ -448,12 +470,13 @@ public class CircleFragment extends BaseLazyFragment {
                 //七牛上传图片完成计数
                 case QI_NIU_UPLOAD_OK:
                     uploadTaskCount++;
-                    KLog.e("qiniu", "上传的个数 " + uploadTaskCount + "");
-                    float per = (float) (uploadTaskCount * 1.0 / mediaFiles.size());
-                    int pro = (int) (per * 100);
-                    progressBar.setProgress(pro);
+                    KLog.e("tag", "上传的个数 " + uploadTaskCount + "");
+
+//                    float per = (float) (uploadTaskCount * 1.0 / mediaFiles.size());
+//                    int pro = (int) (per * 100);
+//                    progressBar.setProgress(pro);
                     //容器中图片全部上传完成
-                    if (uploadTaskCount == mediaFiles.size()) {
+                    if (uploadTaskCount == tempList.size()) {
                         part11.setVisibility(View.GONE);
 
                         if(!TextUtils.isEmpty(qiniuPic.toString())){
@@ -461,13 +484,22 @@ public class CircleFragment extends BaseLazyFragment {
                             KLog.d("tag","以逗号分隔：" + lashPic);
                         }
 
-
                         createBlog();
+                        return;
                     }
+
+
+                    //类似手动点击
+                    uploadPicToQiNiuByOnePic();
+
                     break;
                 case CHECK_NET_OK:
+                    //网络正常，显示进度
+                    ll_circle_send.setVisibility(View.VISIBLE);
+                    part11.setVisibility(View.VISIBLE);
                     //如果没有图片，则直接上传，不需要获取tonken
                     if(TextUtils.isEmpty(resultPic)){
+                        setAnimation(progressBar);
                         createBlog();
                     }else{
                         getUploadToken();
@@ -482,13 +514,62 @@ public class CircleFragment extends BaseLazyFragment {
         }
     };
 
+    boolean isAnimPause;
+    ValueAnimator animator;
+    private void setAnimation(ProgressBar view) {
+        animator = ValueAnimator.ofInt(0, 100).setDuration(1000);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(valueAnimator -> {
+            KLog.d("tag",valueAnimator.getAnimatedValue() + "");
+            view.setProgress((Integer) valueAnimator.getAnimatedValue());
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                KLog.d("tag","取消了");
+                isAnimPause = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //动画正常结束 动画对象存在 界面存储 文本存在
+                if(!isAnimPause && animation != null && null != this){
+                    KLog.d("tag","动画结束");
+                    part11.setVisibility(View.GONE);
+                    part22.setVisibility(View.GONE);
+                    part33.setVisibility(View.VISIBLE);
+                    //发送事件去更新
+                    EventBus.getDefault().post(new SendOkCircleEvent());
+                    removeTempMsg();
+                    new Handler().postDelayed(() -> {
+                        hideState();
+                    },2000);
+                }
+
+                //重新恢复状态
+                isAnimPause = false;
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+            }
+
+            @Override
+            public void onAnimationPause(Animator animation) {
+                super.onAnimationPause(animation);
+            }
+        });
+        animator.start();
+    }
+
+
 
 
     // 点击取消按钮，让UpCancellationSignal##isCancelled()方法返回true，以停止上传
     private void cancell() {
         isCancelled = true;
     }
-
 
 
     String blog = "";
@@ -512,8 +593,8 @@ public class CircleFragment extends BaseLazyFragment {
         Map<String,String> map = new HashMap<>();
         map.put("blog",blog + "");
         map.put("images",lashPic + "");
-        map.put("link",mTempMsgBean.getLinkurl() + "");
-        map.put("link_title",mTempMsgBean.getLinkTitle() + "");
+        map.put("link",blog_link + "");
+        map.put("link_title",blog_link_title + "");
         map.put("type",blog_type + "");
         map.put("pid",blog_pid + "");
         map.put("is_comment",blog_is_comment + "");
@@ -529,21 +610,51 @@ public class CircleFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse response) {
                         KLog.d("tag","response " + response.getReturn_code());
-                        part33.setVisibility(View.VISIBLE);
-                        new Handler().postDelayed(() -> {
-//                            initAnim();
-                             hideState();
-                        },2000);
+
+
+                        if(TextUtils.isEmpty(resultPic)){
+                            ll_circle_send.setVisibility(View.VISIBLE);
+                            part33.setVisibility(View.VISIBLE);
+                        }else{
+                            //发送事件去更新
+                            EventBus.getDefault().post(new SendOkCircleEvent());
+                            removeTempMsg();
+
+                            new Handler().postDelayed(() -> {
+                                hideState();
+                            },2000);
+                        }
+
+                        cleanData();
+
+
                     }
                 });
     }
 
+    private void cleanData() {
+        uploadTaskCount = 0;
+        data = "";
+        key = "";
+        resultPic = "";
+        lashPic = "";
+        blog_link  = "";
+        blog_link_title = "";
+    }
+
+
+    public  void removeTempMsg() {
+        mTempMsgBean = null;
+        SPUtils.getInstance().remove(Constant.TMEP_MSG_INFO);
+    }
+
     private void hideState() {
         ll_circle_send.setVisibility(View.GONE);
-        part11.setVisibility(View.VISIBLE);
+        part11.setVisibility(View.GONE);
         part22.setVisibility(View.GONE);
         part33.setVisibility(View.GONE);
         progressBar.setProgress(0);
+        progressBar.setMax(100);
         uploadTaskCount = 0;
     }
 
@@ -551,9 +662,10 @@ public class CircleFragment extends BaseLazyFragment {
     private void initAnim() {
         KLog.d("tag","----以当前控件为原点，向下为正方向---");
         ObjectAnimator translationY = ObjectAnimator.ofFloat(ll_circle_send, "translationY", 0f, -SizeUtils.dp2px(60f));
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(ll_circle_send, "alpha", 1f, 0);
         ObjectAnimator translationY1 = ObjectAnimator.ofFloat(mViewPager, "translationY", 0f, -SizeUtils.dp2px(60f));
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(translationY,translationY1);
+        animatorSet.playTogether(translationY,translationY1,alpha);
         animatorSet.setDuration(1000);
         animatorSet.start();
         //动画的监听
@@ -582,11 +694,10 @@ public class CircleFragment extends BaseLazyFragment {
     }
 
 
-
     public void showDeleteCircle(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(getActivity()).builder();
         iosAlertDialog.setPositiveButton("取消", v -> {
-
+            hideState();
         }).setNegativeButton("再想想", v -> {}).setMsg("取消发布动态").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }

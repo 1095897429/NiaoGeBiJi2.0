@@ -93,7 +93,7 @@
                         <TextView
                             android:layout_centerVertical="true"
                             android:id="@+id/time_publish_second"
-                            android:text="11分钟前"
+                            android:text=""
                             android:textSize="11sp"
                             android:layout_marginTop="14dp"
                             android:textColor="@color/text_three_color"
@@ -156,7 +156,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:text="全部回复"
+            android:text="最新回复"
             android:textSize="17sp"
             android:textColor="@color/text_first_color"
             android:layout_width="match_parent"

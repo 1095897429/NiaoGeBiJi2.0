@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -49,6 +50,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
+import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CommentAdapter;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
@@ -68,7 +70,8 @@ import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
 import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
-import com.qmkj.niaogebiji.module.event.FlashShareEvent;
+import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ObservableScrollView;
@@ -77,11 +80,6 @@ import com.qmkj.niaogebiji.module.widget.StarBar;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
-import com.umeng.socialize.ShareAction;
-import com.umeng.socialize.UMShareListener;
-import com.umeng.socialize.bean.SHARE_MEDIA;
-import com.umeng.socialize.media.UMImage;
-import com.umeng.socialize.media.UMWeb;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -236,8 +234,6 @@ public class NewsDetailActivity extends BaseActivity {
     LinearLayout ll_empty;
 
 
-
-
     private boolean isSecondComment = false;
 
     //文章的id
@@ -294,7 +290,7 @@ public class NewsDetailActivity extends BaseActivity {
 
                 String audio =  mNewsDetailBean.getVideo();
                 String title =  mNewsDetailBean.getSummary();
-                EventBus.getDefault().post(new AudioEvent(audio,title));
+                EventBus.getDefault().post(new AudioEvent(audio,title,""));
                 break;
             case R.id.toLlTalk:
                 //TODO 弹框1
@@ -314,7 +310,7 @@ public class NewsDetailActivity extends BaseActivity {
                 break;
             case R.id.iv_right:
             case R.id.share:
-                showShareDialog();
+                StringUtil.showShareDialog(NewsDetailActivity.this,mNewsDetailBean);
                 break;
             case R.id.test_submit:
                 if(isQuestionClick){
@@ -1206,6 +1202,13 @@ public class NewsDetailActivity extends BaseActivity {
         nickname_second.setText(temp.getUsername());
         comment_text_second.setText(temp.getMessage());
         ImageUtil.load(this,temp.getAvatar(),head_second_icon);
+        //时间
+        //发布时间
+        if(StringUtil.checkNull(temp.getDateline())){
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getDateline()) * 1000L);
+            time_publish_second.setText(s);
+        }
+
 
         //点赞
         zanChange(zan_second_num_second,zan_second_img_second,temp.getGood_num(),temp.getIs_good());
@@ -1314,10 +1317,10 @@ public class NewsDetailActivity extends BaseActivity {
                         KLog.d(response.getReturn_code());
 
                         if(!isSecondComment){
+                            ToastUtils.showShort("                       评论成功\n审核通过后展示，优质评论+10羽毛");
                             //直接刷新
-                            page = 1;
-                            allFirstList.clear();
-                            getCommentData();
+                            EventBus.getDefault().post(new RefreshActicleCommentEvent());
+
                         }else{
                             secondPage = 1;
                             allCommentList.clear();
@@ -1335,7 +1338,6 @@ public class NewsDetailActivity extends BaseActivity {
                                 ToastUtils.showShort("您评论的字数过多");
                                 return;
                             }
-
                             createBlog();
                         }
                     }
@@ -1408,7 +1410,7 @@ public class NewsDetailActivity extends BaseActivity {
             @Override
             public void onGlobalLayout() {
                 solid_title_height = solid_part.getHeight();
-                KLog.d("tag ", "标题的固定高度为 " + solid_title_height);
+//                KLog.d("tag ", "标题的固定高度为 " + solid_title_height);
                 solid_part.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -1586,7 +1588,8 @@ public class NewsDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-
+                        //评论成功后发送事件刷新圈子
+                        EventBus.getDefault().post(new SendOkCircleEvent());
                     }
                 });
     }
@@ -1860,6 +1863,18 @@ public class NewsDetailActivity extends BaseActivity {
                     }
 
                 });
+    }
+
+
+
+    /** 更新评论数据 */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshActicleCommentEvent(RefreshActicleCommentEvent event){
+        page = 1;
+        allFirstList.clear();
+        getCommentData();
+
+        //TODO 定位到具体的位置
     }
 
 

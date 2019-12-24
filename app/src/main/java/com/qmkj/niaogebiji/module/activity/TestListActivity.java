@@ -157,14 +157,12 @@ public class TestListActivity extends BaseActivity {
             if("0".equals(tempRecord.getIs_tested() + "")){
                 UIHelper.toTestDetailActivity(this,temp);
             }else if("1".equals(tempRecord.getIs_tested() + "")){
-               String score =  tempRecord.getScore();
-               String passScore = temp.getPass_score();
-               if(score.compareTo(passScore) < 0){
-                   KLog.d("tag","不及格");
-                   UIHelper.toTestResultFailActivity(this,temp);
-               }else{
-                   UIHelper.toTestResultActivity(this,temp);
-               }
+                if(Integer.parseInt(tempRecord.getScore()) < Integer.parseInt(temp.getPass_score())){
+                    KLog.d("tag","不及格");
+                    UIHelper.toTestResultFailActivity(this,temp);
+                }else{
+                    UIHelper.toTestResultActivity(this,temp);
+                }
             }
 
         });

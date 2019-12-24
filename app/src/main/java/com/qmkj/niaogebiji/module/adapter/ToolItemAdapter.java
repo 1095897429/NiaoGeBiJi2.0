@@ -1,8 +1,13 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -26,11 +31,14 @@ import java.util.List;
 public class ToolItemAdapter extends BaseQuickAdapter<ToollndexBean, BaseViewHolder> {
 
     public ToolItemAdapter(List<ToollndexBean> data) {
-        super(R.layout.tool_pic_more,data);
+        super(R.layout.tool_pic_more_index,data);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, ToollndexBean item) {
+
+
+
 
         if(!TextUtils.isEmpty(item.getIcon())){
             ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.tool_pic));
@@ -41,7 +49,9 @@ public class ToolItemAdapter extends BaseQuickAdapter<ToollndexBean, BaseViewHol
             imageView.setImageResource(R.mipmap.icon_tool_more);
         }
 
-
+        TextView textView = helper.getView(R.id.tool_txt);
+        TextPaint paint = textView.getPaint();
+        paint.setFakeBoldText(true);
         helper.setText(R.id.tool_txt,item.getTitle());
     }
 }

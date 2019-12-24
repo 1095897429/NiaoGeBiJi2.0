@@ -1,10 +1,12 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
@@ -17,6 +19,8 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -60,6 +64,9 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
                 .addOnClickListener(R.id.ll_has_second_comment)
                 .addOnClickListener(R.id.comment_priase)
                 .addOnClickListener(R.id.toFirstComment);
+
+        getIconType(helper,item);
+
         //评论时间
         if(!TextUtils.isEmpty(item.getDateline())){
             String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(item.getDateline()) * 1000L);
@@ -119,10 +126,29 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         //如果一级评论下的二级评论条数大于 1 条才显示
         if(null != list && !list.isEmpty()){
             helper.setVisible(R.id.ll_has_second_comment,true);
-            helper.setText(R.id.all_comment,"查看全部" + list.size() + "条回复");
+            if( list.size() > 2){
+                helper.setVisible(R.id.all_comment,true);
+                helper.setText(R.id.all_comment,"查看全部" + list.size() + "条回复");
+            }else{
+                helper.setVisible(R.id.all_comment,false);
+            }
+
         }else{
             helper.setVisible(R.id.ll_has_second_comment,false);
         }
+
+
+
+        //评论删除
+        helper.getView(R.id.comment_delete).setOnClickListener(view -> {
+            showRemoveDialog(item,helper.getAdapterPosition());
+        });
+
+
+        //去个人中心
+        helper.getView(R.id.head_icon).setOnClickListener(view -> {
+            UIHelper.toUserInfoActivity(mContext,item.getUid());
+        });
 
     }
 
@@ -198,6 +224,48 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
                 });
     }
 
+
+
+    //通过uid加载布局 -- 自己的可以删除，其他的不管
+    private void getIconType(BaseViewHolder helper, CommentBean.FirstComment item) {
+        String uid = item.getUid();
+        String myUid = StringUtil.getUserInfoBean().getUid();
+        if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
+            helper.setVisible(R.id.comment_delete,true);
+        }else{
+            helper.setVisible(R.id.comment_delete,false);
+        }
+    }
+
+
+    private void showRemoveDialog(CommentBean.FirstComment itemBean, int position) {
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(mContext).builder();
+        iosAlertDialog.setPositiveButton("删除", v -> {
+            deleteComment(itemBean,position);
+        }).setNegativeButton("取消", v -> {
+        }).setMsg("确定要删除这条评论？").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+    private void deleteComment(CommentBean.FirstComment itemBean, int position) {
+        Map<String,String> map = new HashMap<>();
+        map.put("target_type","1");
+        map.put("target_id",itemBean.getCid());
+
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().deleteComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        mData.remove(position);
+                        notifyDataSetChanged();
+                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
 
 }

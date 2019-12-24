@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -54,12 +55,19 @@ import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
+import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
+import com.qmkj.niaogebiji.module.event.RefreshCircleDetailCommentEvent;
+import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,6 +93,9 @@ import io.reactivex.schedulers.Schedulers;
  * 2.
  */
 public class CommentDetailActivity extends BaseActivity {
+
+    @BindView(R.id.smartRefreshLayout)
+    SmartRefreshLayout smartRefreshLayout;
 
     @BindView(R.id.sender_name)
     TextView sender_name;
@@ -133,6 +144,12 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.more_comment_recycler)
     RecyclerView mRecyclerView;
 
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+    @BindView(R.id.tv_empty)
+    TextView tv_empty;
+
 
     @BindView(R.id.part_yc_pic)
     LinearLayout part_yc_pic;
@@ -155,6 +172,12 @@ public class CommentDetailActivity extends BaseActivity {
 
     @BindView(R.id.link_http)
     TextView link_http;
+
+    @BindView(R.id.acticle_img)
+    ImageView acticle_img;
+
+    @BindView(R.id.acticle_title)
+    TextView acticle_title;
 
 
     @BindView(R.id.part_zf_link)
@@ -182,9 +205,6 @@ public class CommentDetailActivity extends BaseActivity {
 
     @BindView(R.id.pic_recyler)
     RecyclerView pic_recyler;
-
-
-
 
 
     //1级 适配器
@@ -215,6 +235,11 @@ public class CommentDetailActivity extends BaseActivity {
     private int myPotion = -1;
 
     @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_comment_detail;
     }
@@ -224,25 +249,12 @@ public class CommentDetailActivity extends BaseActivity {
         myPotion = getIntent().getExtras().getInt("clickPostion");
         blog_id = getIntent().getExtras().getString("blog_id");
         layoutType = getIntent().getExtras().getInt("layoutType");
-
         initLayout();
         initPicLayout();
+        initSamrtLayout();
         initTransferPicLayout();
         blogDetail();
         getBlogCommentList();
-    }
-
-
-
-
-    public void showDeteleCircle(){
-        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
-        iosAlertDialog.setPositiveButton("删除", v -> {
-            deleteBlog();
-        }).setNegativeButton("再想想", v -> {
-
-        }).setMsg("删除帖子?").setCanceledOnTouchOutside(false);
-        iosAlertDialog.show();
     }
 
 
@@ -271,8 +283,8 @@ public class CommentDetailActivity extends BaseActivity {
             R.id.iv_back,
             R.id.part_zf_link,
             R.id.part_yc_link,
-            R.id.part1111
-
+            R.id.part1111,
+            R.id.part_yc_acticle
     })
     public void clicks(View view){
         switch (view.getId()){
@@ -281,10 +293,12 @@ public class CommentDetailActivity extends BaseActivity {
                 break;
             case R.id.part_yc_link:
                 UIHelper.toWebViewActivity(this,mCircleBean.getLink());
-
                 break;
             case R.id.part_zf_link:
                 UIHelper.toWebViewActivity(this,mCircleBean.getP_blog().getLink());
+                break;
+            case R.id.part_yc_acticle:
+                UIHelper.toNewsDetailActivity(this,mCircleBean.getArticle_id());
                 break;
             case R.id.iv_back:
                 finish();
@@ -378,10 +392,19 @@ public class CommentDetailActivity extends BaseActivity {
             oneComment = bottomSheetAdapter.getData().get(position).getCircleComment();
             KLog.d("tag","点击此评论的id 为  " + oneComment.getId() + " 被回复的人事 " + oneComment.getUser_info().getName());
             showTalkDialogSecondComment(position, oneComment);
+
+        });
+
+        bottomSheetAdapter.setOnItemChildClickListener((adapter, view13, position) -> {
+            isSecondComment = true;
+            oneComment = bottomSheetAdapter.getData().get(position).getCircleComment();
+            KLog.d("tag","点击此评论的id 为  " + oneComment.getId() + " 被回复的人是 " + oneComment.getUser_info().getName());
+            showTalkDialogSecondComment(position, oneComment);
         });
 
         initScondEvent();
         allSecondComments.clear();
+        blog_comment_id = oneComment.getId();
         getSecondCommentComment();
     }
 
@@ -405,6 +428,11 @@ public class CommentDetailActivity extends BaseActivity {
         nickname_second.setText(temp.getUser_info().getName());
         comment_text_second.setText(temp.getComment());
         ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
+        //发布时间
+        if(StringUtil.checkNull(temp.getCreate_at())){
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getCreate_at()) * 1000L);
+            time_publish_second.setText(s);
+        }
 
 
 
@@ -422,7 +450,6 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     private void getSecondCommentComment() {
-        blog_comment_id = oneComment.getId();
         Map<String,String> map = new HashMap<>();
         map.put("blog_comment_id",blog_comment_id + "");
         map.put("page",secondPage + "");
@@ -506,7 +533,6 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     /** --------------------------------- 点赞评论  ---------------------------------*/
-
     //用于记录在二级评论点赞后，一级界面数据没有刷新
     private int zanPosition;
 
@@ -591,11 +617,16 @@ public class CommentDetailActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCommentAdapter = new CommentAdapterByNewBean(mAllList);
+        mCommentAdapter.setMyPotion(myPotion);
         mRecyclerView.setAdapter(mCommentAdapter);
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
+        mCommentAdapter.setChangeDetailListener((good_num, is_good, com_num) -> {
+            zanCommentChange(comment,zan_num,image_circle_priase, good_num,is_good ,com_num);
+            first_comment_num.setText("全部" + com_num + "条回复");
+        });
         initEvent();
     }
 
@@ -613,7 +644,6 @@ public class CommentDetailActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse<List<CommentBeanNew>> response) {
                         mCommentBeanNewList = response.getReturn_data();
-                        if(null != mCommentBeanNewList){
                             if(1 == page){
                                 setCommentListData();
                                 mCommentAdapter.setNewData(mAllList);
@@ -632,7 +662,6 @@ public class CommentDetailActivity extends BaseActivity {
                                     mCommentAdapter.loadMoreEnd();
                                 }
                             }
-                        }
                     }
 
 
@@ -661,6 +690,12 @@ public class CommentDetailActivity extends BaseActivity {
                 bean1 = mCommentBeanNewList.get(i);
                 mAllList.add(bean1);
             }
+            mRecyclerView.setVisibility(View.VISIBLE);
+            ll_empty.setVisibility(View.GONE);
+        }else{
+            mRecyclerView.setVisibility(View.GONE);
+            ll_empty.setVisibility(View.VISIBLE);
+            tv_empty.setText("没人评论～");
         }
     }
 
@@ -683,10 +718,6 @@ public class CommentDetailActivity extends BaseActivity {
 
         mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()){
-                case R.id.comment_delete:
-                    blog_id = mCommentAdapter.getData().get(position).getId();
-                    showDeteleCircle();
-                    break;
                 case R.id.toFirstComment:
                     oneComment = mCommentAdapter.getData().get(position);
                     KLog.d("tag","点击此评论的id 为  " + oneComment.getId());
@@ -737,7 +768,6 @@ public class CommentDetailActivity extends BaseActivity {
                     public void onSuccess(HttpResponse response) {
                         KLog.d("tag","response " + response.getReturn_code());
                         ToastUtils.showShort("评论成功");
-
                         if(!isSecondComment){
                             //直接刷新
                             page = 1;
@@ -747,6 +777,8 @@ public class CommentDetailActivity extends BaseActivity {
                             secondPage = 1;
                             allSecondComments.clear();
                             getSecondCommentComment();
+
+                            EventBus.getDefault().post(new RefreshCircleDetailCommentEvent());
                         }
 
                     }
@@ -766,8 +798,14 @@ public class CommentDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<CircleBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<CircleBean> response) {
-                        KLog.d("tag","response " + response.getReturn_code());
+                        if(smartRefreshLayout != null){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         mCircleBean = response.getReturn_data();
+                        if(mCommentAdapter != null){
+                            mCommentAdapter.setCircleBean(mCircleBean);
+                        }
                         setData();
                     }
                 });
@@ -776,8 +814,6 @@ public class CommentDetailActivity extends BaseActivity {
 
     @SuppressLint("SetTextI18n")
     private void setData() {
-
-        //通用配置
         if(mCircleBean.getUser_info() != null){
             //正文
             content.setText(mCircleBean.getBlog());
@@ -787,8 +823,6 @@ public class CommentDetailActivity extends BaseActivity {
             ImageUtil.load(mContext,mCircleBean.getUser_info().getAvatar(),head_icon);
             //底部使用者头像
             ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),user_head_icon);
-
-
             //职位
             sender_tag.setText(mCircleBean.getUser_info().getCompany_name() + mCircleBean.getUser_info().getPosition());
 
@@ -802,20 +836,11 @@ public class CommentDetailActivity extends BaseActivity {
             }
 
             //发布时间
-            if(null != mCircleBean.getCreated_at()){
-                if(!TextUtils.isEmpty(mCircleBean.getCreated_at())){
-                    String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(mCircleBean.getCreated_at()) * 1000L);
-                    if(!TextUtils.isEmpty(s)){
-                        if("天前".contains(s)){
-                            publish_time.setText(TimeUtils.millis2String(Long.parseLong(mCircleBean.getCreated_at()) * 1000L,"yyyy/MM/dd"));
-                        }else{
-                            publish_time.setText(s);
-                        }
-                    }
-                }
-            }else{
-                publish_time.setText("");
+            if(StringUtil.checkNull(mCircleBean.getCreated_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(mCircleBean.getCreated_at()) * 1000L);
+                    publish_time.setText(s);
             }
+
             //点赞数
             zanCommentChange(comment,zan_num,image_circle_priase,
                     mCircleBean.getLike_num() + "",mCircleBean.getIs_like(),mCircleBean.getComment_num());
@@ -836,12 +861,17 @@ public class CommentDetailActivity extends BaseActivity {
                 mPicList = mPicList.subList(0,3);
             }
             mCirclePicAdapter.setNewData(mPicList);
+            mCirclePicAdapter.setTotalSize(mCircleBean.getImages().size());
+
         }else if(CircleRecommentAdapterNew.YC_LINK == layoutType){
             part_yc_link.setVisibility(View.VISIBLE);
             link_http.setText(mCircleBean.getLink());
             link_text.setText(mCircleBean.getLink_title());
         }else if(CircleRecommentAdapterNew.YC_ACTICLE == layoutType){
             part_yc_acticle.setVisibility(View.VISIBLE);
+            acticle_title.setText(mCircleBean.getArticle_title());
+            ImageUtil.load(this,mCircleBean.getArticle_image(),acticle_img);
+
         }else if(CircleRecommentAdapterNew.YC_TEXT == layoutType){
             KLog.d("tag","纯文本");
         }else{
@@ -865,6 +895,7 @@ public class CommentDetailActivity extends BaseActivity {
                     mPicList = mPicList.subList(0,3);
                 }
                 mCircleTransferPicAdapter.setNewData(mPicList);
+                mCircleTransferPicAdapter.setTotalSize(mCircleBean.getP_blog().getImages().size());
 
             }else if(CircleRecommentAdapterNew.ZF_LINK == layoutType){
                 part_zf_link.setVisibility(View.VISIBLE);
@@ -896,6 +927,8 @@ public class CommentDetailActivity extends BaseActivity {
 //                ll_badge.addView(imageView);
 //            }
 //        }
+
+
 
 
 
@@ -935,7 +968,7 @@ public class CommentDetailActivity extends BaseActivity {
         Map<String,String> map = new HashMap<>();
         map.put("blog_id",blog_id);
         map.put("comment",commentString);
-        map.put("create_uid","");
+        map.put("create_uid",mCircleBean.getUid());
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().createBlogComment(result)
                 .subscribeOn(Schedulers.newThread())
@@ -950,6 +983,15 @@ public class CommentDetailActivity extends BaseActivity {
                         page = 1;
                         mAllList.clear();
                         getBlogCommentList();
+
+                        //手动添加 评论数1
+                        mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) + 1) + "");
+                        EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
+                        //全部回复重定义
+                        first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条回复");
+                        //顶部帖子重定义
+                        zanCommentChange(comment,zan_num,image_circle_priase,
+                                mCircleBean.getLike_num() + "",mCircleBean.getIs_like(),mCircleBean.getComment_num());
                     }
                 });
     }
@@ -977,8 +1019,6 @@ public class CommentDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-
-
                         // 测试的
                         int islike = circleBean.getIs_like();
                         if(islike == 0){
@@ -1017,7 +1057,6 @@ public class CommentDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-
                     int islike = circleBean.getIs_like();
                     if(islike == 0){
                         //手动修改
@@ -1029,15 +1068,13 @@ public class CommentDetailActivity extends BaseActivity {
                     }
                     //只更新头部赞数据
                     zanChange(zan_num,image_circle_priase,circleBean.getLike_num(),circleBean.getIs_like());
-                    //TODO 更新首页数据 12.20
                     if(myPotion != -1){
-                        EventBus.getDefault().post(new BlogPriaseEvent(myPotion,circleBean.getIs_like(),circleBean.getLike_num()));
+                        //更新列表数据
+                        EventBus.getDefault().post(new BlogPriaseEvent(myPotion,circleBean.getIs_like(),circleBean.getLike_num(),circleBean.getComment_num()));
                     }
                     }
                 });
     }
-
-
 
     /** --------------------------------- 圈子上图片的展示 ---------------------------------*/
     private GridLayoutManager mGridLayoutManager;
@@ -1054,11 +1091,27 @@ public class CommentDetailActivity extends BaseActivity {
         //解决数据加载不完
         pic_recyler_transfer.setNestedScrollingEnabled(true);
         pic_recyler_transfer.setHasFixedSize(true);
+
+
+        int i1 = SizeUtils.dp2px( 6);
+        Rect rect1 = new Rect(0, 0, i1, 0);
+        int j1 = SizeUtils.dp2px( 0);
+        Rect firstAndLastRect1  = new Rect(j1, 0, i1, 0);
+        HorizontalSpacesDecoration spacesDecoration1 = new HorizontalSpacesDecoration(rect1, firstAndLastRect1);
+        pic_recyler_transfer.addItemDecoration(spacesDecoration1);
+        //禁用change动画
+        ((SimpleItemAnimator)pic_recyler_transfer.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
 
     private void initPicLayout() {
-        mGridLayoutManager = new GridLayoutManager(this,3);
+        GridLayoutManager mGridLayoutManager = new GridLayoutManager(mContext, 3);
+        int i = SizeUtils.dp2px( 8);
+        Rect rect = new Rect(0, 0, i, 0);
+        int j = SizeUtils.dp2px( 0);
+        Rect firstAndLastRect = new Rect(j, 0, i, 0);
+        HorizontalSpacesDecoration spacesDecoration = new HorizontalSpacesDecoration(rect, firstAndLastRect);
+        pic_recyler.addItemDecoration(spacesDecoration);
         //设置布局管理器
         pic_recyler.setLayoutManager(mGridLayoutManager);
         //设置适配器
@@ -1067,7 +1120,30 @@ public class CommentDetailActivity extends BaseActivity {
         //解决数据加载不完
         pic_recyler.setNestedScrollingEnabled(true);
         pic_recyler.setHasFixedSize(true);
+        mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toPicPreViewActivity(mContext,  mCircleBean.getImages(),position));
     }
+
+    private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mAllList.clear();
+            page = 1;
+            blogDetail();
+            getBlogCommentList();
+        });
+    }
+
+
+    /** 更新评论数据 */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshCircleDetailCommentEvent(RefreshCircleDetailCommentEvent event){
+        page = 1;
+        mAllList.clear();
+        getBlogCommentList();
+    }
+
 
 }
 

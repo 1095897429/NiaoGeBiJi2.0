@@ -61,7 +61,7 @@
                 android:drawableRight="@mipmap/icon_home_more"
                 android:drawablePadding="6dp"
                 android:textSize="11sp"
-                android:text="想要内容更精确，点这里让我更懂你"
+                android:text="想要内容更准确？点这里让我更懂你～"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />

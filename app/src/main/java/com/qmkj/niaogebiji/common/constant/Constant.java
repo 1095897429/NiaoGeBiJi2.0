@@ -39,6 +39,8 @@ public class Constant {
     public static final String RELEASE_URL = "http://apph5.niaogebiji.com/";
 
     //文章分享
-    public static  boolean isActicleShare = false;
-}
+    public static boolean isActicleShare = false;
 
+
+
+}

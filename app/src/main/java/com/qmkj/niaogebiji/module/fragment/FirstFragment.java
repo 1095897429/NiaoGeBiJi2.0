@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.TextUtils;
@@ -11,12 +12,18 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
+import com.google.android.material.appbar.AppBarLayout;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
@@ -29,15 +36,19 @@ import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
+import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
+import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.DynamicLine;
+import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.MyLinearLayout;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
@@ -85,10 +96,21 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.moring_time)
     TextView moring_time;
 
-
-
     @BindView(R.id.first_search)
     TextView first_search;
+
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
+
+    @BindView(R.id.search_part)
+    LinearLayout search_part;
+
+    @BindView(R.id.tool_recycler)
+    RecyclerView tool_recycler;
+
+
+
+
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -101,6 +123,16 @@ public class FirstFragment extends BaseLazyFragment {
     private int page = 1;
     private int pageSize = 10;
     private MoringIndexBean.MoringBean mMoringBean;
+
+
+    //适配器
+    ToolItemAdapter mToolItemAdapter;
+    //组合集合
+    List<ToolBean> mAllList = new ArrayList<>();
+    //布局管理器
+    GridLayoutManager mGridLayoutManager;
+
+    private List<ToollndexBean> mList = new ArrayList<>();
 
     @Override
     protected boolean regEvent() {
@@ -121,12 +153,16 @@ public class FirstFragment extends BaseLazyFragment {
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
-        String [] titile = new String[]{"关注","干货","活动","快讯"};
+        String [] titile = new String[]{"关注","干货","活动"};
 
 
         pager_title.initData(titile,mViewPager,1);
 
         initEvent();
+
+        toolindex();
+
+        initToolLayout();
 
         getTopPost();
 
@@ -174,8 +210,8 @@ public class FirstFragment extends BaseLazyFragment {
         mChannelBeanList.add(bean);
         bean = new ChannelBean("2","活动");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("3","快讯");
-        mChannelBeanList.add(bean);
+//        bean = new ChannelBean("3","快讯");
+//        mChannelBeanList.add(bean);
 //        bean = new ChannelBean("4","热榜");
 //        mChannelBeanList.add(bean);
 
@@ -185,6 +221,63 @@ public class FirstFragment extends BaseLazyFragment {
         }
 
     }
+
+
+    private Rect firstAndLastRect;
+    private  Rect rect ;
+    private void initToolLayout() {
+        mGridLayoutManager = new GridLayoutManager(getActivity(),4);
+        //设置布局管理器
+        tool_recycler.setLayoutManager(mGridLayoutManager);
+
+//
+//        if(firstAndLastRect == null){
+//            int space = ScreenUtils.getScreenWidth() - SizeUtils.dp2px(32f) - SizeUtils.dp2px(64) * 4;
+//            int i = space / 4;
+//            rect =  new Rect(0, 0, i, 0);
+//            int j = SizeUtils.dp2px( 0);
+//            firstAndLastRect = new Rect(j, 0, i, 0);
+//            HorizontalSpacesDecoration spacesDecoration = new HorizontalSpacesDecoration(rect, firstAndLastRect);
+//            tool_recycler.addItemDecoration(spacesDecoration);
+//        }
+
+        //设置适配器
+        mToolItemAdapter = new ToolItemAdapter(mList);
+        tool_recycler.setAdapter(mToolItemAdapter);
+        //解决数据加载不完
+        tool_recycler.setNestedScrollingEnabled(true);
+        tool_recycler.setHasFixedSize(true);
+        mToolItemAdapter.setOnItemClickListener((adapter, view, position) -> {
+            ToollndexBean temp =  mToolItemAdapter.getData().get(position);
+            if("0".equals(temp.getType())){
+                Toast.makeText(getContext(),"去 webview",Toast.LENGTH_SHORT).show();
+            }else if("1".equals(temp.getType())){
+                Toast.makeText(getContext(),"去 小程序",Toast.LENGTH_SHORT).show();
+            }else{
+                UIHelper.toToolEditActivity(getActivity());
+            }
+        });
+    }
+
+
+
+    private void toolindex() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().toolindex(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<ToollndexBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<ToollndexBean>> response) {
+                        mList = response.getReturn_data();
+                        setToolData();
+                    }
+                });
+    }
+
+
 
     // {"return_code":"200","return_msg":"success","return_data":{"morning_article":{}}}
     private void getTopPost() {
@@ -199,13 +292,23 @@ public class FirstFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<MoringIndexBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<MoringIndexBean> response) {
-                        KLog.d("tag","response " + response.getReturn_code());
                         MoringIndexBean temp = response.getReturn_data();
                         mMoringBean = temp.getMorning_article();
                         setData();
                     }
                 });
     }
+
+
+    private void setToolData() {
+        int size = mList.size();
+        if(size >= 4){
+           mList = mList.subList(0,4);
+        }
+
+        mToolItemAdapter.setNewData(mList);
+    }
+
 
     private void setData() {
         if(!TextUtils.isEmpty(mMoringBean.getTitle()) &&
@@ -235,10 +338,6 @@ public class FirstFragment extends BaseLazyFragment {
                 ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
-            }else if(i == 3){
-                FlashFragment flashFragment = FlashFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-                        mChannelBeanList.get(i).getChaname());
-                mFragmentList.add(flashFragment);
             }
 
 //            else if(i == 4){
@@ -303,7 +402,8 @@ public class FirstFragment extends BaseLazyFragment {
             case R.id.listenMoring:
                     String audio =  mMoringBean.getVideo();
                     String title = mMoringBean.getSummary();
-                    EventBus.getDefault().post(new AudioEvent(audio,title));
+                    String newid = mMoringBean.getAid();
+                    EventBus.getDefault().post(new AudioEvent(audio,title,newid));
 
                 break;
             case R.id.toMoreMoring:
@@ -325,18 +425,24 @@ public class FirstFragment extends BaseLazyFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFlashThread(toFlashEvent event){
-        mViewPager.setCurrentItem(3);
+        if("去活动信息流".equals(event.getContent())){
+            mViewPager.setCurrentItem(2);
+        }
     }
 
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefreshBus(toRefreshEvent event){
+    public void ontoRefreshMoringEvent(toRefreshMoringEvent event){
         if(getUserVisibleHint()){
-            KLog.d("tag","我是First界面，我需要刷新了");
+            KLog.d("tag","我是First界面，请求早报接口");
 //            getTopPost();
+            ll_moring.setVisibility(View.VISIBLE);
+
         }
+
     }
+
 
 
 

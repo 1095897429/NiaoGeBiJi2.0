@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.qmkj.niaogebiji.R;
 
 /**
  * @author zhouliang
@@ -55,7 +56,7 @@ public class ImageUtil {
         }
 
 
-        Glide.with(context).load(url).into(imageView);
+        Glide.with(context).load(url).placeholder(R.mipmap.icon_fenxiang).into(imageView);
 
 
     }

@@ -42,9 +42,11 @@ public class PicPreviewActivity extends BaseActivity {
 
     private ArrayList<String> imageList = new ArrayList<>();
 
+    //点击是哪个索引的图片
     private int currentIndex = 0;
     //是否是网络图片
     private boolean fromNet = false;
+
 
 
     @Override
@@ -68,7 +70,7 @@ public class PicPreviewActivity extends BaseActivity {
 
 
     private void loadData(){
-        Intent intent = getIntent ();
+        Intent intent = getIntent();
         if(intent != null){
             currentIndex = intent.getIntExtra("index", 0);
             fromNet = intent.getBooleanExtra("fromNet",false);

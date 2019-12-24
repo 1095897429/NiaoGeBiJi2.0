@@ -30,6 +30,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -94,8 +95,6 @@ public class TestLauchActivity extends BaseActivity {
 
     @BindView(R.id.test_title)
     TextView test_title;
-
-
 
     @BindView(R.id.tv_title)
     TextView tv_title;
@@ -181,10 +180,12 @@ public class TestLauchActivity extends BaseActivity {
         setData(1);
     }
 
+    //重新设置数据
     private void setData(int currentNum) {
 
         toNext.setEnabled(false);
-        toSubmit.setEnabled(false);
+        //可设置交卷
+        toSubmit.setEnabled(true);
 
         if(currentNum == totalNum){
             toSubmit.setVisibility(View.GONE);
@@ -194,7 +195,7 @@ public class TestLauchActivity extends BaseActivity {
         mAllList.clear();
 
         String title = list.get(currentNum - 1).getQuestion();
-        test_title.setText(title);
+        test_title.setText(title + "(" + (list.get(currentNum-1).getAnswer()) +")");
 
         TestBean bean1 ;
         List<String> options = list.get(currentNum - 1).getOption();
@@ -293,8 +294,7 @@ public class TestLauchActivity extends BaseActivity {
                 break;
 
             case R.id.toNext:
-
-                //有动画走这里 取消动画
+                //有动画走这里 取消动画先
                 if(animator != null && animator.isRunning()){
                     animator.cancel();
                     setAnimation(progressBar,100);
@@ -345,13 +345,8 @@ public class TestLauchActivity extends BaseActivity {
     public void showSubmit(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("交卷", v -> {
-
             recordTest();
-
-
-
         }).setNegativeButton("再想想", v -> {
-
             //动画暂停
             if(animator != null && animator.isPaused()){
                 animator.resume();
@@ -376,12 +371,18 @@ public class TestLauchActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse httpResponse) {
                         KLog.d("tag",httpResponse.getReturn_data());
+                        mSchoolTest.setMyScore(currentScore + "");
+                        //判断分数
+                        if(currentScore < Integer.parseInt(pass_score)){
+                            UIHelper.toTestResultFailActivity(TestLauchActivity.this,mSchoolTest);
+                        }else{
+                            UIHelper.toTestResultActivity(TestLauchActivity.this,mSchoolTest);
+                        }
 
-                        setResult(RESULT_OK);
-                        finish();
-
-                        //发送列表刷新事件
+                        //发送列表刷新事件 + 学院首页事件
                         EventBus.getDefault().post(new TestListEvent());
+
+                        finish();
                     }
 
                     @Override

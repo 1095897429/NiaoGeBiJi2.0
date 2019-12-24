@@ -12,4 +12,8 @@ public class toFlashEvent {
     public toFlashEvent(String content) {
         this.content = content;
     }
+
+    public String getContent() {
+        return content;
+    }
 }

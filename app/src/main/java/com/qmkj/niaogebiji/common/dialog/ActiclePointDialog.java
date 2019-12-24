@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.common.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -70,11 +71,18 @@ public class ActiclePointDialog {
         mStarBar = view.findViewById(R.id.starBar);
         mStarBar.setIntegerMark(true);
 
-        mStarBar.setOnStarChangeListener(new StarBar.OnStarChangeListener() {
-            @Override
-            public void onStarChange(float mark) {
-                KLog.d("tag","rating = " + mark);
-                result = mark;
+        mStarBar.setOnStarChangeListener(mark -> {
+            KLog.d("tag","rating = " + mark);
+            result = mark;
+
+            if(result == 0.0){
+                submit.setEnabled(false);
+                submit.setBackgroundResource(R.drawable.bg_corners_10_light_yellow);
+                submit.setTextColor(Color.parseColor("#61242629"));
+            }else{
+                submit.setBackgroundResource(R.drawable.bg_corners_10_gradient);
+                submit.setEnabled(true);
+                submit.setTextColor(Color.parseColor("#242629"));
             }
         });
 
@@ -125,9 +133,6 @@ public class ActiclePointDialog {
                 if(result > 0){
                     mOnDialogItemClickListener.func(1,result);
                     dialog.dismiss();
-                }else{
-                    ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
-                    ToastUtils.showShort("至少选择一个星");
                 }
             }
         });

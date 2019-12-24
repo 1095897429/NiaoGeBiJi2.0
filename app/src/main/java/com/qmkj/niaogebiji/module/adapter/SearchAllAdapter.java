@@ -34,7 +34,6 @@ import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.SearchAllBaiduBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
-import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragment;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;

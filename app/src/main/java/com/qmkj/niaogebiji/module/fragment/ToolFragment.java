@@ -14,14 +14,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
-import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
-import com.qmkj.niaogebiji.module.bean.MultiToolNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
-import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.ToolChangeEvent;
@@ -155,7 +148,17 @@ public class ToolFragment extends BaseLazyFragment {
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
-        initEvent();
+        mToolItemAdapter.setOnItemClickListener((adapter, view, position) -> {
+            ToollndexBean temp =  mToolItemAdapter.getData().get(position);
+            if("0".equals(temp.getType())){
+                Toast.makeText(getContext(),"去 webview",Toast.LENGTH_SHORT).show();
+            }else if("1".equals(temp.getType())){
+                Toast.makeText(getContext(),"去 小程序",Toast.LENGTH_SHORT).show();
+            }else{
+                UIHelper.toToolEditActivity(getActivity());
+            }
+
+        });
     }
 
     private void initEvent() {
@@ -166,6 +169,8 @@ public class ToolFragment extends BaseLazyFragment {
                Toast.makeText(getContext(),"去 webview",Toast.LENGTH_SHORT).show();
            }else if("1".equals(temp.getType())){
                Toast.makeText(getContext(),"去 小程序",Toast.LENGTH_SHORT).show();
+           }else{
+               UIHelper.toToolEditActivity(getActivity());
            }
 
         });

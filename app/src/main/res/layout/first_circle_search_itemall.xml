@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/part1111"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/head_icon"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/icon_fenxiang"/>
+
+
+        <LinearLayout
+            android:layout_marginLeft="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignTop="@+id/head_icon"
+            android:layout_toRightOf="@+id/head_icon"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/sender_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:drawablePadding="4dp"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="1"
+                        android:text="公司 + 职位"
+                        android:textColor="#AAAEB3"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/sender_name"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="1"
+                        android:text="名称0"
+                        android:textColor="@color/text_first_color"
+                        android:textSize="16sp" />
+
+
+                    <LinearLayout
+                        android:id="@+id/ll_badge"
+                        android:layout_marginLeft="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_report"
+                    android:gravity="center"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/publish_time"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="1"
+                        android:text="15分钟前"
+                        android:textColor="#AAAEB3"
+                        android:textSize="11sp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="match_parent" />
+
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/circle_report"
+                        android:src="@mipmap/icon_circle_report"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp" />
+
+                    <ImageView
+                        android:id="@+id/circle_remove"
+                        android:visibility="gone"
+                        android:src="@mipmap/icon_circle_remove"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp" />
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/all"
+        android:layout_below="@+id/part1111"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--  原创 文本 -->
+        <TextView
+            android:visibility="visible"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="3"
+            android:text="11"
+            android:textColor="@color/text_first_color"
+            android:textSize="16sp" />
+
+        <!--  原创 多图 -->
+        <LinearLayout
+            android:id="@+id/part_yc_pic"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            android:layout_below="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/ll_pic_3"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="109dp"
+                android:orientation="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/pic_recyler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </androidx.recyclerview.widget.RecyclerView>
+
+
+            </LinearLayout>
+
+            <!-- 此布局没用到 -->
+            <LinearLayout
+                android:id="@+id/ll_pic_1"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="109dp"
+                android:orientation="horizontal">
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/one_img_imgs_1"
+                    android:layout_width="109dp"
+                    android:layout_height="109dp"
+                    android:scaleType="centerCrop"
+                    android:background="@color/bg_color"
+                    app:round_as_circle="false"
+                    app:round_corner="8dp" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--  原创 外链 -->
+        <LinearLayout
+            android:id="@+id/part_yc_link"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:layout_below="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <RelativeLayout
+                android:background="@drawable/bg_corners_8_gray"
+                android:paddingLeft="8dp"
+                android:paddingRight="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/link_img"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/icon_link_logo"
+                    android:layout_centerVertical="true"
+                    android:background="@color/bg_color"
+                    app:round_as_circle="false"
+                    app:round_corner="6dp" />
+
+                <LinearLayout
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@+id/link_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/link_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="1dp"
+                        android:maxLines="1"
+                        android:text="链接标题"
+                        android:textColor="@color/text_first_color"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/link_http"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="1dp"
+                        android:maxLines="1"
+                        android:text="http://baidu.com"
+                        android:textColor="@color/text_first_color"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <!--  原创 文章 -->
+        <LinearLayout
+            android:id="@+id/part_yc_acticle"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <RelativeLayout
+                android:background="@drawable/bg_corners_8_gray"
+                android:paddingLeft="8dp"
+                android:paddingRight="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.qmkj.niaogebiji.module.widget.RCImageView
+                    android:id="@+id/acticle_img"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:scaleType="centerCrop"
+                    android:layout_centerVertical="true"
+                    android:background="@color/bg_color"
+                    app:round_as_circle="false"
+                    app:round_corner="6dp" />
+
+                <LinearLayout
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@+id/acticle_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/acticle_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="1dp"
+                        android:maxLines="1"
+                        android:text="格力电器公告拟修订公司章程，其中，经…"
+                        android:textColor="@color/text_first_color"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

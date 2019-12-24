@@ -65,7 +65,7 @@
 
         <TextView
             android:id="@+id/test_title"
-            android:text="CPC是一种广告计费方式。一般什么广告产品会使用这种计费方式？"
+            android:text=""
             android:textSize="16sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
@@ -145,7 +145,7 @@
             android:id="@+id/toSubmit"
             android:text="交卷"
             android:gravity="center"
-            android:enabled="false"
+            android:enabled="true"
             android:textSize="13sp"
             android:textColor="#5675A7"
             android:layout_width="match_parent"

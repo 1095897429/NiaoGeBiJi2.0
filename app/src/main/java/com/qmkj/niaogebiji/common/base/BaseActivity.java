@@ -45,12 +45,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -149,18 +151,19 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
 
-
     @SuppressLint("CheckResult")
     protected  void initAudioEvent(){
         //主要用于不在播放时，不可移动seekbar
-        seekbar.setEnabled(false);
+        seekbar.setEnabled(true);
 
         //详情
-        RxView.clicks(part_audio)
+        RxView.clicks(toDetail)
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                   KLog.d("tag","去播放详情页 ");
+                    if(!TextUtils.isEmpty(newID)){
+                        UIHelper.toNewsDetailActivity(this,newID);
+                    }
                 });
 
         //之前是正在播放，现在是暂停
@@ -169,7 +172,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
                     //主要用于不在播放时，不可移动seekbar
-                    seekbar.setEnabled(false);
+                    seekbar.setEnabled(true);
                     BaseApp.mMyBinder.pauseMusic();
                     pause();
                 });
@@ -199,7 +202,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .subscribe(object -> {
                     part_audio.setVisibility(View.GONE);
                     isAudaioShow = false;
-                    seekbar.setEnabled(false);
+                    seekbar.setEnabled(true);
                     if(seekbar != null){
                        seekbar.setProgress(0);
                     }
@@ -224,8 +227,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //监听用户结束拖动进度条的时候
+                KLog.d("tag","当前进度是  " + seekBar.getProgress());
                 int dest = seekBar.getProgress();
-                if(BaseApp.mMyBinder != null && BaseApp.mMyBinder.isPlaying()){
+                currentProgress = dest;
+                seekBar.setProgress(currentProgress);
+                if(BaseApp.mMyBinder != null){
                     BaseApp.mMyBinder.seekToPositon(dest);
                 }
             }
@@ -235,14 +241,23 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
 
+    String newID;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudioEvent(AudioEvent event){
-
         String url = event.getUrl();
+        newID = event.getNewId();
         KLog.e("tag","播放视频的路径是 " + url  + " 播放名称 " + event.getTitle());
+        if(TextUtils.isEmpty(event.getUrl())){
+            ToastUtils.showShort("播放资源有误~");
+            return;
+        }
         part_audio.setVisibility(View.VISIBLE);
         audio_title.setText("今日早报｜" + event.getTitle());
         isAudaioShow = true;
+
+
+        //先暂停
+        BaseApp.mMyBinder.pauseMusic();
 
         //有资源时 先关闭之前资源
         BaseApp.mMyBinder.closeMedia();
@@ -305,6 +320,18 @@ public abstract class BaseActivity extends AppCompatActivity {
             if(pause != null){
                 pause.setVisibility(View.GONE);
             }
+
+
+
+            play();
+            BaseApp.mMyBinder.playMusic();
+            BaseApp.mMediaService.setOnProgressListener(progress -> {
+                if(seekbar != null){
+                    seekbar.setProgress(progress);
+                    currentProgress = progress;
+                }
+
+            });
 
         });
 
@@ -412,9 +439,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /** ---------------------------------  播放  ---------------------------------*/
 
-    private MediaPlayer mMediaPlayer;
-    private boolean isplay;
-
     @BindView(R.id.pause)
     ImageView pause;
 
@@ -435,6 +459,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @BindView(R.id.part_audio)
     public RelativeLayout part_audio;
+
+    @BindView(R.id.toDetail)
+    ImageView toDetail;
+
 
 
     @Override
@@ -468,7 +496,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 part_audio.setLayoutParams(lp);
             }
 
-
             //全局 设置界面进度
             seekbar.setMax(maxProgress);
             seekbar.setProgress(currentProgress);
@@ -479,6 +506,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 play.setVisibility(View.GONE);
                 close.setVisibility(View.GONE);
                 pause.setVisibility(View.VISIBLE);
+                BaseApp.mMediaService.setOnProgressListener(progress -> {
+                    if(seekbar != null){
+                        seekbar.setProgress(progress);
+                        currentProgress = progress;
+                    }
+
+                });
             }else{
                 play.setVisibility(View.VISIBLE);
                 close.setVisibility(View.VISIBLE);
@@ -493,7 +527,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         play.setVisibility(View.GONE);
         pause.setVisibility(View.VISIBLE);
         close.setVisibility(View.GONE);
-        isplay = true;
         setMarquee(audio_title);
     }
 

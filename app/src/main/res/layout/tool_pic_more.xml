@@ -5,56 +5,63 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="124dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="124dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="124dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
 
-        <!--<de.hdodenhof.circleimageview.CircleImageView-->
+            <!--<de.hdodenhof.circleimageview.CircleImageView-->
             <!--android:id="@+id/tool_pic"-->
             <!--android:visibility="gone"-->
             <!--android:layout_width="48dp"-->
             <!--android:layout_height="48dp"-->
             <!--android:src="@mipmap/icon_fenxiang"/>-->
 
-        <ImageView
-            android:id="@+id/tool_pic"
-            android:visibility="visible"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@mipmap/icon_fenxiang"/>
+            <ImageView
+                android:id="@+id/tool_pic"
+                android:visibility="visible"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@mipmap/icon_fenxiang"/>
 
 
-        <Space
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/tool_txt"
+                android:text="更多"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="@color/text_first_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
-            android:layout_height="8dp" />
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
 
-        <TextView
-            android:id="@+id/tool_txt"
-            android:text="更多"
-            android:textSize="13sp"
-            android:gravity="center"
-            android:textColor="@color/text_first_color"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+        <View
+            android:layout_alignParentRight="true"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/divider_line"/>
 
 
 
-    <View
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/divider_line"/>
-
-    <View
-        android:layout_alignParentRight="true"
-        android:layout_width="1px"
-        android:layout_height="match_parent"
-        android:background="@color/divider_line"/>
+    </RelativeLayout>
 
 
 </RelativeLayout>

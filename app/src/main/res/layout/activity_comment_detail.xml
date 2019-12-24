@@ -13,133 +13,149 @@
         android:layout_height="1px"
         android:background="@color/divider_line"/>
 
-   <RelativeLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
-
-       <androidx.core.widget.NestedScrollView
-           android:layout_below="@+id/line1"
-           android:id="@+id/scrollView"
-           android:overScrollMode="never"
-           android:layout_above="@+id/bottom_no_comment"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent">
-
-           <LinearLayout
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:orientation="vertical">
-
-               <include
-                   layout="@layout/first_circle_item_all"/>
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/smartRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
-               <View
-                   android:layout_width="match_parent"
-                   android:layout_height="8dp"
-                   android:background="#F6F7F9"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_below="@+id/line1"
+                android:id="@+id/scrollView"
+                android:overScrollMode="never"
+                android:layout_above="@+id/bottom_no_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include
+                        layout="@layout/first_circle_item_all"/>
 
 
-               <LinearLayout
-                   android:visibility="visible"
-                   android:paddingLeft="16dp"
-                   android:paddingRight="16dp"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:orientation="vertical">
-
-                  <LinearLayout
-                      android:id="@+id/ll_have_comment"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical">
-
-                      <TextView
-                          android:id="@+id/first_comment_num"
-                          android:text="全部条评论"
-                          android:textStyle="bold"
-                          android:gravity="center|left"
-                          android:textSize="17sp"
-                          android:textColor="@color/text_first_color"
-                          android:layout_width="match_parent"
-                          android:layout_height="56dp" />
-
-                      <View
-                          android:layout_width="match_parent"
-                          android:layout_height="1px"
-                          android:background="@color/divider_line"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:background="#F6F7F9"/>
 
 
+                    <LinearLayout
+                        android:visibility="visible"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
-                  </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/ll_have_comment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-                   <Space
-                       android:layout_width="match_parent"
-                       android:layout_height="16dp" />
+                            <TextView
+                                android:id="@+id/first_comment_num"
+                                android:text="全部条评论"
+                                android:textStyle="bold"
+                                android:gravity="center|left"
+                                android:textSize="17sp"
+                                android:textColor="@color/text_first_color"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp" />
 
-
-                   <androidx.recyclerview.widget.RecyclerView
-                       android:id="@+id/more_comment_recycler"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:clipToPadding="false"
-                       android:overScrollMode="never"
-                       android:scrollbars="none"/>
-
-
-               </LinearLayout>
-
-           </LinearLayout>
-
-       </androidx.core.widget.NestedScrollView>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="@color/divider_line"/>
 
 
 
-       <LinearLayout
-           android:id="@+id/bottom_no_comment"
-           android:visibility="visible"
-           android:layout_width="match_parent"
-           android:orientation="vertical"
-           android:layout_alignParentBottom="true"
-           android:layout_height="74dp">
+                        </LinearLayout>
 
-           <ImageView
-               android:src="@mipmap/icon_down_shadow"
-               android:scaleType="centerCrop"
-               android:layout_width="match_parent"
-               android:layout_height="18dp" />
-
-           <RelativeLayout
-               android:id="@+id/toComment"
-               android:paddingLeft="16dp"
-               android:paddingRight="16dp"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent">
-
-               <de.hdodenhof.circleimageview.CircleImageView
-                   android:id="@+id/user_head_icon"
-                   android:layout_centerVertical="true"
-                   android:layout_width="40dp"
-                   android:layout_height="40dp"
-                   android:src="@mipmap/icon_fenxiang"/>
-
-               <TextView
-                   android:layout_marginLeft="8dp"
-                   android:layout_toRightOf="@+id/user_head_icon"
-                   android:id="@+id/num_feather"
-                   android:textSize="16sp"
-                   android:textColor="@color/text_second_color"
-                   android:layout_centerVertical="true"
-                   android:text="回复一下"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content" />
-
-           </RelativeLayout>
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="16dp" />
 
 
-       </LinearLayout>
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/more_comment_recycler"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:overScrollMode="never"
+                            android:scrollbars="none"/>
 
-   </RelativeLayout>
+                        <include
+                            android:visibility="gone"
+                            layout="@layout/empty_layout"/>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+
+
+            <LinearLayout
+                android:id="@+id/bottom_no_comment"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_height="74dp">
+
+                <ImageView
+                    android:src="@mipmap/icon_down_shadow"
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp" />
+
+                <RelativeLayout
+                    android:id="@+id/toComment"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/user_head_icon"
+                        android:layout_centerVertical="true"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@mipmap/icon_fenxiang"/>
+
+                    <TextView
+                        android:layout_marginLeft="8dp"
+                        android:layout_toRightOf="@+id/user_head_icon"
+                        android:id="@+id/num_feather"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_second_color"
+                        android:layout_centerVertical="true"
+                        android:text="回复一下"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
+
 
 
 

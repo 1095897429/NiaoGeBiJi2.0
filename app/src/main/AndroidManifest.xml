@@ -87,8 +87,15 @@
 
         <activity android:name=".module.activity.WebViewActivityTest"/>
 
+        <activity android:name=".module.activity.WebViewActivityWithStep"/>
+
+
 
         <activity android:name=".module.activity.SplashActivity">
+        </activity>
+
+
+        <activity android:name=".module.activity.ModifyUserInfoActivity">
         </activity>
 
 

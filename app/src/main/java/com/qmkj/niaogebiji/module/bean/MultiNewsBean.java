@@ -21,6 +21,7 @@ public class MultiNewsBean extends BaseBean implements MultiItemEntity {
     //首页关注作者文章
     private IndexFocusBean.Article_list mArticleList;
     //首页活动 待定
+    private FristActionBean mFristActionBean;
 
     //新首页文章
     private RecommendBean.Article_list mNewsActicleList;
@@ -37,6 +38,14 @@ public class MultiNewsBean extends BaseBean implements MultiItemEntity {
         return itemType;
     }
 
+
+    public FristActionBean getFristActionBean() {
+        return mFristActionBean;
+    }
+
+    public void setFristActionBean(FristActionBean fristActionBean) {
+        mFristActionBean = fristActionBean;
+    }
 
     public IndexBulltin getIndexBulltin() {
         return mIndexBulltin;

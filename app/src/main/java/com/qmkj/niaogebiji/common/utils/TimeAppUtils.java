@@ -41,9 +41,18 @@ public class TimeAppUtils {
         long nMin = lSeconds % 3600;
         long nSec = nMin % 60;
         nMin = nMin / 60;
+        KLog.d("tag","分 " + nMin + "秒 " + nSec);
+        if(nSec == 0){
+            return String.format("%02d分钟", nMin);
+        }else{
+            return String.format("%02d分钟%02d秒", nMin, nSec);
+        }
 
-        return String.format("%02d小时%02d分钟%02d秒", nHour, nMin, nSec);
     }
+
+
+
+
 
 
     /**

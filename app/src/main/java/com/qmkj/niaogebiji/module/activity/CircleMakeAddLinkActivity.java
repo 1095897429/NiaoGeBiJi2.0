@@ -79,8 +79,9 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        String url = "https://rh.mbd.baidu.com/2d4rfla?f=cp&u=4354df9ac3d35511";
-        mEditText.setText(url);
+            //测试数据 -- 1.以m开头的并不能跳转 ？？？
+//        String url = "https://m.weibo.cn/detail/4452636415281894?display=0&retcode=6102";
+//        mEditText.setText(url);
 
         //判断系统剪贴板是否有数据 ，并检查是否前缀是http或者https
         content = getContentFromClipBoard();

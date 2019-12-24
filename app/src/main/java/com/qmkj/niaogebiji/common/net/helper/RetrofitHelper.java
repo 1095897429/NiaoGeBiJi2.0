@@ -85,7 +85,8 @@ public class RetrofitHelper {
                     .baseUrl(BuildConfig.URL)
                     .client(OkHttpHelper.getInstance().getOkHttpClient())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .addConverterFactory(FastJsonConverterFactory.create())
+//                    .addConverterFactory(BaseConverterFactory.create())
+//                    .addConverterFactory(FastJsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
             mRetrofit = builder.build();
         }
@@ -166,7 +167,9 @@ public class RetrofitHelper {
                 Method getImeiMethod = clazz.getDeclaredMethod("getImei");
                 getImeiMethod.setAccessible(true);
                 String imei = (String) getImeiMethod.invoke(tm);
-                if (imei != null) return imei;
+                if (imei != null){
+                    return imei;
+                }
             } catch (Exception e) {
                 Log.e("PhoneUtils", "getIMEI: ", e);
             }

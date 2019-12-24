@@ -39,6 +39,7 @@
     </LinearLayout>
 
 
+    <!--   -->
     <com.qmkj.niaogebiji.module.widget.StarBar
         android:id="@+id/starBar"
         android:layout_width="wrap_content"
@@ -59,8 +60,8 @@
         android:layout_marginTop="40dp"
         android:text="提交"
         android:textSize="13sp"
-        android:background="@drawable/bg_corners_10_gradient"
-        android:textColor="@color/text_news_title_color"
+        android:background="@drawable/bg_corners_10_light_yellow"
+        android:textColor="#61242629"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
         android:gravity="center"

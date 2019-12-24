@@ -21,7 +21,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:drawableRight="@mipmap/icon_authen_company"
             android:drawablePadding="4dp"
             android:lineSpacingExtra="2dp"
             android:maxLines="1"
@@ -40,7 +39,6 @@
         android:maxLines="3"
         android:textColor="@color/text_first_color"
         android:textSize="16sp" />
-
 
 
 

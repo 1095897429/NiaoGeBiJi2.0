@@ -9,13 +9,16 @@ package com.qmkj.niaogebiji.module.event;
 public class AudioEvent {
     public String  url;
     public String title;
+    //新闻id
+    private String newId;
 
     public AudioEvent(String  url){
         this.url = url;
     }
 
-    public AudioEvent(String  url,String  title){
+    public AudioEvent(String  url,String  title,String newId){
         this.url = url;
+        this.newId = newId;
         this.title = title;
     }
 
@@ -25,5 +28,13 @@ public class AudioEvent {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getNewId() {
+        return newId;
+    }
+
+    public void setNewId(String newId) {
+        this.newId = newId;
     }
 }

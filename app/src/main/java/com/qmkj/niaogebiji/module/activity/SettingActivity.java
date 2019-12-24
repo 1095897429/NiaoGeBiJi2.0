@@ -101,6 +101,8 @@ public class SettingActivity extends BaseActivity {
     public static final int EDIT_PHOTO = 3;
     public static final int COMMON_MODIFY = 4;
 
+    private RegisterLoginBean.UserInfo userInfo;
+
 
 
     @Override
@@ -110,6 +112,29 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        userInfo = StringUtil.getUserInfoBean();
+        //头像
+        if(userInfo != null){
+            ImageUtil.load(mContext,userInfo.getAvatar(),head_icon);
+        }
+
+        //昵称
+        nickname.setText(userInfo.getNickname());
+        //简介
+        profile_info_text.setText(userInfo.getPro_summary());
+
+
+
+        mNickname = userInfo.getNickname();
+        mName = userInfo.getName();
+        mGender = userInfo.getGender();
+        mPosition = userInfo.getPosition();
+        mAvatar_ext = "png";
+        mPro_summary = userInfo.getPro_summary() ;
+        mBirthday =  userInfo.getBirthday();
+
+
         tv_title.setText("设置");
 
         boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
@@ -131,10 +156,18 @@ public class SettingActivity extends BaseActivity {
             R.id.exit_ll,
             R.id.open_push,
             R.id.change_cache,
-            R.id.change_resetData
+            R.id.change_resetData,
+            R.id.change_nickname,
+            R.id.profile_info
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.profile_info:
+                UIHelper.toModifyUserInfo(this,"profile",mPro_summary);
+                break;
+            case R.id.change_nickname:
+                UIHelper.toModifyUserInfo(this,"nickname",mNickname);
+                break;
             case R.id.change_resetData:
                 showReSetDataDialog();
                 break;
@@ -182,7 +215,7 @@ public class SettingActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse response) {
-
+                        ToastUtils.showShort("重置成功");
                     }
                 });
     }

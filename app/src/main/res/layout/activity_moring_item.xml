@@ -47,6 +47,8 @@
             android:layout_marginTop="8dp"
             android:text="贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元贾跃亭破产前月薪超过9万美元"
             android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:lineSpacingExtra="4dp"
             android:textColor="@color/text_first_color"
             android:layout_width="match_parent"

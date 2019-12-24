@@ -32,6 +32,8 @@ import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -91,6 +93,8 @@ public class MyFragment extends BaseLazyFragment {
     TextView vip_time;
 
 
+
+
     //适配器
     MyItemAdapter mMyItemAdapter;
     //组合集合
@@ -117,13 +121,10 @@ public class MyFragment extends BaseLazyFragment {
     }
 
 
-
-
     @Override
     protected void initView() {
 
         getUserInfo();
-
         initLayout();
         getData();
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
@@ -169,6 +170,8 @@ public class MyFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
                     @Override
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+
+
                         mUserInfo = response.getReturn_data();
                         if(null != mUserInfo){
                             setUserInfo();

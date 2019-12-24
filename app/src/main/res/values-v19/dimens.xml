@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="status_bar_height">25dp</dimen>
-
+    <dimen name="status_bar_height_below">-25dp</dimen>
     <dimen name="status_bar_height_1">33dp</dimen>
 
     <dimen name="status_bar_height_2">15dp</dimen>

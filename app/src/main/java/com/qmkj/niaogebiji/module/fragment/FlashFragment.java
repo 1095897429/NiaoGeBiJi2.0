@@ -92,11 +92,9 @@ public class FlashFragment extends BaseLazyFragment  {
     private FlashBulltinBean.BuilltinBean mTempBuilltinBean;
 
 
-    public static FlashFragment getInstance(String chainId, String chainName) {
+    public static FlashFragment getInstance() {
         FlashFragment newsItemFragment = new FlashFragment();
         Bundle args = new Bundle();
-        args.putString("catid", chainId);
-        args.putString("chainName", chainName);
         newsItemFragment.setArguments(args);
         return newsItemFragment;
     }

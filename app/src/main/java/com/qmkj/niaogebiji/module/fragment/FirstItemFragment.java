@@ -1,28 +1,20 @@
 package com.qmkj.niaogebiji.module.fragment;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.TimeUtils;
-import com.blankj.utilcode.util.ToastUtils;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
@@ -32,16 +24,12 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
-import com.qmkj.niaogebiji.module.adapter.FirstAuthorAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
-import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
+import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
-import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
-import com.qmkj.niaogebiji.module.bean.MoringAllBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
@@ -50,7 +38,7 @@ import com.qmkj.niaogebiji.module.event.ProDoneEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
-import com.qmkj.niaogebiji.module.widget.EndlessRecyclerOnScrollListener;
+import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -65,20 +53,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.app.Activity.RESULT_OK;
-import static com.blankj.utilcode.util.Utils.runOnUiThread;
 
 /**
  * @author zhouliang
@@ -149,10 +129,63 @@ public class FirstItemFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        //实时快讯
-        getIndexBulltin();
+        //实时快讯 getIndexBulltin();
+
+        //推荐数据
+        recommendlist();
+
         //更懂你
         isPersonal();
+    }
+
+    private FristActionBean mFristActionBean;
+    private void recommendActivity() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().recommendActivity(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse<FristActionBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<FristActionBean> response) {
+                        mFristActionBean = response.getReturn_data();
+                        setActivityData();
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        setActivityData();
+                    }
+                });
+    }
+
+    private void setActivityData() {
+
+        mArticle_lists = temp.getArticle_list();
+
+        if(null != mArticle_lists){
+            if(1 == page){
+                setActicleData(mArticle_lists);
+                mFirstItemAdapter.setNewData(mAllList);
+                //如果第一次返回的数据不满10条，则显示无更多数据
+                if(mArticle_lists.size() < Constant.SEERVER_NUM){
+                    mFirstItemAdapter.loadMoreEnd();
+                }
+            }else{
+                //已为加载更多有数据
+                if(mArticle_lists != null && mArticle_lists.size() > 0){
+                    setActicleData(mArticle_lists);
+                    mFirstItemAdapter.loadMoreComplete();
+                    mFirstItemAdapter.addData(tempList);
+                }else{
+                    //已为加载更多无更多数据
+                    mFirstItemAdapter.loadMoreEnd();
+                }
+            }
+        }
+
     }
 
     //{"return_code":"200","return_msg":"success","return_data":false}
@@ -186,12 +219,12 @@ public class FirstItemFragment extends BaseLazyFragment {
                         }else{
                             part3333.setVisibility(View.GONE);
                         }
-                    KLog.d("tag","---" + response.getReturn_data().toString());
                     }
                 });
     }
 
     private List<RecommendBean.Article_list> mArticle_lists;
+    private RecommendBean temp;
     private void recommendlist() {
         Map<String,String> map = new HashMap<>();
         map.put("page_no",page + "");
@@ -205,37 +238,13 @@ public class FirstItemFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<RecommendBean> response) {
 
-                        //TODO 推荐文章有数据，发送早报接口
-
-
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
 
-                        RecommendBean temp = response.getReturn_data();
+                        temp = response.getReturn_data();
 
-                        mArticle_lists = temp.getArticle_list();
-
-                        if(null != mArticle_lists){
-                            if(1 == page){
-                                setActicleData(mArticle_lists);
-                                mFirstItemAdapter.setNewData(mAllList);
-                                //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(mArticle_lists.size() < Constant.SEERVER_NUM){
-                                    mFirstItemAdapter.loadMoreEnd();
-                                }
-                            }else{
-                                //已为加载更多有数据
-                                if(mArticle_lists != null && mArticle_lists.size() > 0){
-                                    setActicleData(mArticle_lists);
-                                    mFirstItemAdapter.loadMoreComplete();
-                                    mFirstItemAdapter.addData(tempList);
-                                }else{
-                                    //已为加载更多无更多数据
-                                    mFirstItemAdapter.loadMoreEnd();
-                                }
-                            }
-                        }
+                        recommendActivity();
 
                     }
                 });
@@ -248,7 +257,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
         //顶置 2篇
         //实时快讯
-        //活动推荐
+        //活动推荐 1 ,放在索引为5的位置
         //5条 文章列表
         //文章列表
 
@@ -257,6 +266,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
         RecommendBean.Article_list itemBean;
         IndexBulltin indexBulltin1;
+        FristActionBean fristActionBean;
         MultiNewsBean bean1 ;
 
         if(1 == page){
@@ -275,13 +285,15 @@ public class FirstItemFragment extends BaseLazyFragment {
                 }
             }
 
-        if(null != indexBulltin){
-            indexBulltin1 = indexBulltin;
-            bean1 = new MultiNewsBean();
-            bean1.setItemType(4);
-            bean1.setIndexBulltin(indexBulltin1);
-            mAllList.add(bean1);
-        }
+            if(null != indexBulltin){
+                indexBulltin1 = indexBulltin;
+                bean1 = new MultiNewsBean();
+                bean1.setItemType(4);
+                bean1.setIndexBulltin(indexBulltin1);
+                mAllList.add(4,bean1);
+            }
+
+
 
 
             String pic_type;
@@ -298,6 +310,15 @@ public class FirstItemFragment extends BaseLazyFragment {
                 }
                 bean1.setNewsActicleList(itemBean);
                 mAllList.add(bean1);
+            }
+
+
+            if(null != mFristActionBean){
+                fristActionBean = mFristActionBean;
+                bean1 = new MultiNewsBean();
+                bean1.setItemType(FirstItemNewAdapter.ACTIVITY_TYPE);
+                bean1.setFristActionBean(fristActionBean);
+                mAllList.add(4,bean1);
             }
 
             mFirstItemAdapter.setNewData(mAllList);
@@ -371,9 +392,11 @@ public class FirstItemFragment extends BaseLazyFragment {
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            getIndexBulltin();
+            recommendlist();
             //更懂你
             isPersonal();
+
+            EventBus.getDefault().post(new toRefreshMoringEvent());
         });
     }
 
@@ -444,6 +467,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                 case R.id.toMoreActivity:
                     EventBus.getDefault().post(new toActionEvent("去活动界面"));
                     break;
+
                 default:
             }
         });
@@ -466,7 +490,6 @@ public class FirstItemFragment extends BaseLazyFragment {
                     UIHelper.toNewsDetailActivity(getActivity(), aid);
                 }
             }
-
         });
 
     }
@@ -534,7 +557,7 @@ public class FirstItemFragment extends BaseLazyFragment {
         }
     }
 
-    private ArrayList<ProBean> temp;
+    private ArrayList<ProBean> temp1;
     private void getProfession() {
         Map<String,String> map = new HashMap<>();
         String result = RetrofitHelper.commonParam(map);
@@ -546,9 +569,9 @@ public class FirstItemFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<List<ProBean>> response) {
-                        temp = (ArrayList<ProBean>) response.getReturn_data();
-                        if(temp != null && !temp.isEmpty()){
-                            UIHelper.toMoreKnowYouActivity(getActivity(),temp);
+                        temp1 = (ArrayList<ProBean>) response.getReturn_data();
+                        if(temp1 != null && !temp1.isEmpty()){
+                            UIHelper.toMoreKnowYouActivity(getActivity(),temp1);
                         }
                     }
                 });

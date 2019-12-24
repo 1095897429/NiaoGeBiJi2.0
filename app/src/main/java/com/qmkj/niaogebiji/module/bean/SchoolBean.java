@@ -102,6 +102,16 @@ public class SchoolBean extends BaseBean {
         private Record record;
         private int is_show_badge;
         private String share_url;
+        //自己加的分数 -- 用于测试完判断
+        private String myScore;
+
+        public String getMyScore() {
+            return myScore;
+        }
+
+        public void setMyScore(String myScore) {
+            this.myScore = myScore;
+        }
 
         public String getShare_url() {
             return share_url;

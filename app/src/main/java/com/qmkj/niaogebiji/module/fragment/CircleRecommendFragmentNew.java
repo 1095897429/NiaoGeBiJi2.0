@@ -28,21 +28,15 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
-import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
-import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
-import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
-import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
-import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -55,6 +49,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -68,8 +64,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
-    @BindView(R.id.showSendMsg)
-    TextView showSendMsg;
 
     @BindView(R.id.backtop)
     ImageView backtop;
@@ -79,6 +73,10 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
+
+
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
 
     //页数
     private int page = 1;
@@ -112,6 +110,21 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
+
+
+        String content = "测试http://www.baidu.com 测测https://www.qq.com/再来一个 https://china.nba.com";
+        //判断内容是否中link
+        String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+        Matcher matcher = Pattern.compile(regex).matcher(content);
+        int size = matcher.groupCount();
+        KLog.d("tag","link条数 " + size);
+        while (matcher.find()){
+            int start =  matcher.start();
+            int end = matcher.end();
+            KLog.d("tag","start " + start + " end " + end);
+            KLog.d("tag"," matcher.group() " +  matcher.group());
+        }
+
     }
 
     @Override
@@ -135,17 +148,24 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                             smartRefreshLayout.finishRefresh();
                         }
 
-                       List<CircleBean> serverData = response.getReturn_data();
+                            List<CircleBean> serverData = response.getReturn_data();
                             if(1 == page){
-                                if(serverData != null){
+                                if(serverData != null && !serverData.isEmpty()){
                                     setData2(serverData);
                                     mCircleRecommentAdapterNew.setNewData(mAllList);
                                     //如果第一次返回的数据不满10条，则显示无更多数据
                                     if(serverData.size() < Constant.SEERVER_NUM){
                                         mCircleRecommentAdapterNew.loadMoreEnd();
                                     }
+                                    ll_empty.setVisibility(View.GONE);
+                                    mRecyclerView.setVisibility(View.VISIBLE);
                                 }else{
                                     KLog.d("tag","设置空布局");
+                                    //第一次加载无数据
+                                    ll_empty.setVisibility(View.VISIBLE);
+                                    ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("没有推荐圈子数据~");
+                                    mRecyclerView.setVisibility(View.GONE);
+
                                 }
                             }else{
                                 //已为加载更多有数据
@@ -189,7 +209,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             CircleBean temp;
             for (int i = 0; i < list.size(); i++) {
                 temp  = list.get(i);
-                type = getCircleType(temp);
+                type = StringUtil.getCircleType(temp);
                 //如果判断有空数据，则遍历下一个数据
                 if(100 == type){
                     continue;
@@ -201,63 +221,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 mAllList.addAll(teList);
             }
         }
-    }
-
-
-    // 找不到type[比如plog返回空..],那么返回默认的type 100
-    // 先判断原创0  再判断图片 再判断link，最后只剩下全文本
-    // 转发1
-    private int getCircleType(CircleBean item) {
-        if(null != item){
-            if("0".equals(item.getType())){
-                //原创图片
-                if(item.getImages() != null &&  !item.getImages().isEmpty()){
-                    return CircleRecommentAdapterNew.YC_PIC;
-                }
-
-                //原创link
-                if(!TextUtils.isEmpty(item.getLink())){
-                    return CircleRecommentAdapterNew.YC_LINK;
-                }
-
-                //原创 文章
-                if(!TextUtils.isEmpty(item.getArticle_id())  && !"0".equals(item.getArticle_id())){
-                    return CircleRecommentAdapterNew.YC_ACTICLE;
-                }
-
-                //原创 文本
-                if(!TextUtils.isEmpty(item.getBlog())){
-                    return CircleRecommentAdapterNew.YC_TEXT;
-                }
-
-            }else if("1".equals(item.getType())){
-
-                CircleBean.P_blog  temp =  item.getP_blog();
-                if(null != temp){
-                    //转发图片
-                    if(temp.getImages() != null &&  !temp.getImages().isEmpty()){
-                        return CircleRecommentAdapterNew.ZF_PIC;
-                    }
-
-                    //转发link
-                    if(!TextUtils.isEmpty(temp.getLink())){
-                        return CircleRecommentAdapterNew.ZF_LINK;
-                    }
-
-                    //转发 文章
-                    if(!TextUtils.isEmpty(temp.getArticle_id())  && !"0".equals(temp.getArticle_id())){
-                        return CircleRecommentAdapterNew.ZF_ACTICLE;
-                    }
-
-                    //转发 文本
-                    if(!TextUtils.isEmpty(temp.getBlog())){
-                        return CircleRecommentAdapterNew.ZF_TEXT;
-                    }
-
-                }
-            }
-        }
-        return 100;
     }
 
 
@@ -369,8 +332,9 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     /** --------------------------------- 发布帖子成功  ---------------------------------v*/
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendCircleEvent(SendOkCircleEvent event) {
-        showSendMsg.setVisibility(View.VISIBLE);
-        initAnim();
+        mAllList.clear();
+        page = 1;
+        recommendBlogList();
     }
 
 //    private void initExitAnim(){
@@ -404,36 +368,38 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 //        });
 //    }
 
+
+
     private void initAnim() {
-        ObjectAnimator translationX = ObjectAnimator.ofFloat(showSendMsg, "scaleX", 1f, 1.1f, 1f);
-        ObjectAnimator alphaX = ObjectAnimator.ofFloat(showSendMsg, "alpha", 0, 1f);
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(translationX, alphaX);
-        animatorSet.setDuration(1000);
-        animatorSet.start();
-        //动画的监听
-        animatorSet.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                KLog.d("动画开始","");
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                //动画结束跳转
-//               new Handler().postDelayed(() -> initExitAnim(),1000);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-                KLog.d("动画取消","");
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-                KLog.d("动画重复","");
-            }
-        });
+//        ObjectAnimator translationX = ObjectAnimator.ofFloat(showSendMsg, "scaleX", 1f, 1.1f, 1f);
+//        ObjectAnimator alphaX = ObjectAnimator.ofFloat(showSendMsg, "alpha", 0, 1f);
+//        AnimatorSet animatorSet = new AnimatorSet();
+//        animatorSet.playTogether(translationX, alphaX);
+//        animatorSet.setDuration(1000);
+//        animatorSet.start();
+//        //动画的监听
+//        animatorSet.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animator) {
+//                KLog.d("动画开始","");
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animator) {
+//                //动画结束跳转
+////               new Handler().postDelayed(() -> initExitAnim(),1000);
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animator) {
+//                KLog.d("动画取消","");
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animator) {
+//                KLog.d("动画重复","");
+//            }
+//        });
 
     }
 
@@ -444,6 +410,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
         if(getActivity() != null && mCircleRecommentAdapterNew != null){
             mCircleRecommentAdapterNew.getData().get(event.getPosition()).setIs_like(event.getStauts());
             mCircleRecommentAdapterNew.getData().get(event.getPosition()).setLike_num(event.getLikeNum());
+            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setComment_num(event.getCommentNum());
             mCircleRecommentAdapterNew.notifyItemChanged(event.getPosition());
         }
     }

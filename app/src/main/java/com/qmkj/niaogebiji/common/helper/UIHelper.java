@@ -23,6 +23,7 @@ import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.InviteActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
+import com.qmkj.niaogebiji.module.activity.ModifyUserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.MoreKnowYouActivity;
 import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
 import com.qmkj.niaogebiji.module.activity.MyCollectionListActivity;
@@ -46,6 +47,7 @@ import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityTest;
+import com.qmkj.niaogebiji.module.activity.WebViewActivityWithStep;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
@@ -137,12 +139,12 @@ public class UIHelper {
 
 
     /** 打开图片预览界面 */
-    public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos) {
+    public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos,int position) {
         Intent intent = new Intent(ctx, PicPreviewActivity.class);
         Bundle bundle = new Bundle ();
         bundle.putStringArrayList ("imageList", photos);
         bundle.putBoolean("fromNet",true);
-        bundle.putInt("index",0);
+        bundle.putInt("index",position);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
@@ -197,6 +199,13 @@ public class UIHelper {
     /** 打开网页界面 */
     public static void toWebViewActivity(Context ctx,String link) {
         Intent intent = new Intent(ctx, WebViewActivity.class);
+        intent.putExtra("link",link);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开网页界面  返回网页的上一页*/
+    public static void toWebViewActivityWithOnStep(Context ctx,String link) {
+        Intent intent = new Intent(ctx, WebViewActivityWithStep.class);
         intent.putExtra("link",link);
         ctx.startActivity(intent);
     }
@@ -405,6 +414,17 @@ public class UIHelper {
         bundle.putSerializable("bean",bean);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
+    }
+
+
+    /** 打开用户修改界面 */
+    public static void toModifyUserInfo(Activity ctx, String type, String content) {
+        Intent intent = new Intent(ctx, ModifyUserInfoActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("type",type);
+        bundle.putString("content",content);
+        intent.putExtras(bundle);
+        ctx.startActivityForResult(intent,SettingActivity.COMMON_MODIFY);
     }
 
 

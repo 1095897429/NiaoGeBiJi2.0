@@ -57,6 +57,8 @@ public class CircleSearchAdapter extends BaseMultiItemQuickAdapter<MultiCircleNe
     public static final int TYPE3 = 3;
     public static final int TYPE4 = 4;
 
+    public static final int TYPEALL = 5;
+
 
     public CircleSearchAdapter(List<MultiCircleNewsBean> data) {
 
@@ -69,7 +71,8 @@ public class CircleSearchAdapter extends BaseMultiItemQuickAdapter<MultiCircleNe
         addItemType(TYPE3,R.layout.first_circle_search_item3);
         //文本 + 文章
         addItemType(TYPE4,R.layout.first_circle_search_item4);
-
+        //all
+        addItemType(TYPEALL,R.layout.first_circle_search_itemall);
     }
 
     @Override

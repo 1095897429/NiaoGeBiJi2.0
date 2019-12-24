@@ -1,19 +1,34 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.socks.library.KLog;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -40,6 +55,7 @@ public class TestResultActivity extends BaseActivity {
 
     private SchoolBean.SchoolTest mSchoolTest;
 
+    private String hege = "不合格";
 
     @Override
     protected int getLayoutId() {
@@ -48,9 +64,27 @@ public class TestResultActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
+        mExecutorService = Executors.newFixedThreadPool(2);
         mSchoolTest = (SchoolBean.SchoolTest) getIntent().getExtras().getSerializable("bean");
         tv_title.setText(mSchoolTest.getTitle());
+
+        if(!TextUtils.isEmpty(mSchoolTest.getTime()) && !TextUtils.isEmpty(mSchoolTest.getQuestion_num())){
+            long result = Long.parseLong(mSchoolTest.getTime()) * Long.parseLong(mSchoolTest.getQuestion_num());
+            mins  = TimeAppUtils.convertSecToTimeString(result);
+            KLog.d("tag",mins);
+        }
+
+        if(mSchoolTest.getRecord() !=  null){
+            //表示参加过测试
+            if(1 == mSchoolTest.getRecord().getIs_tested()){
+                getHeGe(mSchoolTest.getRecord().getScore(),mSchoolTest.getRecord().getScore());
+            }
+            test_grade.setText(mSchoolTest.getRecord().getScore());
+        }else{
+            test_grade.setText(mSchoolTest.getMyScore());
+            getHeGe(mSchoolTest.getMyScore(),mSchoolTest.getRecord().getScore());
+        }
+
 
 
         tv_title.setTextColor(getResources().getColor(R.color.white));
@@ -60,7 +94,23 @@ public class TestResultActivity extends BaseActivity {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
         test_grade.setTypeface(typeface);
 
-        test_grade.setText(mSchoolTest.getRecord().getScore());
+        if(mSchoolTest.getRecord()!= null && mSchoolTest.getRecord().getScore()!= null){
+            test_grade.setText(mSchoolTest.getRecord().getScore());
+        }else{
+            test_grade.setText(mSchoolTest.getMyScore());
+        }
+
+    }
+
+    private void getHeGe(String score,String passScore) {
+        int score_int = Integer.parseInt(score);
+        int passScore_int = Integer.parseInt(passScore);
+        if(score_int >= passScore_int){
+            hege = "我是合格的";
+            if(score_int == 100){
+                hege = "我是优秀的";
+            }
+        }
     }
 
 
@@ -83,33 +133,64 @@ public class TestResultActivity extends BaseActivity {
     }
 
 
+    /** --------------------------------- 分享  ---------------------------------*/
+    private String mins;
+    ShareBean bean = new ShareBean();
+    Bitmap bitmap =  null;
+    private ExecutorService mExecutorService;
+
     private void showShareDialog() {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(this).builder();
-        alertDialog.setShareDynamicView().setTitleGone();
+        alertDialog.setSharelinkView();
+        alertDialog.setTitleGone();
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
-            switch (position) {
+            switch (position){
                 case 0:
-                    KLog.d("tag", "朋友圈 是张图片");
-                    WxShareBean bean = new WxShareBean();
-                    shareWxCircleByWeb(bean);
+                    if(bitmap  ==  null){
+                        mExecutorService.submit(() -> {
+                            bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
+                        });
+                        mHandler.sendEmptyMessage(0x111);
+                    }
                     break;
                 case 1:
-                    KLog.d("tag", "朋友 是链接");
-                    WxShareBean bean2 = new WxShareBean();
-                    shareWxByWeb(bean2);
+                    mExecutorService.submit(() -> {
+                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
+                        mHandler.sendEmptyMessage(0x112);
+                    });
                     break;
-                case 4:
-                    KLog.d("tag", "转发到动态");
-//                    UIHelper.toTranspondActivity(this);
-//                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
-//                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                case 2:
+                    ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                    ToastUtils.showShort("链接复制成功！");
+                    StringUtil.copyLink(mSchoolTest.getShare_url());
                     break;
                 default:
             }
         });
         alertDialog.show();
     }
+
+
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            bean.setBitmap(bitmap);
+            bean.setImg(mSchoolTest.getIcon());
+            bean.setLink(mSchoolTest.getShare_url());
+            bean.setTitle(hege + mSchoolTest.getTitle());
+            bean.setContent(mins + "通过鸟哥笔记认证"  + mSchoolTest.getTitle() + "测试，你也来试试");
+            if(msg.what == 0x111){
+                bean.setShareType("circle_link");
+            }else{
+                bean.setShareType("weixin_link");
+            }
+            StringUtil.shareWxByWeb(TestResultActivity.this,bean);
+
+        }
+    };
 
 
 

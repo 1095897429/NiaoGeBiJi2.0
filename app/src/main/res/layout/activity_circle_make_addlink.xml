@@ -110,6 +110,7 @@
 
             <LinearLayout
                 android:id="@+id/part2222"
+                android:visibility="gone"
                 android:background="@mipmap/bg_addlink"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"

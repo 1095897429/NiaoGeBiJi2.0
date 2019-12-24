@@ -14,6 +14,8 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.MessageBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -144,8 +146,22 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
                 break;
             case ACTIVITY_TYPE:
-                helper.addOnClickListener(R.id.toMoreActivity);
 
+                FristActionBean t = item.getFristActionBean();
+
+                if(t.getActivity() != null && !TextUtils.isEmpty(t.getActivity().getPic())){
+                    ImageUtil.load(mContext,t.getActivity().getPic(),helper.getView(R.id.one_img_imgs));
+
+                }
+
+                helper.getView(R.id.one_img_imgs).setOnClickListener(view -> {
+                    String link = t.getActivity().getJump_link();
+                    UIHelper.toWebViewActivity(mContext,link);
+                });
+
+                helper.getView(R.id.toMoreActivity).setOnClickListener(view -> {
+                    EventBus.getDefault().post(new toFlashEvent("去活动信息流"));
+                });
 
                 break;
             default:

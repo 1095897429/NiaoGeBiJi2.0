@@ -2,8 +2,11 @@ package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Typeface;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
@@ -16,6 +19,7 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -25,9 +29,12 @@ import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.User_info;
+import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +51,18 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, BaseViewHolder> {
 
+    private int myPotion;
+    //对应具体的圈子数据
+    private CircleBean mCircleBean;
+
+    public void setCircleBean(CircleBean circleBean) {
+        mCircleBean = circleBean;
+    }
+
+    public void setMyPotion(int myPotion1){
+        this.myPotion = myPotion1;
+    }
+
     public CommentAdapterByNewBean(@Nullable List<CommentBeanNew> data) {
         super(R.layout.first_comment_item,data);
     }
@@ -55,7 +74,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
     @Override
     protected void convert(BaseViewHolder helper,CommentBeanNew item) {
         //设置子View点击事件
-        helper.addOnClickListener(R.id.comment_delete)
+        helper
                 .addOnClickListener(R.id.ll_has_second_comment)
                 .addOnClickListener(R.id.comment_priase)
                 .addOnClickListener(R.id.toFirstComment);
@@ -72,17 +91,9 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         helper.setText(R.id.comment_text,item.getComment());
 
         //发布时间
-        if(!TextUtils.isEmpty(item.getCreate_at())){
-            String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(item.getCreate_at()) * 1000L);
-            if(!TextUtils.isEmpty(s)){
-                if("天前".contains(s)){
-                    helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(item.getCreate_at()) * 1000L,"yyyy/MM/dd"));
-                }else{
-                    helper.setText(R.id.time,s);
-                }
-            }
-        }else{
-            helper.setText(R.id.time,"");
+        if(StringUtil.checkNull(item.getCreate_at())){
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getCreate_at()) * 1000L);
+            helper.setText(R.id.time,s);
         }
 
 
@@ -114,7 +125,6 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         recyclerView.setAdapter(mLimit2ReplyCircleAdapter);
 
-
         int size = 0;
         if(!TextUtils.isEmpty(item.getComment_num())){
             size = Integer.parseInt(item.getComment_num());
@@ -122,10 +132,74 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         //如果一级评论下的二级评论条数大于 1 条才显示
         if(size != 0 ){
             helper.setVisible(R.id.ll_has_second_comment,true);
-            helper.setText(R.id.all_comment,"查看全部" + size + "条回复");
+            if(size > 2){
+                helper.setVisible(R.id.all_comment,true);
+                helper.setText(R.id.all_comment,"查看全部" + size + "条回复");
+            }else{
+                helper.setVisible(R.id.all_comment,false);
+            }
         }else{
             helper.setVisible(R.id.ll_has_second_comment,false);
         }
+
+
+        getIconType(helper,item);
+
+        //删除评论
+        helper.getView(R.id.comment_delete).setOnClickListener(view -> showRemoveDialog(item,helper.getAdapterPosition()));
+    }
+
+    private void getIconType(BaseViewHolder helper, CommentBeanNew item) {
+        String uid = item.getUid();
+        String myUid = StringUtil.getUserInfoBean().getUid();
+        if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
+            helper.setVisible(R.id.comment_delete,true);
+        }else{
+            helper.setVisible(R.id.comment_delete,false);
+        }
+    }
+
+    private void showRemoveDialog(CommentBeanNew comment, int position) {
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(mContext).builder();
+        iosAlertDialog.setPositiveButton("删除", v -> {
+            blogdeleteComment(comment,position);
+        }).setNegativeButton("取消", v -> {
+        }).setMsg("确定要删除这条评论？").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    private void blogdeleteComment(CommentBeanNew comment, int position) {
+        Map<String,String> map = new HashMap<>();
+        map.put("comment_id",comment.getId());
+        map.put("class",comment.getComment_class());
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().blogdeleteComment(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        //手动添加 评论数1
+                        mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) - 1) + "");
+                        EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),
+                                mCircleBean.getLike_num(),mCircleBean.getComment_num()));
+
+                        if(mChangeDetailListener != null){
+                            mChangeDetailListener.func(mCircleBean.getLike_num(),mCircleBean.getIs_like(),mCircleBean.getComment_num());
+                        }
+                        mData.remove(position);
+                        notifyDataSetChanged();
+                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                        //TODO 删除到没有数据时，显示空布局
+                        if(mData.isEmpty()){
+                            View view = LayoutInflater.from(mContext).inflate(R.layout.empty_layout,null);
+                            setEmptyView(view);
+
+                        }
+                    }
+                });
     }
 
 
@@ -193,5 +267,14 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
     }
 
 
+    public ChangeDetailListener mChangeDetailListener;
+    /**  更新上面circle的内容 */
+    public interface ChangeDetailListener{
+        void func(String good_num, int is_good,String com_num);
+    }
+
+    public void setChangeDetailListener(ChangeDetailListener changeDetailListener) {
+        mChangeDetailListener = changeDetailListener;
+    }
 }
 

@@ -96,6 +96,8 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-15
  * 描述:圈子帖发布界面
+ * 1.发布帖子成功,删除草稿 (没有的原因是销毁了 )  -- eventbus失效了
+ * 2.采用全局变量
  */
 public class CircleMakeActivity extends BaseActivity {
 
@@ -141,7 +143,6 @@ public class CircleMakeActivity extends BaseActivity {
     GridLayoutManager mGridLayoutManager;
 
     private String mString;
-    private int textLength;
     //编辑字数限制
     private int num = 140;
     public  int pic_num = 9;
@@ -171,7 +172,13 @@ public class CircleMakeActivity extends BaseActivity {
     }
 
     @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+    @Override
     public void initData() {
+
         mTempMsgBean = getTempMsg();
         //上次是保存草稿的
         if(null != mTempMsgBean){
@@ -180,6 +187,7 @@ public class CircleMakeActivity extends BaseActivity {
             removeTempMsg();
             KeyboardUtils.showSoftInput(mEditText);
         }
+
     }
 
     @SuppressLint("CheckResult")
@@ -189,25 +197,28 @@ public class CircleMakeActivity extends BaseActivity {
                 .textChanges(mEditText)
                 .subscribe(charSequence -> {
                     //英文单词占1个字符  表情占2个字符 中文占1个字符
-//                    KLog.d("tag", "accept: " + charSequence.toString() );
-                    //　trim()是去掉首尾空格
+                    //目前用上面的方案的
+                    KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );
+                    //trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
                         send.setEnabled(true);
                         send.setTextColor(getResources().getColor(R.color.text_first_color));
-                        textLength = mString.length();
                         //设置光标在最后
                         mEditText.setSelection(charSequence.toString().length());
 
                         if(mString.length() > num){
-                            KLog.d("tag","超出了");
-                            return;
+                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
+                        }else{
+                            listentext.setTextColor(Color.parseColor("#818386"));
                         }
-                        listentext.setText(textLength + " / " + num);
+
                     }else{
                         send.setEnabled(false);
                         send.setTextColor(Color.parseColor("#CC818386"));
                     }
+
+                    listentext.setText(mString.length() + "");
                 });
 
         initLayout();
@@ -234,11 +245,14 @@ public class CircleMakeActivity extends BaseActivity {
                 setStatus(true);
                 break;
             case R.id.link:
-                KLog.d("tag","添加链接");
                 UIHelper.toCircleMakeAddLinkActivity(this,REQCODE);
                 overridePendingTransition(R.anim.activity_enter_right,R.anim.activity_alpha_exit);
                 break;
             case R.id.send:
+                if(mString.length() > num){
+                    ToastUtils.showShort("内容最多输入140字");
+                    return;
+                }
                 sendPicToQiuNiu();
                 break;
             case R.id.cancel:
@@ -321,9 +335,13 @@ public class CircleMakeActivity extends BaseActivity {
             Bundle bundle = data.getExtras();
             linkurl = bundle.getString("add_link");
             linkTitle = bundle.getString("link_title");
+            //获取到是 https://m.weibo.cn/detail/4452636415281894?display=0&retcode=6102，需显示域名
+
+            String tempLink   = StringUtil.getDomain(linkurl);
+
             if(!TextUtils.isEmpty(linkurl)){
                 part2222.setVisibility(View.VISIBLE);
-                link_url.setText(linkurl);
+                link_url.setText(tempLink);
                 link_title.setText(linkTitle);
                 setStatus(false);
             }
@@ -372,7 +390,7 @@ public class CircleMakeActivity extends BaseActivity {
             getData();
         }).setNegativeButton("不使用", v -> {
             removeTempMsg();
-        }).setMsg("你有保存的草稿，是否使用？").setCanceledOnTouchOutside(false);
+        }).setMsg("你有保存的草稿，是否使用？").setCanceledOnTouchOutside(false).setCancelable(false);
         iosAlertDialog.show();
     }
 
@@ -416,11 +434,24 @@ public class CircleMakeActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!TextUtils.isEmpty(mEditText.getEditableText().toString())){
+
+        }
+
+    }
+
     private void getData() {
         if(null != mTempMsgBean) {
             if(!TextUtils.isEmpty(mTempMsgBean.getContent())){
                 mEditText.setText(mTempMsgBean.getContent());
                 mString = mTempMsgBean.getContent();
+                mEditText.setSelection(mEditText.getEditableText().toString().length());
+                mEditText.setCursorVisible(true);
+                //TODO 这句很重要，只有调用了这句，光标才能显示出来
+                mEditText.requestFocus();
             }
 
             if(!TextUtils.isEmpty(mTempMsgBean.getLinkurl())){

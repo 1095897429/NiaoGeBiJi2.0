@@ -33,6 +33,7 @@ import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
+import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
 import com.qmkj.niaogebiji.module.fragment.SchoolFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolFragment;
@@ -56,15 +57,15 @@ public class HomeActivity extends BaseActivity {
     @BindView(R.id.index_first_text)
     TextView index_first_text;
 
-    @BindView(R.id.index_news_icon)
-    ImageView index_news_icon;
-    @BindView(R.id.index_news_text)
-    TextView index_news_text;
-
     @BindView(R.id.index_school_icon)
     ImageView index_school_icon;
     @BindView(R.id.index_school_text)
     TextView index_school_text;
+
+    @BindView(R.id.index_flash_icon)
+    ImageView index_flash_icon;
+    @BindView(R.id.index_flash_text)
+    TextView index_flash_text;
 
     @BindView(R.id.index_activity_icon)
     ImageView index_activity_icon;
@@ -118,8 +119,9 @@ public class HomeActivity extends BaseActivity {
     int count = 1;
 
     FirstFragment mFirstFragment;
+    FlashFragment mFlashFragment;
     SchoolFragment mSchoolFragment;
-    ToolFragment mToolFragment;
+//    ToolFragment mToolFragment;
     CircleFragment mCircleFragment;
     MyFragment mMyFragment;
     Fragment mCurrentFragment;
@@ -196,7 +198,6 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                KLog.d("tag","onPageFinished");
                 toGiveToken();
             }
         });
@@ -296,7 +297,7 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.index_first,R.id.index_school,R.id.index_tool,R.id.index_circle,R.id.index_my
+    @OnClick({R.id.index_first,R.id.index_flash,R.id.index_tool,R.id.index_circle,R.id.index_my
 
     })
     public void bottomClick(android.view.View layout){
@@ -308,7 +309,7 @@ public class HomeActivity extends BaseActivity {
                 if(null == mFirstFragment){
                     mFirstFragment = FirstFragment.getInstance();
                 }
-                index_first_icon.setImageResource(R.mipmap.icon_index_01);
+                index_first_icon.setImageResource(R.mipmap.icon_index_001);
                 index_first_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mFirstFragment);
 
@@ -323,24 +324,25 @@ public class HomeActivity extends BaseActivity {
                 }
 
                 break;
-            case R.id.index_school:
+            case R.id.index_flash:
+                hideImageStatus();
+                if(null == mFlashFragment){
+                    mFlashFragment = FlashFragment.getInstance();
+                }
+                index_flash_icon.setImageResource(R.mipmap.icon_index_11);
+                index_flash_text.setTextColor(Color.parseColor("#333333"));
+                switchFragment(mFlashFragment);
+                break;
+            case R.id.index_tool:
+
                 hideImageStatus();
                 if(null == mSchoolFragment){
                     mSchoolFragment = SchoolFragment.getInstance();
                 }
-                index_school_icon.setImageResource(R.mipmap.icon_index_11);
+                index_school_icon.setImageResource(R.mipmap.icon_index_01);
                 index_school_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mSchoolFragment);
-                break;
-            case R.id.index_tool:
-                hideImageStatus();
-                if(null == mToolFragment){
-                    mToolFragment = ToolFragment.getInstance();
-                }
-                index_news_icon.setImageResource(R.mipmap.icon_index_21);
-                index_news_text.setTextColor(Color.parseColor("#333333"));
-                switchFragment(mToolFragment);
-                break;
+            break;
             case R.id.index_circle:
                 hideImageStatus();
                 if(null == mCircleFragment){
@@ -384,15 +386,15 @@ public class HomeActivity extends BaseActivity {
     /** 隐藏状态 */
     @SuppressLint("ResourceAsColor")
     private void hideImageStatus(){
-        index_first_icon.setImageResource(R.mipmap.icon_index_00);
+        index_first_icon.setImageResource(R.mipmap.icon_index_000);
+        index_flash_icon.setImageResource(R.mipmap.icon_index_00);
         index_school_icon.setImageResource(R.mipmap.icon_index_10);
-        index_news_icon.setImageResource(R.mipmap.icon_index_20);
         index_activity_icon.setImageResource(R.mipmap.icon_index_30);
         index_my_icon.setImageResource(R.mipmap.icon_index_40);
         index_first_text.setTextColor(Color.parseColor("#C0C0C0"));
-        index_school_text.setTextColor(Color.parseColor("#C0C0C0"));
+        index_flash_text.setTextColor(Color.parseColor("#C0C0C0"));
         index_activity_text.setTextColor(Color.parseColor("#C0C0C0"));
-        index_news_text.setTextColor(Color.parseColor("#C0C0C0"));
+        index_school_text.setTextColor(Color.parseColor("#C0C0C0"));
         index_my_text.setTextColor(Color.parseColor("#C0C0C0"));
     }
 

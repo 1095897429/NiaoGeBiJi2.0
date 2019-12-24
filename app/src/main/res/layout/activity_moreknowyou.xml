@@ -77,7 +77,7 @@
                 android:orientation="horizontal">
 
                 <View
-                    android:background="@drawable/bg_corners_2_light_yellow"
+                    android:background="@drawable/bg_corners_2_yellow"
                     android:layout_width="18dp"
                     android:layout_height="4dp" />
 
@@ -87,7 +87,7 @@
 
                 <View
 
-                    android:background="@drawable/bg_corners_2_yellow"
+                    android:background="@drawable/bg_corners_2_light_yellow"
                     android:layout_width="10dp"
                     android:layout_height="4dp" />
 
@@ -216,7 +216,7 @@
                 android:orientation="horizontal">
 
                 <View
-                    android:background="@drawable/bg_corners_2_yellow"
+                    android:background="@drawable/bg_corners_2_light_yellow"
                     android:layout_width="18dp"
                     android:layout_height="4dp" />
 
@@ -226,7 +226,7 @@
 
                 <View
 
-                    android:background="@drawable/bg_corners_2_light_yellow"
+                    android:background="@drawable/bg_corners_2_yellow"
                     android:layout_width="10dp"
                     android:layout_height="4dp" />
 

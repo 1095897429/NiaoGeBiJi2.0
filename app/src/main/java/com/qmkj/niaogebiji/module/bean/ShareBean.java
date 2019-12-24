@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.bean;
 
+import android.graphics.Bitmap;
+
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
 /**
@@ -16,6 +18,15 @@ public class ShareBean extends BaseBean {
     private int resId;
     private String content;
     private String shareType;
+    private Bitmap bitmap;
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
 
     public String getShareType() {
         return shareType;

@@ -19,6 +19,7 @@ import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
+import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IncomeBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
@@ -638,6 +639,26 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/posCertInit")
     Observable<HttpResponse<AutherCertInitBean>> posCertInit(@Field("params") String param);
+
+
+
+    /* 2019.12.20 首页推荐活动， */
+    @FormUrlEncoded
+    @POST("app/item/recommendActivity")
+    Observable<HttpResponse<FristActionBean>> recommendActivity(@Field("params") String param);
+
+    /* 2019.12.20  删除新闻评论*/
+    @FormUrlEncoded
+    @POST("app/my/deleteComment")
+    Observable<HttpResponse> deleteComment(@Field("params") String param);
+
+
+    /* 2019.12.24  删除圈子评论*/
+    @FormUrlEncoded
+    @POST("app/blog/deleteComment")
+    Observable<HttpResponse> blogdeleteComment(@Field("params") String param);
+
+
 
 
 

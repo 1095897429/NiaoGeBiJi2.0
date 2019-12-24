@@ -101,23 +101,24 @@ public class TranspondActivity extends BaseActivity {
                     KLog.d("tag", "accept: " + charSequence.toString() );
                     //　trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
-                    KLog.d("tag",mString);
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
                         send.setEnabled(true);
                         send.setTextColor(getResources().getColor(R.color.text_first_color));
-                        textLength = mString.length();
                         //设置光标在最后
                         mEditText.setSelection(charSequence.toString().length());
 
                         if(mString.length() > num){
-                            KLog.d("tag","超出了");
-                            return;
+                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
+                        }else{
+                            listentext.setTextColor(Color.parseColor("#818386"));
                         }
-                        listentext.setText(textLength + " / " + num);
+
                     }else{
                         send.setEnabled(false);
                         send.setTextColor(Color.parseColor("#CC818386"));
                     }
+
+                    listentext.setText(mString.length() + "");
                 });
 
         RxCompoundButton.checkedChanges(mCheckbox).subscribe(new Consumer<Boolean>() {
@@ -137,7 +138,15 @@ public class TranspondActivity extends BaseActivity {
     @Override
     public void initData() {
         mCircleBean = (CircleBean) getIntent().getExtras().getSerializable("circle");
-        ImageUtil.load(this,mCircleBean.getUser_info().getAvatar(),logo);
+
+        //只判断img字段 没有的话是转发，传头像即可；如果有，就用图片的第一张
+        if(mCircleBean.getImages() != null && !mCircleBean.getImages().isEmpty()){
+            ImageUtil.load(this,mCircleBean.getImages().get(0),logo);
+
+        }else{
+            ImageUtil.load(this,mCircleBean.getUser_info().getAvatar(),logo);
+        }
+
         acticle_title.setText(mCircleBean.getBlog());
     }
 
@@ -151,8 +160,10 @@ public class TranspondActivity extends BaseActivity {
                 UIHelper.toCommentDetailActivity(this,mCircleBean.getId(),mCircleBean.getCircleType(),mCircleBean.getSlefPosition());
                 break;
             case R.id.send:
-                KLog.d("tag","发布");
-
+                if(mString.length() > num){
+                    ToastUtils.showShort("内容最多输入140字");
+                    return;
+                }
                 createBlog();
 
 
@@ -173,7 +184,7 @@ public class TranspondActivity extends BaseActivity {
     String blog_link = "";
     String blog_link_title = "";
     //0原创 1转发动态传递1
-    int blog_type = 0;
+    int blog_type = 1;
     //被转发动态ID，原创为0
     String blog_pid = "";
     //转发时是否同时评论动态，1是 0否
@@ -189,12 +200,12 @@ public class TranspondActivity extends BaseActivity {
         blog = mString;
         Map<String,String> map = new HashMap<>();
         map.put("blog",blog + "");
-        map.put("images", "");
+        map.put("images", blog_images);
         map.put("link","");
         map.put("link_title","");
-        map.put("type",blog_type + "");
-        map.put("pid",mCircleBean.getId() + "");
-        map.put("is_comment",blog_is_comment + "");
+        map.put("type",blog_type + "");//TODO 必转
+        map.put("pid",mCircleBean.getId() + "");//TODO 必转
+        map.put("is_comment",blog_is_comment + "");//TODO 必转
         map.put("article_id", article_id + "");
         map.put("article_title", article_title + "");
         map.put("article_image",article_image + "");

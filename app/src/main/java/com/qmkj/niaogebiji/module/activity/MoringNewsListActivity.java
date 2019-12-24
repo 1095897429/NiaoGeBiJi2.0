@@ -141,7 +141,8 @@ public class MoringNewsListActivity extends BaseActivity {
         mMoringNewsAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             String audio =  mMoringNewsAdapter.getData().get(position).getVideo();
             String title =  mMoringNewsAdapter.getData().get(position).getTitle();
-            EventBus.getDefault().post(new AudioEvent(audio,title));
+            String newid =  mMoringNewsAdapter.getData().get(position).getAid();
+            EventBus.getDefault().post(new AudioEvent(audio,title,newid));
         });
     }
 

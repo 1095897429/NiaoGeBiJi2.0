@@ -2,11 +2,13 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
@@ -22,9 +24,15 @@ import com.qmkj.niaogebiji.module.adapter.SchoolTestAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.event.TestListEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +52,10 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SchoolFragment extends BaseLazyFragment {
 
+    @BindView(R.id.smartRefreshLayout)
+    SmartRefreshLayout smartRefreshLayout;
+
+
     @BindView(R.id.recycler00)
     RecyclerView recycler00;
 
@@ -52,6 +64,8 @@ public class SchoolFragment extends BaseLazyFragment {
 
     @BindView(R.id.recycler22)
     RecyclerView recycler22;
+
+
 
 
     SchoolBaiduAdapter mSchoolBaiduAdapter;
@@ -85,9 +99,49 @@ public class SchoolFragment extends BaseLazyFragment {
         return R.layout.fragment_school;
     }
 
+    private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mSchoolBaiDus.clear();
+            mSchoolTests.clear();
+            mSchoolBooks.clear();
+            schoolindex();
+        });
+    }
+
+
+    @BindView(R.id.loading_dialog)
+    LinearLayout loading_dialog;
+
+    @BindView(R.id.lottieAnimationView)
+    LottieAnimationView lottieAnimationView;
+
+    public void showWaitingDialog() {
+        loading_dialog.setVisibility(View.VISIBLE);
+        lottieAnimationView.setImageAssetsFolder("images");
+        lottieAnimationView.setAnimation("images/loading.json");
+        lottieAnimationView.loop(true);
+        lottieAnimationView.playAnimation();
+    }
+
+    /**
+     * 隐藏等待提示框
+     */
+    public void hideWaitingDialog() {
+        if(null != lottieAnimationView){
+            loading_dialog.setVisibility(View.GONE);
+            lottieAnimationView.cancelAnimation();
+        }
+    }
+
+
 
     @Override
     protected void initView() {
+        showWaitingDialog();
+        initSamrtLayout();
         initLayout0();
         initLayout1();
         initLayout2();
@@ -106,9 +160,20 @@ public class SchoolFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<SchoolBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<SchoolBean> response) {
-                        KLog.d("tag","response " + response.getReturn_code());
+
+                        hideWaitingDialog();
+
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         mSchoolBean  = response.getReturn_data();
                         setData();
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        hideWaitingDialog();
                     }
                 });
     }
@@ -125,37 +190,13 @@ public class SchoolFragment extends BaseLazyFragment {
         mSchoolBookAdapter.setNewData(mSchoolBooks);
     }
 
-    private void getData() {
-
-//        SchoolBean.SchoolBaiDu baiDu;
-//        for (int i = 0; i < 5; i++) {
-//            baiDu = new SchoolBean.SchoolBaiDu();
-//            baiDu.setImg(imgs[i]);
-//            baiDu.setName(names[i]);
-//            mSchoolBaiDus.add(baiDu);
-//        }
-//
-//        SchoolBean.SchoolTest test;
-//        for (int i = 0; i < 6; i++) {
-//            test = new SchoolBean.SchoolTest();
-//            mSchoolTests.add(test);
-//        }
-//
-//        SchoolBean.SchoolBook book;
-//        for (int i = 0; i < 6; i++) {
-//            book = new SchoolBean.SchoolBook();
-//            mSchoolBooks.add(book);
-//        }
-
-    }
-
     private void initEvent() {
         mSchoolBaiduAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","根据cateid 去wiki");
             SchoolBean.SchoolBaiDu temp =  mSchoolBaiduAdapter.getData().get(position);
             if(!TextUtils.isEmpty(temp.getCate_id() + "")){
                 String link = StringUtil.getLink("wikilist/" + temp.getCate_id());
-                UIHelper.toWebViewActivity(getActivity(),link);
+                UIHelper.toWebViewActivityWithOnStep(getActivity(),link);
             }
         });
 
@@ -165,9 +206,7 @@ public class SchoolFragment extends BaseLazyFragment {
             if("0".equals(tempRecord.getIs_tested() + "")){
                 UIHelper.toTestDetailActivity(getActivity(),temp);
             }else if("1".equals(tempRecord.getIs_tested() + "")){
-                String score =  tempRecord.getScore();
-                String passScore = temp.getPass_score();
-                if(score.compareTo(passScore) < 0){
+                if(Integer.parseInt(tempRecord.getScore()) < Integer.parseInt(temp.getPass_score())){
                     KLog.d("tag","不及格");
                     UIHelper.toTestResultFailActivity(getActivity(),temp);
                 }else{
@@ -182,6 +221,8 @@ public class SchoolFragment extends BaseLazyFragment {
             KLog.d("tag","去课程");
         });
     }
+
+
 
     private void initLayout2() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
@@ -245,20 +286,19 @@ public class SchoolFragment extends BaseLazyFragment {
 
 
 
-
-
-
-
-
-
-
-
-
     @Override
     public void initData() {
 
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTestListEvent(TestListEvent event){
+        mSchoolBaiDus.clear();
+        mSchoolTests.clear();
+        mSchoolBooks.clear();
+        schoolindex();
+    }
 
 
 }

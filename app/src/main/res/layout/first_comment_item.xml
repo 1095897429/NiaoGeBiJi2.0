@@ -200,6 +200,7 @@
 
                     <TextView
                         android:id="@+id/all_comment"
+                        android:visibility="gone"
                         android:textSize="13sp"
                         android:textColor="#5675A7"
                         android:text="查看全部10条回复"

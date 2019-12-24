@@ -1,10 +1,15 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -13,9 +18,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
@@ -24,7 +32,10 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -32,10 +43,16 @@ import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -47,6 +64,7 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-22
  * 描述:测一测详情
+ * 1.（time *  题目数 ）+ "分数比较 " + "标题"
  */
 public class TestDetailActivity extends BaseActivity {
 
@@ -76,8 +94,13 @@ public class TestDetailActivity extends BaseActivity {
     @BindView(R.id.summary)
     TextView summary;
 
+    private String mins;
+
+
 
     private SchoolBean.SchoolTest mSchoolTest;
+
+    private ExecutorService mExecutorService;
 
     @Override
     protected int getLayoutId() {
@@ -86,12 +109,20 @@ public class TestDetailActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        mExecutorService = Executors.newFixedThreadPool(2);
         mSchoolTest = (SchoolBean.SchoolTest) getIntent().getExtras().getSerializable("bean");
 
         tv_title.setText("测试详情");
         tv_title.setTextColor(getResources().getColor(R.color.white));
         iv_back.setImageResource(R.mipmap.icon_test_detail_back);
         iv_right.setVisibility(View.VISIBLE);
+
+        if(!TextUtils.isEmpty(mSchoolTest.getTime()) && !TextUtils.isEmpty(mSchoolTest.getQuestion_num())){
+            long result = Long.parseLong(mSchoolTest.getTime()) * Long.parseLong(mSchoolTest.getQuestion_num());
+            mins  = TimeAppUtils.convertSecToTimeString(result);
+            KLog.d("tag",mins);
+        }
+
 
 
         getData();
@@ -152,6 +183,7 @@ public class TestDetailActivity extends BaseActivity {
     private void setData() {
         if(!list.isEmpty()){
             UIHelper.toTestLauchActivity(this, (ArrayList<TestNewBean>) list,mSchoolTest);
+            finish();
         }
     }
 
@@ -167,6 +199,9 @@ public class TestDetailActivity extends BaseActivity {
 
     /** --------------------------------- 分享  ---------------------------------*/
 
+    ShareBean bean = new ShareBean();
+    Bitmap bitmap =  null;
+
     private void showShareDialog() {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(this).builder();
         alertDialog.setSharelinkView();
@@ -175,26 +210,23 @@ public class TestDetailActivity extends BaseActivity {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
-                    KLog.d("tag","朋友圈 是张图片");
-                    WxShareBean bean = new WxShareBean();
-                    shareWxCircleByWeb(bean);
+                    if(bitmap  ==  null){
+                        mExecutorService.submit(() -> {
+                            bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
+                        });
+                        mHandler.sendEmptyMessage(0x111);
+                    }
                     break;
                 case 1:
-                    KLog.d("tag","朋友 是链接");
-                    WxShareBean bean2 = new WxShareBean();
-                    shareWxByWeb(bean2);
+                    mExecutorService.submit(() -> {
+                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
+                        mHandler.sendEmptyMessage(0x112);
+                    });
                     break;
                 case 2:
-                        KLog.d("tag","复制链接");
-                        //获取剪贴板管理器：
-                        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        // 创建普通字符型ClipData
-                        ClipData mClipData = ClipData.newPlainText("Label", "http://www.baidu.com");
-                        // 将ClipData内容放到系统剪贴板里。
-                        cm.setPrimaryClip(mClipData);
                         ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                         ToastUtils.showShort("链接复制成功！");
-
+                        StringUtil.copyLink(mSchoolTest.getShare_url());
 
                     break;
                 default:
@@ -202,6 +234,27 @@ public class TestDetailActivity extends BaseActivity {
         });
         alertDialog.show();
     }
+
+
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            bean.setBitmap(bitmap);
+            bean.setImg(mSchoolTest.getIcon());
+            bean.setLink(mSchoolTest.getShare_url());
+            bean.setTitle("测一测：" + mSchoolTest.getTitle());
+            bean.setContent(mins + "看看你能否成为合格的" +  "\n" + mSchoolTest.getTitle());
+            if(msg.what == 0x111){
+                bean.setShareType("circle_link");
+            }else{
+                bean.setShareType("weixin_link");
+            }
+            StringUtil.shareWxByWeb(TestDetailActivity.this,bean);
+
+        }
+    };
 
 
 }

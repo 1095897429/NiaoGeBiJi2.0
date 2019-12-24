@@ -1,22 +1,23 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
@@ -35,9 +36,10 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
+import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
+import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -47,6 +49,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -84,6 +88,12 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     private List<String> mPics = new ArrayList<>();
     private List<String> mPics_transger;
     private CircleTransferPicAdapter mCircleTransferPicAdapter;
+
+    private  int i ;
+    private  Rect rect ;
+    private int j;
+    private  Rect firstAndLastRect;
+    private  Rect firstAndLastRect1;
 
     @Override
     protected void convert(BaseViewHolder helper, CircleBean item) {
@@ -128,8 +138,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             ImageView imageView =  helper.getView( R.id.image_circle_priase);
             zanCommentChange(com_num,zan_num,imageView,item.getLike_num(),item.getIs_like(),item.getComment_num());
 
-            //正文
-            helper.setText(R.id.content,item.getBlog());
+
+            TextView msg = helper.getView(R.id.content);
+            msg.setText(item.getBlog());
+//            getIconLinkShow(item,msg);
+
 
         }
 
@@ -196,20 +209,35 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 mPics = item.getImages();
                 if(mPics != null && mPics.size() > 3){
                     mPics = mPics.subList(0,3);
+
                 }
                 //二级评论布局
-                GridLayoutManager talkManager = new GridLayoutManager(mContext,3);
+                GridLayoutManager layoutManager = new GridLayoutManager(mContext, 3);
                 RecyclerView recyclerView =  helper.getView(R.id.pic_recyler);
-                recyclerView.setLayoutManager(talkManager);
+                recyclerView.setLayoutManager(layoutManager);
+
+                //TODO 如果没有加这个，这个会导致重复添加
+                if(firstAndLastRect == null){
+                    i = SizeUtils.dp2px( 8);
+                    rect =  new Rect(0, 0, i, 0);
+                    j = SizeUtils.dp2px( 0);
+                    firstAndLastRect = new Rect(j, 0, i, 0);
+                    HorizontalSpacesDecoration spacesDecoration = new HorizontalSpacesDecoration(rect, firstAndLastRect);
+                    recyclerView.addItemDecoration(spacesDecoration);
+
+                }
+
                 mCirclePicAdapter = new CirclePicAdapter(mPics);
+                mCirclePicAdapter.setTotalSize(item.getImages().size());
                 //禁用change动画
                 ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mCirclePicAdapter);
 
+
                 //预览事件
                 mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
                     KLog.d("tag","点击预览");
-                    UIHelper.toPicPreViewActivity(mContext,  item.getImages());
+                    UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position);
                 });
 
 
@@ -232,15 +260,29 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 if(mPics_transger != null && mPics_transger.size() > 3){
                     mPics_transger = mPics_transger.subList(0,3);
                 }
-                //二级评论布局
-                talkManager = new GridLayoutManager(mContext,3);
-                recyclerView =  helper.getView(R.id.pic_recyler_transfer);
-                recyclerView.setLayoutManager(talkManager);
-                mCircleTransferPicAdapter = new CircleTransferPicAdapter(mPics_transger);
-                //禁用change动画
-                ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-                recyclerView.setAdapter(mCircleTransferPicAdapter);
+                GridLayoutManager layoutManager2 = new GridLayoutManager(mContext, 3);
+                RecyclerView recyclerView2 =  helper.getView(R.id.pic_recyler_transfer);
+                recyclerView2.setLayoutManager(layoutManager2);
 
+                if(firstAndLastRect1 == null){
+                    int i1 = SizeUtils.dp2px( 6);
+                    Rect rect1 = new Rect(0, 0, i1, 0);
+                    int j1 = SizeUtils.dp2px( 0);
+                    firstAndLastRect1  = new Rect(j1, 0, i1, 0);
+                    HorizontalSpacesDecoration spacesDecoration1 = new HorizontalSpacesDecoration(rect1, firstAndLastRect1);
+                    recyclerView2.addItemDecoration(spacesDecoration1);
+
+                }
+
+                mCircleTransferPicAdapter = new CircleTransferPicAdapter(mPics_transger);
+                mCircleTransferPicAdapter.setTotalSize(item.getP_blog().getImages().size());
+                //禁用change动画
+                ((SimpleItemAnimator)recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
+                recyclerView2.setAdapter(mCircleTransferPicAdapter);
+
+
+
+                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition()));
 
                 break;
             case 22:
@@ -252,11 +294,41 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 if(!TextUtils.isEmpty(item.getP_blog().getArticle_image())){
                     ImageUtil.load(mContext,item.getP_blog().getArticle_image(),helper.getView(R.id.transfer_article_img));
                 }
-                helper.setText(R.id.transfer_article_img,item.getP_blog().getArticle_title());
+                helper.setText(R.id.transfer_article_title,item.getP_blog().getArticle_title());
                 break;
                 default:
         }
 
+
+    }
+
+    private void getIconLinkShow(CircleBean item, TextView msg) {
+        //正文里link判断 并装换
+        String content = "测试http://www.baidu.com 测测https://www.qq.com/再来一个 https://china.nba.com";
+        //判断内容是否中link
+        String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+        Matcher matcher = Pattern.compile(regex).matcher(content);
+        int size = matcher.groupCount();
+
+        Map<String,String> map = new HashMap<>();
+        while (matcher.find()){
+            int start =  matcher.start();
+            int end = matcher.end();
+            KLog.d("tag","start " + start + " end " + end);
+            KLog.d("tag"," matcher.group() " +  matcher.group());
+            map.put(matcher.group(),matcher.group());
+        }
+        KLog.d("tag","link条数 " + map.size());
+
+
+        //拼接链接
+        Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_link_http);
+        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+        //居中对齐imageSpan
+        CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+        SpannableString spanString2 = new SpannableString("icon");
+        spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        msg.append(spanString2);
 
     }
 
@@ -275,6 +347,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
     //通过type加载布局 并且 设置转发帖子的type
     private void getCircleType(BaseViewHolder helper, CircleBean item) {
+
+        helper.setVisible(R.id.transfer_zf_ll,false);
+        helper.setVisible(R.id.transfer_yc_ll,true);
+
         if(CircleRecommentAdapterNew.YC_PIC == item.getCircleType()){
             helper.setVisible(R.id.part_yc_pic,true);
             helper.setVisible(R.id.part_yc_link,false);
@@ -297,9 +373,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             helper.setVisible(R.id.transfer_zf_ll,false);
         }else {
             helper.setVisible(R.id.transfer_zf_ll,true);
-            helper.setVisible(R.id.part_yc_pic,false);
-            helper.setVisible(R.id.part_yc_link,false);
-            helper.setVisible(R.id.part_yc_acticle,false);
+            helper.setVisible(R.id.transfer_yc_ll,false);
+
+
 
             if(CircleRecommentAdapterNew.ZF_PIC == item.getCircleType()){
                 helper.setVisible(R.id.part_zf_pic,true);
@@ -316,6 +392,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 helper.setVisible(R.id.part_zf_link,false);
                 helper.setVisible(R.id.part_zf_pic,false);
                 item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_ACTICLE);
+            }else if(CircleRecommentAdapterNew.ZF_TEXT == item.getCircleType()){
+                helper.setVisible(R.id.part_zf_pic,false);
+                helper.setVisible(R.id.part_zf_link,false);
+                helper.setVisible(R.id.part_zf_article,false);
+                item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_TEXT);
             }
 
         }
@@ -413,8 +494,19 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     ShareBean bean1 = new ShareBean();
                     bean1.setShareType("circle_link");
                     bean1.setLink(item.getShare_url());
-                    bean1.setTitle(item.getBlog());
+                    String name1 = "";
+                    if( null != item.getUser_info()){
+                        name1 = item.getUser_info().getName();
+                    }
+                    bean1.setTitle("分享一条" + name1 + "的营销圈动态");
                     bean1.setContent(item.getBlog());
+                    String img = "";
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img = item.getUser_info().getAvatar();
+                    }
+                    bean1.setImg(img);
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -422,8 +514,19 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     ShareBean bean = new ShareBean();
                     bean.setShareType("weixin_link");
                     bean.setLink(item.getShare_url());
-                    bean.setTitle(item.getBlog());
+                    String name = "";
+                    if( null != item.getUser_info()){
+                        name = item.getUser_info().getName();
+                    }
+                    bean.setTitle("分享一条" + name + "的营销圈动态");
                     bean.setContent(item.getBlog());
+                    String img2 = "";
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img2  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img2 = item.getUser_info().getAvatar();
+                    }
+                    bean.setImg(img2);
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 4:

@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.qmkj.niaogebiji.module.widget.RCImageView
-        android:id="@+id/pic"
-        android:src="@color/bg_color"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_weight="1"
-        android:scaleType="centerCrop"
-        app:round_as_circle="false"
-        app:round_corner="8dp" />
+    <LinearLayout
+        android:id="@+id/pic_ll"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <View
-        android:layout_width="6dp"
-        android:layout_height="match_parent"/>
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:id="@+id/pic"
+            android:src="@color/bg_color"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            app:round_as_circle="false"
+            app:round_corner="8dp" />
 
-</LinearLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/count"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:text=""
+        android:background="@drawable/bg_corners_8_60alpha"
+        android:visibility="visible"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="100dp" />
+
+
+
+
+</RelativeLayout>

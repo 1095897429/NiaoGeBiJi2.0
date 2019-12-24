@@ -37,7 +37,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
+import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -120,9 +120,12 @@ public class UserInfoActivity extends BaseActivity {
 
     private int page = 1;
     //适配器
-    CircleRecommendAdapter mCircleRecommendAdapter;
-    //组合集合
-    List<MultiCircleNewsBean> mAllList = new ArrayList<>();
+//    CircleRecommendAdapter mCircleRecommendAdapter;
+//    List<MultiCircleNewsBean> mAllList = new ArrayList<>();
+
+    CircleRecommentAdapterNew mCircleRecommentAdapterNew;
+    List<CircleBean> mAllList = new ArrayList<>();
+
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
     //关注状态
@@ -201,10 +204,10 @@ public class UserInfoActivity extends BaseActivity {
         if(page == 1){
             if(!blog_list.isEmpty()){
                 setData2(blog_list);
-                mCircleRecommendAdapter.setNewData(mAllList);
+                mCircleRecommentAdapterNew.setNewData(mAllList);
                 //如果第一次返回的数据不满10条，则显示无更多数据
                 if(blog_list.size() < Constant.SEERVER_NUM){
-                    mCircleRecommendAdapter.loadMoreEnd();
+                    mCircleRecommentAdapterNew.loadMoreEnd();
                 }
             }else{
                 ll_empty.setVisibility(View.VISIBLE);
@@ -213,87 +216,40 @@ public class UserInfoActivity extends BaseActivity {
             //已为加载更多有数据
             if(blog_list != null && blog_list.size() > 0){
                 setData2(blog_list);
-                mCircleRecommendAdapter.loadMoreComplete();
-                mCircleRecommendAdapter.addData(teList);
+                mCircleRecommentAdapterNew.loadMoreComplete();
+                mCircleRecommentAdapterNew.addData(teList);
             }else{
                 //已为加载更多无更多数据
-                mCircleRecommendAdapter.loadMoreComplete();
-                mCircleRecommendAdapter.loadMoreEnd();
+                mCircleRecommentAdapterNew.loadMoreComplete();
+                mCircleRecommentAdapterNew.loadMoreEnd();
             }
         }
     }
 
-    //转移数据
-    List<MultiCircleNewsBean> teList = new ArrayList<>();
-    private void setData2(List<CircleBean> blog_list) {
-        CircleBean temp;
-        String type;
-        String link;
-        String content;
-        List<String> imgs;
-        MultiCircleNewsBean mulBean;
-        for (int i = 0; i < blog_list.size(); i++) {
-            mulBean = new MultiCircleNewsBean();
-            temp = blog_list.get(i);
-            type = temp.getType();
-            link = temp.getLink();
-            imgs =  temp.getImages();
-            //1 是 转发
-            if(!TextUtils.isEmpty(type) && "1".equals(type)){
-                //内部图片
 
-                if(temp.getP_blog() != null){
-                    List<String> imgsss = temp.getP_blog().getImages();
-                    if(imgsss != null &&  !imgsss.isEmpty()){
-                        mulBean.setItemType(2);
-                    }
-                    //link
-                    String linked = temp.getP_blog().getLink();
-                    if(!TextUtils.isEmpty(linked)){
-                        mulBean.setItemType(3);
-                    }
-
-                    if((imgsss.isEmpty()) && TextUtils.isEmpty(link)){
-                        mulBean.setItemType(5);
-                    }
-                }else {
+    List<CircleBean> teList = new ArrayList<>();
+    private void setData2(List<CircleBean> list) {
+        teList.clear();
+        if(list != null){
+            int type ;
+            CircleBean temp;
+            for (int i = 0; i < list.size(); i++) {
+                temp  = list.get(i);
+                type = StringUtil.getCircleType(temp);
+                //如果判断有空数据，则遍历下一个数据
+                if(100 == type){
                     continue;
                 }
-
-
-            }else{
-                //原创图片
-                if(imgs != null &&  !imgs.isEmpty()){
-                    mulBean.setItemType(1);
-                }
-
-                //原创link
-                if(!TextUtils.isEmpty(link)){
-                    mulBean.setItemType(4);
-                }
-
-                if((imgs.isEmpty()) && TextUtils.isEmpty(link)){
-                    mulBean.setItemType(5);
-                }
-
-                content = temp.getBlog();
-                //判断内容是否中link
-                String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
-                Matcher matcher = Pattern.compile(regex).matcher(content);
-                while (matcher.find()){
-                    KLog.d("tag","url  " + matcher.group(0));
-                }
+                temp.setCircleType(type);
+                teList.add(temp);
             }
-
-            mulBean.setCircleBean(temp);
-            teList.add(mulBean);
+            if(page == 1){
+                mAllList.addAll(teList);
+            }
         }
-
-        if(page == 1){
-            mAllList.addAll(teList);
-        }
-
     }
+
+
 
     // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
     private void showStateByFollow(int status) {
@@ -423,8 +379,8 @@ public class UserInfoActivity extends BaseActivity {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mCircleRecommendAdapter = new CircleRecommendAdapter(mAllList);
-        mRecyclerView.setAdapter(mCircleRecommendAdapter);
+        mCircleRecommentAdapterNew = new CircleRecommentAdapterNew(mAllList);
+        mRecyclerView.setAdapter(mCircleRecommentAdapterNew);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(true);
@@ -438,17 +394,17 @@ public class UserInfoActivity extends BaseActivity {
     @SuppressLint("CheckResult")
     private void initEvent() {
 
-        mCircleRecommendAdapter.setOnLoadMoreListener(() -> {
+        mCircleRecommentAdapterNew.setOnLoadMoreListener(() -> {
             ++page;
             getPersonInfo();
         }, mRecyclerView);
 
         headView = LayoutInflater.from(this).inflate(R.layout.person_head_view,null);
 
-        mCircleRecommendAdapter.setHeaderView(headView);
+        mCircleRecommentAdapterNew.setHeaderView(headView);
 
 
-        mCircleRecommendAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+        mCircleRecommentAdapterNew.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()) {
                 case R.id.circle_remove:
                     break;
@@ -486,7 +442,7 @@ public class UserInfoActivity extends BaseActivity {
         });
 
 
-        mCircleRecommendAdapter.setOnItemClickListener((adapter, view, position) -> {
+        mCircleRecommentAdapterNew.setOnItemClickListener((adapter, view, position) -> {
             if (StringUtil.isFastClick()) {
                 return;
             }

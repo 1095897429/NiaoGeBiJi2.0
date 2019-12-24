@@ -75,12 +75,13 @@ public class StarBar extends View {
      * @param mark
      */
     public void setStarMark(float mark){
+//        KLog.d("tag","mark的值为 " + mark);
         if (integerMark) {
             //ceil 想上取整
 //            starMark = (int)Math.ceil(mark);
             //floor向下取整
             starMark = (float) Math.floor(mark);
-            KLog.d("tag","整数的值为 " + starMark);
+//            KLog.d("tag","整数的值为 " + starMark);
         }else {
             starMark = Math.round(mark * 10) * 1.0f / 10;
         }
@@ -89,6 +90,8 @@ public class StarBar extends View {
         }
         invalidate();
     }
+
+
 
     /**
      * 获取显示星星的数目

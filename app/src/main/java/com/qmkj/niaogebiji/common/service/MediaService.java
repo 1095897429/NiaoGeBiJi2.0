@@ -82,7 +82,7 @@ public class MediaService extends Service {
          * 播放音乐
          */
         public void playMusic() {
-            if (!mMediaPlayer.isPlaying()) {
+            if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
                 //如果还没开始播放，就开始
                 mMediaPlayer.start();
 
@@ -97,22 +97,11 @@ public class MediaService extends Service {
          * 暂停播放
          */
         public void pauseMusic() {
-            if (mMediaPlayer.isPlaying()) {
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 //如果还没开始播放，就开始
                 mMediaPlayer.pause();
                 isPauseOrEnding = true;
             }
-        }
-
-        /**
-         * reset
-         */
-        public void resetMusic() {
-//            if (!mMediaPlayer.isPlaying()) {
-//                //如果还没开始播放，就开始
-//                mMediaPlayer.reset();
-//                iniMediaPlayerFile(i);
-//            }
         }
 
         /**
@@ -131,51 +120,16 @@ public class MediaService extends Service {
             }
         }
 
-        /**
-         * 下一首
-         */
-        public void nextMusic() {
-//            if (mMediaPlayer != null && i < 4 && i >= 0) {
-//                //切换歌曲reset()很重要很重要很重要，没有会报IllegalStateException
-//                mMediaPlayer.reset();
-//                iniMediaPlayerFile(i + 1);
-//                //这里的if只要是为了不让歌曲的序号越界，因为只有4首歌
-//                if (i == 2) {
-//
-//                } else {
-//                    i = i + 1;
-//                }
-//                playMusic();
-//            }
-        }
 
         /**
-         * 上一首
-         */
-//        public void preciousMusic() {
-//            if (mMediaPlayer != null && i < 4 && i > 0) {
-//                mMediaPlayer.reset();
-//                iniMediaPlayerFile(i - 1);
-//                if (i == 1) {
-//
-//                } else {
-//
-//                    i = i - 1;
-//                }
-//                playMusic();
-//            }
-//        }
-
-        /**
-         * 获取歌曲长度
+         * 获取歌曲长度 1
          **/
         public int getProgress() {
-
             return mMediaPlayer.getDuration();
         }
 
         /**
-         * 获取播放位置
+         * 获取播放位置 2
          */
         public int getPlayPosition() {
 
@@ -234,6 +188,8 @@ public class MediaService extends Service {
         //播放完成监听
         mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
             KLog.d("tag","播放完成监听");
+            //TODO 12.24 出现的问题是：音频播放完，进度条还没有走到头 -- 延缓状态设置  isPauseOrEnding = true;
+            SystemClock.sleep(500);
             isPauseOrEnding = true;
             if(null != mOnEndListener){
                 mOnEndListener.onEnd();
@@ -255,11 +211,6 @@ public class MediaService extends Service {
                 mOnStartListener.onStart(lengthoftime);
             }
 
-            //准备好了自动开始播放
-//            if (!mMediaPlayer.isPlaying()) {
-//                //如果还没开始播放，就开始
-//                mMediaPlayer.start();
-//            }
         });
 
 
@@ -277,7 +228,6 @@ public class MediaService extends Service {
         public void run() {
                 //得到当前音乐的播放位置
                 while (true){
-
                     if(isPauseOrEnding){
                         break;
                     }

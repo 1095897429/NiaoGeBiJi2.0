@@ -36,7 +36,6 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
-import com.qmkj.niaogebiji.module.adapter.CircleRecommendAdapter;
 import com.qmkj.niaogebiji.module.adapter.CircleSearchAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
@@ -84,11 +83,6 @@ public class SearchCircleFragment extends BaseLazyFragment {
     @BindView(R.id.allpart)
     LinearLayout allpart;
 
-    @BindView(R.id.ll_show)
-    LinearLayout ll_show;
-
-    @BindView(R.id.showSendMsg)
-    TextView showSendMsg;
 
     @BindView(R.id.backtop)
     ImageView backtop;
@@ -151,7 +145,6 @@ public class SearchCircleFragment extends BaseLazyFragment {
     protected void lazyLoadData() {
         searchBlog();
     }
-
 
 
     private void searchBlog() {
@@ -705,8 +698,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
     /** --------------------------------- 发布帖子成功  ---------------------------------v*/
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendCircleEvent(SendOkCircleEvent event) {
-        showSendMsg.setVisibility(View.VISIBLE);
-        initAnim();
+
     }
 
 //    private void initExitAnim(){
@@ -740,38 +732,7 @@ public class SearchCircleFragment extends BaseLazyFragment {
 //        });
 //    }
 
-    private void initAnim() {
-        ObjectAnimator translationX = ObjectAnimator.ofFloat(showSendMsg, "scaleX", 1f, 1.1f, 1f);
-        ObjectAnimator alphaX = ObjectAnimator.ofFloat(showSendMsg, "alpha", 0, 1f);
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(translationX, alphaX);
-        animatorSet.setDuration(1000);
-        animatorSet.start();
-        //动画的监听
-        animatorSet.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                KLog.d("动画开始","");
-            }
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                //动画结束跳转
-//               new Handler().postDelayed(() -> initExitAnim(),1000);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-                KLog.d("动画取消","");
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-                KLog.d("动画重复","");
-            }
-        });
-
-    }
 
 
     //点击全部里的查看更多事件

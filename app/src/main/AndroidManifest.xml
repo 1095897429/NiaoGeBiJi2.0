@@ -85,7 +85,7 @@
 
         </activity>
 
-        <activity android:name=".module.activity.WebViewActivityTest"/>
+        <activity android:name=".module.activity.WebViewActivityWithLayout"/>
 
         <activity android:name=".module.activity.WebViewActivityWithStep"/>
 

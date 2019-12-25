@@ -3,13 +3,17 @@ package com.qmkj.niaogebiji.module.fragment;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -17,6 +21,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -46,9 +51,17 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-11-11
  * 描述:  去关注作者文章接口前两条数据，没有则不显示
  *  1.猜你喜欢没有加载更多
+ *  2.没有关注作者文章时，显示猜你喜欢
+ *  2.当关注作者文章没有文章时，显示猜你喜欢
  *
  */
 public class FocusFragment extends BaseLazyFragment {
+
+    @BindView(R.id.nestedScrollView)
+    NestedScrollView nestedScrollView;
+
+
+    private boolean isShow = false;
 
     public static FocusFragment getInstance(String chainId, String chainName) {
         FocusFragment newsItemFragment = new FocusFragment();
@@ -72,8 +85,8 @@ public class FocusFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
         initSamrtLayout();
-
         initLayout();
+
     }
 
     @Override
@@ -81,8 +94,7 @@ public class FocusFragment extends BaseLazyFragment {
         getIndexArticle();
     }
 
-
-    List<IndexFocusBean.Article_list> guessYouLikeList ;
+    List<IndexFocusBean.Article_list> guessYouLikeList = new ArrayList<>();
 
     private void recommendAuthorArticleList() {
         Map<String,String> map = new HashMap<>();
@@ -96,7 +108,8 @@ public class FocusFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
                        IndexFocusBean temp = response.getReturn_data();
                         guessYouLikeList = temp.getArticle_list();
-                        listCommonLogic();
+                        isShow = true;
+                        listGuessLogic();
                     }
                 });
     }
@@ -165,15 +178,27 @@ public class FocusFragment extends BaseLazyFragment {
                 default:
             }
         });
+
+
+        nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                //加载更多,请求过猜你喜欢不加载了
+                if(!isShow){
+                    ++page;
+                    KLog.d("tag","加载更多");
+                    getIndexArticle();
+                }
+            }
+        });
+
+
     }
 
 
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
-
         smartRefreshLayout.setEnableLoadMore(false);
-        //下拉刷新
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
@@ -183,7 +208,6 @@ public class FocusFragment extends BaseLazyFragment {
     }
 
 
-    //from =1 代表来自主界面推荐关注里的关注  from = 0 下拉刷新的请求
     private void getIndexArticle() {
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
@@ -200,14 +224,37 @@ public class FocusFragment extends BaseLazyFragment {
                         if(null != mIndexFocusBean){
                             if(null != smartRefreshLayout){
                                 smartRefreshLayout.finishRefresh();
+                                smartRefreshLayout.finishLoadMore();
                             }
-                            mAuther_lists =  mIndexFocusBean.getAuther_list();
+
                             mArticle_lists = mIndexFocusBean.getArticle_list();
-                            //未关注文章时，请求猜你喜欢接口
-                            if(mArticle_lists.isEmpty()){
+                            //第一次时进入 未关注文章时，请求猜你喜欢接口
+                            if(mArticle_lists.isEmpty() && page == 1){
+                                mAuther_lists =  mIndexFocusBean.getAuther_list();
+                                setAuthorListByAlone();
                                 recommendAuthorArticleList();
                             }else{
-                                listCommonLogic();
+                                if(1 == page){
+                                    mAuther_lists =  mIndexFocusBean.getAuther_list();
+                                    if(mArticle_lists != null && !mArticle_lists.isEmpty()){
+                                        setData2(mArticle_lists);
+                                        mFocusAdapter.setNewData(mAllList);
+                                        //如果第一次返回的数据不满10条，则请求猜你喜欢接口
+                                        if(mArticle_lists.size() < Constant.SEERVER_NUM){
+
+                                        }
+                                    }
+                                }else{
+                                    //已为加载更多有数据
+                                    if(mArticle_lists != null && mArticle_lists.size() > 0){
+                                        setData2(mArticle_lists);
+                                        mFocusAdapter.loadMoreComplete();
+                                        mFocusAdapter.addData(teList);
+                                    }else{
+                                        //已为加载更多无更多数据 -- 请求猜你喜欢数据
+                                        recommendAuthorArticleList();
+                                    }
+                                }
                             }
 
                         }
@@ -232,76 +279,95 @@ public class FocusFragment extends BaseLazyFragment {
                 });
     }
 
-    private void listCommonLogic() {
-
-        int size ;
-        //取头两条数据
-        if(!mArticle_lists.isEmpty()){
-            size = mArticle_lists.size();
-            if(size > 2){
-                for (int i = 0; i < 2; i++) {
-                    MultiNewsBean bean = new MultiNewsBean();
-                    bean.setItemType(2);
-                    bean.setArticleList(mArticle_lists.get(i));
-                    mAllList.add(bean);
-                }
-            }else{
-                for (int i = 0; i < mArticle_lists.size(); i++) {
-                    MultiNewsBean bean = new MultiNewsBean();
-                    bean.setItemType(2);
-                    bean.setArticleList(mArticle_lists.get(i));
-                    mAllList.add(bean);
-                }
-            }
-        }
-
+    private void setAuthorListByAlone() {
+        teList.clear();
+        mAllList.clear();
         //推荐关注
         MultiNewsBean bean1 = new MultiNewsBean();
         FouBBBB bbbb = new FouBBBB();
         bbbb.setDjj(mAuther_lists);
         bean1.setFouBBBB(bbbb);
         bean1.setItemType(1);
-        mAllList.add(bean1);
+        teList.add(bean1);
+        mAllList.addAll(teList);
+        mFocusAdapter.setNewData(mAllList);
+    }
 
-        //取不是第二条的数据
-        if(!mArticle_lists.isEmpty()){
-            for (int i = 2; i < mArticle_lists.size(); i++) {
+    List<MultiNewsBean> teList = new ArrayList<>();
+    private void setData2(List<IndexFocusBean.Article_list> article_lists) {
+        teList.clear();
+        if(page == 1){
+            int size ;
+            //取头两条数据
+            if(!article_lists.isEmpty()){
+                size = article_lists.size();
+                if(size > 2){
+                    for (int i = 0; i < 2; i++) {
+                        MultiNewsBean bean = new MultiNewsBean();
+                        bean.setItemType(2);
+                        bean.setArticleList(article_lists.get(i));
+                        teList.add(bean);
+                    }
+                }else{
+                    for (int i = 0; i < article_lists.size(); i++) {
+                        MultiNewsBean bean = new MultiNewsBean();
+                        bean.setItemType(2);
+                        bean.setArticleList(article_lists.get(i));
+                        teList.add(bean);
+                    }
+                }
+            }
+
+            //推荐关注
+            MultiNewsBean bean1 = new MultiNewsBean();
+            FouBBBB bbbb = new FouBBBB();
+            bbbb.setDjj(mAuther_lists);
+            bean1.setFouBBBB(bbbb);
+            bean1.setItemType(1);
+            teList.add(bean1);
+
+            //取不是第二条的数据 + 条数>2
+            if(!article_lists.isEmpty() && article_lists.size() > 2){
+                for (int i = 2; i < article_lists.size(); i++) {
+                    MultiNewsBean bean = new MultiNewsBean();
+                    bean.setItemType(2);
+                    bean.setArticleList(article_lists.get(i));
+                    teList.add(bean);
+                }
+            }
+            mAllList.addAll(teList);
+        }else{
+            for (int i = 0; i < article_lists.size(); i++) {
                 MultiNewsBean bean = new MultiNewsBean();
                 bean.setItemType(2);
-                bean.setArticleList(mArticle_lists.get(i));
-                mAllList.add(bean);
+                bean.setArticleList(article_lists.get(i));
+                teList.add(bean);
             }
         }
 
-        if(null != guessYouLikeList && !guessYouLikeList.isEmpty()){
 
+    }
+
+
+
+    private void listGuessLogic() {
+        teList.clear();
+        if(null != guessYouLikeList && !guessYouLikeList.isEmpty()){
             //猜你喜欢布局
             MultiNewsBean bean2 = new MultiNewsBean();
             bean2.setItemType(3);
-            mAllList.add(bean2);
+            teList.add(bean2);
 
             //猜你喜欢数据
             for (int i = 0; i < guessYouLikeList.size(); i++) {
                 MultiNewsBean bean = new MultiNewsBean();
                 bean.setItemType(2);
                 bean.setArticleList(guessYouLikeList.get(i));
-                mAllList.add(bean);
+                teList.add(bean);
             }
         }
 
-
-        if(1 == page){
-            mFocusAdapter.setNewData(mAllList);
-        }else{
-            //已为加载更多有数据
-            if(mAllList != null && mAllList.size() > 0){
-                mFocusAdapter.loadMoreComplete();
-                mFocusAdapter.addData(mAllList);
-            }else{
-                //已为加载更多无更多数据
-                mFocusAdapter.loadMoreEnd();
-            }
-        }
+        mFocusAdapter.addData(teList);
 
     }
 

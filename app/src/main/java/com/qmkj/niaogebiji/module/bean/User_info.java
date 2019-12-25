@@ -18,7 +18,7 @@ import java.util.List;
     private String company_name;
     private String position;
     private String auth_com_status;
-    private List<Badge> badge;
+    private List<Badge> badges;
     public void setName(String name) {
         this.name = name;
     }
@@ -62,13 +62,13 @@ import java.util.List;
         return auth_com_status;
     }
 
-    public void setBadge(List<Badge> badge) {
-        this.badge = badge;
-    }
-    public List<Badge> getBadge() {
-        return badge;
+    public List<Badge> getBadges() {
+        return badges;
     }
 
+    public void setBadges(List<Badge> badges) {
+        this.badges = badges;
+    }
 
     static public class Badge {
 

@@ -71,7 +71,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SearchActivity extends BaseActivity {
 
-
     @BindView(R.id.part1111)
     LinearLayout part1111;
 
@@ -267,7 +266,6 @@ public class SearchActivity extends BaseActivity {
 
         Map<String,String> map = new HashMap<>();
         String result = RetrofitHelper.commonParam(map);
-
         RetrofitHelper.getApiService().searchIndex(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

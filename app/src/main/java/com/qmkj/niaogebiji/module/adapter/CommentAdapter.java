@@ -69,7 +69,7 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
 
         //评论时间
         if(!TextUtils.isEmpty(item.getDateline())){
-            String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(item.getDateline()) * 1000L);
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getDateline()) * 1000L);
             if(!TextUtils.isEmpty(s)){
                 if("天前".contains(s)){
                     helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(item.getDateline()) * 1000L,"yyyy/MM/dd"));

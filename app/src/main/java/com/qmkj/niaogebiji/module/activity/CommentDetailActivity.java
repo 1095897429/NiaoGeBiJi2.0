@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -35,6 +36,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.dialog.TalkAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -53,6 +55,7 @@ import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
@@ -85,12 +88,16 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-11-21
  * 描述:一级评论 (帖子 文章 快讯)
  *
- * 脉脉是所有评论中回复一条之后 二级评论大于1 显示 共2条回复>> !! 擦，2条也不显示显示更多
- *
- *
  * 0.showTalkDialog
  * 1.showTalkDialogFirstComment
  * 2.
+ *
+ * 1级适配器 CommentAdapterByNewBean
+ * 2级适配器 CommentSecondAdapter
+ * zanPosition 记录到二级评论时评论的索引
+ *
+ *
+ * 1.h5跳转 过来，此时layoutType还不能用。blogdetail请求后再判断
  */
 public class CommentDetailActivity extends BaseActivity {
 
@@ -132,11 +139,15 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.circle_priase)
     LinearLayout circle_priase;
 
+    @BindView(R.id.circle_share)
+    LinearLayout circle_share;
+
+
     @BindView(R.id.lottieAnimationView)
     LottieAnimationView lottieAnimationView;
 
-    @BindView(R.id.ll_have_comment)
-    LinearLayout ll_have_comment;
+    @BindView(R.id.ll_have_first_comment)
+    LinearLayout ll_have_first_comment;
 
     @BindView(R.id.first_comment_num)
     TextView first_comment_num;
@@ -149,6 +160,9 @@ public class CommentDetailActivity extends BaseActivity {
 
     @BindView(R.id.tv_empty)
     TextView tv_empty;
+
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
 
 
     @BindView(R.id.part_yc_pic)
@@ -259,25 +273,6 @@ public class CommentDetailActivity extends BaseActivity {
 
 
 
-    private void deleteBlog() {
-        Map<String,String> map = new HashMap<>();
-        map.put("blog_id",blog_id);
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().deleteBlog(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        KLog.d("tag","response " + response.getReturn_code());
-                        ToastUtils.showShort("删除成功");
-                    }
-                });
-    }
-
-
-
     @OnClick({R.id.toComment,
             R.id.circle_comment,
             R.id.iv_back,
@@ -316,6 +311,7 @@ public class CommentDetailActivity extends BaseActivity {
 
     /** --------------------------------- 二级评论列表 及 点击事件---------------------------------*/
     int secondPage = 1;
+    LinearLayout ll_second_empty;
     RelativeLayout totalk;
     ImageView second_close;
     RecyclerView mSecondRV;
@@ -338,6 +334,7 @@ public class CommentDetailActivity extends BaseActivity {
     private void showSheetDialog() {
         View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
         mSecondRV = view.findViewById(R.id.recycler);
+        ll_second_empty = view.findViewById(R.id.ll_second_empty);
         icon = view.findViewById(R.id.icon);
         comment_num_second = view.findViewById(R.id.comment_num_second);
         second_close = view.findViewById(R.id.second_close);
@@ -354,7 +351,6 @@ public class CommentDetailActivity extends BaseActivity {
         mSecondRV.setHasFixedSize(true);
         ((SimpleItemAnimator)mSecondRV.getItemAnimator()).setSupportsChangeAnimations(false);
         mSecondRV.setLayoutManager(new LinearLayoutManager(this));
-        mSecondRV.setItemAnimator(new DefaultItemAnimator());
         mSecondRV.setAdapter(bottomSheetAdapter);
 
         bottomSheetDialog = new BottomSheetDialog(this, R.style.MyCommentDialog);
@@ -429,12 +425,10 @@ public class CommentDetailActivity extends BaseActivity {
         comment_text_second.setText(temp.getComment());
         ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
         //发布时间
-        if(StringUtil.checkNull(temp.getCreate_at())){
-            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getCreate_at()) * 1000L);
+        if(StringUtil.checkNull(temp.getCreated_at())){
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getCreated_at()) * 1000L);
             time_publish_second.setText(s);
         }
-
-
 
         nickname_second.setText(temp.getUser_info().getName());
         comment_text_second.setText(temp.getComment());
@@ -470,7 +464,11 @@ public class CommentDetailActivity extends BaseActivity {
                                 if(mCommentSList.size() < Constant.SEERVER_NUM){
                                     bottomSheetAdapter.loadMoreEnd();
                                 }
+                                mSecondRV.setVisibility(View.VISIBLE);
+                                ll_second_empty.setVisibility(View.GONE);
                             }else{
+                                mSecondRV.setVisibility(View.GONE);
+                                ll_second_empty.setVisibility(View.VISIBLE);
                             }
                         }else{
                             //已为加载更多有数据
@@ -524,7 +522,6 @@ public class CommentDetailActivity extends BaseActivity {
             ++secondPage;
             KLog.d("tag","加载更多");
         },mSecondRV);
-
 
         setSecondHeadData(oneComment);
     }
@@ -625,7 +622,7 @@ public class CommentDetailActivity extends BaseActivity {
         mRecyclerView.setHasFixedSize(true);
         mCommentAdapter.setChangeDetailListener((good_num, is_good, com_num) -> {
             zanCommentChange(comment,zan_num,image_circle_priase, good_num,is_good ,com_num);
-            first_comment_num.setText("全部" + com_num + "条回复");
+            first_comment_num.setText("全部" + com_num + "条评论");
         });
         initEvent();
     }
@@ -683,7 +680,6 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     private void setCommentListData() {
-
         if(!mCommentBeanNewList.isEmpty()){
             CommentBeanNew bean1 ;
             for (int i = 0; i < mCommentBeanNewList.size(); i++) {
@@ -692,10 +688,13 @@ public class CommentDetailActivity extends BaseActivity {
             }
             mRecyclerView.setVisibility(View.VISIBLE);
             ll_empty.setVisibility(View.GONE);
+            ll_have_first_comment.setVisibility(View.VISIBLE);
         }else{
+            ll_have_first_comment.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.GONE);
             ll_empty.setVisibility(View.VISIBLE);
-            tv_empty.setText("没人评论～");
+            iv_empty.setImageResource(R.mipmap.icon_empty_comment);
+            tv_empty.setText("成为第一个评论者～");
         }
     }
 
@@ -801,7 +800,6 @@ public class CommentDetailActivity extends BaseActivity {
                         if(smartRefreshLayout != null){
                             smartRefreshLayout.finishRefresh();
                         }
-
                         mCircleBean = response.getReturn_data();
                         if(mCommentAdapter != null){
                             mCommentAdapter.setCircleBean(mCircleBean);
@@ -846,12 +844,20 @@ public class CommentDetailActivity extends BaseActivity {
                     mCircleBean.getLike_num() + "",mCircleBean.getIs_like(),mCircleBean.getComment_num());
 
             //评论数
-            first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条回复");
+            if(!TextUtils.isEmpty(mCircleBean.getComment_num()) && !"0".equals(mCircleBean.getComment_num())){
+                first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条评论");
+            }
 
             //点赞事件
             circle_priase.setOnClickListener(view -> {
               likeBlog(mCircleBean);
              });
+
+            //分享事件
+            circle_share.setOnClickListener(view -> {
+                showShareDialog(mCircleBean);
+            });
+
         }
 
         if(CircleRecommentAdapterNew.YC_PIC == layoutType){
@@ -906,31 +912,25 @@ public class CommentDetailActivity extends BaseActivity {
             }
         }
 
-
-
-
-
-
-//        //徽章
-//        if(null != mCircleBean.getUser_info().getBadge() && !mCircleBean.getUser_info().getBadge().isEmpty()){
-//            ll_badge.removeAllViews();
-//            for (int i = 0; i < mCircleBean.getUser_info().getBadge().size(); i++) {
-//                ImageView imageView = new ImageView(mContext);
-//                imageView.setImageResource(R.mipmap.icon_test_detail_icon1);
-//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-//                        ViewGroup.LayoutParams.WRAP_CONTENT);
-//                lp.width = SizeUtils.dp2px(22);
-//                lp.height = SizeUtils.dp2px(22);
-//                lp.gravity = Gravity.CENTER;
-//                lp.setMargins(0,0,SizeUtils.dp2px(8),0);
-//                imageView.setLayoutParams(lp);
-//                ll_badge.addView(imageView);
-//            }
-//        }
-
-
-
-
+        //徽章
+        if(null != mCircleBean.getUser_info().getBadges() && !mCircleBean.getUser_info().getBadges().isEmpty()){
+            ll_badge.removeAllViews();
+            for (int i = 0; i < mCircleBean.getUser_info().getBadges().size(); i++) {
+                ImageView imageView = new ImageView(mContext);
+                String icon = mCircleBean.getUser_info().getBadges().get(i).getIcon();
+                if(!TextUtils.isEmpty(icon)){
+                    ImageUtil.load(mContext,icon,imageView);
+                }
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.width = SizeUtils.dp2px(22);
+                lp.height = SizeUtils.dp2px(22);
+                lp.gravity = Gravity.CENTER;
+                lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+                imageView.setLayoutParams(lp);
+                ll_badge.addView(imageView);
+            }
+        }
 
     }
 
@@ -986,9 +986,10 @@ public class CommentDetailActivity extends BaseActivity {
 
                         //手动添加 评论数1
                         mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) + 1) + "");
+                        //更新首页列表中数据
                         EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
                         //全部回复重定义
-                        first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条回复");
+                        first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条评论");
                         //顶部帖子重定义
                         zanCommentChange(comment,zan_num,image_circle_priase,
                                 mCircleBean.getLike_num() + "",mCircleBean.getIs_like(),mCircleBean.getComment_num());
@@ -1142,6 +1143,65 @@ public class CommentDetailActivity extends BaseActivity {
         page = 1;
         mAllList.clear();
         getBlogCommentList();
+    }
+
+
+    //分享事件
+    private void showShareDialog(CircleBean item) {
+        ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
+        alertDialog.setShareDynamicView().setTitleGone();
+        alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setOnDialogItemClickListener(position -> {
+            switch (position) {
+                case 0:
+                    ShareBean bean1 = new ShareBean();
+                    bean1.setShareType("circle_link");
+                    bean1.setLink(item.getShare_url());
+                    String name1 = "";
+                    if( null != item.getUser_info()){
+                        name1 = item.getUser_info().getName();
+                    }
+                    bean1.setTitle("分享一条" + name1 + "的营销圈动态");
+                    bean1.setContent(item.getBlog());
+                    String img = "";
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img = item.getUser_info().getAvatar();
+                    }
+                    bean1.setImg(img);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean1);
+                    break;
+                case 1:
+                    KLog.d("tag","朋友 是链接");
+                    ShareBean bean = new ShareBean();
+                    bean.setShareType("weixin_link");
+                    bean.setLink(item.getShare_url());
+                    String name = "";
+                    if( null != item.getUser_info()){
+                        name = item.getUser_info().getName();
+                    }
+                    bean.setTitle("分享一条" + name + "的营销圈动态");
+                    bean.setContent(item.getBlog());
+                    String img2 = "";
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img2  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img2 = item.getUser_info().getAvatar();
+                    }
+                    bean.setImg(img2);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean);
+                    break;
+                case 4:
+                    KLog.d("tag", "转发到动态");
+                    UIHelper.toTranspondActivity(mContext,item);
+                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                    ((Activity)mContext).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                    break;
+                default:
+            }
+        });
+        alertDialog.show();
     }
 
 

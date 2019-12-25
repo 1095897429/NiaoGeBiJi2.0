@@ -29,9 +29,9 @@ public class SchoolBookAdapter extends BaseQuickAdapter<SchoolBean.SchoolBook, B
 
     @Override
     protected void convert(BaseViewHolder helper,SchoolBean.SchoolBook item) {
-
+        //Argument must not be null -- 控件不对
         if(!TextUtils.isEmpty(item.getImage_url())){
-            ImageUtil.load(mContext,item.getImage_url(),helper.getView(R.id.baidu_icon));
+            ImageUtil.load(mContext,item.getImage_url(),helper.getView(R.id.img_1));
         }
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");

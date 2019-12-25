@@ -4,13 +4,18 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -53,6 +58,9 @@ import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -474,6 +482,53 @@ public class StringUtil {
             e.printStackTrace();
         }
         return map;
+    }
+
+
+    /** 保存图片到 /storage/emulated/0/DCIM/pipi/ */
+    public static void saveImageToGallery(Bitmap bitmap, BaseApp activity) {
+        // 首先保存图片
+        File file = null;
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File root = FileHelper.getOutputImgDirFile(activity);
+        KLog.d("tag","路径是：" + root);
+        File dir = new File(root, "ngbj");
+        KLog.d("tag","路径是：" + dir);
+        if (dir.mkdirs() || dir.isDirectory()) {
+            file = new File(dir, fileName);
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            ToastUtils.showShort("保存成功");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            ToastUtils.showShort("保存失败");
+        }
+        //其次把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(activity.getContentResolver(),
+                    file.getAbsolutePath(), fileName, null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 通知图库更新
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            MediaScannerConnection.scanFile(activity, new String[]{file.getAbsolutePath()}, null,
+//                    (path, uri) -> {
+//                        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                        mediaScanIntent.setData(uri);
+//                        activity.sendBroadcast(mediaScanIntent);
+//                    });
+//        } else {
+//            String relationDir = file.getParent();
+//            File file1 = new File(relationDir);
+//            activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.fromFile(file1.getAbsoluteFile())));
+//        }
     }
 
 }

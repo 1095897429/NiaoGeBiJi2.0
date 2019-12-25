@@ -63,6 +63,8 @@ public class CategoryListActivity extends BaseActivity {
 
     private String catid;
 
+    private String title;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_catogory_list;
@@ -76,7 +78,8 @@ public class CategoryListActivity extends BaseActivity {
     @Override
     protected void initView() {
         catid = getIntent().getStringExtra("catid");
-        tv_title.setText("内容运营");
+        title = getIntent().getStringExtra("title");
+        tv_title.setText(title);
         initLayout();
         initSamrtLayout();
         catlist();
@@ -224,12 +227,9 @@ public class CategoryListActivity extends BaseActivity {
             if(StringUtil.isFastClick()){
                 return;
             }
-            int type = mFirstItemNewAdapter.getData().get(position).getItemType();
-            if(type == 1){
-                String aid = mFirstItemNewAdapter.getData().get(position).getNewsActicleList().getAid();
-                if (!TextUtils.isEmpty(aid)) {
-                    UIHelper.toNewsDetailActivity(this, aid);
-                }
+            String aid = mFirstItemNewAdapter.getData().get(position).getNewsActicleList().getAid();
+            if (!TextUtils.isEmpty(aid)) {
+                UIHelper.toNewsDetailActivity(this, aid);
             }
 
         });

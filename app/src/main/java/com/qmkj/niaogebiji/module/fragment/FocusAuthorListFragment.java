@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -14,6 +15,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -45,6 +47,15 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class FocusAuthorListFragment extends BaseLazyFragment {
 
+
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+
+    @BindView(R.id.to_authorlist)
+    TextView to_authorlist;
+
+
     public static FocusAuthorListFragment getInstance(String chainId, String chainName) {
         FocusAuthorListFragment actionItemFragment = new FocusAuthorListFragment();
         Bundle args = new Bundle();
@@ -64,6 +75,8 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
     protected void initView() {
         initLayout();
         initSamrtLayout();
+
+        to_authorlist.setOnClickListener(view -> UIHelper.toAuthorListActivity(getActivity()));
 
     }
 
@@ -95,13 +108,20 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
                         if(null != mAuthorBean){
                             mAuthors =  mAuthorBean.getList();
 
-
                             if(1 == page){
-                                mAuthorAdapter.setNewData(mAuthors);
-                                //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(mAuthorAdapter.getData().size() < Constant.SEERVER_NUM){
-                                    mAuthorAdapter.loadMoreEnd();
+                                if(!mAuthors.isEmpty()){
+                                    mRecyclerView.setVisibility(View.VISIBLE);
+                                    ll_empty.setVisibility(View.GONE);
+                                    mAuthorAdapter.setNewData(mAuthors);
+                                    //如果第一次返回的数据不满10条，则显示无更多数据
+                                    if(mAuthorAdapter.getData().size() < Constant.SEERVER_NUM){
+                                        mAuthorAdapter.loadMoreEnd();
+                                    }
+                                }else{
+                                    mRecyclerView.setVisibility(View.GONE);
+                                    ll_empty.setVisibility(View.VISIBLE);
                                 }
+
                             }else{
                                 //已为加载更多有数据
                                 if(mAuthors != null && mAuthors.size() > 0){
@@ -173,9 +193,6 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
 
         //不需要可以配置加载更多
         mAuthorAdapter.disableLoadMoreIfNotFullPage();
-        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
-        mAuthorAdapter.setEmptyView(emptyView);
-        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("您还没有关注的作者哦，看看推荐关注～");
 
         //点击事件
         mAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {

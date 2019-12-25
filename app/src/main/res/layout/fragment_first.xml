@@ -98,7 +98,7 @@
 
         <LinearLayout
             android:id="@+id/ll_moring"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -181,6 +181,8 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/tool_part"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"

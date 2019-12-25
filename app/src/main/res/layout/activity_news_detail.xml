@@ -51,7 +51,7 @@
         <ImageView
             android:id="@+id/comment"
             android:layout_gravity="center"
-            android:src="@mipmap/icon_news_talk"
+            android:src="@mipmap/icon_empty_comment_seat"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/love"
             android:layout_marginRight="23dp"

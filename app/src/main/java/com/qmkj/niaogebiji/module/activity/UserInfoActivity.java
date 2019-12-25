@@ -85,6 +85,7 @@ public class UserInfoActivity extends BaseActivity {
     @BindView(R.id.iv_text)
     TextView iv_text;
 
+    LinearLayout part2222_2;
     TextView send_article_num;
     TextView medal_count;
     TextView sender_name;
@@ -119,9 +120,6 @@ public class UserInfoActivity extends BaseActivity {
 
 
     private int page = 1;
-    //适配器
-//    CircleRecommendAdapter mCircleRecommendAdapter;
-//    List<MultiCircleNewsBean> mAllList = new ArrayList<>();
 
     CircleRecommentAdapterNew mCircleRecommentAdapterNew;
     List<CircleBean> mAllList = new ArrayList<>();
@@ -270,6 +268,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void setHeadData() {
         //头部信息
+        part2222_2 = headView.findViewById(R.id.part2222_2);
         send_article_num = headView.findViewById(R.id.send_article_num);
         medal_count = headView.findViewById(R.id.medal_count);
         sender_name = headView.findViewById(R.id.sender_name);
@@ -288,9 +287,18 @@ public class UserInfoActivity extends BaseActivity {
             posCertInit();
         });
 
-        head_icon.setOnClickListener((v)->{
-            toPicPrewView();
+
+        //去关注列表
+        part2222_2.setOnClickListener((v)->{
+            if(myUid.equals(otherUid)){
+                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("myconcern"));
+            }else{
+                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("hisconcern"));
+            }
         });
+
+
+
 
         //设置逻辑
         initDifferLogic();
@@ -317,10 +325,10 @@ public class UserInfoActivity extends BaseActivity {
                     }
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    lp.width = SizeUtils.dp2px(22);
-                    lp.height = SizeUtils.dp2px(22);
+                    lp.width = SizeUtils.dp2px(14);
+                    lp.height = SizeUtils.dp2px(14);
                     lp.gravity = Gravity.CENTER;
-                    lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+                    lp.setMargins(0,0,SizeUtils.dp2px(7),0);
                     imageView.setLayoutParams(lp);
                     ll_badge.addView(imageView);
                 }
@@ -464,6 +472,7 @@ public class UserInfoActivity extends BaseActivity {
     })
     public void clicks(View view){
         switch (view.getId()){
+
             case R.id.alreadFocus:
                 showCancelFocusDialog();
                 break;

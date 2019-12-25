@@ -93,6 +93,10 @@ public class SchoolFragment extends BaseLazyFragment {
         return new SchoolFragment();
     }
 
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -219,6 +223,11 @@ public class SchoolFragment extends BaseLazyFragment {
 
         mSchoolBookAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","去课程");
+            String link = mSchoolBookAdapter.getData().get(position).getLink();
+            if(!TextUtils.isEmpty(link)){
+                UIHelper.toWebViewActivity(getActivity(),link);
+            }
+
         });
     }
 

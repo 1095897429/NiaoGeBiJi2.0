@@ -271,6 +271,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
         if(1 == page){
             int size ;
+            String pic_type;
             //取头两条数据
             if(!article_lists.isEmpty()){
                 size = article_lists.size();
@@ -278,7 +279,14 @@ public class FirstItemFragment extends BaseLazyFragment {
                     for (int i = 0; i < 2; i++) {
                         itemBean = article_lists.get(i);
                         bean1 = new MultiNewsBean();
-                        bean1.setItemType(1);
+                        pic_type = article_lists.get(i).getPic_type();
+                        if("1".equals(pic_type)){
+                            bean1.setItemType(1);
+                        }else if("2".equals(pic_type)){
+                            bean1.setItemType(3);
+                        }else if("3".equals(pic_type)){
+                            bean1.setItemType(2);
+                        }
                         bean1.setNewsActicleList(itemBean);
                         mAllList.add(bean1);
                     }
@@ -294,22 +302,21 @@ public class FirstItemFragment extends BaseLazyFragment {
             }
 
 
-
-
-            String pic_type;
-            for (int i = 0 + 2; i < article_lists.size(); i++) {
-                itemBean = article_lists.get(i);
-                bean1 = new MultiNewsBean();
-                pic_type = article_lists.get(i).getPic_type();
-                if("1".equals(pic_type)){
-                    bean1.setItemType(1);
-                }else if("2".equals(pic_type)){
-                    bean1.setItemType(3);
-                }else if("3".equals(pic_type)){
-                    bean1.setItemType(2);
+            if(article_lists.size() > 2){
+                for (int i = 0 + 2; i < article_lists.size(); i++) {
+                    itemBean = article_lists.get(i);
+                    bean1 = new MultiNewsBean();
+                    pic_type = article_lists.get(i).getPic_type();
+                    if("1".equals(pic_type)){
+                        bean1.setItemType(1);
+                    }else if("2".equals(pic_type)){
+                        bean1.setItemType(3);
+                    }else if("3".equals(pic_type)){
+                        bean1.setItemType(2);
+                    }
+                    bean1.setNewsActicleList(itemBean);
+                    mAllList.add(bean1);
                 }
-                bean1.setNewsActicleList(itemBean);
-                mAllList.add(bean1);
             }
 
 
@@ -318,7 +325,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                 bean1 = new MultiNewsBean();
                 bean1.setItemType(FirstItemNewAdapter.ACTIVITY_TYPE);
                 bean1.setFristActionBean(fristActionBean);
-                mAllList.add(4,bean1);
+                mAllList.add(5,bean1);
             }
 
             mFirstItemAdapter.setNewData(mAllList);
@@ -398,41 +405,6 @@ public class FirstItemFragment extends BaseLazyFragment {
 
             EventBus.getDefault().post(new toRefreshMoringEvent());
         });
-    }
-
-
-    private void getData() {
-
-        NewsItemBean itemBean;
-        FirstItemBean firstItemBean;
-        MultiNewsBean bean1 ;
-        for (int i = 0; i < 10; i++) {
-           if(i == 2){
-              firstItemBean = new FirstItemBean();
-              bean1 = new MultiNewsBean();
-              bean1.setItemType(4);
-              bean1.setFirstItemBean(firstItemBean);
-          }else {
-              itemBean = new NewsItemBean();
-              bean1 = new MultiNewsBean();
-              if(i == 4){
-                  bean1.setItemType(2);
-              }else if(i == 5){
-                  bean1.setItemType(3);
-              }else if(i == 7){
-                  bean1.setItemType(5);
-              }else{
-                  bean1.setItemType(1);
-              }
-
-              bean1.setNewsItemBean(itemBean);
-          }
-            mAllList.add(bean1);
-        }
-
-        mFirstItemAdapter.setNewData(mAllList);
-
-        initAnimate();
     }
 
 
@@ -552,6 +524,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                 break;
             case R.id.toMoreLoveYou:
                 getProfession();
+
                 break;
             default:
         }

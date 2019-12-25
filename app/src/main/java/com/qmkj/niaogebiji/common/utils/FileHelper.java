@@ -38,4 +38,20 @@ public class FileHelper {
     public static File getOutputInviteDirFile(Context context){
         return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "");
     }
+
+
+    /** 保存图片目录 /storage/mnt/Android/data/DCIM/ngbj/*/
+    public static File getOutputImgDirFile(Context context){
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "");
+    }
+
+
+
+
+
+
+
+
+
+
 }

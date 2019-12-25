@@ -105,7 +105,7 @@
                     <TextView
                         android:layout_centerVertical="true"
                         android:id="@+id/time"
-                        android:text="11分钟前"
+                        android:text=""
                         android:textSize="11sp"
                         android:layout_marginTop="14dp"
                         android:textColor="@color/text_three_color"

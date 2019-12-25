@@ -109,6 +109,8 @@ public class FirstFragment extends BaseLazyFragment {
     RecyclerView tool_recycler;
 
 
+    @BindView(R.id.tool_part)
+    LinearLayout tool_part;
 
 
 
@@ -307,6 +309,7 @@ public class FirstFragment extends BaseLazyFragment {
         }
 
         mToolItemAdapter.setNewData(mList);
+        tool_part.setVisibility(View.VISIBLE);
     }
 
 
@@ -436,9 +439,7 @@ public class FirstFragment extends BaseLazyFragment {
     public void ontoRefreshMoringEvent(toRefreshMoringEvent event){
         if(getUserVisibleHint()){
             KLog.d("tag","我是First界面，请求早报接口");
-//            getTopPost();
-            ll_moring.setVisibility(View.VISIBLE);
-
+            getTopPost();
         }
 
     }

@@ -96,7 +96,7 @@
                 android:layout_marginRight="16dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:cursorVisible="false"
+                android:cursorVisible="true"
                 android:id="@+id/et_input"
                 android:gravity="left|center"
                 android:singleLine="true"

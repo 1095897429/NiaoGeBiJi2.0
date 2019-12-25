@@ -75,12 +75,15 @@ public class FlashFragment extends BaseLazyFragment  {
     @BindView(R.id.header_textview)
     TextView header_textview;
 
+    private Typeface typeface;
+
     /** --------------------------------- 快讯列表  ---------------------------------*/
     @BindView(R.id.smartRefreshLayout)
     SmartRefreshLayout smartRefreshLayout;
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
+
 
     private LinearLayoutManager mLinearLayoutManager;
     private int page = 1;
@@ -112,20 +115,23 @@ public class FlashFragment extends BaseLazyFragment  {
 
     @Override
     protected void initView() {
+        typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Black.otf");
         initSamrtLayout();
         initLayout();
         initShareLayout();
     }
 
+    private View view;
     private void initShareLayout() {
         //初始化分享内容
-        View view =  LayoutInflater.from(getActivity()).inflate(R.layout.activity_poster,null,false);
+        view =  LayoutInflater.from(getActivity()).inflate(R.layout.activity_poster,null,false);
         title = view.findViewById(R.id.title);
         tag = view.findViewById(R.id.tag);
         today_time = view.findViewById(R.id.today_time);
         time_txt = view.findViewById(R.id.time_txt);
         image33 = view.findViewById(R.id.image33);
         flash_ll = view.findViewById(R.id.ll_poster);
+        today_time.setTypeface(typeface);
     }
 
     private void initSamrtLayout() {
@@ -309,10 +315,14 @@ public class FlashFragment extends BaseLazyFragment  {
             switch (position){
                 case 0:
                     sharePositon = 0;
+                    flash_ll.removeAllViews();
+                    initShareLayout();
                     bulletinShare();
                     break;
                 case 1:
                     sharePositon = 1;
+                    flash_ll.removeAllViews();
+                    initShareLayout();
                     bulletinShare();
                     KLog.d("tag","vx朋友");
                     break;
@@ -347,7 +357,6 @@ public class FlashFragment extends BaseLazyFragment  {
                                 String url = mBuilltinBean.getQrcode_url();
                                 Bitmap bitmap = ZXingUtils.createQRImage(url, SizeUtils.dp2px(48), SizeUtils.dp2px(48));
                                 image33.setImageBitmap(bitmap);
-
 
                                 setData();
                             }
@@ -393,10 +402,9 @@ public class FlashFragment extends BaseLazyFragment  {
         paint.setFakeBoldText(true);
         title.setText(mTempBuilltinBean.getTitle());
         tag.setText(mTempBuilltinBean.getContent());
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Black.otf");
-        today_time.setTypeface(typeface);
-        String time ;
-        String time2 ;
+
+        String time = "";
+        String time2 = "";
         if(!TextUtils.isEmpty(mTempBuilltinBean.getPub_time())){
             time =  TimeUtils.millis2String(Long.parseLong(mTempBuilltinBean.getPub_time())* 1000L,"yyyy/MM/dd");
             time_txt.setText(time);
@@ -404,12 +412,14 @@ public class FlashFragment extends BaseLazyFragment  {
             today_time.setText(time2);
         }
 
+        KLog.d("tag","日期是：" + time + " " + " 今天时间是 " + time2);
+        //TODO 海报的时间生成的不对，验证是布局生成的问题
         new Handler().postDelayed(() -> getShareImg(),500);
     }
 
     // 生成海报
     private void getShareImg() {
-
+        flash_ll.refreshDrawableState();
         flash_ll.setDrawingCacheEnabled(true);
         flash_ll.buildDrawingCache();
         new Handler().postDelayed(() -> {

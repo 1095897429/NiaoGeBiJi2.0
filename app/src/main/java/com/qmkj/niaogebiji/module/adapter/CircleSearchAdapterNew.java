@@ -117,7 +117,7 @@ public class CircleSearchAdapterNew extends BaseQuickAdapter<CircleBean, BaseVie
                 ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
                 //时间
                 if(!TextUtils.isEmpty(item.getCreated_at())){
-                    String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(item.getCreated_at()) * 1000L);
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getCreated_at()) * 1000L);
                     if(!TextUtils.isEmpty(s)){
                         if("天前".contains(s)){
                             helper.setText(R.id.publish_time, TimeUtils.millis2String(Long.parseLong(item.getCreated_at()) * 1000L,"yyyy/MM/dd"));

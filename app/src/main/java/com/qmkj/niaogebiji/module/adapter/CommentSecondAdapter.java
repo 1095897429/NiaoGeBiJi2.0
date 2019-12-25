@@ -126,9 +126,11 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 getReply(helper,comment);
 
                 //发布时间
-                if(StringUtil.checkNull(comment.getCreate_at())){
-                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(comment.getCreate_at()) * 1000L);
+                if(StringUtil.checkNull(comment.getCreated_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(comment.getCreated_at()) * 1000L);
                     helper.setText(R.id.time,s);
+                }else{
+                    helper.setText(R.id.time,"");
                 }
 
                 //点赞数

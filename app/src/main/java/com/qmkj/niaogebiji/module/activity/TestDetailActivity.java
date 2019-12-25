@@ -210,12 +210,11 @@ public class TestDetailActivity extends BaseActivity {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
-                    if(bitmap  ==  null){
-                        mExecutorService.submit(() -> {
-                            bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
-                        });
+                    mExecutorService.submit(() -> {
+                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
                         mHandler.sendEmptyMessage(0x111);
-                    }
+                    });
+
                     break;
                 case 1:
                     mExecutorService.submit(() -> {

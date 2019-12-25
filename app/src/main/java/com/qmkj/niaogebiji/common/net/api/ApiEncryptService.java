@@ -9,6 +9,7 @@ import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.BadegsAllBean;
 import com.qmkj.niaogebiji.module.bean.CateAllBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
@@ -658,6 +659,11 @@ public interface ApiEncryptService{
     @POST("app/blog/deleteComment")
     Observable<HttpResponse> blogdeleteComment(@Field("params") String param);
 
+
+    /* 2019.12.25  我的徽章列表*/
+    @FormUrlEncoded
+    @POST("app/center/getBadgeList")
+    Observable<HttpResponse<BadegsAllBean>> getBadgeList(@Field("params") String param);
 
 
 

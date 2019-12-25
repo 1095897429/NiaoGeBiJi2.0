@@ -370,7 +370,7 @@ public class TestLauchActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse httpResponse) {
-                        KLog.d("tag",httpResponse.getReturn_data());
+                        KLog.d("tag","及格分数是 " + mSchoolTest.getPass_score() );
                         mSchoolTest.setMyScore(currentScore + "");
                         //判断分数
                         if(currentScore < Integer.parseInt(pass_score)){

@@ -1,30 +1,16 @@
 package com.qmkj.niaogebiji.module.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -32,7 +18,6 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
@@ -64,7 +49,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
-
     @BindView(R.id.backtop)
     ImageView backtop;
 
@@ -73,7 +57,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
-
 
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
@@ -165,7 +148,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                                     ll_empty.setVisibility(View.VISIBLE);
                                     ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("没有推荐圈子数据~");
                                     mRecyclerView.setVisibility(View.GONE);
-
                                 }
                             }else{
                                 //已为加载更多有数据
@@ -200,7 +182,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     }
 
 
-
     List<CircleBean> teList = new ArrayList<>();
     private void setData2(List<CircleBean> list) {
         teList.clear();
@@ -224,8 +205,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     }
 
 
-
-
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         //设置默认垂直布局
@@ -243,9 +222,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     }
 
 
-
     private void initSamrtLayout() {
-
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
@@ -257,9 +234,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     }
 
 
-
-
-
     @SuppressLint("CheckResult")
     private void initEvent() {
         mCircleRecommentAdapterNew.setOnLoadMoreListener(() -> {
@@ -267,66 +241,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             recommendBlogList();
         }, mRecyclerView);
 
-        mRecyclerView.addOnScrollListener(new RvScrollListener());
-
     }
-
-
-    private class RvScrollListener extends RecyclerView.OnScrollListener {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-            // 只有LinearLayoutManager才有查找第一个和最后一个可见view位置的方法
-            if (layoutManager instanceof LinearLayoutManager) {
-                LinearLayoutManager linearManager = (LinearLayoutManager) layoutManager;
-                //获取最后一个可见view的位置
-                int lastItemPosition = linearManager.findLastVisibleItemPosition();
-                if (lastItemPosition > 6) {
-                    backtop.setVisibility(View.VISIBLE);
-                } else {
-                    backtop.setVisibility(View.GONE);
-                }
-            }
-
-        }
-    }
-
-    /**
-     * --------------------------------- 图片预览  ---------------------------------
-     */
-    private void toPicPrewView() {
-        ArrayList<String> photos = new ArrayList<>();
-        photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
-        photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWV1BA0uIJD2cACgyyOBAl4YAAMP0gOPNF0AKDLg887.jpg");
-        photos.add("https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg");
-        photos.add("https://b.zol-img.com.cn/desk/bizhi/image/8/4096x2160/1563934008198.png");
-        photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWV03v-eIOEWoAC0lpucbl_sAAMC8AFTL9QALSW-183.jpg");
-        photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03wq6IbWwqAA-IxrPijHEAAMDAwJ0cR8AD4je242.jpg");
-        //错误图片url
-        photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03v_aISd7vABOqKe2IAXEAAMC8QJgIh4AE6pB2971212.jpg");
-        Bundle bundle = new Bundle();
-        bundle.putStringArrayList("imageList", photos);
-        bundle.putBoolean("fromNet", true);
-        bundle.putInt("index", 0);
-        Intent intent = new Intent(getActivity(), PicPreviewActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
-
-
-
-
-
-
-
-    @Override
-    protected void changePriaseStatus() {
-
-    }
-
-
-
 
 
     /** --------------------------------- 发布帖子成功  ---------------------------------v*/
@@ -402,8 +317,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 //        });
 
     }
-
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBlogPriaseEvent(BlogPriaseEvent event) {

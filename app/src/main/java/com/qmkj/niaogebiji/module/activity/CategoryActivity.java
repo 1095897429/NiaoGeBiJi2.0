@@ -113,7 +113,8 @@ public class CategoryActivity extends BaseActivity {
         mCategoryAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的索引 " + position);
             int catid = mCategoryAdapter.getData().get(position).getCatid();
-            UIHelper.toCategoryListActivity(this,catid + "");
+            String title = mCategoryAdapter.getData().get(position).getCat();
+            UIHelper.toCategoryListActivity(this,catid + "",title);
         });
     }
 

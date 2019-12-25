@@ -31,27 +31,42 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
+import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.event.ProfessionEvent;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-20
- * 描述:
+ * 描述: 动态方式加载布局
  * 1.android 调用 js  参数 --  编辑徽章完成调用方法名 finish
  */
 public class WebViewActivity extends BaseActivity {
@@ -151,8 +166,9 @@ public class WebViewActivity extends BaseActivity {
 
         });
 
-        mMyWebView.loadUrl(link);
         mLayout.addView(mMyWebView);
+
+        mMyWebView.loadUrl(link);
     }
 
 
@@ -233,8 +249,10 @@ public class WebViewActivity extends BaseActivity {
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);
 
                     }else if("toKnow".equals(result)){
+                        KLog.d("tag","线程名称 " + Thread.currentThread().getName() + "");
                         //去更懂你
-//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                        runOnUiThread(() -> getProfession());
+
                     }else if("toConfirmOk".equals(result)){
                         // id 1 职业认证成功(回主界面不刷新)  id 2  审核认证成功(回主界面刷新)
 
@@ -245,12 +263,83 @@ public class WebViewActivity extends BaseActivity {
                     }else if("toEditBadge".equals(result)){
                         //去编辑徽章页面
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                    }else if("followAuthor".equals(result)){
+                        //更新列表 + 首页
+                    }else if("toCommentDetail".equals(result)){
+                        //我的动态 评论 - 去详情
+                        String comment = object.optString("comment");
+                        String created_at= object.optString("created_at");
+                        String good_num= object.optString("good_num");
+                        String type= object.optString("type");
+                        String relatedid= object.optString("relatedid");
+                        String post_title= object.optString("post_title");
+                        if(!TextUtils.isEmpty(type)){
+                            if("1".equals(type)){
+                                //去文章详情页
+                                UIHelper.toNewsDetailActivity(WebViewActivity.this,relatedid);
+                            }else if("2".equals(type)){
+                                UIHelper.toCommentDetailActivity(WebViewActivity.this,relatedid,0,0);
+                                //圈子一级评论
+                            }else if("3".equals(type)){
+                                //圈子二级评论
+                                UIHelper.toCommentDetailActivity(WebViewActivity.this,relatedid,0,0);
+                            }
+                        }
+                    }else if("toActivityDetail".equals(result)){
+                        //发布 去圈子明细
+                        UIHelper.toCommentDetailActivity(WebViewActivity.this,id,0,0);
+
+                    }else if("shareActivity".equals(result)){
+                        ArrayList<String> ins = new ArrayList<>();
+                        //发布 弹出分享框，这里加上自己的uid
+                        String uid = object.optString("uid");
+                        String blog = object.optString("blog");
+                        JSONArray images= object.getJSONArray("images");
+                        int size = images.length();
+                        if(size > 0){
+                            ins.add(images.optString(0));
+                        }
+                        String link= object.optString("link");
+                        String link_title= object.optString("link_title");
+                        String type= object.optString("type");
+                        String pid= object.optString("pid");
+                        String like_num = object.optString("like_num");
+                        String show_num= object.optString("show_num");
+                        String sort= object.optString("sort");
+                        String created_at= object.optString("created_at");
+                        String article_id= object.optString("article_id");
+                        String article_title= object.optString("article_title");
+                        String article_image= object.optString("article_image");
+                        String comment_num= object.optString("comment_num");
+                        String share_url= object.optString("share_url");
+                        int is_like = object.optInt("is_like");
+                        CircleBean item = new CircleBean();
+                        item.setId(id);
+                        item.setImages(ins);
+                        item.setLink(link);
+                        item.setLink_title(link_title);
+                        item.setType(type);
+                        item.setArticle_id(article_id);
+                        item.setArticle_image(article_image);
+                        item.setArticle_title(article_title);
+                        item.setIs_like(is_like);
+                        item.setComment(blog);
+                        item.setBlog(blog);
+                        item.setShare_url(share_url);
+
+                        showShareDialog(item);
+
+
+                    }else if("tolink".equals(result)){
+                        //TODO 圈子的链接 -- 还未测试
+                        String link =  object.optString("link");
+                        UIHelper.toWebViewActivityWithOnStep(WebViewActivity.this,link);
+
                     }else if("toUserDetail".equals(result)){
                         //关注列表去跳转
-//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
+                        String uid =  object.optString("uid");
+                        UIHelper.toUserInfoActivity(WebViewActivity.this,uid);
                     }
-
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -301,6 +390,107 @@ public class WebViewActivity extends BaseActivity {
             });
         }
     }
+
+
+    private ArrayList<ProBean> temp1;
+    private void getProfession() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getProfession(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<ProBean>>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<List<ProBean>> response) {
+                        temp1 = (ArrayList<ProBean>) response.getReturn_data();
+                        if(temp1 != null && !temp1.isEmpty()){
+                            UIHelper.toMoreKnowYouActivity(WebViewActivity.this,temp1);
+                        }
+                    }
+                });
+    }
+
+
+
+
+
+    private void showShareDialog(CircleBean item) {
+        ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
+        alertDialog.setShareDynamicView().setTitleGone();
+        alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setOnDialogItemClickListener(position -> {
+            switch (position) {
+                case 0:
+                    ShareBean bean1 = new ShareBean();
+                    bean1.setShareType("circle_link");
+                    bean1.setLink(item.getShare_url());
+                    String name1 = "";
+                    if( null != item.getUser_info()){
+                        name1 = item.getUser_info().getName();
+                    }else{
+                        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+                         if(!TextUtils.isEmpty(mUserInfo.getName())){
+                             name1 = mUserInfo.getName();
+                         }else{
+                             name1 = mUserInfo.getNickname();
+                         }
+                    }
+                    bean1.setTitle("分享一条" + name1 + "的营销圈动态");
+                    bean1.setContent(item.getBlog());
+                    String img ;
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img = item.getUser_info().getAvatar();
+                    }else{
+                        img = StringUtil.getUserInfoBean().getAvatar();
+                    }
+                    bean1.setImg(img);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean1);
+                    break;
+                case 1:
+                    KLog.d("tag","朋友 是链接");
+                    ShareBean bean = new ShareBean();
+                    bean.setShareType("weixin_link");
+                    bean.setLink(item.getShare_url());
+                    String name = "";
+                    if( null != item.getUser_info()){
+                        name = item.getUser_info().getName();
+                    }else{
+                        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+                        if(!TextUtils.isEmpty(mUserInfo.getName())){
+                            name = mUserInfo.getName();
+                        }else{
+                            name = mUserInfo.getNickname();
+                        }
+                    }
+                    bean.setTitle("分享一条" + name + "的营销圈动态");
+                    bean.setContent(item.getBlog());
+                    String img2 ;
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img2  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img2 = item.getUser_info().getAvatar();
+                    }else{
+                        img2 = StringUtil.getUserInfoBean().getAvatar();
+                    }
+                    bean.setImg(img2);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean);
+                    break;
+                case 4:
+                    KLog.d("tag", "转发到动态");
+                    UIHelper.toTranspondActivity(mContext,item);
+                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                    ((Activity)mContext).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                    break;
+                default:
+            }
+        });
+        alertDialog.show();
+    }
+
 
 
 

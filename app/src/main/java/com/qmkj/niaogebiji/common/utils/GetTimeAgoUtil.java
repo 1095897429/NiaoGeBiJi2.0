@@ -84,7 +84,7 @@ public class GetTimeAgoUtil {
         } else if (diff < 72 * HOUR_MILLIS) {
             return (diff / DAY_MILLIS) + "天前";
         } else {
-            String data =  TimeUtils.millis2String(diff,"yyyy/MM/dd");
+            String data =  TimeUtils.millis2String(time,"yyyy/MM/dd");
             return data;
         }
     }

@@ -100,7 +100,7 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
                     //　trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
                     KLog.d("tag",mString);
-                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
+                    if(!TextUtils.isEmpty(mString) && mString.length() != 0 && isValidUrl(mString)){
                         addLink.setEnabled(true);
                         addLink.setTextColor(getResources().getColor(R.color.text_first_color));
                         //设置光标在最后
@@ -121,14 +121,16 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.to_paste:
                 mEditText.setText(content);
+                part2222.setVisibility(View.GONE);
                 break;
             case R.id.addLink:
                 KLog.d("tag","添加链接");
+
                 //这里还需检查一下链接
-                if(!isValidUrl(mString)){
-                    ToastUtils.showShort("输入了非法链接");
-                    return;
-                }
+//                if(!isValidUrl(mString)){
+//                    ToastUtils.showShort("输入了非法链接");
+//                    return;
+//                }
 
 
                 new Thread(() -> {

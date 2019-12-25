@@ -39,10 +39,9 @@ import butterknife.OnClick;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-20
- * 描述:
+ * 描述:在布局中添加了webview
  */
-public class WebViewActivityTest extends BaseActivity {
-
+public class WebViewActivityWithLayout extends BaseActivity {
 
     @BindView(R.id.tv_title)
     TextView tv_title;
@@ -53,10 +52,8 @@ public class WebViewActivityTest extends BaseActivity {
     @BindView(R.id.progressBar)
     ProgressBar mProgressBar;
 
-
     @BindView(R.id.webview)
     WebView webview;
-
 
 
     private String link;
@@ -68,61 +65,56 @@ public class WebViewActivityTest extends BaseActivity {
     }
 
 
-
     private void initSetting() {
         WebSettings webSettings = webview.getSettings();
         if(null == webSettings){
             return;
         }
-
-
         //开启 js交互功能
         webSettings.setJavaScriptEnabled(true);
-
-//        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-//        webSettings.setDefaultTextEncodingName("utf-8");
-//        webSettings.setAllowContentAccess(true);
-//        webSettings.setAllowFileAccess(true);
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            MyWebView.setWebContentsDebuggingEnabled(true);
-//        }
-//        //不因手机修改字体变化
-//        webSettings.setTextZoom(100);
-//        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-//
-//        //开启 database storage API 功能
-//        webSettings.setDatabaseEnabled(true);
-//
-//        //开启DomStorage缓存
-//        webSettings.setDomStorageEnabled(true);
-//        //开启 H5缓存 功能
-//        webSettings.setAppCacheEnabled(true);
-//        webSettings.setGeolocationEnabled(true);
-//        //兼容所有的手机界面,使网页始终按照webview宽度设定(如果设置为true,此项功能为失效,导致部分手机网页如淘宝显示为PC样式,但能完整显示PC网页)
-//        webSettings.setUseWideViewPort(true);
-//        webSettings.setLoadWithOverviewMode(true);
-//
-//        //加快内容加载速度
-//        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-//        //阻止图片网络加载
-//        webSettings.setBlockNetworkImage(false);
-//        webview.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-//        //势焦点
-//        webview.requestFocusFromTouch();
-//        //视频播放需要
-//        webSettings.setPluginState(WebSettings.PluginState.ON);
-//
-//        //在安卓5.0之后，默认不允许加载http与https混合内容，需要设置webview允许其加载混合网络协议内容
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-//        }
-//        if (Build.VERSION.SDK_INT >= 19) {
-//            webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-//        } else {
-//            webview.setLayerType(View.LAYER_TYPE_NONE, null);
-//        }
+        webSettings.setDefaultTextEncodingName("utf-8");
+        webSettings.setAllowContentAccess(true);
+        webSettings.setAllowFileAccess(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            MyWebView.setWebContentsDebuggingEnabled(true);
+        }
+        //不因手机修改字体变化
+        webSettings.setTextZoom(100);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+        //开启 database storage API 功能
+        webSettings.setDatabaseEnabled(true);
+
+        //开启DomStorage缓存
+        webSettings.setDomStorageEnabled(true);
+        //开启 H5缓存 功能
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setGeolocationEnabled(true);
+        //兼容所有的手机界面,使网页始终按照webview宽度设定(如果设置为true,此项功能为失效,导致部分手机网页如淘宝显示为PC样式,但能完整显示PC网页)
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+
+        //加快内容加载速度
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        //阻止图片网络加载
+        webSettings.setBlockNetworkImage(false);
+        webview.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        //势焦点
+        webview.requestFocusFromTouch();
+        //视频播放需要
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+
+        //在安卓5.0之后，默认不允许加载http与https混合内容，需要设置webview允许其加载混合网络协议内容
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        if (Build.VERSION.SDK_INT >= 19) {
+            webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            webview.setLayerType(View.LAYER_TYPE_NONE, null);
+        }
     }
 
 
@@ -139,8 +131,63 @@ public class WebViewActivityTest extends BaseActivity {
 
         initSetting();
 
-        webview.loadUrl(link);
+        //js交互 -- 给js调用app的方法，xnNative是协调的对象
+        webview.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
 
+        webview.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                KLog.d("tag","---- " + url);
+                return false;
+            }
+
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed(); // 接受所有网站的证书
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
+
+
+        webview.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if(100 == newProgress || 1 >= newProgress){
+                    mProgressBar.setVisibility(View.GONE);
+                }else{
+                    if (mProgressBar.getVisibility() == View.GONE) {
+                        mProgressBar.setVisibility(View.VISIBLE);
+                    }
+                    mProgressBar.setProgress(newProgress);
+                }
+            }
+
+
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                if(!TextUtils.isEmpty(mTitle)){
+                    tv_title.setText(mTitle);
+                }else{
+                    tv_title.setText(title);
+                }
+            }
+
+
+        });
+
+
+        webview.loadUrl(link);
     }
 
 
@@ -180,10 +227,10 @@ public class WebViewActivityTest extends BaseActivity {
         public void copyText(String text) {
             // 从API11开始android推荐使用android.content.ClipboardManager
             // 为了兼容低版本我们这里使用旧版的android.text.ClipboardManager，虽然提示deprecated，但不影响使用。
-            ClipboardManager cm = (ClipboardManager) WebViewActivityTest.this.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipboardManager cm = (ClipboardManager) WebViewActivityWithLayout.this.getSystemService(Context.CLIPBOARD_SERVICE);
             // 将文本内容放到系统剪贴板里。
             cm.setText(text);
-            Toast.makeText(WebViewActivityTest.this, text + "复制成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(WebViewActivityWithLayout.this, text + "复制成功", Toast.LENGTH_SHORT).show();
         }
 
         //跳转文章详情
@@ -193,7 +240,7 @@ public class WebViewActivityTest extends BaseActivity {
                 try {
                     JSONObject b= new JSONObject(articleId);
                     String result = b.optString("id");
-                    UIHelper.toNewsDetailActivity(WebViewActivityTest.this,result);
+                    UIHelper.toNewsDetailActivity(WebViewActivityWithLayout.this,result);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -214,7 +261,7 @@ public class WebViewActivityTest extends BaseActivity {
                     if("toArticleDetail".equals(result)){
                         JSONObject object  = b.getJSONObject("params");
                         String article = object.optString("id");
-                        UIHelper.toNewsDetailActivity(WebViewActivityTest.this,article);
+                        UIHelper.toNewsDetailActivity(WebViewActivityWithLayout.this,article);
                     }else if("toHome".equals(result)){
                         //去文章首页
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);
@@ -229,8 +276,6 @@ public class WebViewActivityTest extends BaseActivity {
                         //徽章 尚未获得，立即前往获取
 //                        UIHelper.toHomeActivity(WebViewActivity.this,0);
                     }
-
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();

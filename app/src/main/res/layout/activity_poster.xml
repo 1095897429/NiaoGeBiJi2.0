@@ -55,7 +55,7 @@
                         app:layout_constraintTop_toTopOf="@+id/img_1"
                         app:layout_constraintBottom_toBottomOf="@+id/img_1"
                         android:textSize="40sp"
-                        android:text="10:32"
+                        android:text=""
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
@@ -101,7 +101,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 android:textSize="16sp"
-                                android:text="2019/07/08"
+                                android:text=""
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
 
@@ -116,7 +116,6 @@
                             android:layout_marginLeft="16dp"
                             android:layout_marginTop="16dp"
                             android:textSize="18sp"
-                            android:text="微信公众平台上线“常读用户”分析功能，可查询用户年龄等数据"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
@@ -128,7 +127,6 @@
                             android:layout_marginRight="16dp"
                             android:textColor="@color/text_second_color"
                             android:textSize="16sp"
-                            android:text="手机行业即将迎来另一曙光，5G时代将会是一个契机，谁能在这窗口做出较好的5G相关产品，就弯道超车。手机能否坚持到曙光来临，目前来看很不乐观。"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 

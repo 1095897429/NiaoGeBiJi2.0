@@ -13,6 +13,8 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -59,8 +61,10 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
                 helper.setText(R.id.one_img_title,bean.getTitle());
                 helper.setText(R.id.one_img_auth,bean.getAuthor());
 
-                if(!TextUtils.isEmpty(bean.getPublished_at())){
-                    helper.setText(R.id.one_img_time, TimeUtils.millis2String(Long.parseLong(bean.getPublished_at())* 1000L,"yyyy/MM/dd"));
+                //发布时间
+                if(StringUtil.checkNull(bean.getPublished_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(bean.getPublished_at()) * 1000L);
+                    helper.setText(R.id.one_img_time, s);
                 }
 
                 if(!TextUtils.isEmpty(bean.getPic())){

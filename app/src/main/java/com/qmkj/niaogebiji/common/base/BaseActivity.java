@@ -96,6 +96,13 @@ import io.reactivex.schedulers.Schedulers;
  *         2.切换资源
  *         3.让seekbar只能在播放时移动
  *         4.有底部栏的需加上底部栏，没有的不加
+ *
+ *
+ *
+ * 1.自动播放添加监听
+ * 2.手动播放添加
+ * 3.切换界面添加监听
+ * 4.移动seekbar添加监听
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -108,6 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static int maxProgress;
     private static long audiotime;
     public static boolean isAudaioShow;
+    public static long  currenttime;
 
 
     @Override
@@ -188,8 +196,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                     BaseApp.mMyBinder.playMusic();
                     BaseApp.mMediaService.setOnProgressListener(progress -> {
                         if(seekbar != null){
-                            seekbar.setProgress(progress);
-                            currentProgress = progress;
+                            runOnUiThread(() -> {
+                                timeParse(time,progress);
+                                seekbar.setProgress(progress);
+                                currentProgress = progress;
+                            });
                         }
 
                     });
@@ -203,6 +214,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     part_audio.setVisibility(View.GONE);
                     isAudaioShow = false;
                     seekbar.setEnabled(true);
+                    currentProgress = 0;
                     if(seekbar != null){
                        seekbar.setProgress(0);
                     }
@@ -230,7 +242,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 KLog.d("tag","当前进度是  " + seekBar.getProgress());
                 int dest = seekBar.getProgress();
                 currentProgress = dest;
-                seekBar.setProgress(currentProgress);
+                runOnUiThread(() -> {
+                    seekBar.setProgress(currentProgress);
+                    timeParse(time,dest);
+                });
                 if(BaseApp.mMyBinder != null){
                     BaseApp.mMyBinder.seekToPositon(dest);
                 }
@@ -239,6 +254,26 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
+
+    public static void timeParse(TextView timeView,long duration) {
+        String time = "" ;
+        long minute = duration / 60000 ;
+        long seconds = duration % 60000 ;
+        long second = Math.round((float)seconds/1000) ;
+        if( minute < 10 ){
+            time += "0" ;
+        }
+        time += minute+":" ;
+        if( second < 10 ){
+            time += "0" ;
+        }
+        time += second ;
+        KLog.e("tag"," 时间是 " + time);
+        if(timeView != null){
+            timeView.setText(time);
+        }
+        currenttime = duration;
+    }
 
 
     String newID;
@@ -293,6 +328,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             if(pause != null){
                 pause.setVisibility(View.GONE);
             }
+
         });
 
 
@@ -301,10 +337,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             currentProgress = 0;
             maxProgress = totalLength;
             audiotime = totalLength;
-
-            if(time != null){
-                time.setText(timeParse(totalLength) + "");
-            }
 
             if(seekbar != null){
                 seekbar.setMax(totalLength);
@@ -320,15 +352,18 @@ public abstract class BaseActivity extends AppCompatActivity {
             if(pause != null){
                 pause.setVisibility(View.GONE);
             }
-
-
-
+            //👇是自动播放
             play();
             BaseApp.mMyBinder.playMusic();
             BaseApp.mMediaService.setOnProgressListener(progress -> {
                 if(seekbar != null){
-                    seekbar.setProgress(progress);
-                    currentProgress = progress;
+
+                    runOnUiThread(() -> {
+                        timeParse(time,progress);
+                        seekbar.setProgress(progress);
+                        currentProgress = progress;
+
+                    });
                 }
 
             });
@@ -499,25 +534,44 @@ public abstract class BaseActivity extends AppCompatActivity {
             //全局 设置界面进度
             seekbar.setMax(maxProgress);
             seekbar.setProgress(currentProgress);
-            time.setText(timeParse(audiotime) + "");
+            //设置当时时间
+            time.setText(timeParse(currenttime) + "");
             //视频正在播放
             if( BaseApp.mMyBinder.isPlaying()){
                 BaseApp.mMyBinder.playMusic();
                 play.setVisibility(View.GONE);
                 close.setVisibility(View.GONE);
                 pause.setVisibility(View.VISIBLE);
-                BaseApp.mMediaService.setOnProgressListener(progress -> {
-                    if(seekbar != null){
-                        seekbar.setProgress(progress);
-                        currentProgress = progress;
-                    }
-
-                });
             }else{
                 play.setVisibility(View.VISIBLE);
                 close.setVisibility(View.VISIBLE);
                 pause.setVisibility(View.GONE);
             }
+
+            BaseApp.mMediaService.setOnProgressListener(progress -> {
+                if(seekbar != null){
+                    runOnUiThread(() -> {
+                        timeParse(time,progress);
+                        seekbar.setProgress(progress);
+                        currentProgress = progress;
+                    });
+                }
+
+            });
+
+
+            BaseApp.mMediaService.setOnEndListener(() -> {
+                if(play != null){
+                    play.setVisibility(View.VISIBLE);
+                }
+                if(close != null){
+                    close.setVisibility(View.VISIBLE);
+                }
+                if(pause != null){
+                    pause.setVisibility(View.GONE);
+                }
+
+            });
         }else{
             part_audio.setVisibility(View.GONE);
         }

@@ -237,6 +237,8 @@ public class RecommendBean extends BaseBean {
         //1-单图小，2-单图大，3-三图
         private String pic_type;
 
+        private int act_state;
+
 
         private String video;
         private String app_content_url;
@@ -246,6 +248,14 @@ public class RecommendBean extends BaseBean {
         private String share_pic;
         private String article_point;
 
+
+        public int getAct_state() {
+            return act_state;
+        }
+
+        public void setAct_state(int act_state) {
+            this.act_state = act_state;
+        }
 
         public String getVideo() {
             return video;

@@ -33,6 +33,8 @@ import com.socks.library.KLog;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -62,6 +64,18 @@ public class WebViewActivityWithStep extends BaseActivity {
     private String link;
     private String mTitle;
 
+
+    public static String getWebTitle(String url){
+        try {
+            //还是一样先从一个URL加载一个Document对象。
+            Document doc = Jsoup.connect(url).get();
+            String title = doc.title();
+            return title;
+        }catch(Exception e) {
+            return "";
+        }
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_webview;
@@ -73,6 +87,7 @@ public class WebViewActivityWithStep extends BaseActivity {
         link = getIntent().getStringExtra("link");
         mTitle = getIntent().getStringExtra("title");
         KLog.d("tag","link " +link);
+
         if(TextUtils.isEmpty(link)){
             return;
         }
@@ -107,7 +122,7 @@ public class WebViewActivityWithStep extends BaseActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 String title = view.getTitle();
-                KLog.d("tag","title: " + title);
+
             }
         });
 
@@ -128,11 +143,9 @@ public class WebViewActivityWithStep extends BaseActivity {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                if(!TextUtils.isEmpty(mTitle)){
-                    tv_title.setText(mTitle);
-                }else{
-                    tv_title.setText(title);
-                }
+                KLog.d("tag","title: " + view.getTitle());
+                tv_title.setText(title);
+
             }
 
 

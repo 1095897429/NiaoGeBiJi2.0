@@ -211,7 +211,7 @@ public class CircleFragment extends BaseLazyFragment {
 //                ll_circle_send.startAnimation(translateAnimation);
 
 //                initAnim();
-                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("messagecenter"));
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"));
                 break;
             case R.id.icon_send_msg:
                 if(StringUtil.isFastClick()){

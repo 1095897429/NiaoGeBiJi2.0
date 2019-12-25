@@ -49,6 +49,17 @@
     <color name="greenStart">#a7f56e</color>
     <color name="greenEnd">#11c612</color>
 
+    <color name="know1">#A9B2BD</color>
+    <color name="know2">#A9B2BD</color>
+    <color name="know3">#A9B2BD</color>
+    <color name="know4">#A9B2BD</color>
+    <color name="know5">#A9B2BD</color>
+    <color name="know6">#A9B2BD</color>
+    <color name="know7">#A9B2BD</color>
+    <color name="know8">#A9B2BD</color>
+    <color name="know_select">#FFB531</color>
+
+
 
     <color name="prise_select_color">#FFFFBA20</color>
     <color name="prise_no_select_color"> #555962</color>

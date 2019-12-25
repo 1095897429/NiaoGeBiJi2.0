@@ -8,10 +8,13 @@ import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -121,15 +124,32 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             //头像
             ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
             //时间
-            if(!TextUtils.isEmpty(item.getCreated_at())){
-                String s =  GetTimeAgoUtil.getTimeAgo(Long.parseLong(item.getCreated_at()) * 1000L);
-                if(!TextUtils.isEmpty(s)){
-                    if("天前".contains(s)){
-                        helper.setText(R.id.publish_time, TimeUtils.millis2String(Long.parseLong(item.getCreated_at()) * 1000L,"yyyy/MM/dd"));
-                    }else{
-                        helper.setText(R.id.publish_time,s);
+            if(StringUtil.checkNull(item.getCreated_at())){
+                String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getCreated_at()) * 1000L);
+                helper.setText(R.id.publish_time,s);
+            }
+
+            //徽章
+            LinearLayout ll_badge = helper.getView(R.id.ll_badge);
+            if(userInfo.getBadges() != null && !userInfo.getBadges().isEmpty()){
+                ll_badge.removeAllViews();
+                for (int i = 0; i < userInfo.getBadges().size(); i++) {
+                    ImageView imageView = new ImageView(mContext);
+                    String icon = userInfo.getBadges().get(i).getIcon();
+                    if(!TextUtils.isEmpty(icon)){
+                        ImageUtil.load(mContext,icon,imageView);
                     }
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.width = SizeUtils.dp2px(22);
+                    lp.height = SizeUtils.dp2px(22);
+                    lp.gravity = Gravity.CENTER;
+                    lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+                    imageView.setLayoutParams(lp);
+                    ll_badge.addView(imageView);
                 }
+            }else{
+                ll_badge.removeAllViews();
             }
 
             //点赞数
@@ -162,6 +182,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //item点击事件
         helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId(),item.getCircleType(),helper.getAdapterPosition()));
 
+        //item长按事件
+        helper.itemView.setOnLongClickListener(view -> {
+            StringUtil.copyLink(item.getBlog());
+            ToastUtils.showShort("复制成功");
+            return true;
+        });
+
 
         //link点击
         helper.getView(R.id.part_yc_link).setOnClickListener(view -> UIHelper.toWebViewActivity(mContext, item.getLink()));
@@ -180,9 +207,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         //转发帖子点击
         helper.getView(R.id.transfer_zf_ll).setOnClickListener(view -> {
-
             UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition());
-
         });
 
         //帖子举报/删除 -- 为了增大触摸面积
@@ -201,7 +226,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         helper.getView(R.id.part1111).setOnClickListener(view -> {
             UIHelper.toUserInfoActivity(mContext,item.getUid());
         });
-
 
 
         switch (item.getCircleType()){
@@ -552,7 +576,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         TextView share = inflate.findViewById(R.id.share);
         //必须设置宽和高
         mPopupWindow.setWidth(SizeUtils.dp2px(80f));
-        mPopupWindow.setHeight(SizeUtils.dp2px(88f));
+        mPopupWindow.setHeight(SizeUtils.dp2px(44f));
         //点击其他地方隐藏,false为无反应
         mPopupWindow.setFocusable(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -574,7 +598,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         });
 
         share.setOnClickListener(view1 -> {
-//            showShareDialog();
             mPopupWindow.dismiss();
         });
     }

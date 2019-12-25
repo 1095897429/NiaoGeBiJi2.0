@@ -55,20 +55,6 @@
                             android:textColor="@color/text_first_color"
                             android:textSize="22sp" />
 
-                        <Space
-                            android:layout_width="8dp"
-                            android:layout_height="match_parent" />
-
-                        <LinearLayout
-                            android:id="@+id/ll_badge"
-                            android:layout_marginLeft="8dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-
-                        </LinearLayout>
-
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -84,8 +70,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:drawableRight="@mipmap/icon_authen_company"
-                    android:drawablePadding="4dp"
                     android:lineSpacingExtra="2dp"
                     android:maxLines="1"
                     android:text="上海青墨网络科技有限公司产品经理"
@@ -106,7 +90,24 @@
 
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="8dp" />
+                    android:layout_height="10dp" />
+
+
+
+                <LinearLayout
+                    android:id="@+id/ll_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+
+
 
                 <TextView
                     android:id="@+id/user_des"

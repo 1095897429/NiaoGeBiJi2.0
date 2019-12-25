@@ -47,7 +47,7 @@ import io.reactivex.schedulers.Schedulers;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-21
- * 描述:1级评论适配器
+ * 描述:圈子 1级评论适配器
  */
 public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, BaseViewHolder> {
 
@@ -91,9 +91,11 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         helper.setText(R.id.comment_text,item.getComment());
 
         //发布时间
-        if(StringUtil.checkNull(item.getCreate_at())){
-            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getCreate_at()) * 1000L);
+        if(StringUtil.checkNull(item.getCreated_at())){
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getCreated_at()) * 1000L);
             helper.setText(R.id.time,s);
+        }else{
+            helper.setText(R.id.time,"");
         }
 
 
@@ -195,8 +197,9 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
                         //TODO 删除到没有数据时，显示空布局
                         if(mData.isEmpty()){
                             View view = LayoutInflater.from(mContext).inflate(R.layout.empty_layout,null);
+                            ((ImageView)(view.findViewById(R.id.iv_empty))).setImageResource(R.mipmap.icon_empty_comment);
+                            ((TextView)(view.findViewById(R.id.iv_text))).setText("成为第一个评论者～");
                             setEmptyView(view);
-
                         }
                     }
                 });
@@ -210,7 +213,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         zan_num.setTypeface(typeface);
         if(StringUtil.checkNull(good_num)){
             if("0".equals(good_num)){
-                zan_num.setText("赞");
+                zan_num.setText("");
             }else{
                 int size = Integer.parseInt(good_num);
                 if(size > 99){

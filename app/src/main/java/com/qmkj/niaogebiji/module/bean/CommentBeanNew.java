@@ -19,7 +19,7 @@ public class CommentBeanNew extends BaseBean {
     private String uid;
     private String comment;
     private String like_num;
-    private String create_at;
+    private String created_at;
     private User_info user_info;
     private String comment_num;
     private String comment_class;
@@ -83,12 +83,12 @@ public class CommentBeanNew extends BaseBean {
         this.like_num = like_num;
     }
 
-    public String getCreate_at() {
-        return create_at;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setCreate_at(String create_at) {
-        this.create_at = create_at;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     public User_info getUser_info() {

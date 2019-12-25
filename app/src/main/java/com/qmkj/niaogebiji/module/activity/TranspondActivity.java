@@ -23,6 +23,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -142,9 +143,10 @@ public class TranspondActivity extends BaseActivity {
         //只判断img字段 没有的话是转发，传头像即可；如果有，就用图片的第一张
         if(mCircleBean.getImages() != null && !mCircleBean.getImages().isEmpty()){
             ImageUtil.load(this,mCircleBean.getImages().get(0),logo);
-
-        }else{
+        }else if(mCircleBean.getUser_info() != null){
             ImageUtil.load(this,mCircleBean.getUser_info().getAvatar(),logo);
+        }else{
+            ImageUtil.load(this, StringUtil.getUserInfoBean().getAvatar(),logo);
         }
 
         acticle_title.setText(mCircleBean.getBlog());
@@ -183,14 +185,14 @@ public class TranspondActivity extends BaseActivity {
     String blog_images = "";
     String blog_link = "";
     String blog_link_title = "";
-    //0原创 1转发动态传递1
+    //0原创 1转发 动态传递1
     int blog_type = 1;
     //被转发动态ID，原创为0
     String blog_pid = "";
     //转发时是否同时评论动态，1是 0否
     int blog_is_comment = 0;
     //文章Id
-    int article_id;
+    String article_id = "";
     //文字标题
     String article_title = "";
     //文字图片
@@ -200,7 +202,7 @@ public class TranspondActivity extends BaseActivity {
         blog = mString;
         Map<String,String> map = new HashMap<>();
         map.put("blog",blog + "");
-        map.put("images", blog_images);
+        map.put("images", "");
         map.put("link","");
         map.put("link_title","");
         map.put("type",blog_type + "");//TODO 必转

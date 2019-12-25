@@ -46,17 +46,15 @@ import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
-import com.qmkj.niaogebiji.module.activity.WebViewActivityTest;
+import com.qmkj.niaogebiji.module.activity.WebViewActivityWithLayout;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityWithStep;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
-import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -157,9 +155,10 @@ public class UIHelper {
 
 
     /** 打开分类列表 界面 */
-    public static void toCategoryListActivity(Context ctx,String catid) {
+    public static void toCategoryListActivity(Context ctx,  String catid,String title) {
         Intent intent = new Intent(ctx, CategoryListActivity.class);
         intent.putExtra("catid",catid);
+        intent.putExtra("title",title);
         ctx.startActivity(intent);
     }
 
@@ -210,8 +209,8 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
-    public static void toWebViewActivityTest(Context ctx,String link) {
-        Intent intent = new Intent(ctx, WebViewActivityTest.class);
+    public static void toWebViewActivityWithOnLayout(Context ctx,String link) {
+        Intent intent = new Intent(ctx, WebViewActivityWithLayout.class);
         intent.putExtra("link",link);
         ctx.startActivity(intent);
     }

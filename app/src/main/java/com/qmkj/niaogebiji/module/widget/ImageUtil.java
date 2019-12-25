@@ -55,8 +55,9 @@ public class ImageUtil {
             }
         }
 
+        Glide.with(context).load(url).into(imageView);
 
-        Glide.with(context).load(url).placeholder(R.mipmap.icon_fenxiang).into(imageView);
+//        Glide.with(context).load(url).placeholder(R.mipmap.icon_fenxiang).into(imageView);
 
 
     }

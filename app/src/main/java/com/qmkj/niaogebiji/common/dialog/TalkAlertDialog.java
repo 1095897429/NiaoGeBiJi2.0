@@ -41,11 +41,7 @@ public class TalkAlertDialog {
     //默认是评论文章
     private int myPosition = -1;
 
-    //文章需要转发 圈子不需要
-    private boolean isneedtotrans ;
-
     public void setIsneedtotrans(boolean isneedtotrans) {
-        this.isneedtotrans = isneedtotrans;
         if(isneedtotrans){
             comment_succuss_transfer.setVisibility(View.VISIBLE);
         }
@@ -55,7 +51,7 @@ public class TalkAlertDialog {
         this.myPosition = myPosition;
     }
 
-    /** 回调接口 开始 */
+    /** 是否转发到圈子 回调接口 开始 */
     public OnIsToCircleLister mOnIsToCircleLister;
 
     public interface OnIsToCircleLister{
@@ -81,6 +77,12 @@ public class TalkAlertDialog {
         return this;
     }
 
+    //设置草稿
+    public TalkAlertDialog setCaoGao(String content) {
+        et_input.setText(content);
+        setStatus(true);
+        return this;
+    }
 
 
 
@@ -148,18 +150,18 @@ public class TalkAlertDialog {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().length() > 500){
+                if(s.toString().length() > 140){
                     Log.d("tag","输入的字数过多");
+                    return;
                 }
                 if(s.toString().length() == 0){
-                    send.setEnabled(false);
-                    send.setSelected(false);
-                    //文字透明度
-                    send.setTextColor(0xCC818386);
+                    setStatus(false);
                 }else{
-                    send.setEnabled(true);
-                    send.setSelected(true);
-                    send.setTextColor(Color.parseColor("#242629"));
+                    setStatus(true);
+                }
+
+                if(null != mTalkLisenter){
+                    mTalkLisenter.talk(myPosition,et_input.getText().toString().trim());
                 }
             }
 
@@ -168,6 +170,8 @@ public class TalkAlertDialog {
 
             }
         });
+
+        //发送 类型(文本在输入框监听时已传入)
         send.setOnClickListener(view -> {
             if (TextUtils.isEmpty(et_input.getText().toString().trim())) {
                 return;
@@ -177,13 +181,26 @@ public class TalkAlertDialog {
                 mOnIsToCircleLister.func(mCheckBox.isChecked());
             }
 
-            if(null != mTalkLisenter){
-                mTalkLisenter.talk(myPosition,et_input.getText().toString().trim());
-                KeyboardUtils.hideSoftInput(et_input);
-                dialog.dismiss();
-            }
+            KeyboardUtils.hideSoftInput(et_input);
+            dialog.dismiss();
+
+
         });
 
+    }
+
+    //状态
+    private void setStatus(boolean status) {
+        if(!status){
+            send.setEnabled(false);
+            send.setSelected(false);
+            //文字透明度
+            send.setTextColor(0xCC818386);
+        }else{
+            send.setEnabled(true);
+            send.setSelected(true);
+            send.setTextColor(Color.parseColor("#242629"));
+        }
     }
 
     private void setData(){
@@ -195,7 +212,7 @@ public class TalkAlertDialog {
         dialog.show();
     }
 
-
+    //输入字返回
     public interface  TalkLisenter{
         void talk(int position,String words);
     }
@@ -205,4 +222,8 @@ public class TalkAlertDialog {
     public void setTalkLisenter(TalkLisenter talkLisenter) {
         mTalkLisenter = talkLisenter;
     }
+
+
+
+
 }

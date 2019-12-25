@@ -15,6 +15,8 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.MessageBean;
@@ -73,9 +75,24 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 helper.setText(R.id.one_img_title,bean.getTitle());
                 helper.setText(R.id.one_img_auth,bean.getAuthor());
 
-                if(!TextUtils.isEmpty(bean.getPublished_at())){
-                    helper.setText(R.id.one_img_time, TimeUtils.millis2String(Long.parseLong(bean.getPublished_at())* 1000L,"yyyy/MM/dd"));
+                //发布时间
+                if(StringUtil.checkNull(bean.getPublished_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(bean.getPublished_at()) * 1000L);
+                    helper.setText(R.id.one_img_time, s);
                 }
+
+                //热门 + 顶置
+                int act_state = bean.getAct_state();
+                if(1 == act_state){
+                    helper.setVisible(R.id.top,true);
+                    helper.setText(R.id.top,"置顶");
+                }else if(2 == act_state){
+                    helper.setVisible(R.id.top,true);
+                    helper.setText(R.id.top,"热门");
+                }else{
+                    helper.setVisible(R.id.top,false);
+                }
+
 
                 if(!TextUtils.isEmpty(bean.getPic())){
                     ImageUtil.load(mContext,bean.getPic(),helper.getView(R.id.one_img_imgs));
@@ -87,8 +104,10 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 helper.setText(R.id.one_img_title,bean3.getTitle());
                 helper.setText(R.id.one_img_auth,bean3.getAuthor());
 
-                if(!TextUtils.isEmpty(bean3.getPublished_at())){
-                    helper.setText(R.id.one_img_time, TimeUtils.millis2String(Long.parseLong(bean3.getPublished_at())* 1000L,"yyyy/MM/dd"));
+                //发布时间
+                if(StringUtil.checkNull(bean3.getPublished_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(bean3.getPublished_at()) * 1000L);
+                    helper.setText(R.id.one_img_time, s);
                 }
 
                 if(!TextUtils.isEmpty(bean3.getPic())){
@@ -103,8 +122,10 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 helper.setText(R.id.one_img_title,beanLong.getTitle());
                 helper.setText(R.id.one_img_auth,beanLong.getAuthor());
 
-                if(!TextUtils.isEmpty(beanLong.getPublished_at())){
-                    helper.setText(R.id.one_img_time, TimeUtils.millis2String(Long.parseLong(beanLong.getPublished_at())* 1000L,"yyyy/MM/dd"));
+                //发布时间
+                if(StringUtil.checkNull(beanLong.getPublished_at())){
+                    String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(beanLong.getPublished_at()) * 1000L);
+                    helper.setText(R.id.one_img_time, s);
                 }
 
                 if(!TextUtils.isEmpty(beanLong.getPic())){

@@ -30,7 +30,7 @@
                     android:id="@+id/test_time"
                     android:text="限时"
                     android:gravity="center"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_first_color"
                     android:textSize="9sp"
                     android:layout_width="34dp"
                     android:layout_height="16dp" />

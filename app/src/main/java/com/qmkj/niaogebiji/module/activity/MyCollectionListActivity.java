@@ -61,11 +61,11 @@ public class MyCollectionListActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        tv_title.setText("我的收藏");
+        tv_title.setText("干货收藏");
 
         mChannelBeanList = new ArrayList<>();
         ChannelBean bean ;
-        bean = new ChannelBean("0","文章收藏");
+        bean = new ChannelBean("0","收藏文章");
         mChannelBeanList.add(bean);
         bean = new ChannelBean("1","关注作者");
         mChannelBeanList.add(bean);

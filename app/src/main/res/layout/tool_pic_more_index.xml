@@ -11,7 +11,6 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:src="@mipmap/icon_tool_test"
             android:id="@+id/baidu_icon"
             android:layout_width="64dp"
             android:layout_height="40dp" />
@@ -22,7 +21,7 @@
 
         <TextView
             android:id="@+id/tool_txt"
-            android:text="初入职场"
+            android:text=""
             android:textSize="12sp"
             android:gravity="center"
             android:textColor="@color/text_first_color"

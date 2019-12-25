@@ -2,10 +2,12 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -190,6 +192,22 @@ public class ActionFragment extends BaseLazyFragment {
             if(!TextUtils.isEmpty(aid)){
                 UIHelper.toDataInfoActivity(getActivity(),aid);
             }
+
+        });
+
+        mActionAdapter.setOnItemClickListener((adapter, view, position) -> {
+            //TODO 1活动行 2 文章
+            String linkType = mActionAdapter.getData().get(position).getLink_type();
+            String jump_link = mActionAdapter.getData().get(position).getJump_link();
+
+            if(!TextUtils.isEmpty(linkType)){
+                if("1".equals(linkType)){
+                    UIHelper.toWebViewActivity(getActivity(),jump_link);
+                }else if("2".equals(linkType)){
+                    UIHelper.toNewsDetailActivity(getActivity(),jump_link);
+                }
+            }
+
 
         });
     }

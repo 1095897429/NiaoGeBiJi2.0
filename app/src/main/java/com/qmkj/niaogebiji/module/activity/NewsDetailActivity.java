@@ -233,6 +233,17 @@ public class NewsDetailActivity extends BaseActivity {
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
 
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
+
+    @BindView(R.id.tv_empty)
+    TextView tv_empty;
+
+
+    @BindView(R.id.comment)
+    ImageView comment;
+
+
 
     private boolean isSecondComment = false;
 
@@ -1113,8 +1124,12 @@ public class NewsDetailActivity extends BaseActivity {
                                         mCommentAdapter.loadMoreEnd();
                                     }
                                     ll_empty.setVisibility(View.GONE);
+                                    comment.setImageResource(R.mipmap.icon_news_talk);
                                 }else{
                                     ll_empty.setVisibility(View.VISIBLE);
+                                    iv_empty.setImageResource(R.mipmap.icon_empty_comment);
+                                    tv_empty.setText("期待你的精彩评论，让更多人看到");
+                                    comment.setImageResource(R.mipmap.icon_empty_comment_seat);
                                 }
 
                             }else{
@@ -1320,6 +1335,9 @@ public class NewsDetailActivity extends BaseActivity {
                             ToastUtils.showShort("                       评论成功\n审核通过后展示，优质评论+10羽毛");
                             //直接刷新
                             EventBus.getDefault().post(new RefreshActicleCommentEvent());
+
+                            //清空草稿
+                            saveContent = "";
 
                         }else{
                             secondPage = 1;
@@ -1629,7 +1647,10 @@ public class NewsDetailActivity extends BaseActivity {
     private void showTalkDialog(int position,String talkCid,String from,String replyWho) {
         final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
         talkAlertDialog.setIsneedtotrans(true);
-        talkAlertDialog.setOnIsToCircleLister(bug -> isSendToCircle = bug);
+        //单次保存草稿
+        if(!TextUtils.isEmpty(saveContent)){
+            talkAlertDialog.setCaoGao(saveContent);
+        }
         talkAlertDialog.setMyPosition(position);
         if(!TextUtils.isEmpty(replyWho)){
             talkAlertDialog.setHint(replyWho);
@@ -1637,8 +1658,15 @@ public class NewsDetailActivity extends BaseActivity {
         talkAlertDialog.setTalkLisenter((position1, words) -> {
             KLog.d("tag","接受到的文字是 " + words);
             commentString = words;
+            saveContent = words;
+        });
+
+        talkAlertDialog.setOnIsToCircleLister(bug -> {
+            isSendToCircle = bug;
             commentBulletinNew(commentString,talkCid,from);
         });
+
+
         talkAlertDialog.show();
     }
 
@@ -1745,6 +1773,7 @@ public class NewsDetailActivity extends BaseActivity {
 
 
     /** --------------------------------- 二级评论列表 及 点击事件---------------------------------*/
+    String saveContent = "";
     int secondPage = 1;
     RelativeLayout totalk;
     ImageView second_close;

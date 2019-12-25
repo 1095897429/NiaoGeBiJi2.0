@@ -50,4 +50,19 @@
         <item>@color/purpleEnd</item>
     </integer-array>
 
+    <integer-array name="colors1">
+        <item>@color/know1</item>
+        <item>@color/know2</item>
+        <item>@color/know3</item>
+        <item>@color/know4</item>
+        <item>@color/know5</item>
+        <item>@color/know6</item>
+        <item>@color/know7</item>
+        <item>@color/know8</item>
+    </integer-array>
+
+
+
+
+
 </resources>

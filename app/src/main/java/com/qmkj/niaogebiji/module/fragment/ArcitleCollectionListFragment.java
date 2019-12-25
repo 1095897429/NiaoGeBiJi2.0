@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -192,7 +193,9 @@ public class ArcitleCollectionListFragment extends BaseLazyFragment {
         mNewsCollectItemAdapter.disableLoadMoreIfNotFullPage();
         View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
         mNewsCollectItemAdapter.setEmptyView(emptyView);
-        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("您还没有关注的文章哦～");
+        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有收藏的内容～");
+        ((ImageView)emptyView.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
+
 
         mNewsCollectItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             KLog.d("点击图片，请求取消接口，刷新界面");

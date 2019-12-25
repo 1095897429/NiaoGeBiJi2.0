@@ -77,12 +77,15 @@ public class TestResultActivity extends BaseActivity {
         if(mSchoolTest.getRecord() !=  null){
             //表示参加过测试
             if(1 == mSchoolTest.getRecord().getIs_tested()){
-                getHeGe(mSchoolTest.getRecord().getScore(),mSchoolTest.getRecord().getScore());
+                getHeGe(mSchoolTest.getRecord().getScore(),mSchoolTest.getPass_score());
+            }else{
+                test_grade.setText(mSchoolTest.getMyScore());
+                getHeGe(mSchoolTest.getMyScore(),mSchoolTest.getPass_score());
             }
             test_grade.setText(mSchoolTest.getRecord().getScore());
         }else{
             test_grade.setText(mSchoolTest.getMyScore());
-            getHeGe(mSchoolTest.getMyScore(),mSchoolTest.getRecord().getScore());
+            getHeGe(mSchoolTest.getMyScore(),mSchoolTest.getPass_score());
         }
 
 
@@ -147,12 +150,10 @@ public class TestResultActivity extends BaseActivity {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
-                    if(bitmap  ==  null){
-                        mExecutorService.submit(() -> {
-                            bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
-                        });
+                    mExecutorService.submit(() -> {
+                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
                         mHandler.sendEmptyMessage(0x111);
-                    }
+                    });
                     break;
                 case 1:
                     mExecutorService.submit(() -> {

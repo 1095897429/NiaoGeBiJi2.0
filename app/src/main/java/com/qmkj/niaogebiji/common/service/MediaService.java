@@ -187,7 +187,7 @@ public class MediaService extends Service {
         });
         //播放完成监听
         mMediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            KLog.d("tag","播放完成监听");
+            KLog.e("tag","播放完成监听");
             //TODO 12.24 出现的问题是：音频播放完，进度条还没有走到头 -- 延缓状态设置  isPauseOrEnding = true;
             SystemClock.sleep(500);
             isPauseOrEnding = true;

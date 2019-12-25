@@ -1,19 +1,33 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.ImageBrowseAdapter;
+import com.socks.library.KLog;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -38,6 +52,10 @@ public class PicPreviewActivity extends BaseActivity {
     @BindView(R.id.imageBrowseViewPager)
     ViewPager imageBrowseViewPager;
 
+    @BindView(R.id.icon_preview_download)
+    ImageView icon_preview_download;
+
+
     private ImageBrowseAdapter mImageBrowseAdapter;
 
     private ArrayList<String> imageList = new ArrayList<>();
@@ -48,6 +66,9 @@ public class PicPreviewActivity extends BaseActivity {
     private boolean fromNet = false;
 
 
+    private ExecutorService mExecutorService;
+
+    private Bitmap bitmap =  null;
 
     @Override
     protected int getLayoutId() {
@@ -56,6 +77,7 @@ public class PicPreviewActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        mExecutorService = Executors.newFixedThreadPool(2);
         //加载动画
         overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
         //全屏
@@ -120,15 +142,41 @@ public class PicPreviewActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.icon_preview_back})
+    @OnClick({R.id.icon_preview_back,
+            R.id.icon_preview_download
+
+    })
     public void clicks(View view){
         switch (view.getId()){
             case R.id.icon_preview_back:
                 finish();
                 break;
+            case R.id.icon_preview_download:
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                } else {
+                    KLog.d("tag",icon_preview_download.isEnabled() + "");
+                    mExecutorService.submit(() -> {
+                        bitmap =  StringUtil.getBitmap(imageList.get(currentIndex));
+                        mHandler.sendEmptyMessage(0x113);
+                    });
+                }
+                break;
 
             default:
         }
     }
+
+
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            StringUtil.saveImageToGallery(bitmap, BaseApp.getApplication());
+        }
+    };
+
 
 }

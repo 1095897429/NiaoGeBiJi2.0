@@ -140,7 +140,6 @@ public class MoreKnowYouActivity extends BaseActivity {
         text_progress.setTypeface(typeface);
 
         list = (ArrayList<ProBean>) getIntent().getSerializableExtra("list");
-
         getDynamicData();
     }
 
@@ -180,7 +179,7 @@ public class MoreKnowYouActivity extends BaseActivity {
 
     class MyPickerAdapter implements BubblePickerAdapter{
         final String[] titles = getResources().getStringArray(R.array.countries);
-        final TypedArray colors = getResources().obtainTypedArray(R.array.colors);
+        final TypedArray colors = getResources().obtainTypedArray(R.array.colors1);
         @Override
         public int getTotalCount() {
             return list.size();
@@ -203,7 +202,6 @@ public class MoreKnowYouActivity extends BaseActivity {
     MyPickerAdapter mMyPickerAdapter;
     private void getDynamicData() {
 
-
         final TypedArray colors = getResources().obtainTypedArray(R.array.colors);
         mMyPickerAdapter = new MyPickerAdapter();
         picker.setAdapter(mMyPickerAdapter);
@@ -212,20 +210,20 @@ public class MoreKnowYouActivity extends BaseActivity {
 
         picker.setCenterImmediately(true);
         //单选
-//        picker.setMaxSelectedCount(1);
+        picker.setMaxSelectedCount(1);
 
         picker.setBubbleSize(list.size());
+
+
 
         picker.setListener(new BubblePickerListener() {
             @Override
             public void onBubbleSelected(@NotNull PickerItem item) {
 
 
-//                if(mSet.size() > 0) {
-//                    PickerItem temp = mSet.iterator().next();
-//                    temp.setSelected(false);
-//                    onBubbleDeselected(temp);
-//                }
+                KLog.d("tag","item 是否选中 " + item.isSelected());
+
+                item.setColor(getResources().getColor(R.color.know_select));
 
                 KLog.d("tag","选择 " + item.getTitle());
 
@@ -233,15 +231,8 @@ public class MoreKnowYouActivity extends BaseActivity {
                 toNext.setEnabled(true);
                 toNext.setBackgroundResource(R.drawable.bg_corners_12_yellow);
 
-//                for (ProBean bean:list) {
-//                        if(item.getTitle().equals(bean.getName())){
-//                            bean.setSelect(true);
-//                        }else{
-//                            bean.setSelect(false);
-//                        }
-//                    }
-//
-//                    picker.setAdapter(mMyPickerAdapter);
+
+
             }
 
             @Override

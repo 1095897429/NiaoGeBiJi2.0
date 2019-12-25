@@ -4,13 +4,18 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -27,6 +32,7 @@ import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
+import com.qmkj.niaogebiji.module.bean.BadegsAllBean;
 import com.qmkj.niaogebiji.module.bean.MyBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -92,7 +98,8 @@ public class MyFragment extends BaseLazyFragment {
     @BindView(R.id.vip_time)
     TextView vip_time;
 
-
+    @BindView(R.id.ll_badge)
+    LinearLayout ll_badge;
 
 
     //适配器
@@ -125,6 +132,7 @@ public class MyFragment extends BaseLazyFragment {
     protected void initView() {
 
         getUserInfo();
+
         initLayout();
         getData();
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
@@ -132,6 +140,54 @@ public class MyFragment extends BaseLazyFragment {
         read_time.setTypeface(typeface);
         medal_count.setTypeface(typeface);
         feather_count.setTypeface(typeface);
+    }
+
+    List<BadegsAllBean.BadegBean> listall = new ArrayList<>();
+    private void getBadgeList() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getBadgeList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<BadegsAllBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<BadegsAllBean> response) {
+                        BadegsAllBean temp = response.getReturn_data();
+                        if(null != temp){
+                            List<BadegsAllBean.BadegBean> list1 = temp.getShow_badges();
+                            List<BadegsAllBean.BadegBean> list2 = temp.getCollect_badges();
+
+                            listall.clear();
+                            listall.addAll(list1);
+                            listall.addAll(list2);
+                            setBadege();
+                        }
+
+                    }
+                });
+    }
+
+    //设置个人中心徽章
+    private void setBadege() {
+        if(!listall.isEmpty()){
+            ll_badge.removeAllViews();
+            for (int i = 0; i < listall.size(); i++) {
+                ImageView imageView = new ImageView(mContext);
+                String icon = listall.get(i).getIcon();
+                if(!TextUtils.isEmpty(icon)){
+                    ImageUtil.load(mContext,icon,imageView);
+                }
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.width = SizeUtils.dp2px(22);
+                lp.height = SizeUtils.dp2px(22);
+                lp.gravity = Gravity.CENTER;
+                lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+                imageView.setLayoutParams(lp);
+                ll_badge.addView(imageView);
+            }
+        }
     }
 
     //点击切换fragement会调用
@@ -171,10 +227,11 @@ public class MyFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
 
-
                         mUserInfo = response.getReturn_data();
                         if(null != mUserInfo){
+                            StringUtil.setUserInfoBean(mUserInfo);
                             setUserInfo();
+                            getBadgeList();
                         }
                     }
                 });
@@ -268,7 +325,7 @@ public class MyFragment extends BaseLazyFragment {
                     UIHelper.toInviteActivity(getActivity());
                     break;
                 case 2:
-                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("mybadge"));
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"));
 
                     break;
                 case 3:
@@ -279,7 +336,7 @@ public class MyFragment extends BaseLazyFragment {
                     UIHelper.toMyCollectionListActivity(getActivity());
                     break;
                 case 5:
-                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("favorite"));
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myconcern"));
                     break;
 
 
@@ -311,7 +368,7 @@ public class MyFragment extends BaseLazyFragment {
         switch (view.getId()){
             case R.id.toMsg:
 
-                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("messagecenter"));
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"));
                 break;
             case R.id.toUserInfo:
 

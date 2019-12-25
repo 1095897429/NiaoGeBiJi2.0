@@ -60,11 +60,10 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-11
  *  搜索干货界面
+ *  1.首页区别是：没有置顶
+ *  2.没有更懂你
  */
 public class SearchActicleItemFragment extends BaseLazyFragment {
-
-    @BindView(R.id.part3333)
-    RelativeLayout part3333;
 
     @BindView(R.id.backtop)
     ImageView backtop;
@@ -104,7 +103,7 @@ public class SearchActicleItemFragment extends BaseLazyFragment {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_first_item;
+        return R.layout.fragment_acticle_item;
     }
 
 
@@ -385,57 +384,6 @@ public class SearchActicleItemFragment extends BaseLazyFragment {
                 .subscribe(object -> {
                     mRecyclerView.scrollToPosition(0);
                     smartRefreshLayout.autoRefresh();
-                });
-    }
-
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefreshBus(toRefreshEvent event){
-        if(getUserVisibleHint()){
-            KLog.d("tag","我是干货界面，我刷新了");
-            mRecyclerView.scrollToPosition(0);
-            smartRefreshLayout.autoRefresh();
-        }
-    }
-
-
-
-    @OnClick({R.id.to_tomorow, R.id.toMoreLoveYou})
-    public void clicks(View view){
-        switch (view.getId()){
-            case R.id.to_tomorow:
-                //明天提示
-                SPUtils.getInstance().put("today_time",System.currentTimeMillis());
-                part3333.setVisibility(View.GONE);
-                break;
-            case R.id.toMoreLoveYou:
-                getProfession();
-                break;
-            default:
-        }
-    }
-
-
-    //
-
-    private ArrayList<ProBean> temp;
-    private void getProfession() {
-        Map<String,String> map = new HashMap<>();
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().getProfession(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<ProBean>>>() {
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onSuccess(HttpResponse<List<ProBean>> response) {
-                        temp = (ArrayList<ProBean>) response.getReturn_data();
-                        if(temp != null && !temp.isEmpty()){
-                            UIHelper.toMoreKnowYouActivity(getActivity(),temp);
-                        }
-                    }
                 });
     }
 

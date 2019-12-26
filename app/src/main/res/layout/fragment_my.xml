@@ -32,18 +32,40 @@
                     android:layout_width="match_parent"
                     android:layout_height="44dp">
 
-                    <ImageView
+                    <RelativeLayout
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:id="@+id/toMsg"
-                        android:src="@mipmap/icon_my_msg"
+                        android:id="@+id/rl_newmsg"
                         android:layout_width="28dp"
-                        android:layout_height="28dp" />
+                        android:layout_height="28dp">
+
+                        <ImageView
+                            android:id="@+id/icon_sign"
+                            android:src="@mipmap/icon_circle_msg"
+                            android:layout_width="24dp"
+                            android:layout_height="25dp" />
+
+
+                        <TextView
+                            android:id="@+id/red_point"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginRight="2dp"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_red_point"
+                            android:padding="0dp"
+                            android:textSize="12dp"
+                            android:visibility="visible" />
+
+                    </RelativeLayout>
 
 
                     <ImageView
                         android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@+id/toMsg"
+                        android:layout_toLeftOf="@+id/rl_newmsg"
                         android:layout_marginRight="24dp"
                         android:id="@+id/toSet"
                         android:src="@mipmap/icon_my_set"
@@ -73,8 +95,7 @@
                                android:id="@+id/head_icon"
                                android:layout_centerVertical="true"
                                android:layout_width="78dp"
-                               android:layout_height="78dp"
-                               android:src="@mipmap/icon_fenxiang"/>
+                               android:layout_height="78dp" />
 
                            <LinearLayout
                                android:layout_marginLeft="16dp"
@@ -88,7 +109,7 @@
 
                                <TextView
                                    android:id="@+id/name"
-                                   android:text="小羽毛"
+                                   android:text=""
                                    android:textSize="22sp"
                                    android:textColor="@color/text_first_color"
                                    android:layout_width="wrap_content"
@@ -100,7 +121,7 @@
 
                                <TextView
                                    android:id="@+id/name_tag"
-                                   android:text="鸟哥笔记网络科技有限公司设计师"
+                                   android:text=""
                                    android:textSize="13sp"
                                    android:textColor="#AAAEB3"
                                    android:layout_width="wrap_content"

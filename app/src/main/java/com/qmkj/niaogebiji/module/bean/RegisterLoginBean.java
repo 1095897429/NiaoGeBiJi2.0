@@ -98,6 +98,24 @@ public class RegisterLoginBean extends BaseBean {
         //关注别人状态
         private int follow_status;
 
+        private String badge_num;
+        private String read_article_num;
+
+        public String getBadge_num() {
+            return badge_num;
+        }
+
+        public void setBadge_num(String badge_num) {
+            this.badge_num = badge_num;
+        }
+
+        public String getRead_article_num() {
+            return read_article_num;
+        }
+
+        public void setRead_article_num(String read_article_num) {
+            this.read_article_num = read_article_num;
+        }
 
         public String getVip_last_time() {
             return vip_last_time;

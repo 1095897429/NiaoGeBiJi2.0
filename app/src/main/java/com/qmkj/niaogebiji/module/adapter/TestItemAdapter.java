@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -27,7 +30,10 @@ public class TestItemAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, Bas
     protected void convert(BaseViewHolder helper, SchoolBean.SchoolTest item) {
 
         helper.setText(R.id.test_name,item.getTitle());
-        helper.setText(R.id.test_count,item.getNum()  + "人已测");
+        if(!TextUtils.isEmpty(item.getNum())){
+            helper.setText(R.id.test_count,StringUtil.formatPeopleNum(item.getNum()) + "人已测");
+        }
+
 
         ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.test_icon));
 

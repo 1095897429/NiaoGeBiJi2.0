@@ -63,6 +63,7 @@ public class TimeAppUtils {
      */
     public static String getOldDate(int distanceDay) {
         SimpleDateFormat dft = new SimpleDateFormat("yyyy年MM月dd日");
+        //当前日期
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);

@@ -41,7 +41,6 @@ import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
@@ -60,8 +59,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -79,6 +76,9 @@ import io.reactivex.schedulers.Schedulers;
  *
  * 3.uid判断显示不同的布局
  * 4.取消屏蔽 -- 提示屏蔽成功，下方布局消失，同时改变popup中的屏蔽为取消屏蔽
+ *
+ *
+ * 1.空布局是  activity_empty
  */
 public class UserInfoActivity extends BaseActivity {
 
@@ -103,6 +103,12 @@ public class UserInfoActivity extends BaseActivity {
 
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
+
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
+
+    @BindView(R.id.tv_empty)
+    TextView tv_empty;
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
@@ -209,6 +215,9 @@ public class UserInfoActivity extends BaseActivity {
                 }
             }else{
                 ll_empty.setVisibility(View.VISIBLE);
+
+                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("您还没有关注的圈子用户哦，快去推荐看看吧！");
+
             }
         }else{
             //已为加载更多有数据
@@ -291,9 +300,9 @@ public class UserInfoActivity extends BaseActivity {
         //去关注列表
         part2222_2.setOnClickListener((v)->{
             if(myUid.equals(otherUid)){
-                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("myconcern"));
+                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("myconcern"),"");
             }else{
-                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("hisconcern"));
+                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("hisconcern"),"");
             }
         });
 
@@ -371,7 +380,7 @@ public class UserInfoActivity extends BaseActivity {
                             }else if(6 == step){
                                 link = StringUtil.getLink("professionidsuc");
                             }
-                            UIHelper.toWebViewActivity(UserInfoActivity.this,link);
+                            UIHelper.toWebViewActivityWithOnLayout(UserInfoActivity.this,link,"个人中心");
                         }
                     }
                 });

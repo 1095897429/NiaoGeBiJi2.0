@@ -66,13 +66,13 @@
 
                 <TextView
                     android:id="@+id/sender_tag"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
                     android:maxLines="1"
-                    android:text="上海青墨网络科技有限公司产品经理"
+                    android:text=""
                     android:textColor="@color/text_first_color"
                     android:textSize="13sp" />
 

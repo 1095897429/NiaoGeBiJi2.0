@@ -27,6 +27,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -39,10 +40,13 @@ import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.ShowSignRedPointEvent;
+import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
@@ -110,9 +114,13 @@ public class FirstFragment extends BaseLazyFragment {
 
 
     @BindView(R.id.tool_part)
-    LinearLayout tool_part;
+    RelativeLayout tool_part;
 
+    @BindView(R.id.toVip)
+    LinearLayout toVip;
 
+    @BindView(R.id.red_point)
+    TextView red_point;
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -157,6 +165,21 @@ public class FirstFragment extends BaseLazyFragment {
     protected void initView() {
         String [] titile = new String[]{"关注","干货","活动"};
 
+
+
+        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+        if(!TextUtils.isEmpty(mUserInfo.getVip_last_time()) && !"0".equals(mUserInfo.getVip_last_time())){
+            toVip.setVisibility(View.GONE);
+        }else{
+            toVip.setVisibility(View.VISIBLE);
+        }
+
+        //今天是否签到了：1-已签到，0-未签到
+        if("1".equals(mUserInfo.getSigned_today())){
+            red_point.setVisibility(View.GONE);
+        }else{
+            red_point.setVisibility(View.VISIBLE);
+        }
 
         pager_title.initData(titile,mViewPager,1);
 
@@ -298,6 +321,11 @@ public class FirstFragment extends BaseLazyFragment {
                         mMoringBean = temp.getMorning_article();
                         setData();
                     }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        ll_moring.setVisibility(View.GONE);
+                    }
                 });
     }
 
@@ -320,6 +348,8 @@ public class FirstFragment extends BaseLazyFragment {
             //早报时间
             StringUtil.setPublishTime(moring_time,mMoringBean.getPublished_at());
             ll_moring.setVisibility(View.VISIBLE);
+        }else{
+            ll_moring.setVisibility(View.GONE);
         }
     }
 
@@ -382,10 +412,13 @@ public class FirstFragment extends BaseLazyFragment {
 
 
     @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content,R.id.rl_sign,
-        R.id.ll_moring
+        R.id.ll_moring,R.id.toVip
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.toVip:
+                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("vipmember"));
+                break;
             case R.id.moring_content:
             case R.id.ll_moring:
                 String aid = mMoringBean.getAid();
@@ -433,6 +466,11 @@ public class FirstFragment extends BaseLazyFragment {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void ontoActicleEvent(toActicleEvent event){
+        mViewPager.setCurrentItem(1);
+
+    }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -443,6 +481,16 @@ public class FirstFragment extends BaseLazyFragment {
         }
 
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowSignRedPointEvent(ShowSignRedPointEvent event){
+        if("1".equals(event.getIs_red())){
+            //已签到，去掉红点
+            red_point.setVisibility(View.GONE);
+        }
+    }
+
 
 
 
@@ -470,6 +518,7 @@ public class FirstFragment extends BaseLazyFragment {
                             if(null != mHot_searches && !mHot_searches.isEmpty()){
                                 String defaultHotKey = mHot_searches.get(0).getSearch_string();
                                 first_search.setHint(defaultHotKey);
+                                Constant.firstSearchName = defaultHotKey;
                             }
                         }
                     }

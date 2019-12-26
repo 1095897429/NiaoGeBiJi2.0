@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -30,6 +31,7 @@ import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
@@ -414,4 +416,16 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
+
+
+    private int fromType;
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent.getExtras() != null){
+            fromType =  intent.getExtras().getInt("type");
+            bottomClick(findViewById(R.id.index_first));
+            EventBus.getDefault().post(new toActicleEvent("去干货"));
+        }
+    }
 }

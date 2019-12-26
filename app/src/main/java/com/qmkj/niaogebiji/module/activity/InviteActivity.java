@@ -39,15 +39,22 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.ViewPagerAdapter;
 import com.qmkj.niaogebiji.module.bean.InviteBean;
+import com.qmkj.niaogebiji.module.bean.InvitePosterBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.widget.AlphaTransformer;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ScaleTransformer;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -58,12 +65,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -72,7 +83,7 @@ import butterknife.OnClick;
  * 创建时间 2019-11-27
  * 描述:邀请好友
  * 1.保存图片过大如何处理？
- * 2.qq分享先没做？
+ * 2.qq分享先没做
  */
 public class InviteActivity extends BaseActivity {
 
@@ -89,7 +100,7 @@ public class InviteActivity extends BaseActivity {
     MyWebView mMyWebView;
 
 
-    private InviteBean mInviteBean;
+    private InvitePosterBean mPosterBean;
     private String picLink;
 
     private List<String> pics = new ArrayList<>();
@@ -121,12 +132,33 @@ public class InviteActivity extends BaseActivity {
         tv_title.setText("邀请好友");
         iv_text.setText("邀请记录");
         iv_text.setVisibility(View.VISIBLE);
-        initViewPage();
-        initDot();
+
         mExecutorService = Executors.newFixedThreadPool(2);
 
         //webview
         getWebData();
+
+        getshareinfo();
+    }
+
+    private void getshareinfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getshareinfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<InvitePosterBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<InvitePosterBean> response) {
+
+                        mPosterBean = response.getReturn_data();
+                        if(null != mPosterBean){
+                            initDot();
+                           initViewPage();
+                        }
+                    }
+                });
     }
 
 
@@ -167,16 +199,16 @@ public class InviteActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        mInviteBean = new InviteBean();
-        for (int i = 0; i < 4; i++) {
-            if(i == 0){
-                pics.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
-            }else{
-                pics.add("https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg");
-
-            }
-        }
-        mInviteBean.setPic_links(pics);
+//        mInviteBean = new InviteBean();
+//        for (int i = 0; i < 4; i++) {
+//            if(i == 0){
+//                pics.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
+//            }else{
+//                pics.add("https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg");
+//
+//            }
+//        }
+//        mInviteBean.setPic_links(pics);
     }
 
     //初始化小圆点的id
@@ -193,7 +225,7 @@ public class InviteActivity extends BaseActivity {
     private void initViewPage() {
 
         views = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < mPosterBean.getPic_list().size(); i++) {
             ImageView imageView = new ImageView(this);
             imageView.setImageResource(R.mipmap.icon_invite_pic);
             views.add(imageView);
@@ -225,7 +257,7 @@ public class InviteActivity extends BaseActivity {
                 }
 
                 mPosition = position;
-                KLog.d("tag",mInviteBean.getPic_links().get(mPosition));
+                KLog.d("tag",mPosterBean.getPic_list().get(mPosition));
 
 
             }
@@ -263,13 +295,11 @@ public class InviteActivity extends BaseActivity {
                 toWxShare(3);
                 break;
             case R.id.share_save:
-
                 if(hasPermissions(this,permissions1)){
                     toWxShare(2);
                 }else{
                     ActivityCompat.requestPermissions(InviteActivity.this, permissions1, 100);
                 }
-
                 break;
             case R.id.share_link:
                 //获取剪贴板管理器：
@@ -288,9 +318,9 @@ public class InviteActivity extends BaseActivity {
 
     private void toWxShare(int type) {
         if(-1 == mPosition){
-            picLink = mInviteBean.getPic_links().get(1);
+            picLink = mPosterBean.getPic_list().get(1);
         }else{
-            picLink = mInviteBean.getPic_links().get(mPosition);
+            picLink = mPosterBean.getPic_list().get(mPosition);
         }
 
         mExecutorService.submit(() -> {

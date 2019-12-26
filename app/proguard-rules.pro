@@ -40,3 +40,7 @@
 -keep class com.huawei.hms.**{*;}
 -keep class com.huawei.android.hms.agent.**{*;}
 
+
+#oaid
+-keep class com.bun.miitmdid.core.** {*;}
+

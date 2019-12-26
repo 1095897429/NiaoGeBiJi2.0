@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,6 +47,19 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-12.21
  * 描述:圈子推荐
+ * 1.在链接后面自动加上一个/，为了方便解析
+ *
+ *      String content = "测试http://www.baidu.com/测测https://www.qq.com/\n再来一个 https://china.nba.com";
+ *         //判断内容是否中link
+ *         String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
+ *         Matcher matcher = Pattern.compile(regex).matcher(content);
+ *
+ *         while (matcher.find()){
+ *             int start =  matcher.start();
+ *             int end = matcher.end();
+ *             KLog.d("tag","start " + start + " end " + end);
+ *             KLog.d("tag"," matcher.group() " +  matcher.group());
+ *         }
  */
 public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
@@ -60,6 +74,12 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
+
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
+
+    @BindView(R.id.tv_empty)
+    TextView tv_empty;
 
     //页数
     private int page = 1;
@@ -93,21 +113,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
-
-
-        String content = "测试http://www.baidu.com 测测https://www.qq.com/再来一个 https://china.nba.com";
-        //判断内容是否中link
-        String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
-        Matcher matcher = Pattern.compile(regex).matcher(content);
-        int size = matcher.groupCount();
-        KLog.d("tag","link条数 " + size);
-        while (matcher.find()){
-            int start =  matcher.start();
-            int end = matcher.end();
-            KLog.d("tag","start " + start + " end " + end);
-            KLog.d("tag"," matcher.group() " +  matcher.group());
-        }
-
     }
 
     @Override
@@ -126,7 +131,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
                     @Override
                     public void onSuccess(HttpResponse<List<CircleBean>> response) {
-
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
@@ -146,7 +150,8 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                                     KLog.d("tag","设置空布局");
                                     //第一次加载无数据
                                     ll_empty.setVisibility(View.VISIBLE);
-                                    ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("没有推荐圈子数据~");
+                                    ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("暂无推荐内容");
+                                    ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
                                     mRecyclerView.setVisibility(View.GONE);
                                 }
                             }else{
@@ -191,6 +196,16 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             for (int i = 0; i < list.size(); i++) {
                 temp  = list.get(i);
                 type = StringUtil.getCircleType(temp);
+
+                addLinksData(temp);
+
+               if(type == CircleRecommentAdapterNew.ZF_TEXT ||
+                    type == CircleRecommentAdapterNew.ZF_PIC ||
+                       type == CircleRecommentAdapterNew.ZF_ACTICLE ||
+                            type == CircleRecommentAdapterNew.ZF_LINK){
+                   addTransLinksData(temp);
+                }
+
                 //如果判断有空数据，则遍历下一个数据
                 if(100 == type){
                     continue;
@@ -202,6 +217,41 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 mAllList.addAll(teList);
             }
         }
+    }
+
+    private void addTransLinksData(CircleBean temp) {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> pcLinks = new ArrayList<>();
+        //在文本的基础上，再检查一下有无link
+        String regex =  "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
+        Matcher matcher = Pattern.compile(regex).matcher(temp.getP_blog().getBlog());
+        while (matcher.find()){
+            int start =  matcher.start();
+            int end = matcher.end();
+            KLog.d("tag","start " + start + " end " + end);
+            KLog.d("tag"," matcher.group() " +  matcher.group());
+            sb.append(start).append(":").append(end).append(":");
+            pcLinks.add(matcher.group());
+        }
+        temp.getP_blog().setPcLinks(pcLinks);
+    }
+
+    private void addLinksData(CircleBean temp) {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> pcLinks = new ArrayList<>();
+        //在文本的基础上，再检查一下有无link
+        String regex =  "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
+        Matcher matcher = Pattern.compile(regex).matcher(temp.getBlog());
+        while (matcher.find()){
+            int start =  matcher.start();
+            int end = matcher.end();
+            KLog.d("tag","start " + start + " end " + end);
+            KLog.d("tag"," matcher.group() " +  matcher.group());
+            sb.append(start).append(":").append(end).append(":");
+            pcLinks.add(matcher.group());
+
+        }
+        temp.setPcLinks(pcLinks);
     }
 
 

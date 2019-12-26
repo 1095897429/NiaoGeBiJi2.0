@@ -1,6 +1,6 @@
 package com.qmkj.niaogebiji.module.fragment;
 
-import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -14,32 +14,25 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
-import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
-import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
+import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
-import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
+import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.BadegsAllBean;
 import com.qmkj.niaogebiji.module.bean.MyBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
-import com.qmkj.niaogebiji.module.bean.ToolBean;
+import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
-import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -48,7 +41,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -56,7 +48,6 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.udesk.UdeskSDKManager;
-import cn.udesk.callback.IUdeskFormCallBack;
 import cn.udesk.config.UdeskConfig;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -73,6 +64,9 @@ public class MyFragment extends BaseLazyFragment {
 
     @BindView(R.id.name)
     TextView name;
+
+    @BindView(R.id.red_point)
+    TextView red_point;
 
     @BindView(R.id.read_time)
     TextView read_time;
@@ -100,6 +94,8 @@ public class MyFragment extends BaseLazyFragment {
 
     @BindView(R.id.ll_badge)
     LinearLayout ll_badge;
+
+
 
 
     //适配器
@@ -241,6 +237,16 @@ public class MyFragment extends BaseLazyFragment {
     private void setUserInfo() {
         if(null != mUserInfo){
 
+            //是否显示红点  个人中心消息通知：1-有新消息，0-无新消息
+           if(!TextUtils.isEmpty( mUserInfo.getIs_red())){
+               if("1".equals( mUserInfo.getIs_red())){
+                   red_point.setVisibility(View.VISIBLE);
+               }else if("0".equals( mUserInfo.getIs_red())){
+                   red_point.setVisibility(View.GONE);
+               }
+               EventBus.getDefault().post(new ShowRedPointEvent(mUserInfo.getIs_red()));
+           }
+
             if(!TextUtils.isEmpty(mUserInfo.getVip_last_time())){
                 vip_time.setText("鸟哥笔记VIP剩余"+ mUserInfo.getVip_last_time() + "天");
             }
@@ -254,19 +260,27 @@ public class MyFragment extends BaseLazyFragment {
                 name.setText(mUserInfo.getName());
             }
 
-            if(!TextUtils.isEmpty(mUserInfo.getPro_summary())){
-                name_tag.setText(mUserInfo.getPro_summary());
+            //认证
+            if("1".equals(mUserInfo.getAuth_com_status())){
+                if(!TextUtils.isEmpty(mUserInfo.getPro_summary())){
+                    name_tag.setText(mUserInfo.getPro_summary());
+                }else{
+                    name_tag.setText("写一句话介绍一下自己");
+                }
             }else{
-                name_tag.setText("写一句话介绍一下自己");
+                name_tag.setText("立即职业认证，建立人脉");
+                name_tag.setTextColor(Color.parseColor("#5675A7"));
             }
+
+
 
             ImageUtil.load(mContext,mUserInfo.getAvatar(),head_icon);
 
             //个人中心消息通知：1-有新消息，0-无新消息
             if("1".equals(mUserInfo.getIs_red())){
-
+                red_point.setVisibility(View.VISIBLE);
             }else{
-
+                red_point.setVisibility(View.GONE);
             }
 
             //更新本地用户信息
@@ -281,6 +295,14 @@ public class MyFragment extends BaseLazyFragment {
 
             TextPaint paint3 = medal_count.getPaint();
             paint3.setFakeBoldText(true);
+            if(!TextUtils.isEmpty(mUserInfo.getBadge_num())){
+                medal_count.setText(mUserInfo.getBadge_num());
+            }
+
+            if(!TextUtils.isEmpty(mUserInfo.getRead_article_num())){
+                read_time.setText(mUserInfo.getRead_article_num());
+            }
+
         }
 
     }
@@ -325,7 +347,7 @@ public class MyFragment extends BaseLazyFragment {
                     UIHelper.toInviteActivity(getActivity());
                     break;
                 case 2:
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"));
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
 
                     break;
                 case 3:
@@ -336,7 +358,7 @@ public class MyFragment extends BaseLazyFragment {
                     UIHelper.toMyCollectionListActivity(getActivity());
                     break;
                 case 5:
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myconcern"));
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myconcern"),"");
                     break;
 
 
@@ -348,29 +370,26 @@ public class MyFragment extends BaseLazyFragment {
 
     @Override
     public void initData() {
-        //认证与未认证
-        name_tag.setText("立即职业认证，建立人脉");
     }
 
 
     @OnClick({R.id.toSet,
                 R.id.about_ll,
-                R.id.name_tag,
-                R.id.part2222_2,
+                R.id.head_icon,
+                R.id.ll_badge,
                 R.id.part3333_3,
                 R.id.toExchange,
                 R.id.rl_vip_time,
                 R.id.toVip,
                 R.id.toQue,R.id.advice_ll,
                 R.id.toUserInfo,
-                R.id.toMsg})
+                R.id.rl_newmsg})
     public void clicks(View view){
         switch (view.getId()){
-            case R.id.toMsg:
-
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"));
+            case R.id.rl_newmsg:
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
                 break;
-            case R.id.toUserInfo:
+            case R.id.head_icon:
 
                 UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
 
@@ -387,9 +406,7 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.toVip:
             case R.id.rl_vip_time:
-
                 UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("vipmember"));
-
 
                 break;
             case R.id.toExchange:
@@ -400,11 +417,13 @@ public class MyFragment extends BaseLazyFragment {
                 KLog.d("tag","去羽毛任务");
                 UIHelper.toFeatherctivity(getActivity());
                 break;
-            case R.id.part2222_2:
+            case R.id.ll_badge:
                 KLog.d("tag","去徽章详情页");
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
                 break;
             case R.id.name_tag:
                 KLog.d("tag","h5 职业认证");
+                posCertInit();
                 break;
             case R.id.toSet:
                 UIHelper.toSettingActivity(getActivity());
@@ -469,6 +488,44 @@ public class MyFragment extends BaseLazyFragment {
                         }
                     }
 
+                });
+    }
+
+
+
+    private void posCertInit() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+
+        RetrofitHelper.getApiService().posCertInit(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<AutherCertInitBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<AutherCertInitBean> response) {
+                        AutherCertInitBean temp = response.getReturn_data();
+                        if(temp != null){
+                            //1-身份证认证页面，2-邮箱提交页面，3-邮箱已提交页面，4-人工审核提交成功页面，5-人工审核失败页面，6-人工审核通过页面
+                            int step = temp.getFlow_step();
+                            String link = "";
+
+                            if(1 == step){
+                                link = StringUtil.getLink("professionidone");
+                            }else if(2 == step){
+                                link = StringUtil.getLink("professionidthree");
+                            }else if(3 == step){
+                                link = StringUtil.getLink("professionidfour");
+                            }else if(4 == step){
+                                link = StringUtil.getLink("manexaminesuc");
+                            }else if(5 == step){
+                                link = StringUtil.getLink("manexaminefail");
+                            }else if(6 == step){
+                                link = StringUtil.getLink("professionidsuc");
+                            }
+                            UIHelper.toWebViewActivityWithOnLayout(getActivity(),link,"个人中心");
+                        }
+                    }
                 });
     }
 

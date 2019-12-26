@@ -23,7 +23,7 @@
 
         <include
             android:visibility="gone"
-            layout="@layout/empty_layout"/>
+            layout="@layout/activity_empty"/>
 
 
     </LinearLayout>

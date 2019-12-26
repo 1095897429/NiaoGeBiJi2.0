@@ -214,36 +214,6 @@ public class TestLauchActivity extends BaseActivity {
         setAnimation(progressBar,100);
     }
 
-    private void getData(int currentNum) {
-
-        toNext.setEnabled(false);
-        toSubmit.setEnabled(false);
-
-        if(currentNum == totalNum){
-            toSubmit.setVisibility(View.GONE);
-            toNext.setText("交卷");
-        }
-
-        mAllList.clear();
-        if(currentNum == 1){
-            TestBean bean1;
-            for (int i = 0; i < 4; i++) {
-                bean1 = new TestBean();
-                bean1.setAnswer(" 留存是延长用户生命周期" + i);
-                mAllList.add(bean1);
-            }
-        }else{
-            TestBean bean1;
-            for (int i = 0; i < 4; i++) {
-                bean1 = new TestBean();
-                bean1.setAnswer(" 我是题目" + currentNum);
-                mAllList.add(bean1);
-            }
-        }
-
-        mTestLaunchItemAdapter.setNewData(mAllList);
-    }
-
 
 
     private void initLayout() {
@@ -444,6 +414,7 @@ public class TestLauchActivity extends BaseActivity {
                if(!isAnimPause && animation != null && null != this && toNextbyAnim != null){
                    KLog.d("tag","动画结束,显示文本倒计时");
                    toNextbyAnim.setVisibility(View.VISIBLE);
+                   toNext.setEnabled(false);
                    initRxTime();
                }
 

@@ -154,6 +154,10 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".module.activity.MessageDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
 
         <activity android:name=".module.activity.NewsDetailActivity"
             android:screenOrientation="portrait">

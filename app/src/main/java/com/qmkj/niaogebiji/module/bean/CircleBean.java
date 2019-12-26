@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.bean;
 
+import android.util.SparseArray;
+
 import com.alibaba.fastjson.annotation.JSONField;
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouliang
@@ -47,15 +50,35 @@ public class CircleBean extends BaseBean {
         private String article_title;
         private String article_image;
 
+        private String avatar;
 
-        //圈子类型 12.21
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    //圈子类型 12.21
         private int circleType;
         //记住自己的位置
         private int mSlefPosition;
 
-        public int getSlefPosition() {
-            return mSlefPosition;
+        //网页链接地址
+        private ArrayList<String> pcLinks;
+
+        public ArrayList<String> getPcLinks() {
+            return pcLinks;
         }
+
+        public void setPcLinks(ArrayList<String> pcLinks) {
+            this.pcLinks = pcLinks;
+        }
+
+        public int getSlefPosition() {
+                return mSlefPosition;
+            }
 
         public void setSlefPosition(int slefPosition) {
             mSlefPosition = slefPosition;
@@ -274,6 +297,17 @@ public class CircleBean extends BaseBean {
         private String article_image;
        //圈子类型 12.21
        private int circleType;
+
+       //网页链接地址
+       private ArrayList<String> pcLinks;
+
+       public ArrayList<String> getPcLinks() {
+           return pcLinks;
+       }
+
+       public void setPcLinks(ArrayList<String> pcLinks) {
+           this.pcLinks = pcLinks;
+       }
 
        public int getCircleType() {
            return circleType;

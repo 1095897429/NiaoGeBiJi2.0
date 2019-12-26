@@ -7,7 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +66,7 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-12-21
  * 描述:圈子新布局
+ * 1.设置布局展示的type
  */
 public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, BaseViewHolder> {
 
@@ -131,11 +135,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
             //徽章
             LinearLayout ll_badge = helper.getView(R.id.ll_badge);
-            if(userInfo.getBadges() != null && !userInfo.getBadges().isEmpty()){
+            if(userInfo.getBadge() != null && !userInfo.getBadge().isEmpty()){
                 ll_badge.removeAllViews();
-                for (int i = 0; i < userInfo.getBadges().size(); i++) {
+                for (int i = 0; i < userInfo.getBadge().size(); i++) {
                     ImageView imageView = new ImageView(mContext);
-                    String icon = userInfo.getBadges().get(i).getIcon();
+                    String icon = userInfo.getBadge().get(i).getIcon();
                     if(!TextUtils.isEmpty(icon)){
                         ImageUtil.load(mContext,icon,imageView);
                     }
@@ -148,8 +152,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     imageView.setLayoutParams(lp);
                     ll_badge.addView(imageView);
                 }
-            }else{
-                ll_badge.removeAllViews();
             }
 
             //点赞数
@@ -160,16 +162,23 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
             TextView msg = helper.getView(R.id.content);
-            msg.setText(item.getBlog());
-//            getIconLinkShow(item,msg);
-
+            if(item.getPcLinks() !=  null && !item.getPcLinks().isEmpty()){
+                getIconLinkShow(item,msg);
+            }else{
+                msg.setText(item.getBlog());
+            }
 
         }
 
 
         if(item.getP_blog() != null){
             //转发文本
-            helper.setText(R.id.transfer_zf_content,item.getP_blog().getBlog());
+            TextView trans_msg = helper.getView(R.id.transfer_zf_content);
+            if(item.getP_blog().getPcLinks() !=  null && !item.getP_blog().getPcLinks().isEmpty()){
+                getTransIconLinkShow(item.getP_blog(),trans_msg);
+            }else{
+                trans_msg.setText(item.getP_blog().getBlog());
+            }
 
             if(item.getP_blog() != null && item.getP_blog().getP_user_info() != null){
                 CircleBean.P_user_info temp =item.getP_blog().getP_user_info();
@@ -180,7 +189,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
         //item点击事件
-        helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId(),item.getCircleType(),helper.getAdapterPosition()));
+//        helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId(),item.getCircleType(),helper.getAdapterPosition()));
+        helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId()));
+
 
         //item长按事件
         helper.itemView.setOnLongClickListener(view -> {
@@ -207,7 +218,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         //转发帖子点击
         helper.getView(R.id.transfer_zf_ll).setOnClickListener(view -> {
-            UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition());
+//            UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition());
+            UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId());
+
         });
 
         //帖子举报/删除 -- 为了增大触摸面积
@@ -304,9 +317,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 ((SimpleItemAnimator)recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView2.setAdapter(mCircleTransferPicAdapter);
 
+//                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition()));
 
 
-                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition()));
+                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId()));
 
                 break;
             case 22:
@@ -325,36 +339,145 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
     }
-
+    SpannableString spanString2;
     private void getIconLinkShow(CircleBean item, TextView msg) {
-        //正文里link判断 并装换
-        String content = "测试http://www.baidu.com 测测https://www.qq.com/再来一个 https://china.nba.com";
-        //判断内容是否中link
-        String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
-        Matcher matcher = Pattern.compile(regex).matcher(content);
-        int size = matcher.groupCount();
-
-        Map<String,String> map = new HashMap<>();
-        while (matcher.find()){
-            int start =  matcher.start();
-            int end = matcher.end();
-            KLog.d("tag","start " + start + " end " + end);
-            KLog.d("tag"," matcher.group() " +  matcher.group());
-            map.put(matcher.group(),matcher.group());
+        String content = item.getBlog();
+        String icon = "[icon]";
+        //获取链接
+        int size  =  item.getPcLinks().size();
+        if(size >  0){
+            for (int k = 0; k < size; k++) {
+                content = content.replace(item.getPcLinks().get(k),icon);
+            }
         }
-        KLog.d("tag","link条数 " + map.size());
+        KLog.d("tag","最新字符串是 " + content);
 
+        String newContent = content;
+
+        //保存字符的开始下标
+        List<Integer> pos = new ArrayList<>();
+
+        int c = 0;
+        for(int i = 0; i< size ;i++ ){
+            c = content.indexOf(icon,c);
+            //如果有S这样的子串。则C的值不是-1.
+            if(c != -1){
+                //记录找到字符的索引
+                pos.add(c);
+                //记录字符串后面的
+                c = c + 1;
+                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
+                //将剩下的字符冲洗取出放到str中
+                //content = content.substring(c + 1);
+            }
+            else {
+                //i++;
+                KLog.d("tag","没有");
+                break;
+            }
+        }
 
         //拼接链接
         Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_link_http);
         drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
-        //居中对齐imageSpan
-        CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
-        SpannableString spanString2 = new SpannableString("icon");
-        spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        msg.append(spanString2);
+
+        spanString2 = new SpannableString(newContent);
+
+        int w;
+        for (int k = 0; k < size; k++) {
+            w = k;
+            int finalW = w;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    String li = item.getPcLinks().get(finalW);
+                    KLog.d("tag","点击了网页 " + li);
+                    UIHelper.toWebViewActivity(mContext,li);
+                }
+            };
+
+            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
+            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+        //累加的原因找到了，用了append,需要用setText
+        msg.setText(spanString2);
+        //下面语句不写的话，点击clickablespan没效果
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
+
+    private void getTransIconLinkShow(CircleBean.P_blog item, TextView msg) {
+        String content = item.getBlog();
+        String icon = "[icon]";
+        //获取链接
+        int size  =  item.getPcLinks().size();
+        if(size >  0){
+            for (int k = 0; k < size; k++) {
+                content = content.replace(item.getPcLinks().get(k),icon);
+            }
+        }
+        KLog.d("tag","最新字符串是 " + content);
+
+        String newContent = content;
+
+        //保存字符的开始下标
+        List<Integer> pos = new ArrayList<>();
+
+        int c = 0;
+        for(int i = 0; i< size ;i++ ){
+            c = content.indexOf(icon,c);
+            //如果有S这样的子串。则C的值不是-1.
+            if(c != -1){
+                //记录找到字符的索引
+                pos.add(c);
+                //记录字符串后面的
+                c = c + 1;
+                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
+                //将剩下的字符冲洗取出放到str中
+                //content = content.substring(c + 1);
+            }
+            else {
+                //i++;
+                KLog.d("tag","没有");
+                break;
+            }
+        }
+
+        //拼接链接
+        Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_link_http);
+        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+
+        spanString2 = new SpannableString(newContent);
+
+        int w;
+        for (int k = 0; k < size; k++) {
+            w = k;
+            int finalW = w;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    String li = item.getPcLinks().get(finalW);
+                    KLog.d("tag","点击了网页 " + li);
+                    UIHelper.toWebViewActivity(mContext,li);
+                }
+            };
+
+            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
+            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+        //累加的原因找到了，用了append,需要用setText
+        msg.setText(spanString2);
+        //下面语句不写的话，点击clickablespan没效果
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
 
     //通过uid加载布局
     private void getIconType(BaseViewHolder helper, CircleBean item) {

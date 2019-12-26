@@ -186,14 +186,14 @@ public class ActionFragment extends BaseLazyFragment {
             activitiesList();
         },mRecyclerView);
 
-        //相关资料
-        mActionAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-            String aid = mActionAdapter.getData().get(position).getId();
-            if(!TextUtils.isEmpty(aid)){
-                UIHelper.toDataInfoActivity(getActivity(),aid);
-            }
-
-        });
+        //12.26 相关资料 去掉
+//        mActionAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+//            String aid = mActionAdapter.getData().get(position).getId();
+//            if(!TextUtils.isEmpty(aid)){
+//                UIHelper.toDataInfoActivity(getActivity(),aid);
+//            }
+//
+//        });
 
         mActionAdapter.setOnItemClickListener((adapter, view, position) -> {
             //TODO 1活动行 2 文章

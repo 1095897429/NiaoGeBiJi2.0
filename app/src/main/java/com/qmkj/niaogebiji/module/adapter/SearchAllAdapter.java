@@ -112,25 +112,18 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
 
 
     FirstItemNewAdapter mFirstItemNewAdapter;
-    FlashSeacherItemAdapter mFlashSeacherItemAdapter;
-    ActionAdapter mActionAdapter;
     ThingsAdapter mThingsAdapter;
-    ToolRecommentItemAdapter mToolRecommentItemAdapter;
-    CircleSearchAdapter mCircleSearchAdapter;
+    CircleSearchAdapterNew mCircleSearchAdapterNew;
     AuthorAdapter mAuthorAdapter;
     PeopleItemAdapter mPeopleItemAdapter;
     SchoolBookAdapter mSchoolBookAdapter;
     BaiduItemAdapter mBaiduItemAdapter;
-    TestItemAdapter mTestItemAdapter;
 
     LinearLayoutManager talkManager;
     RecyclerView recyclerView;
 
     @Override
     protected void convert(BaseViewHolder helper, MultSearchBean item) {
-
-
-
         //通用数据
         recyclerView = helper.getView(R.id.recycler00);
         //二级
@@ -145,15 +138,19 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
         //查看更多
         helper.addOnClickListener(R.id.toMoreList);
 
+
         switch (helper.getItemViewType()){
 
             case SEACHER_GANHUO:
                 //根据类型添加数据
                 List<RecommendBean.Article_list> temps11 = item.getNewsItemBeanList();
                 List<MultiNewsBean> mAllList = new ArrayList<>();
-
+                //仅数据条数>3条时，展示
                 if(temps11.size() > 3){
                     temps11 = temps11.subList(0,3);
+                    helper.setVisible(R.id.toMoreList,true);
+                }else {
+                    helper.setVisible(R.id.toMoreList, false);
                 }
 
                 MultiNewsBean bean1 ;
@@ -193,6 +190,9 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 List<RecommendBean.Article_list> toolBeanList = item.getThings();
                 if(toolBeanList.size() > 3){
                     toolBeanList = toolBeanList.subList(0,3);
+                    helper.setVisible(R.id.toMoreList,true);
+                }else{
+                    helper.setVisible(R.id.toMoreList,false);
                 }
                 mThingsAdapter = new ThingsAdapter(toolBeanList);
                 recyclerView.setAdapter(mThingsAdapter);
@@ -204,14 +204,33 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 List<CircleBean> circleBeans = item.getCircleBeanList();
                 if(circleBeans.size() > 3){
                     circleBeans = circleBeans.subList(0,3);
+                    helper.setVisible(R.id.toMoreList,true);
+                }else{
+                    helper.setVisible(R.id.toMoreList,false);
                 }
-                List<MultiCircleNewsBean> list1 = StringUtil.setCircleData(circleBeans);
-                mCircleSearchAdapter = new CircleSearchAdapter(list1);
-                recyclerView.setAdapter(mCircleSearchAdapter);
+                int type ;
+                CircleBean temp;
+                List<CircleBean> teList = new ArrayList<>();
+                for (int i = 0; i < circleBeans.size(); i++) {
+                    temp = circleBeans.get(i);
+                    type = StringUtil.getCircleType(temp);
+                    temp = StringUtil.addLinksData(temp);
+                    //如果判断有空数据，则遍历下一个数据
+                    if(100 == type){
+                        continue;
+                    }
+                    temp.setCircleType(type);
+                    teList.add(temp);
+                }
+
+
+                mCircleSearchAdapterNew = new CircleSearchAdapterNew(teList);
+                recyclerView.setAdapter(mCircleSearchAdapterNew);
                 //事件
-                mCircleSearchAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    String blog_id = mCircleSearchAdapter.getData().get(position).getCircleBean().getId();
-//                    UIHelper.toCommentDetailActivity(mContext,blog_id,"1",position);
+                mCircleSearchAdapterNew.setOnItemClickListener((adapter, view, position) -> {
+                    KLog.d("tag","去评论明细页" + position);
+                    String blog_id = mCircleSearchAdapterNew.getData().get(position).getId();
+                    UIHelper.toCommentDetailActivity(mContext,blog_id);
                 });
 
                 break;
@@ -220,6 +239,9 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 List<AuthorBean.Author> authors = item.getAuthorBeanList();
                 if(authors.size() > 3){
                     authors =  authors.subList(0,3);
+                    helper.setVisible(R.id.toMoreList,true);
+                }else {
+                    helper.setVisible(R.id.toMoreList,false);
                 }
                 mAuthorAdapter = new AuthorAdapter(authors);
 
@@ -233,6 +255,9 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 List<RegisterLoginBean.UserInfo> peopleBeans = item.getUserInfos();
                 if(peopleBeans.size() > 3){
                     peopleBeans = peopleBeans.subList(0,3);
+                    helper.setVisible(R.id.toMoreList,true);
+                }else{
+                    helper.setVisible(R.id.toMoreList,false);
                 }
 
                 mPeopleItemAdapter = new PeopleItemAdapter(peopleBeans);
@@ -242,6 +267,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 break;
             case  SEACHER_SCHOOL:
                 helper.setText(R.id.text_name,"课程");
+
                 List<SchoolBean.SchoolBook> schoolBooks = new ArrayList<>();
                 recyclerView = helper.getView(R.id.recycler00);
                 //二级
@@ -263,6 +289,9 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 List<SearchAllBaiduBean.Wiki> wikis  = item.getWikis();
                 if(wikis.size() > 3){
                     wikis =  wikis.subList(0,3);
+                    helper.setVisible(R.id.toMoreList,true);
+                }else{
+                    helper.setVisible(R.id.toMoreList,false);
                 }
                 mBaiduItemAdapter = new BaiduItemAdapter(wikis);
                 recyclerView.setAdapter(mBaiduItemAdapter);

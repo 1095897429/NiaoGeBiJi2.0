@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
 //import com.huawei.android.hms.agent.HMSAgent;
@@ -17,6 +18,7 @@ import com.qmkj.niaogebiji.common.base.ActivityManager;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.utils.ChannelUtil;
+import com.qmkj.niaogebiji.common.utils.MiitHelper;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -46,11 +48,21 @@ public class BaseApp extends Application {
     //Activity管理器
     private ActivityManager mActivityManager;
 
+    public static String oaid;
+
     {
         PlatformConfig.setWeixin(Constant.WXAPPKEY, Constant.WXAPPSECRET);
-        PlatformConfig.setQQZone("100424468", "c7394704798a158208a74ab60104f0ba");
+        PlatformConfig.setQQZone("1109884279", "Ucwj3qXLehg0oxPK");
     }
 
+
+    private MiitHelper.AppIdsUpdater appIdsUpdater = new MiitHelper.AppIdsUpdater() {
+        @Override
+        public void OnIdsAvalid(@NonNull String ids) {
+            Log.e("++++++ids: ", ids);
+            oaid = ids;
+        }
+    };
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -65,6 +77,11 @@ public class BaseApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //获取OAID等设备标识符
+        MiitHelper miitHelper = new MiitHelper(appIdsUpdater);
+        miitHelper.getDeviceIds(getApplicationContext());
+
         KLog.d(TAG,"onCreate");
         initLogger();
         initDataBase();

@@ -129,7 +129,6 @@ public class SearchAllFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<ActiclePeopleBean> response) {
-
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
@@ -501,7 +500,6 @@ public class SearchAllFragment extends BaseLazyFragment {
             mSearchAllAdapter.getData().get(firstPosition).getUserInfos().get(position).setFollow_status(event.getStatus());
             mSearchAllAdapter.notifyItemChanged(firstPosition);
         }
-
 
     }
 

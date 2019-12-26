@@ -10,13 +10,23 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  */
 public class AppointmentBean extends BaseBean {
 
-    private String status;
+    private int status;
 
-    public String getStatus() {
+    private int date;
+
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getDate() {
+        return date;
+    }
+
+    public void setDate(int date) {
+        this.date = date;
     }
 }

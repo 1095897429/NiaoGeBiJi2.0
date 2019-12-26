@@ -37,27 +37,27 @@ public class ActionAdapter extends BaseQuickAdapter<ActionBean.Act_list, BaseVie
 
         String sss = "";
         //截取district
-        if(!TextUtils.isEmpty(item.getDistrict())){
-            if(item.getDistrict().contains("，") || item.getDistrict().contains(",")){
-                String  string = item.getDistrict().replaceAll("，",",");
-                String [] result = string.split(",");
-                if(result != null && result.length > 0){
-                    StringBuilder sb = new StringBuilder();
-                    for (String temp : result) {
-                        sb.append(temp).append("/");
-                    }
-                    sss =  "|" + sb.substring(0,sb.length() - 1);
-                }
-
-            }else{
-                //没有,，直接获取即可
-                sss = "|" + item.getDistrict();
-            }
-        }
+//        if(!TextUtils.isEmpty(item.getDistrict())){
+//            if(item.getDistrict().contains("，") || item.getDistrict().contains(",")){
+//                String  string = item.getDistrict().replaceAll("，",",");
+//                String [] result = string.split(",");
+//                if(result != null && result.length > 0){
+//                    StringBuilder sb = new StringBuilder();
+//                    for (String temp : result) {
+//                        sb.append(temp).append("/");
+//                    }
+//                    sss =  "|" + sb.substring(0,sb.length() - 1);
+//                }
+//
+//            }else{
+//                //没有,，直接获取即可
+//                sss = "|" + item.getDistrict();
+//            }
+//        }
 
 
         if(!TextUtils.isEmpty(item.getTitle())){
-            helper.setText(R.id.content,item.getTitle() + sss);
+            helper.setText(R.id.content,item.getTitle() +  "|"  + item.getLocation());
         }else{
             helper.setText(R.id.content,"");
         }

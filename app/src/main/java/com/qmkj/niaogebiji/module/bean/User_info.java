@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.bean;
 
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
     private String company_name;
     private String position;
     private String auth_com_status;
-    private List<Badge> badges;
+    private ArrayList<Badge> badge;
     public void setName(String name) {
         this.name = name;
     }
@@ -62,15 +63,15 @@ import java.util.List;
         return auth_com_status;
     }
 
-    public List<Badge> getBadges() {
-        return badges;
+    public ArrayList<Badge> getBadge() {
+        return badge;
     }
 
-    public void setBadges(List<Badge> badges) {
-        this.badges = badges;
+    public void setBadge(ArrayList<Badge> badge) {
+        this.badge = badge;
     }
 
-    static public class Badge {
+    static public class Badge extends BaseBean{
 
 
         private String id;

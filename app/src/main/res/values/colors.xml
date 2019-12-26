@@ -76,5 +76,8 @@
 
     <color name="text_blue">#5675A7</color>
 
+    <color name="badge_color">#898EA9</color>
+
+
 
 </resources>

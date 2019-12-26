@@ -44,10 +44,6 @@ public class ReTestCalendaDialog {
 
     private ImageView icon_delete;
 
-
-
-
-
     public ReTestCalendaDialog(Context context){
         this.mContext = context;
         WindowManager windowManager = (WindowManager) context.getSystemService(Context

@@ -67,7 +67,8 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-20
  * 描述: 动态方式加载布局
- * 1.android 调用 js  参数 --  编辑徽章完成调用方法名 finish
+ * 1.vip界面
+ * 2.
  */
 public class WebViewActivity extends BaseActivity {
 
@@ -245,14 +246,12 @@ public class WebViewActivity extends BaseActivity {
                     if("toArticleDetail".equals(result)){
                         UIHelper.toNewsDetailActivity(WebViewActivity.this,id);
                     }else if("toHome".equals(result)){
-                        //去文章首页
-//                        UIHelper.toHomeActivity(WebViewActivity.this,0);
-
+                        //去文章首页干货 -- ok
+                        UIHelper.toHomeActivity(WebViewActivity.this,0);
                     }else if("toKnow".equals(result)){
                         KLog.d("tag","线程名称 " + Thread.currentThread().getName() + "");
-                        //去更懂你
+                        //去更懂你 -- ok
                         runOnUiThread(() -> getProfession());
-
                     }else if("toConfirmOk".equals(result)){
                         // id 1 职业认证成功(回主界面不刷新)  id 2  审核认证成功(回主界面刷新)
 
@@ -278,16 +277,16 @@ public class WebViewActivity extends BaseActivity {
                                 //去文章详情页
                                 UIHelper.toNewsDetailActivity(WebViewActivity.this,relatedid);
                             }else if("2".equals(type)){
-                                UIHelper.toCommentDetailActivity(WebViewActivity.this,relatedid,0,0);
+                                UIHelper.toCommentDetailActivity(WebViewActivity.this,relatedid);
                                 //圈子一级评论
                             }else if("3".equals(type)){
                                 //圈子二级评论
-                                UIHelper.toCommentDetailActivity(WebViewActivity.this,relatedid,0,0);
+                                UIHelper.toCommentDetailActivity(WebViewActivity.this,relatedid);
                             }
                         }
                     }else if("toActivityDetail".equals(result)){
                         //发布 去圈子明细
-                        UIHelper.toCommentDetailActivity(WebViewActivity.this,id,0,0);
+                        UIHelper.toCommentDetailActivity(WebViewActivity.this,id);
 
                     }else if("shareActivity".equals(result)){
                         ArrayList<String> ins = new ArrayList<>();

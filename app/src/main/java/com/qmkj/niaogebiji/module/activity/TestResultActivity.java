@@ -25,6 +25,7 @@ import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 
 import java.util.concurrent.ExecutorService;
@@ -50,8 +51,17 @@ public class TestResultActivity extends BaseActivity {
     @BindView(R.id.iv_right)
     ImageView iv_right;
 
+    @BindView(R.id.icon_tag)
+    ImageView icon_tag;
+
+
+
     @BindView(R.id.test_grade)
     TextView test_grade;
+
+    @BindView(R.id.content)
+    TextView content;
+
 
     private SchoolBean.SchoolTest mSchoolTest;
 
@@ -67,6 +77,11 @@ public class TestResultActivity extends BaseActivity {
         mExecutorService = Executors.newFixedThreadPool(2);
         mSchoolTest = (SchoolBean.SchoolTest) getIntent().getExtras().getSerializable("bean");
         tv_title.setText(mSchoolTest.getTitle());
+
+        content.setText("恭喜你获得鸟哥笔记认证『" + mSchoolTest.getTitle() + "』称号。特授予你" + mSchoolTest.getTitle() +
+                   "认证徽章，已帮你自动佩戴上" );
+
+        ImageUtil.load(this,mSchoolTest.getIcon(),icon_tag);
 
         if(!TextUtils.isEmpty(mSchoolTest.getTime()) && !TextUtils.isEmpty(mSchoolTest.getQuestion_num())){
             long result = Long.parseLong(mSchoolTest.getTime()) * Long.parseLong(mSchoolTest.getQuestion_num());
@@ -164,7 +179,7 @@ public class TestResultActivity extends BaseActivity {
                 case 2:
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
-                    StringUtil.copyLink(mSchoolTest.getShare_url());
+                    StringUtil.copyLink(mSchoolTest.getTitle() + "\n" +  mSchoolTest.getShare_url());
                     break;
                 default:
             }
@@ -182,7 +197,7 @@ public class TestResultActivity extends BaseActivity {
             bean.setImg(mSchoolTest.getIcon());
             bean.setLink(mSchoolTest.getShare_url());
             bean.setTitle(hege + mSchoolTest.getTitle());
-            bean.setContent(mins + "通过鸟哥笔记认证"  + mSchoolTest.getTitle() + "测试，你也来试试");
+            bean.setContent(test_grade.getText().toString() + "分" + "通过鸟哥笔记认证"  + mSchoolTest.getTitle() + "测试，你也来试试");
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
             }else{

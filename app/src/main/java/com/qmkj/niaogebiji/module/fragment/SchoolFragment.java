@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.fragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -66,6 +68,9 @@ public class SchoolFragment extends BaseLazyFragment {
     RecyclerView recycler22;
 
 
+
+    @BindView(R.id.search_first)
+    TextView search_first;
 
 
     SchoolBaiduAdapter mSchoolBaiduAdapter;
@@ -144,6 +149,11 @@ public class SchoolFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+
+        if(!TextUtils.isEmpty(Constant.firstSearchName)){
+            search_first.setHint(Constant.firstSearchName);
+        }
+
         showWaitingDialog();
         initSamrtLayout();
         initLayout0();

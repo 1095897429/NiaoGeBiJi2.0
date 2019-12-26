@@ -10,7 +10,7 @@
         android:id="@+id/iv_empty"
         android:layout_width="144dp"
         android:layout_height="144dp"
-        android:background="@mipmap/icon_no_nothing" />
+        android:src="@mipmap/icon_no_nothing" />
 
     <TextView
         android:id="@+id/tv_empty"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:textSize="13sp"
-        android:text="除了我，谁还会理你╭(╯^╰)╮"
+        android:text=""
         android:textColor="#A6A6A6" />
 
 </LinearLayout>

@@ -17,6 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:id="@+id/is_test_ok"
+                android:src="@mipmap/icon_test_already_1"
+                android:layout_width="73dp"
+                android:layout_height="66dp" />
+
             <FrameLayout
                 android:background="@drawable/bg_corners_10_gray"
                 android:id="@+id/part1111"
@@ -71,7 +79,7 @@
 
                 <TextView
                     android:id="@+id/test_count"
-                    android:text="1.2w人已测"
+                    android:text=""
                     android:textSize="13sp"
                     android:textColor="@color/setting_text_default"
                     android:layout_width="wrap_content"
@@ -79,13 +87,7 @@
 
             </LinearLayout>
             
-            <ImageView
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:id="@+id/is_test_ok"
-                android:src="@mipmap/icon_test_already"
-                android:layout_width="73dp"
-                android:layout_height="66dp" />
+
             
         </RelativeLayout>
 

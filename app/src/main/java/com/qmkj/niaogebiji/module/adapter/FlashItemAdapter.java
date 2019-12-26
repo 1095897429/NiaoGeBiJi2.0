@@ -6,6 +6,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -14,9 +17,11 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
 
 import java.util.List;
 
@@ -61,13 +66,22 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
 
         //拼接链接
         if(!TextUtils.isEmpty(mBean.getLink())){
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    KLog.d("tag","点击了快讯link " + mBean.getLink());
+                    UIHelper.toWebViewActivity(mContext,mBean.getLink());
+                }
+            };
             Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_flash_link_pic);
             drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
             //居中对齐imageSpan
             CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
             SpannableString spanString2 = new SpannableString("icon");
             spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan,0,4,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             ((TextView)helper.getView(R.id.content_des)).append(spanString2);
+            ((TextView)helper.getView(R.id.content_des)).setMovementMethod(LinkMovementMethod.getInstance());
         }else{
 
         }

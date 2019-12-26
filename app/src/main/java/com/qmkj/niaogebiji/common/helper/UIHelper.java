@@ -23,6 +23,7 @@ import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.InviteActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
+import com.qmkj.niaogebiji.module.activity.MessageDetailActivity;
 import com.qmkj.niaogebiji.module.activity.ModifyUserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.MoreKnowYouActivity;
 import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
@@ -51,6 +52,7 @@ import com.qmkj.niaogebiji.module.activity.WebViewActivityWithStep;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
+import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
@@ -68,8 +70,10 @@ public class UIHelper {
     /** 打开主界面 */
     public static void toHomeActivity(Context ctx, int type) {
         Intent intent = new Intent(ctx, HomeActivity.class);
-//        intent.putExtra("type",type);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Bundle bundle = new Bundle();
+        intent.putExtra("type",type);
+        bundle.putInt("type",type);
+        intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
 
@@ -209,19 +213,18 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
-    public static void toWebViewActivityWithOnLayout(Context ctx,String link) {
+    public static void toWebViewActivityWithOnLayout(Context ctx, String link,String fromWhere) {
         Intent intent = new Intent(ctx, WebViewActivityWithLayout.class);
         intent.putExtra("link",link);
+        intent.putExtra("fromWhere",fromWhere);
         ctx.startActivity(intent);
     }
 
-    /** 打开评论详情界面 */
-    public static void toCommentDetailActivity(Context ctx,String blog_id,int layoutType,int position) {
+    /** 打开评论详情界面  position 放在set方法中传入*/
+    public static void toCommentDetailActivity(Context ctx,String blog_id) {
         Intent intent = new Intent(ctx, CommentDetailActivity.class);
         Bundle  bundle = new Bundle();
-        bundle.putInt("clickPostion",position);
         bundle.putString("blog_id",blog_id);
-        bundle.putInt("layoutType",layoutType);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
@@ -424,6 +427,16 @@ public class UIHelper {
         bundle.putString("content",content);
         intent.putExtras(bundle);
         ctx.startActivityForResult(intent,SettingActivity.COMMON_MODIFY);
+    }
+
+
+    /** 打开消息中心明细 */
+    public static void toMsgDetailActivity(Context ctx, MessageAllH5Bean.MessageH5Bean bean) {
+        Intent intent = new Intent(ctx, MessageDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("bean",bean);
+        intent.putExtras(bundle);
+        ctx.startActivity(intent);
     }
 
 

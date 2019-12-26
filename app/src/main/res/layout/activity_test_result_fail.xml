@@ -67,13 +67,24 @@
                             android:layout_height="wrap_content" />
 
                         <Space
-                            android:layout_width="4dp"
+                            android:layout_width="5dp"
                             android:layout_height="match_parent" />
 
                         <TextView
                             android:id="@+id/test_grade"
                             android:text="100"
                             android:textSize="42sp"
+                            android:textColor="#FF5040"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Space
+                            android:layout_width="5dp"
+                            android:layout_height="match_parent" />
+
+                        <TextView
+                            android:text="分"
+                            android:textSize="13sp"
                             android:textColor="#FF5040"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
@@ -131,6 +142,7 @@
                 <TextView
                     android:id="@+id/toLook"
                     android:text="查看题库"
+                    android:visibility="gone"
                     android:gravity="center"
                     android:textSize="17sp"
                     android:background="@drawable/bg_corners_12_gray"

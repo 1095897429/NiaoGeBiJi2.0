@@ -24,6 +24,7 @@ import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IncomeBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.bean.InvitePosterBean;
 import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
 import com.qmkj.niaogebiji.module.bean.MoringAllBean;
 import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
@@ -666,7 +667,26 @@ public interface ApiEncryptService{
     Observable<HttpResponse<BadegsAllBean>> getBadgeList(@Field("params") String param);
 
 
+    /* 2019.12.26  消息已读*/
+    @FormUrlEncoded
+    @POST("app/my/readInformation")
+    Observable<HttpResponse> readInformation(@Field("params") String param);
 
+    /* 2019.12.27  我的邀请列表接口*/
+    @FormUrlEncoded
+    @POST("app/my/invitedUserList")
+    Observable<HttpResponse> invitedUserList(@Field("params") String param);
+
+    /* 2019.12.27  根据wifi标志获取有相同标志记录用户*/
+    @FormUrlEncoded
+    @POST("app/init/getFriends")
+    Observable<HttpResponse> getFriends(@Field("params") String param);
+
+
+    /* 2019.12.27  获取用户分享用的信息 主要为海报图片*/
+    @FormUrlEncoded
+    @POST("app/my/getshareinfo")
+    Observable<HttpResponse<InvitePosterBean>> getshareinfo(@Field("params") String param);
 
 
 

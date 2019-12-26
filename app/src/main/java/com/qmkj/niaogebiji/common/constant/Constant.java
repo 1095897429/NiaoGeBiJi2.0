@@ -31,8 +31,8 @@ public class Constant {
 
 
     //测试环境
-//    public static final String TEST_URL = "http://apph5.xy860.com/";
-    public static final String TEST_URL = "http://192.168.14.70:8080/";
+    public static final String TEST_URL = "http://apph5.xy860.com/";
+//    public static final String TEST_URL = "http://192.168.14.70:8080/";
 
 
     //正式环境
@@ -40,6 +40,9 @@ public class Constant {
 
     //文章分享
     public static boolean isActicleShare = false;
+
+    //搜索文章热搜第一个词
+    public static String firstSearchName;
 
 
 

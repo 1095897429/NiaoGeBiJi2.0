@@ -83,7 +83,7 @@ public class VertifyCodeActivity extends BaseActivity {
     Disposable disposable;
 
     //倒计时60秒,单位是秒
-    public static int COUNT = 2;
+    public static int COUNT = 60;
 
     private String phone;
 
@@ -126,9 +126,12 @@ public class VertifyCodeActivity extends BaseActivity {
         phone_text.setText("已向" + phone +" 发送验证码");
 
 
+        //
+
+
         String oldPhone = SPUtils.getInstance().getString("oldPhone","");
-        if(!phone.equals(oldPhone)){
-            sendverifycode("");
+        if(!oldPhone.equals(phone)){
+            sendverifycode("1");
             SPUtils.getInstance().put("lastTime",-1);
         }else{
             initRxTime();
@@ -306,6 +309,8 @@ public class VertifyCodeActivity extends BaseActivity {
                        }else if("30001".equals(return_code)){
                            showFobbidUserDialog();
                        }
+                        SPUtils.getInstance().put("oldPhone","");
+                        KeyboardUtils.hideSoftInput(et);
                     }
                 });
     }

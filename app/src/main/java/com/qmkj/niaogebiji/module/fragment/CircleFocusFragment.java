@@ -163,7 +163,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
                                 KLog.d("tag","设置空布局");
                                 //第一次加载无数据
                                 ll_empty.setVisibility(View.VISIBLE);
-                                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("没有推荐圈子数据~");
+                                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("您还没有关注的圈子用户哦，快去推荐看看吧！");
                                 mRecyclerView.setVisibility(View.GONE);
 
                             }
@@ -210,6 +210,25 @@ public class CircleFocusFragment extends BaseLazyFragment {
             for (int i = 0; i < list.size(); i++) {
                 temp  = list.get(i);
                 type = StringUtil.getCircleType(temp);
+
+                if(type == CircleRecommentAdapterNew.YC_TEXT){
+                    StringBuilder sb = new StringBuilder();
+                    ArrayList<String> pcLinks = new ArrayList<>();
+                    //在文本的基础上，再检查一下有无link
+                    String regex =  "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
+                    Matcher matcher = Pattern.compile(regex).matcher(temp.getBlog());
+                    while (matcher.find()){
+                        int start =  matcher.start();
+                        int end = matcher.end();
+                        KLog.d("tag","start " + start + " end " + end);
+                        KLog.d("tag"," matcher.group() " +  matcher.group());
+                        sb.append(start).append(":").append(end).append(":");
+                        pcLinks.add(matcher.group());
+
+                    }
+                    temp.setPcLinks(pcLinks);
+                }
+
                 //如果判断有空数据，则遍历下一个数据
                 if(100 == type){
                     continue;

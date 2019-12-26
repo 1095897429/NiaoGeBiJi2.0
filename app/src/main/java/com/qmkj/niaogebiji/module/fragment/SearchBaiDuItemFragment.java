@@ -1,22 +1,16 @@
 package com.qmkj.niaogebiji.module.fragment;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.SPUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -25,31 +19,15 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.adapter.BaiduItemAdapter;
-import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
-import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
-import com.qmkj.niaogebiji.module.bean.AuthorBean;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
-import com.qmkj.niaogebiji.module.bean.MultSearchBean;
-import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
-import com.qmkj.niaogebiji.module.bean.NewsItemBean;
-import com.qmkj.niaogebiji.module.bean.ProBean;
-import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
-import com.qmkj.niaogebiji.module.bean.SearchAllAuthorBean;
 import com.qmkj.niaogebiji.module.bean.SearchAllBaiduBean;
-import com.qmkj.niaogebiji.module.bean.SearchAllPeopleBean;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
-import com.qmkj.niaogebiji.module.event.toActionEvent;
-import com.qmkj.niaogebiji.module.event.toFlashEvent;
-import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -57,10 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -191,9 +167,8 @@ public class SearchBaiDuItemFragment extends BaseLazyFragment {
         adapter.disableLoadMoreIfNotFullPage();
         //TODO 预加载，当列表滑动到倒数第N个Item的时候(默认是1)回调onLoadMoreRequested方法
         adapter.setPreLoadNumber(2);
-        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
+        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty_no_search,null);
         adapter.setEmptyView(emptyView);
-        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有数据");
     }
 
 
@@ -239,10 +214,18 @@ public class SearchBaiDuItemFragment extends BaseLazyFragment {
 
         mBaiduItemAdapter.bindToRecyclerView(mRecyclerView);
 
+
+        mBaiduItemAdapter.setOnLoadMoreListener(() -> {
+            ++page;
+            searchWiki();
+        });
+
         mBaiduItemAdapter.setOnItemClickListener((adapter, view, position) -> {
 
 
-            KLog.d("tag","去webview");
+            String link = StringUtil.getLink("wikidetail/" + mBaiduItemAdapter.getData().get(position).getWord_id());
+
+            UIHelper.toWebViewActivityWithOnStep(getActivity(),link);
         });
     }
 

@@ -34,7 +34,6 @@
 
                     <ImageView
                         android:id="@+id/icon_tag"
-                        android:src="@mipmap/icon_result_1"
                         android:layout_width="126dp"
                         android:layout_height="126dp" />
 
@@ -67,7 +66,7 @@
 
                         <TextView
                             android:id="@+id/test_grade"
-                            android:text="100"
+                            android:text=""
                             android:textSize="42sp"
                             android:textColor="@color/white"
                             android:layout_width="wrap_content"
@@ -86,7 +85,7 @@
 
 
                 <TextView
-                    android:text="恭喜你获得鸟哥笔记认证『初级ASO优化师』称号。特授予你初级ASO优化师认证徽章，已帮你自动佩戴上"
+                    android:id="@+id/content"
                     android:textSize="13sp"
                     android:textColor="@color/white"
                     android:layout_width="311dp"

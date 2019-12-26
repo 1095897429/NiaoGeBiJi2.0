@@ -241,7 +241,7 @@ public class CommentDetailActivity extends BaseActivity {
     String commentString;
     //一级集合
     private List<CommentBeanNew> mCommentBeanNewList = new ArrayList<>();
-    //布局类型
+    //布局类型 请求数据后加载
     private int layoutType;
     //评论的是 一级评论还是二级评论
     private boolean isSecondComment = false;
@@ -913,11 +913,11 @@ public class CommentDetailActivity extends BaseActivity {
         }
 
         //徽章
-        if(null != mCircleBean.getUser_info().getBadges() && !mCircleBean.getUser_info().getBadges().isEmpty()){
+        if(null != mCircleBean.getUser_info().getBadge() && !mCircleBean.getUser_info().getBadge().isEmpty()){
             ll_badge.removeAllViews();
-            for (int i = 0; i < mCircleBean.getUser_info().getBadges().size(); i++) {
+            for (int i = 0; i < mCircleBean.getUser_info().getBadge().size(); i++) {
                 ImageView imageView = new ImageView(mContext);
-                String icon = mCircleBean.getUser_info().getBadges().get(i).getIcon();
+                String icon = mCircleBean.getUser_info().getBadge().get(i).getIcon();
                 if(!TextUtils.isEmpty(icon)){
                     ImageUtil.load(mContext,icon,imageView);
                 }

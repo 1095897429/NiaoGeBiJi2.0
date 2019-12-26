@@ -87,9 +87,6 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -422,15 +419,22 @@ public class CircleMakeActivity extends BaseActivity {
     private void sendData() {
         if(null == mTempMsgBean){
             mTempMsgBean = new TempMsgBean();
-            mTempMsgBean.setContent(mString);
-            mTempMsgBean.setLinkTitle(linkTitle);
-            mTempMsgBean.setLinkurl(linkurl);
-            if(!mediaFiles.isEmpty()){
-                mTempMsgBean.setImgPath(mediaFiles);
-            }
-            if(!pathList.isEmpty()){
-                mTempMsgBean.setImgPath2(pathList);
-            }
+        }
+
+        mTempMsgBean.setContent(mEditText.getText().toString().trim());
+        //12.26 link 在点击删除按钮时清空了
+        mTempMsgBean.setLinkTitle(linkTitle);
+        mTempMsgBean.setLinkurl(linkurl);
+        //
+        if(!mediaFiles.isEmpty()){
+            mTempMsgBean.setImgPath(mediaFiles);
+        }else{
+            mTempMsgBean.setImgPath(null);
+        }
+        if(!pathList.isEmpty()){
+            mTempMsgBean.setImgPath2(pathList);
+        }else{
+            mTempMsgBean.setImgPath2(null);
         }
     }
 

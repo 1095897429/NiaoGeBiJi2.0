@@ -24,7 +24,7 @@ import java.util.List;
 public class SchoolBookAdapter extends BaseQuickAdapter<SchoolBean.SchoolBook, BaseViewHolder> {
 
     public SchoolBookAdapter(@Nullable List<SchoolBean.SchoolBook> data) {
-        super(R.layout.school_book_item,data);
+        super(R.layout.school_book_item_1,data);
     }
 
     @Override

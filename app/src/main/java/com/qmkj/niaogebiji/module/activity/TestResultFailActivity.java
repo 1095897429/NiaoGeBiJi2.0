@@ -2,8 +2,6 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,14 +24,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
-import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
-import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.dialog.ReTestCalendaDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -45,15 +41,12 @@ import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
-import com.qmkj.niaogebiji.module.bean.TestNewBean;
-import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
@@ -120,7 +113,6 @@ public class TestResultFailActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toLook:
-                ToastUtils.showShort("h5 跳转题库");
                 break;
             case R.id.iv_right:
                 showShareDialog();
@@ -152,12 +144,12 @@ public class TestResultFailActivity extends BaseActivity {
 
                         // 状态值 0之前没有预约过 1已预约过，但还没到预约时间 2可以参加预约考试
                         AppointmentBean temp = httpResponse.getReturn_data();
-
-                        if("0".equals(temp.getStatus())){
+                        if(0 == temp.getStatus()){
                             showReTestCalendar();
-                        }else if("1".equals(temp.getStatus())){
-                            ToastUtils.showShort("已预约过，请不要重复预约");
-                        }else if("2".equals(temp.getStatus())){
+                        }else if(1 == temp.getStatus()){
+                            int time = temp.getDate();
+                            ToastUtils.showShort("你在近期参加过该测试。如需重考请在" + TimeUtils.millis2String(time*1000L,"yyyy年MM月dd日") + "再来参加");
+                        }else if(2 == temp.getStatus()){
                             UIHelper.toTestDetailActivity(TestResultFailActivity.this,mSchoolTest);
                         }
 
@@ -186,7 +178,6 @@ public class TestResultFailActivity extends BaseActivity {
                     mExecutorService.submit(() -> {
                         bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
                         mHandler.sendEmptyMessage(0x111);
-
                     });
 
                     break;
@@ -200,8 +191,7 @@ public class TestResultFailActivity extends BaseActivity {
                 case 2:
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
-
-                    StringUtil.copyLink(mSchoolTest.getShare_url());
+                    StringUtil.copyLink(mSchoolTest.getTitle() + "\n" +  mSchoolTest.getShare_url());
 
                     break;
                 default:
@@ -220,7 +210,7 @@ public class TestResultFailActivity extends BaseActivity {
             bean.setImg(mSchoolTest.getIcon());
             bean.setLink(mSchoolTest.getShare_url());
             bean.setTitle("测一测：" + mSchoolTest.getTitle());
-            bean.setContent(mins + "看看你能否成为合格的" +  "\n" + mSchoolTest.getTitle());
+            bean.setContent(mins + "看看你能否成为合格的"  + mSchoolTest.getTitle());
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
             }else{
@@ -244,7 +234,7 @@ public class TestResultFailActivity extends BaseActivity {
     private static String CALENDARS_ACCOUNT_TYPE = "com.android.exchange";
     private static String CALENDARS_DISPLAY_NAME = "测试账户";
     private static int ONE_HOUR =  60 * 1000;
-    private static int TWO_DAT =   48 * 60 * 1000 ;
+    private static int TWO_DAT =   48 * 60 * 1000  * 1000 ;
 
     //获取事件ID
     private long eventId;
@@ -253,19 +243,53 @@ public class TestResultFailActivity extends BaseActivity {
     public void showReTestSubmit(){
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(this).builder();
         iosAlertDialog.setPositiveButton("重考", v -> {
-//            reserveTest();
-            showReTestCalendar();
+            reserveTest();
         }).setNegativeButton("再想想", v -> {
         }).setMsg("要进行重考吗？").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
 
+    //获取默认值
+    public void getDDD(){
+        //获取当前时间
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int date = c.get(Calendar.DATE);
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        int second = c.get(Calendar.SECOND);
+        KLog.d("tag",year + "/" + (month+1) + "/" + date + " " +hour + ":" +minute + ":" + second);
+    }
+
+    //可以对每个时间域单独修改
+    public String getDDD222(){
+        //获取当前时间
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int date = c.get(Calendar.DATE) + 3;
+        int hour = 9;
+        int minute = 0;
+        int second = 0;
+        KLog.d("tag",year + "/" + (month+1) + "/" + date + " " +hour + ":" +minute + ":" + second);
+        return  year + "/" + (month+1) + "/" + date + " " +hour + ":" +minute + ":" + second;
+    }
 
 
     //13考试  --- 16号可以考试
+    String endTime;
+    long endLongTime;
     public void showReTestCalendar(){
-        String time = TimeAppUtils.getOldDate(3);
-        String result = "最近的可重考时间为"+ time +"。请及时参加考试~";
+
+
+        endTime = TimeAppUtils.getOldDate(3);
+
+        endLongTime = TimeUtils.string2Millis(getDDD222(),"yyyy/MM/dd HH:mm:ss");
+
+        getDDD222();
+
+        String result = "最近的可重考时间为"+ endTime +"。请及时参加考试~";
 
         final ReTestCalendaDialog iosAlertDialog = new ReTestCalendaDialog(this).builder();
         iosAlertDialog.setTitle(result).setPositiveButton("帮我添加到日历", v -> {
@@ -275,7 +299,6 @@ public class TestResultFailActivity extends BaseActivity {
                 toNext();
             }else{
                 ActivityCompat.requestPermissions(this, permissions, 100);
-
             }
 
         }).setMsg("您已预约重考！").setCancelable(false).setCanceledOnTouchOutside(false);
@@ -306,7 +329,7 @@ public class TestResultFailActivity extends BaseActivity {
 
 
     private void toNext(){
-        addCalendarEvent(this,mSchoolTest.getTitle(),mSchoolTest.getDesc(),System.currentTimeMillis());
+        addCalendarEvent(this,mSchoolTest.getTitle(),mSchoolTest.getDesc(),System.currentTimeMillis(),endLongTime);
     }
 
 
@@ -379,7 +402,7 @@ public class TestResultFailActivity extends BaseActivity {
 
 
     //添加日历事件、日程
-    public  void addCalendarEvent(Context context,String title, String description, long beginTime){
+    public  void addCalendarEvent(Context context,String title, String description, long beginTime,long endTime){
         // 获取日历账户的id
         int calId = checkAndAddCalendarAccount(context);
         if (calId < 0) {
@@ -407,10 +430,14 @@ public class TestResultFailActivity extends BaseActivity {
         mCalendar.setTimeInMillis(beginTime);
         long start = mCalendar.getTime().getTime();
         //设置终止时间
-        mCalendar.setTimeInMillis(start + TWO_DAT);
+        mCalendar.setTimeInMillis(start);
         long end = mCalendar.getTime().getTime();
 
+        end = endTime;
+
+
         KLog.d("tag","结束时间 " + TimeAppUtils.timeStamp2Date(end,""));
+        KLog.d("tag","结束时间1 " + TimeAppUtils.timeStamp2Date(endLongTime,""));
         event.put(CalendarContract.Events.DTSTART, start);
         event.put(CalendarContract.Events.DTEND, end);
         //设置有闹钟提醒

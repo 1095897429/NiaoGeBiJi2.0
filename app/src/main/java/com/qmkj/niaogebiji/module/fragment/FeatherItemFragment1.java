@@ -31,6 +31,7 @@ import com.qmkj.niaogebiji.module.bean.NewPointTaskBean;
 import com.qmkj.niaogebiji.module.bean.NewUserTaskBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.FeatherEvent;
+import com.qmkj.niaogebiji.module.event.ShowSignRedPointEvent;
 import com.qmkj.niaogebiji.module.event.UserFeatherEvent;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -562,6 +563,9 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
                         mFeatherItemAdapter.notifyItemChanged(0);
                         //签到成功展示弹框
                         showFeatherDialog();
+
+                        //发送事件取消首页的红点
+                        EventBus.getDefault().post(new ShowSignRedPointEvent("1"));
 
                     }
 

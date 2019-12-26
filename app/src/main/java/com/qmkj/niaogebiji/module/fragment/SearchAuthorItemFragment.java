@@ -167,9 +167,8 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
         adapter.disableLoadMoreIfNotFullPage();
         //TODO 预加载，当列表滑动到倒数第N个Item的时候(默认是1)回调onLoadMoreRequested方法
         adapter.setPreLoadNumber(2);
-        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty,null);
+        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty_no_search,null);
         adapter.setEmptyView(emptyView);
-        ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("没有数据");
     }
 
 
@@ -224,6 +223,12 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
     private void initEvent() {
 
         mAuthorAdapter.bindToRecyclerView(mRecyclerView);
+
+        mAuthorAdapter.setOnLoadMoreListener(() -> {
+            ++page;
+            searchAuthor();
+        });
+
 
     }
 

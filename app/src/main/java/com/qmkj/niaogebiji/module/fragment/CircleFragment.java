@@ -7,18 +7,16 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -50,9 +48,8 @@ import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
-import com.qmkj.niaogebiji.module.db.DBManager;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
-import com.qmkj.niaogebiji.module.event.SendingCircleEvent;
+import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -71,8 +68,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -108,6 +103,14 @@ public class CircleFragment extends BaseLazyFragment {
     @BindView(R.id.part33)
     RelativeLayout part33;
 
+
+    @BindView(R.id.red_point)
+    TextView red_point;
+
+
+    @BindView(R.id.search_first)
+    TextView search_first;
+
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<String> mTitls = new ArrayList<>();
@@ -138,6 +141,10 @@ public class CircleFragment extends BaseLazyFragment {
         String [] titile = new String[]{"关注","推荐"};
         pager_title.initData(titile,mViewPager,1);
         mExecutorService = Executors.newFixedThreadPool(2);
+
+        if(!TextUtils.isEmpty(Constant.firstSearchName)){
+            search_first.setHint(Constant.firstSearchName);
+        }
     }
 
 
@@ -211,7 +218,7 @@ public class CircleFragment extends BaseLazyFragment {
 //                ll_circle_send.startAnimation(translateAnimation);
 
 //                initAnim();
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"));
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
                 break;
             case R.id.icon_send_msg:
                 if(StringUtil.isFastClick()){
@@ -520,7 +527,7 @@ public class CircleFragment extends BaseLazyFragment {
         animator = ValueAnimator.ofInt(0, 100).setDuration(1000);
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(valueAnimator -> {
-            KLog.d("tag",valueAnimator.getAnimatedValue() + "");
+//            KLog.d("tag",valueAnimator.getAnimatedValue() + "");
             view.setProgress((Integer) valueAnimator.getAnimatedValue());
         });
         animator.addListener(new AnimatorListenerAdapter() {
@@ -702,6 +709,15 @@ public class CircleFragment extends BaseLazyFragment {
         iosAlertDialog.show();
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowRedPointEvent(ShowRedPointEvent event){
+        if("1".equals( event.getIs_red())){
+            red_point.setVisibility(View.VISIBLE);
+        }else if("0".equals(event.getIs_red())){
+            red_point.setVisibility(View.GONE);
+        }
+    }
 
 
 }

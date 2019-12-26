@@ -159,7 +159,8 @@ public class TranspondActivity extends BaseActivity {
         KeyboardUtils.hideSoftInput(mEditText);
         switch (view.getId()){
             case R.id.acticle_part:
-                UIHelper.toCommentDetailActivity(this,mCircleBean.getId(),mCircleBean.getCircleType(),mCircleBean.getSlefPosition());
+//                UIHelper.toCommentDetailActivity(this,mCircleBean.getId(),mCircleBean.getSlefPosition());
+                UIHelper.toCommentDetailActivity(this,mCircleBean.getId());
                 break;
             case R.id.send:
                 if(mString.length() > num){

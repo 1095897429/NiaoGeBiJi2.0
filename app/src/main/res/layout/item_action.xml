@@ -27,7 +27,7 @@
         app:layout_constraintTop_toBottomOf="@+id/img_1"
         app:layout_constraintLeft_toLeftOf="parent"
         android:textColor="@color/text_first_color"
-        android:text="流量攻坚战 • 鸟哥笔记APP推广公开课|北京/广州/杭州/上海"
+        android:text=""
         android:maxLines="2"
         android:ellipsize="end"
         android:layout_width="match_parent"

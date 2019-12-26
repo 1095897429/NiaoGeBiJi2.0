@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -65,6 +66,9 @@ public class ModifyUserInfoActivity extends BaseActivity {
         content = getIntent().getExtras().getString("content");
         type = getIntent().getExtras().getString("type");
         if("nickname".equals(type)){
+            //动态设置长度
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
+
             tv_title.setText("昵称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
@@ -114,6 +118,16 @@ public class ModifyUserInfoActivity extends BaseActivity {
                 if(s.toString().length() > 500){
                     Log.d("tag","输入的字数过多");
                 }
+
+
+                if("nickname".equals(type)){
+                    //英文单词占1个字符  表情占2个字符 中文占1个字符
+                    if(s.toString().length() > 8){
+                        ToastUtils.showShort("昵称过长");
+                        return;
+                    }
+                }
+
                 if(s.toString().length() == 0){
                     submit.setEnabled(false);
                     submit.setSelected(false);

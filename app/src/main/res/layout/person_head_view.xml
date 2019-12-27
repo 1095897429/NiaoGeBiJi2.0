@@ -22,7 +22,7 @@
                 android:id="@+id/head_icon"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:src="@mipmap/icon_fenxiang"/>
+                android:src="@mipmap/icon_head_default"/>
 
 
             <LinearLayout
@@ -51,7 +51,6 @@
                             android:ellipsize="end"
                             android:lineSpacingExtra="2dp"
                             android:maxLines="1"
-                            android:text=""
                             android:textColor="@color/text_first_color"
                             android:textSize="22sp" />
 
@@ -66,13 +65,13 @@
 
                 <TextView
                     android:id="@+id/sender_tag"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
                     android:maxLines="1"
-                    android:text=""
+                    android:text="职业"
                     android:textColor="@color/text_first_color"
                     android:textSize="13sp" />
 
@@ -92,10 +91,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="10dp" />
 
-
-
                 <LinearLayout
                     android:id="@+id/ll_badge"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
@@ -174,7 +172,7 @@
 
                         <TextView
                             android:id="@+id/medal_count"
-                            android:text=""
+                            android:text="0"
                             android:layout_gravity="left"
                             android:textSize="18sp"
                             android:textColor="@color/text_first_color"

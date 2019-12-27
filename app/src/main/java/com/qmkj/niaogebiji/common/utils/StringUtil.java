@@ -21,7 +21,11 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,6 +48,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -57,6 +62,7 @@ import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -192,6 +198,7 @@ public class StringUtil {
         cm.setPrimaryClip(mClipData);
         ToastUtils.setGravity(Gravity.BOTTOM, 0, SizeUtils.dp2px(40));
         ToastUtils.showShort("链接复制成功！");
+        
     }
 
     /** 判定操作 */
@@ -557,6 +564,165 @@ public class StringUtil {
     }
 
 
+    public static CircleBean addTransLinksData(CircleBean temp) {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> pcLinks = new ArrayList<>();
+        //在文本的基础上，再检查一下有无link
+        String regex =  "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
+        Matcher matcher = Pattern.compile(regex).matcher(temp.getP_blog().getBlog());
+        while (matcher.find()){
+            int start =  matcher.start();
+            int end = matcher.end();
+            KLog.d("tag","start " + start + " end " + end);
+            KLog.d("tag"," matcher.group() " +  matcher.group());
+            sb.append(start).append(":").append(end).append(":");
+            pcLinks.add(matcher.group());
+        }
+        temp.getP_blog().setPcLinks(pcLinks);
+        return temp;
+    }
+
+
+
+    public static void getIconLinkShow(CircleBean item, Activity activity,TextView msg) {
+        SpannableString spanString2;
+        String content = item.getBlog() + "";
+        String icon = "[icon]";
+        //获取链接
+        int size  =  item.getPcLinks().size();
+        if(size >  0){
+            for (int k = 0; k < size; k++) {
+                content = content.replace(item.getPcLinks().get(k),icon);
+            }
+        }
+        //如果没有匹配，则还是原来的字符串
+        String newContent = content;
+        //保存字符的开始下标
+        List<Integer> pos = new ArrayList<>();
+        int c = 0;
+        for(int i = 0; i< size ;i++ ){
+            c = content.indexOf(icon,c);
+            //如果有S这样的子串。则C的值不是-1.
+            if(c != -1){
+                //记录找到字符的索引
+                pos.add(c);
+                //记录字符串后面的
+                c = c + 1;
+                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
+                //将剩下的字符冲洗取出放到str中
+                //content = content.substring(c + 1);
+            }
+            else {
+                //i++;
+                KLog.d("tag","没有");
+                break;
+            }
+        }
+
+        //拼接链接
+        Drawable drawableLink = activity.getResources().getDrawable(R.mipmap.icon_link_http);
+        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+
+        spanString2 = new SpannableString(newContent);
+
+        int w;
+        for (int k = 0; k < size; k++) {
+            w = k;
+            int finalW = w;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    String li = item.getPcLinks().get(finalW);
+                    UIHelper.toWebViewActivity(activity,li);
+                }
+            };
+
+            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
+            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+        //累加的原因找到了，用了append,需要用setText
+        msg.setText(spanString2);
+        //下面语句不写的话，点击clickablespan没效果
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
+    public static void getTransIconLinkShow(CircleBean.P_blog item, Activity activity,TextView msg) {
+        SpannableString spanString2;
+        String content = item.getBlog();
+        String icon = "[icon]";
+        //获取链接
+        int size  =  item.getPcLinks().size();
+        if(size >  0){
+            for (int k = 0; k < size; k++) {
+                content = content.replace(item.getPcLinks().get(k),icon);
+            }
+        }
+        KLog.d("tag","最新字符串是 " + content);
+
+        String newContent = content;
+
+        //保存字符的开始下标
+        List<Integer> pos = new ArrayList<>();
+
+        int c = 0;
+        for(int i = 0; i< size ;i++ ){
+            c = content.indexOf(icon,c);
+            //如果有S这样的子串。则C的值不是-1.
+            if(c != -1){
+                //记录找到字符的索引
+                pos.add(c);
+                //记录字符串后面的
+                c = c + 1;
+                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
+                //将剩下的字符冲洗取出放到str中
+                //content = content.substring(c + 1);
+            }
+            else {
+                //i++;
+                KLog.d("tag","没有");
+                break;
+            }
+        }
+
+        //拼接链接
+        Drawable drawableLink = activity.getResources().getDrawable(R.mipmap.icon_link_http);
+        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+
+        spanString2 = new SpannableString(newContent);
+
+        int w;
+        for (int k = 0; k < size; k++) {
+            w = k;
+            int finalW = w;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    String li = item.getPcLinks().get(finalW);
+                    KLog.d("tag","点击了网页 " + li);
+                    UIHelper.toWebViewActivityWithOnLayout(activity,li,"stringUtil");
+                }
+            };
+
+            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
+            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+        //累加的原因找到了，用了append,需要用setText
+        msg.setText(spanString2);
+        //下面语句不写的话，点击clickablespan没效果
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+
+
+
+
 
 
     @SuppressLint("HardwareIds")
@@ -597,6 +763,9 @@ public class StringUtil {
         String androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         return androidID;
     }
+
+
+
 
 
 

@@ -44,6 +44,10 @@ public class Constant {
     //搜索文章热搜第一个词
     public static String firstSearchName;
 
+    //进入vip h5是否刷新 + getUserInfo数据
+    public static boolean isReLoad ;
+
+
 
 
 }

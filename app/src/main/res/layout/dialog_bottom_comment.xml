@@ -33,7 +33,7 @@
                 android:id="@+id/comment_num_second"
                 android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
-                android:text="2条回复"
+                android:text=""
                 android:textStyle="bold"
                 android:textSize="17sp"
                 android:textColor="@color/text_first_color"
@@ -105,7 +105,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
-            android:src="@mipmap/icon_fenxiang"/>
+            android:src="@mipmap/icon_head_default"/>
 
         <TextView
             android:id="@+id/hint_text"

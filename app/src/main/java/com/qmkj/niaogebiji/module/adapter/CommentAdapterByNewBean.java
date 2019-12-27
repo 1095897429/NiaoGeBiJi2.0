@@ -198,7 +198,8 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
                         if(mData.isEmpty()){
                             View view = LayoutInflater.from(mContext).inflate(R.layout.empty_layout,null);
                             ((ImageView)(view.findViewById(R.id.iv_empty))).setImageResource(R.mipmap.icon_empty_comment);
-                            ((TextView)(view.findViewById(R.id.iv_text))).setText("成为第一个评论者～");
+                            ((TextView)(view.findViewById(R.id.tv_empty))).setText("成为第一个评论者～");
+
                             setEmptyView(view);
                         }
                     }

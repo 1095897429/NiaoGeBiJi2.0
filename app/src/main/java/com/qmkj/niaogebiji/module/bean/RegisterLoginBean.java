@@ -83,7 +83,7 @@ public class RegisterLoginBean extends BaseBean {
         //微信登录
         private String wechat_token;
 
-        //邀请信息
+        //邀请路径
         private String invite_url;
 
 
@@ -93,7 +93,16 @@ public class RegisterLoginBean extends BaseBean {
         private String vip_end_date;
         //vip_last_time
         private String vip_last_time;
+        // 1-领取过，0-未领取过
+        private String is_vip;
 
+        public String getIs_vip() {
+            return is_vip;
+        }
+
+        public void setIs_vip(String is_vip) {
+            this.is_vip = is_vip;
+        }
 
         //关注别人状态
         private int follow_status;

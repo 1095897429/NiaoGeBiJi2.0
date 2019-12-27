@@ -51,6 +51,7 @@ import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.bean.UserRankBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
+import com.qmkj.niaogebiji.module.bean.VipBean;
 
 import java.util.List;
 
@@ -687,6 +688,20 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/getshareinfo")
     Observable<HttpResponse<InvitePosterBean>> getshareinfo(@Field("params") String param);
+
+
+    /* 2019.12.27  VIP状态判断 getVipStatus*/
+    @FormUrlEncoded
+    @POST("app/center/getVipStatus")
+    Observable<HttpResponse<VipBean>> getVipStatus(@Field("params") String param);
+
+    /* 2019.12.27  登出*/
+    @FormUrlEncoded
+    @POST("app/my/logout")
+    Observable<HttpResponse> logout(@Field("params") String param);
+
+
+
 
 
 

@@ -67,6 +67,9 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-12-21
  * 描述:圈子新布局
  * 1.设置布局展示的type
+ *
+ * 1.圈子展示 +关注展示
+ * 2.我的个人信息展示 -- 注意position-- 用另一套
  */
 public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, BaseViewHolder> {
 
@@ -85,6 +88,17 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     public  static final int ZF_ACTICLE = 33;
 
     public  static final int ZF_TEXT = 44;
+
+    //用户在个人信息界面删除的时候，position多1(头布局)
+    private boolean  isFromUserInfo ;
+
+    public boolean isFromUserInfo() {
+        return isFromUserInfo;
+    }
+
+    public void setFromUserInfo(boolean fromUserInfo) {
+        isFromUserInfo = fromUserInfo;
+    }
 
     public CircleRecommentAdapterNew(List<CircleBean> data) {
         super(R.layout.first_circle_item_all,data);
@@ -116,17 +130,28 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             sender_name.setText(userInfo.getName());
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
-            sender_tag.setText(userInfo.getCompany_name() + userInfo.getPosition());
+            StringBuilder name =  new StringBuilder() ;
+            name.setLength(0);
+            if(null != userInfo.getCompany_name()){
+                name.append(userInfo.getCompany_name());
+            }
+
+            if(null != userInfo.getPosition()){
+                name.append(userInfo.getPosition());
+            }
+
+            sender_tag.setText(name.toString());
             //是否认证
-            if("1".equals(userInfo.getAuth_com_status())){
+            if("1".equals(userInfo.getAuth_email_status()) || "1".equals(userInfo.getAuth_card_status())){
                 Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
                 sender_tag.setCompoundDrawables(null,null,drawable,null);
             }else{
                 sender_tag.setCompoundDrawables(null,null,null,null);
             }
+
             //头像
-            ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
+            ImageUtil.loadByDefaultHead(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
             //时间
             if(StringUtil.checkNull(item.getCreated_at())){
                 String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getCreated_at()) * 1000L);
@@ -136,6 +161,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             //徽章
             LinearLayout ll_badge = helper.getView(R.id.ll_badge);
             if(userInfo.getBadge() != null && !userInfo.getBadge().isEmpty()){
+                ll_badge.setVisibility(View.VISIBLE);
                 ll_badge.removeAllViews();
                 for (int i = 0; i < userInfo.getBadge().size(); i++) {
                     ImageView imageView = new ImageView(mContext);
@@ -152,6 +178,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     imageView.setLayoutParams(lp);
                     ll_badge.addView(imageView);
                 }
+            }else {
+                ll_badge.removeAllViews();
+                ll_badge.setVisibility(View.GONE);
             }
 
             //点赞数
@@ -163,7 +192,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
             TextView msg = helper.getView(R.id.content);
             if(item.getPcLinks() !=  null && !item.getPcLinks().isEmpty()){
-                getIconLinkShow(item,msg);
+                //对有links的原创文本进行富文本
+                StringUtil.getIconLinkShow(item, (Activity) mContext,msg);
             }else{
                 msg.setText(item.getBlog());
             }
@@ -175,7 +205,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             //转发文本
             TextView trans_msg = helper.getView(R.id.transfer_zf_content);
             if(item.getP_blog().getPcLinks() !=  null && !item.getP_blog().getPcLinks().isEmpty()){
-                getTransIconLinkShow(item.getP_blog(),trans_msg);
+                //对有links的转发文本进行富文本
+                StringUtil.getTransIconLinkShow(item.getP_blog(), (Activity) mContext,trans_msg);
             }else{
                 trans_msg.setText(item.getP_blog().getBlog());
             }
@@ -189,7 +220,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
         //item点击事件
-//        helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId(),item.getCircleType(),helper.getAdapterPosition()));
         helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId()));
 
 
@@ -216,9 +246,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             showShareDialog(item);
         });
 
-        //转发帖子点击
+        //转发帖子点击事件
         helper.getView(R.id.transfer_zf_ll).setOnClickListener(view -> {
-//            UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition());
             UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId());
 
         });
@@ -281,7 +310,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 break;
             case 2:
                 helper.setText(R.id.link_text,item.getLink_title());
-                helper.setText(R.id.link_http,item.getLink());
+                String tempLink   = StringUtil.getDomain(item.getLink());
+                helper.setText(R.id.link_http,tempLink);
                 helper.setImageResource(R.id.link_img,R.mipmap.icon_link_logo);
                 break;
             case 3:
@@ -325,7 +355,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 break;
             case 22:
                 helper.setText(R.id.transfer_link_text,item.getP_blog().getLink_title());
-                helper.setText(R.id.transfer_link_http,item.getP_blog().getLink());
+
+                String tempLink2   = StringUtil.getDomain(item.getP_blog().getLink());
+                helper.setText(R.id.transfer_link_http,tempLink2);
                 helper.setImageResource(R.id.transer_link_img,R.mipmap.icon_link_logo);
                 break;
             case 33:
@@ -475,7 +507,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         msg.setText(spanString2);
         //下面语句不写的话，点击clickablespan没效果
         msg.setMovementMethod(LinkMovementMethod.getInstance());
-
     }
 
 
@@ -624,6 +655,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                             circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) - 1) + "");
                         }
                         notifyItemChanged(position);
+
+
                     }
                 });
     }
@@ -771,7 +804,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        mData.remove(position);
+
+                        if(isFromUserInfo){
+                            mData.remove(position - 1);
+                        }else{
+                            mData.remove(position);
+                        }
+
                         notifyDataSetChanged();
                         Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
                     }

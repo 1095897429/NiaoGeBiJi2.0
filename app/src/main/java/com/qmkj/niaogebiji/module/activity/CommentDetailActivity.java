@@ -38,6 +38,7 @@ import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.dialog.TalkAlertDialog;
+import com.qmkj.niaogebiji.common.dialog.TalkCircleAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -98,7 +99,16 @@ import io.reactivex.schedulers.Schedulers;
  *
  *
  * 1.h5跳转 过来，此时layoutType还不能用。blogdetail请求后再判断
+ *
+ *
+ * 1.circle + comment (重构  2019.12.27)
+ *
+ * 重点
+ * 0.评论的实体叫做CommentBeanNew ，圈子叫做CircleBean
+ * 1.构建临时变量 oneComment ，在每次点击列表item时重新赋值
  */
+
+
 public class CommentDetailActivity extends BaseActivity {
 
     @BindView(R.id.smartRefreshLayout)
@@ -200,6 +210,15 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.part_zf_article)
     LinearLayout part_zf_article;
 
+    @BindView(R.id.transfer_article_img)
+    ImageView transfer_article_img;
+
+
+    @BindView(R.id.transfer_article_title)
+    TextView transfer_article_title;
+
+
+
 
     @BindView(R.id.transfer_link_text)
     TextView transfer_link_text;
@@ -279,24 +298,33 @@ public class CommentDetailActivity extends BaseActivity {
             R.id.part_zf_link,
             R.id.part_yc_link,
             R.id.part1111,
-            R.id.part_yc_acticle
+            R.id.part_yc_acticle,
+            R.id.transfer_zf_ll
     })
     public void clicks(View view){
         switch (view.getId()){
             case R.id.part1111:
+                //头像跳转事件
                 UIHelper.toUserInfoActivity(this,mCircleBean.getUid());
                 break;
             case R.id.part_yc_link:
+                //原创外链跳转事件
                 UIHelper.toWebViewActivity(this,mCircleBean.getLink());
                 break;
             case R.id.part_zf_link:
+                //转发外链点击事件
                 UIHelper.toWebViewActivity(this,mCircleBean.getP_blog().getLink());
                 break;
             case R.id.part_yc_acticle:
+                //原创文章跳转事件
                 UIHelper.toNewsDetailActivity(this,mCircleBean.getArticle_id());
                 break;
             case R.id.iv_back:
                 finish();
+                break;
+            case R.id.transfer_zf_ll:
+                //转发帖子item点击事件
+                UIHelper.toCommentDetailActivity(mContext,mCircleBean.getP_blog().getId());
                 break;
             case R.id.circle_comment:
             case R.id.toComment:
@@ -740,7 +768,7 @@ public class CommentDetailActivity extends BaseActivity {
     /** --------------------------------- 一级评论弹框 ---------------------------------*/
 
     private void showTalkDialogFirstComment(int position,CommentBeanNew beanNew) {
-        final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
+        final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
         talkAlertDialog.setHint(beanNew.getUser_info().getName());
         talkAlertDialog.setTalkLisenter((position1, words) -> {
@@ -806,6 +834,13 @@ public class CommentDetailActivity extends BaseActivity {
                         }
                         setData();
                     }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        if(smartRefreshLayout != null){
+                            smartRefreshLayout.finishRefresh();
+                        }
+                    }
                 });
     }
 
@@ -813,8 +848,10 @@ public class CommentDetailActivity extends BaseActivity {
     @SuppressLint("SetTextI18n")
     private void setData() {
         if(mCircleBean.getUser_info() != null){
-            //正文
-            content.setText(mCircleBean.getBlog());
+            // 检查links同时添加原创文本
+            mCircleBean  =  StringUtil.addLinksData(mCircleBean);
+            // 对有links的原创文本进行富文本
+            StringUtil.getIconLinkShow(mCircleBean,this,content);
             //发帖人
             sender_name.setText(mCircleBean.getUser_info().getName() );
             //头像
@@ -825,13 +862,15 @@ public class CommentDetailActivity extends BaseActivity {
             sender_tag.setText(mCircleBean.getUser_info().getCompany_name() + mCircleBean.getUser_info().getPosition());
 
             //是否认证
-            if("0".equals(mCircleBean.getIs_auth())){
-                sender_name.setCompoundDrawables(null,null,null,null);
-            }else if("1".equals(mCircleBean.getIs_auth())){
+            if("1".equals(mCircleBean.getUser_info().getAuth_email_status())
+                    || "1".equals(mCircleBean.getUser_info().getAuth_card_status())){
                 Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-                sender_name.setCompoundDrawables(null,null,drawable,null);
+                sender_tag.setCompoundDrawables(null,null,drawable,null);
+            }else{
+                sender_tag.setCompoundDrawables(null,null,null,null);
             }
+
 
             //发布时间
             if(StringUtil.checkNull(mCircleBean.getCreated_at())){
@@ -860,6 +899,17 @@ public class CommentDetailActivity extends BaseActivity {
 
         }
 
+        layoutType = StringUtil.getCircleType(mCircleBean);
+
+        mCircleBean  =  StringUtil.addLinksData(mCircleBean);
+
+        if(layoutType == CircleRecommentAdapterNew.ZF_TEXT ||
+                layoutType == CircleRecommentAdapterNew.ZF_PIC ||
+                layoutType == CircleRecommentAdapterNew.ZF_ACTICLE ||
+                layoutType == CircleRecommentAdapterNew.ZF_LINK){
+            mCircleBean = StringUtil.addTransLinksData(mCircleBean);
+        }
+
         if(CircleRecommentAdapterNew.YC_PIC == layoutType){
             part_yc_pic.setVisibility(View.VISIBLE);
             mPicList = mCircleBean.getImages();
@@ -883,14 +933,16 @@ public class CommentDetailActivity extends BaseActivity {
         }else{
 
             if(mCircleBean.getP_blog() != null && mCircleBean.getP_blog().getP_user_info() != null){
-
-                transfer_zf_content.setText(mCircleBean.getP_blog().getBlog());
+                if(mCircleBean.getP_blog().getPcLinks() !=  null && !mCircleBean.getP_blog().getPcLinks().isEmpty()){
+                    StringUtil.getTransIconLinkShow(mCircleBean.getP_blog(),this,transfer_zf_content);
+                }else{
+                    transfer_zf_content.setText(mCircleBean.getP_blog().getBlog());
+                }
 
                 CircleBean.P_user_info temp = mCircleBean.getP_blog().getP_user_info();
                 transfer_zf_author.setText(temp.getName()  + "  " + temp.getCompany_name() +
                         temp.getPosition());
             }
-
 
             transfer_zf_ll.setVisibility(View.VISIBLE);
             if(CircleRecommentAdapterNew.ZF_PIC == layoutType){
@@ -906,9 +958,12 @@ public class CommentDetailActivity extends BaseActivity {
             }else if(CircleRecommentAdapterNew.ZF_LINK == layoutType){
                 part_zf_link.setVisibility(View.VISIBLE);
                 transfer_link_text.setText(mCircleBean.getP_blog().getLink_title());
-                transfer_link_http.setText(mCircleBean.getP_blog().getLink_title());
+                transfer_link_http.setText(mCircleBean.getP_blog().getLink());
             }else if(CircleRecommentAdapterNew.ZF_ACTICLE == layoutType){
                 part_zf_article.setVisibility(View.VISIBLE);
+                transfer_article_title.setText(mCircleBean.getP_blog().getArticle_title());
+                ImageUtil.load(this,mCircleBean.getP_blog().getArticle_image(),transfer_article_img);
+
             }
         }
 
@@ -937,7 +992,7 @@ public class CommentDetailActivity extends BaseActivity {
 
     /** --------------------------------- 二级评论弹框 ---------------------------------*/
     private void showTalkDialogSecondComment(int position,CommentBeanNew beanNew) {
-        final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
+        final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
         talkAlertDialog.setHint(beanNew.getUser_info().getName());
         talkAlertDialog.setTalkLisenter((position1, words) -> {
@@ -951,7 +1006,7 @@ public class CommentDetailActivity extends BaseActivity {
     /** --------------------------------- 动态评论弹框 ---------------------------------*/
 
     private void showTalkDialog(int position,String talkCid,String from,String replyWho) {
-        final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
+        final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
         if(!TextUtils.isEmpty(replyWho)){
             talkAlertDialog.setHint(replyWho);
@@ -987,7 +1042,11 @@ public class CommentDetailActivity extends BaseActivity {
                         //手动添加 评论数1
                         mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) + 1) + "");
                         //更新首页列表中数据
+//                        if(-1 != myPotion){
+//                            EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
+//                        }
                         EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
+
                         //全部回复重定义
                         first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条评论");
                         //顶部帖子重定义

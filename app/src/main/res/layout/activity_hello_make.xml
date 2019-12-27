@@ -101,7 +101,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:background="@null"
-                android:hint="我是张骏杰，上海青墨网络科技有限公司产品经理"
+                android:hint=""
                 android:textColorHint="#AAAEB3"
                 android:textSize="16sp"
                 android:text=""

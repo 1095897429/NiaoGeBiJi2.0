@@ -19,12 +19,32 @@ public class PersonUserInfoBean extends BaseBean {
         private String position;
         //企业认证状态：1-正常，2-未提交，3-审核中，4-未通过
         private String auth_com_status;
+
+        private String auth_email_status;
+        private String auth_card_status;
         private String pro_summary;
         private List<Badges> badge;
         private String blog_count;
         private int fans_count;
         private List<CircleBean> blog_list;
         private int follow_status;
+
+        public String getAuth_email_status() {
+            return auth_email_status;
+        }
+
+        public void setAuth_email_status(String auth_email_status) {
+            this.auth_email_status = auth_email_status;
+        }
+
+        public String getAuth_card_status() {
+            return auth_card_status;
+        }
+
+        public void setAuth_card_status(String auth_card_status) {
+            this.auth_card_status = auth_card_status;
+        }
+
         public void setUid(String uid) {
             this.uid = uid;
         }

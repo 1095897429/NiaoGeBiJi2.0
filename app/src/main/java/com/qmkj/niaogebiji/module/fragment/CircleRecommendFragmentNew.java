@@ -195,15 +195,17 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             CircleBean temp;
             for (int i = 0; i < list.size(); i++) {
                 temp  = list.get(i);
+                //获取类型
                 type = StringUtil.getCircleType(temp);
-
-                addLinksData(temp);
+                //检查links同时添加原创文本
+                StringUtil.addLinksData(temp);
 
                if(type == CircleRecommentAdapterNew.ZF_TEXT ||
                     type == CircleRecommentAdapterNew.ZF_PIC ||
                        type == CircleRecommentAdapterNew.ZF_ACTICLE ||
                             type == CircleRecommentAdapterNew.ZF_LINK){
-                   addTransLinksData(temp);
+                   //检查links同时添加到转发文本
+                   StringUtil.addTransLinksData(temp);
                 }
 
                 //如果判断有空数据，则遍历下一个数据
@@ -300,6 +302,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
         mAllList.clear();
         page = 1;
         recommendBlogList();
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
 //    private void initExitAnim(){
@@ -371,10 +374,16 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBlogPriaseEvent(BlogPriaseEvent event) {
         if(getActivity() != null && mCircleRecommentAdapterNew != null){
-            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setIs_like(event.getStauts());
-            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setLike_num(event.getLikeNum());
-            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setComment_num(event.getCommentNum());
-            mCircleRecommentAdapterNew.notifyItemChanged(event.getPosition());
+//            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setIs_like(event.getStauts());
+//            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setLike_num(event.getLikeNum());
+//            mCircleRecommentAdapterNew.getData().get(event.getPosition()).setComment_num(event.getCommentNum());
+//            mCircleRecommentAdapterNew.notifyItemChanged(event.getPosition());
+
+            page = 1;
+            mAllList.clear();
+            recommendBlogList();
+
+            //TODO 12.17 留给自己的疑问：出现情况是，如果是page = 2的 时候，会变化吗
         }
     }
 }

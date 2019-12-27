@@ -201,8 +201,6 @@ public class CircleMakeActivity extends BaseActivity {
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
                         send.setEnabled(true);
                         send.setTextColor(getResources().getColor(R.color.text_first_color));
-                        //设置光标在最后
-                        mEditText.setSelection(charSequence.toString().length());
 
                         if(mString.length() > num){
                             listentext.setTextColor(Color.parseColor("#FFFF5040"));
@@ -574,7 +572,7 @@ public class CircleMakeActivity extends BaseActivity {
                     break;
                 case CirclePicItemAdapter.NORMAL:
                     KLog.d("tag","预览");
-                    toPicPrewView();
+                    toPicPrewView(position);
                     break;
                     default:
             }
@@ -633,8 +631,9 @@ public class CircleMakeActivity extends BaseActivity {
     }
 
 
-    /** --------------------------------- 图片预览  ---------------------------------*/
-    private void toPicPrewView() {
+    /** --------------------------------- 图片预览  ---------------------------------
+     * @param position*/
+    private void toPicPrewView(int position) {
 
         ArrayList<String> photos = new ArrayList<>();
 
@@ -651,7 +650,7 @@ public class CircleMakeActivity extends BaseActivity {
         Bundle bundle = new Bundle ();
         bundle.putStringArrayList ("imageList", photos);
         bundle.putBoolean("fromNet",true);
-        bundle.putInt("index",0);
+        bundle.putInt("index",position);
         Intent intent = new Intent(this, PicPreviewActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);

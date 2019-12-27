@@ -41,6 +41,9 @@ public class CircleBean extends BaseBean {
         //内容
         private String comment;
 
+        private String comment_class;
+
+
         //兼容搜索
         private String name;
         private String company_name;
@@ -51,6 +54,14 @@ public class CircleBean extends BaseBean {
         private String article_image;
 
         private String avatar;
+
+    public String getComment_class() {
+        return comment_class;
+    }
+
+    public void setComment_class(String comment_class) {
+        this.comment_class = comment_class;
+    }
 
     public String getAvatar() {
         return avatar;

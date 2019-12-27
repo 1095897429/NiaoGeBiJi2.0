@@ -142,12 +142,13 @@
             android:visibility="visible"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:layout_gravity="center|left"
             android:id="@+id/content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:lineSpacingExtra="2dp"
-            android:text=""
+            android:text="2222222"
             android:textColor="@color/text_first_color"
             android:textSize="16sp" />
 
@@ -383,6 +384,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                    <View
+                        android:layout_marginBottom="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/divider_line"/>
+
                     <RelativeLayout
                         android:paddingLeft="8dp"
                         android:paddingRight="16dp"
@@ -447,6 +454,12 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_marginBottom="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/divider_line"/>
 
                     <RelativeLayout
                         android:paddingLeft="8dp"

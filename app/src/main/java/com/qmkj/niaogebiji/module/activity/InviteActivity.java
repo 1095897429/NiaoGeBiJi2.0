@@ -50,6 +50,7 @@ import com.qmkj.niaogebiji.module.bean.InvitePosterBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.widget.AlphaTransformer;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.ScaleTransformer;
 import com.socks.library.KLog;
@@ -154,8 +155,8 @@ public class InviteActivity extends BaseActivity {
 
                         mPosterBean = response.getReturn_data();
                         if(null != mPosterBean){
-                            initDot();
                            initViewPage();
+                           initDot();
                         }
                     }
                 });
@@ -227,15 +228,15 @@ public class InviteActivity extends BaseActivity {
         views = new ArrayList<>();
         for (int i = 0; i < mPosterBean.getPic_list().size(); i++) {
             ImageView imageView = new ImageView(this);
-            imageView.setImageResource(R.mipmap.icon_invite_pic);
+            ImageUtil.load(this,mPosterBean.getPic_list().get(i),imageView);
             views.add(imageView);
         }
 
         viewPagerAdapter = new ViewPagerAdapter(views);
 
         viewpager.setAdapter(viewPagerAdapter);
-        viewpager.setOffscreenPageLimit(3);//设置缓存页数
-        viewpager.setPageMargin(24);//设置页与页之间的间距
+        viewpager.setOffscreenPageLimit(3);
+        viewpager.setPageMargin(24);
         viewpager.setCurrentItem(1);
 //        viewpager.setPageTransformer(false, new ScaleTransformer());
 
@@ -248,7 +249,7 @@ public class InviteActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 // 设置底部小点选中状态
-                for(int i = 0;i<ids.length;i ++){
+                for(int i = 0;i<mPosterBean.getPic_list().size();i ++){
                     if(position==i){
                         dotArray[i].setImageResource(R.mipmap.welcome_long_pic);
                     }else {
@@ -302,12 +303,9 @@ public class InviteActivity extends BaseActivity {
                 }
                 break;
             case R.id.share_link:
-                //获取剪贴板管理器：
-                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                // 创建普通字符型ClipData
-                ClipData mClipData = ClipData.newPlainText("邀请链接", "http://www.baidu.com");
-                // 将ClipData内容放到系统剪贴板里。
-                cm.setPrimaryClip(mClipData);
+                RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
+                StringUtil.copyLink(userInfo.getInvite_url());
+
                 ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                 ToastUtils.showShort("链接复制成功！");
 

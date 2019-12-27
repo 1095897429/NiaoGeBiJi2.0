@@ -57,10 +57,27 @@ public class ImageUtil {
 
         Glide.with(context).load(url).into(imageView);
 
-//        Glide.with(context).load(url).placeholder(R.mipmap.icon_fenxiang).into(imageView);
+
+    }
+
+
+    public static void loadByDefaultHead(Context context, String url, ImageView imageView) {
+
+        if (context == null){
+            return;
+        }
+
+        if (context instanceof Activity) {
+            if (((Activity) context).isFinishing()) {
+                return;
+            }
+        }
+
+        Glide.with(context).load(url).placeholder(R.mipmap.icon_head_default).into(imageView);
 
 
     }
+
 
     public static void load(Context context, int res, ImageView imageView) {
 

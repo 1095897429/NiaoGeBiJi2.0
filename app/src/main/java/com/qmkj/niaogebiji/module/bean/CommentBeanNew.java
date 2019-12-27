@@ -11,7 +11,6 @@ import java.util.List;
  * 描述:评论新实体
  */
 public class CommentBeanNew extends BaseBean {
-
     private String puid;
     private User_info p_user_info;
 

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -216,7 +217,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     public void onSuccess(HttpResponse response) {
                         mData.remove(position - 1);
                         notifyDataSetChanged();
-                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort("删除成功");
                         EventBus.getDefault().post(new RefreshActicleCommentEvent());
                     }
                 });
@@ -247,9 +248,13 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     public void onSuccess(HttpResponse response) {
                         mData.remove(position - 1);
                         notifyDataSetChanged();
-                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showShort("删除成功");
                         //TODO 二级评论 - 删除需通知前一个界面列表中某一条数据
                         EventBus.getDefault().post(new RefreshCircleDetailCommentEvent());
+
+                        if(mOnReduceListener != null){
+                            mOnReduceListener.reduce();
+                        }
 
                     }
                 });
@@ -422,5 +427,17 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
             spannableString = new SpannableString(sb.toString());
         }
         helper.setText(R.id.comment_text,spannableString);
+    }
+
+
+
+    public interface OnReduceListener{
+        void reduce();
+    }
+
+    private OnReduceListener mOnReduceListener;
+
+    public void setOnReduceListener(OnReduceListener onReduceListener) {
+        mOnReduceListener = onReduceListener;
     }
 }

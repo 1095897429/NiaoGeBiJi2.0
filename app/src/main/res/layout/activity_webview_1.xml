@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/status_bar_height"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingRight="16dp"
         android:layout_height="54dp"
         android:visibility="visible">
 
@@ -42,7 +42,6 @@
             android:id="@+id/tv_title"
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/iv_back"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,6 +53,7 @@
             android:textColor="@color/text_news_title_color"
             android:textStyle="bold"
             android:visibility="visible" />
+
 
 
         <TextView
@@ -81,6 +81,20 @@
             android:layout_width="64dp"
             android:layout_height="32dp"
             android:text="完成"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="@color/text_news_title_color"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_zengsong"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_width="64dp"
+            android:layout_height="32dp"
+            android:text="赠送"
             android:ellipsize="end"
             android:singleLine="true"
             android:textSize="16sp"

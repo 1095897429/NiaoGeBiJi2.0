@@ -126,9 +126,6 @@ public class VertifyCodeActivity extends BaseActivity {
         phone_text.setText("已向" + phone +" 发送验证码");
 
 
-        //
-
-
         String oldPhone = SPUtils.getInstance().getString("oldPhone","");
         if(!oldPhone.equals(phone)){
             sendverifycode("1");
@@ -308,13 +305,14 @@ public class VertifyCodeActivity extends BaseActivity {
                            showMesCountOverDialog();
                        }else if("30001".equals(return_code)){
                            showFobbidUserDialog();
+                       }else{
+                           ToastUtils.showShort(errorMes);
                        }
                         SPUtils.getInstance().put("oldPhone","");
                         KeyboardUtils.hideSoftInput(et);
                     }
                 });
     }
-
 
 
     private void initRxTime() {

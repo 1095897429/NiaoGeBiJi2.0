@@ -212,10 +212,10 @@ public class HomeActivity extends BaseActivity {
 
 
         boolean firstGuide = SPUtils.getInstance().getBoolean("isFirstHomeGuide",false);
-        if(!firstGuide){
+        if(false){
             oldguide.setVisibility(View.VISIBLE);
+            guideUser();
         }
-        guideUser();
 
         loginHW();
     }

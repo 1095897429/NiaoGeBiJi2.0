@@ -24,8 +24,10 @@ import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CirclePicItemAdapter;
 import com.qmkj.niaogebiji.module.bean.MulMediaFile;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.event.SayHiEvent;
 import com.qmkj.niaogebiji.module.widget.GlideLoader;
@@ -80,6 +82,7 @@ public class HelloMakeActivity extends BaseActivity {
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
+
         RxTextView
                 .textChanges(mEditText)
                 .subscribe(charSequence -> {
@@ -105,6 +108,19 @@ public class HelloMakeActivity extends BaseActivity {
                         send.setTextColor(Color.parseColor("#CC818386"));
                     }
                 });
+
+
+        //如果自己没认证
+        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+        if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
+            mEditText.setText("我是" + (TextUtils.isEmpty(mUserInfo.getName())?mUserInfo.getNickname():mUserInfo.getName()) + ",  " +
+                    (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                    (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+        }else{
+            mEditText.setHint("打招呼");
+        }
+
+
 
     }
 

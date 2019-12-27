@@ -144,6 +144,8 @@ public class FirstFragment extends BaseLazyFragment {
 
     private List<ToollndexBean> mList = new ArrayList<>();
 
+    private RegisterLoginBean.UserInfo mUserInfo;
+
     @Override
     protected boolean regEvent() {
         return true;
@@ -160,6 +162,16 @@ public class FirstFragment extends BaseLazyFragment {
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!TextUtils.isEmpty(mUserInfo.getVip_last_time()) && !"0".equals(mUserInfo.getVip_last_time())){
+            toVip.setVisibility(View.GONE);
+        }else{
+            toVip.setVisibility(View.VISIBLE);
+        }
+    }
+
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
@@ -167,12 +179,8 @@ public class FirstFragment extends BaseLazyFragment {
 
 
 
-        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
-        if(!TextUtils.isEmpty(mUserInfo.getVip_last_time()) && !"0".equals(mUserInfo.getVip_last_time())){
-            toVip.setVisibility(View.GONE);
-        }else{
-            toVip.setVisibility(View.VISIBLE);
-        }
+        mUserInfo = StringUtil.getUserInfoBean();
+
 
         //今天是否签到了：1-已签到，0-未签到
         if("1".equals(mUserInfo.getSigned_today())){
@@ -417,7 +425,7 @@ public class FirstFragment extends BaseLazyFragment {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toVip:
-                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("vipmember"));
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
                 break;
             case R.id.moring_content:
             case R.id.ll_moring:

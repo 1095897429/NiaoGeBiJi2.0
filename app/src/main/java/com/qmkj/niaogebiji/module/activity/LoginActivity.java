@@ -90,15 +90,6 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-
-        boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
-        if (!isAgree) {
-            showSecretDialog(this);
-        } else {
-
-        }
-
-
         KLog.d("tag", mCheckBox.isChecked() + "");
         initEvent();
 
@@ -113,7 +104,13 @@ public class LoginActivity extends BaseActivity {
 
                     loginType = "phone";
 
-                    UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                    boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
+                    if (!isAgree) {
+                        showSecretDialog(this);
+                    } else {
+                        UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                    }
+
                 });
     }
 
@@ -163,6 +160,7 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick({R.id.weixinLogin, R.id.iv_back})
     public void login(View view) {
+
         switch (view.getId()) {
             case R.id.iv_back:
                 finish();
@@ -176,11 +174,20 @@ public class LoginActivity extends BaseActivity {
                         ToastUtils.showShort("请先同意用户协议与隐私政策");
                         return;
                     }
-                    weChatAuth();
+
+                    boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
+                    if (!isAgree) {
+                        showSecretDialog(this);
+                    } else {
+                        weChatAuth();
+                    }
+
                 } else {
                     ToastUtils.setGravity(Gravity.BOTTOM, 0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("您还未安装微信");
                 }
+
+
 
                 break;
             default:
@@ -275,6 +282,14 @@ public class LoginActivity extends BaseActivity {
                 .setPositiveButton("同意", v -> {
                     SPUtils.getInstance().put("isAgree", true);
                     KLog.d("tag", "同意");
+
+                    if("phone".equals(loginType)){
+                        UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                    }else if("weixin".equals(loginType)){
+                        weChatAuth();
+                    }
+
+
                 })
                 .setNegativeButton("不同意", v -> {
                     KLog.d("tag","弹框内部做了二次弹框的操作");

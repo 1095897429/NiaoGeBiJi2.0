@@ -3,8 +3,10 @@ package com.qmkj.niaogebiji.module.fragment;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -20,6 +22,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.PeopleItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ThingsAdapter;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
@@ -63,6 +66,12 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
+    @BindView(R.id.no_vip_auther)
+    LinearLayout no_vip_auther;
+
+
+
+
     @BindView(R.id.smartRefreshLayout)
     SmartRefreshLayout smartRefreshLayout;
 
@@ -91,7 +100,7 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.common_refresh;
+        return R.layout.activity_search_people;
     }
 
 
@@ -99,6 +108,8 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
+
+        no_vip_auther.setOnClickListener(v -> UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember"));
     }
 
     private void initSamrtLayout() {
@@ -135,6 +146,16 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
+
+
+                        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+
+                        if(!TextUtils.isEmpty(mUserInfo.getVip_last_time()) && !"0".equals(mUserInfo.getVip_last_time())){
+                            no_vip_auther.setVisibility(View.GONE);
+                        }else{
+                            no_vip_auther.setVisibility(View.VISIBLE);
+                        }
+
 
                         SearchAllPeopleBean temp  = response.getReturn_data();
                         if(null != temp){

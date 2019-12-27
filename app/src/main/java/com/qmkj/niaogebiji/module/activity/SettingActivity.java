@@ -204,6 +204,23 @@ public class SettingActivity extends BaseActivity {
         }
     }
 
+    private void logout() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().logout(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        ToastUtils.showShort("用户登出成功");
+                        exit();
+                    }
+                });
+    }
+
     private void resetPersonal() {
         Map<String,String> map = new HashMap<>();
         String result = RetrofitHelper.commonParam(map);
@@ -249,7 +266,7 @@ public class SettingActivity extends BaseActivity {
     public void showExitDialog(){
         final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(SettingActivity.this).builder();
         iosAlertDialog.setPositiveButton("退出", v -> {
-            exit();
+            logout();
         }).setNegativeButton("再想想", v -> {}).setMsg("退出当前账号?").setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }

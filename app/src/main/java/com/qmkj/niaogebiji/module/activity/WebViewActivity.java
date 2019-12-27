@@ -72,7 +72,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class WebViewActivity extends BaseActivity {
 
-
     @BindView(R.id.tv_title)
     TextView tv_title;
 
@@ -245,9 +244,6 @@ public class WebViewActivity extends BaseActivity {
                     //去文章详情
                     if("toArticleDetail".equals(result)){
                         UIHelper.toNewsDetailActivity(WebViewActivity.this,id);
-                    }else if("toHome".equals(result)){
-                        //去文章首页干货 -- ok
-                        UIHelper.toHomeActivity(WebViewActivity.this,0);
                     }else if("toKnow".equals(result)){
                         KLog.d("tag","线程名称 " + Thread.currentThread().getName() + "");
                         //去更懂你 -- ok

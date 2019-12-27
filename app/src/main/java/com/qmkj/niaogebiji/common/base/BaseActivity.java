@@ -510,8 +510,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
 
-        KLog.d("tag","开启的activity 是 " + getClass().getSimpleName() );
-
         super.onResume();
         MobclickAgent.onResume(this);
 

@@ -3,7 +3,9 @@ package com.qmkj.niaogebiji.module.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,6 +24,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -42,6 +45,7 @@ import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.ProfessionEvent;
@@ -79,6 +83,9 @@ import io.reactivex.schedulers.Schedulers;
  *
  *
  * 1.空布局是  activity_empty
+ *
+ * 1.我 ：用户 + 立即认证(公司 + 职位) + 徽章 + 个人简介
+ * 2.别人：用户  + 显示 未认证 或者(公司 + 职位) +  徽章 + 个人简介
  */
 public class UserInfoActivity extends BaseActivity {
 
@@ -136,6 +143,7 @@ public class UserInfoActivity extends BaseActivity {
     private String follow_status;
     //自己的uid
     private String myUid;
+    private RegisterLoginBean.UserInfo  mUserInfo;
     //传递uid
     private String  otherUid;
     //屏蔽 取消屏蔽
@@ -153,6 +161,7 @@ public class UserInfoActivity extends BaseActivity {
 
         otherUid = getIntent().getStringExtra("uid");
         myUid = StringUtil.getMyUid();
+        mUserInfo = StringUtil.getUserInfoBean();
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
 
@@ -160,23 +169,47 @@ public class UserInfoActivity extends BaseActivity {
 
     }
     private void initDifferLogic() {
+
         //自己
         if(myUid.equals(otherUid)){
-            //企业认证状态：1-正常，2-未提交，3-审核中，4-未通过
-            if("1".equals(temp.getAuth_com_status())){
-                sender_name.setVisibility(View.VISIBLE);
-                sender_name.setText(temp.getCompany_name());
+            iv_text.setVisibility(View.VISIBLE);
+            //认证
+            if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                sender_tag.setCompoundDrawables(null,null,drawable,null);
+                sender_tag.setVisibility(View.VISIBLE);
+                senderverticity.setVisibility(View.GONE);
+                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
             }else{
+                sender_tag.setVisibility(View.GONE);
+                senderverticity.setText("立即职业认证，建立人脉");
+                senderverticity.setVisibility(View.VISIBLE);
+                senderverticity.setOnClickListener((v)->{
+                    posCertInit();
+                });
+            }
+        }else{
+            if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                sender_tag.setVisibility(View.VISIBLE);
+                senderverticity.setVisibility(View.GONE);
+                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+            }else{
+                sender_tag.setVisibility(View.GONE);
+                senderverticity.setText("未认证");
                 senderverticity.setVisibility(View.VISIBLE);
             }
-            iv_text.setVisibility(View.VISIBLE);
-        }else{
             //别人
             showStateByFollow(temp.getFollow_status());
             iv_right.setVisibility(View.VISIBLE);
             part3333.setVisibility(View.VISIBLE);
-            sender_tag.setVisibility(View.VISIBLE);
+
         }
+
+
+
     }
 
 
@@ -242,7 +275,19 @@ public class UserInfoActivity extends BaseActivity {
             CircleBean temp;
             for (int i = 0; i < list.size(); i++) {
                 temp  = list.get(i);
+                //获取类型
                 type = StringUtil.getCircleType(temp);
+                //检查links同时添加原创文本
+                StringUtil.addLinksData(temp);
+
+                if(type == CircleRecommentAdapterNew.ZF_TEXT ||
+                        type == CircleRecommentAdapterNew.ZF_PIC ||
+                        type == CircleRecommentAdapterNew.ZF_ACTICLE ||
+                        type == CircleRecommentAdapterNew.ZF_LINK){
+                    //检查links同时添加到转发文本
+                    StringUtil.addTransLinksData(temp);
+                }
+
                 //如果判断有空数据，则遍历下一个数据
                 if(100 == type){
                     continue;
@@ -291,10 +336,7 @@ public class UserInfoActivity extends BaseActivity {
         medal_count.setTypeface(typeface);
         send_article_num.setTypeface(typeface);
 
-        senderverticity.setOnClickListener((v)->{
-           //直接去webview
-            posCertInit();
-        });
+
 
 
         //去关注列表
@@ -312,19 +354,18 @@ public class UserInfoActivity extends BaseActivity {
         //设置逻辑
         initDifferLogic();
 
-
         if(temp != null){
             user_des.setText(temp.getPro_summary());
             sender_name.setText(temp.getName());
             send_article_num.setText(temp.getBlog_count() + "");
 
-            //后台会直接给2.1w还是我们自己算
-            medal_count.setText(temp.getFans_count() + "");
+            medal_count.setText(StringUtil.formatPeopleNum(temp.getFans_count() + ""));
 
-            ImageUtil.load(this,temp.getAvatar(),head_icon);
+            ImageUtil.loadByDefaultHead(this,temp.getAvatar(),head_icon);
 
             //徽章
             if(temp.getBadge() != null && !temp.getBadge().isEmpty()){
+                ll_badge.setVisibility(View.VISIBLE);
                 ll_badge.removeAllViews();
                 for (int i = 0; i < temp.getBadge().size(); i++) {
                     ImageView imageView = new ImageView(mContext);
@@ -341,6 +382,8 @@ public class UserInfoActivity extends BaseActivity {
                     imageView.setLayoutParams(lp);
                     ll_badge.addView(imageView);
                 }
+            }else {
+                ll_badge.setVisibility(View.GONE);
             }
         }
 
@@ -397,6 +440,8 @@ public class UserInfoActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCircleRecommentAdapterNew = new CircleRecommentAdapterNew(mAllList);
+        mCircleRecommentAdapterNew.setFromUserInfo(true);
+        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         mRecyclerView.setAdapter(mCircleRecommentAdapterNew);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(false);
@@ -481,12 +526,18 @@ public class UserInfoActivity extends BaseActivity {
     })
     public void clicks(View view){
         switch (view.getId()){
-
             case R.id.alreadFocus:
                 showCancelFocusDialog();
                 break;
             case R.id.noFocus:
-                showProfessionAuthen();
+                //认证过了直接去打招呼界面
+                if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
+                    UIHelper.toHelloMakeActivity(this);
+                    overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                }else{
+                    showProfessionAuthen();
+                }
+
                 break;
             case R.id.iv_right:
 
@@ -525,6 +576,11 @@ public class UserInfoActivity extends BaseActivity {
                         // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
                         temp.setFollow_status(1);
                         EventBus.getDefault().post(new PeopleFocusEvent(otherUid,1));
+
+                        //重新设置关注数 + 1
+                        medal_count.setText(StringUtil.formatPeopleNum((temp.getFans_count() + 1) + ""));
+
+
                     }
                 });
     }
@@ -533,16 +589,8 @@ public class UserInfoActivity extends BaseActivity {
     public void showProfessionAuthen(){
         final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(this).builder();
         iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
-            KLog.d("tag","h5 去验证 ");
-            //认证h5
-//            String link = Constant.TEST_URL + "professionidsuc";
-//            UIHelper.toWebViewActivity(this,link);
-
-            //人工审核
-            String link = Constant.TEST_URL + "manexaminesuc";
-            UIHelper.toWebViewActivity(this,link);
-
-
+            //和外面的认证一样
+            posCertInit();
         }).setNegativeButton("下次再说", v -> {
             UIHelper.toHelloMakeActivity(this);
             overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
@@ -848,6 +896,9 @@ public class UserInfoActivity extends BaseActivity {
                         // 0未关注 1已关注 2我屏蔽了别人 3别人屏蔽了我
                         temp.setFollow_status(0);
                         EventBus.getDefault().post(new PeopleFocusEvent(otherUid, 0));
+
+                        // - 1
+                        medal_count.setText(StringUtil.formatPeopleNum((temp.getFans_count() - 1) + ""));
                     }
                 });
     }

@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -58,7 +59,7 @@ import udesk.core.UdeskConst;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-11
- * 描述:
+ * 描述:1.用户  + 认证(公司 ) + 徽章
  */
 public class MyFragment extends BaseLazyFragment {
 
@@ -79,8 +80,17 @@ public class MyFragment extends BaseLazyFragment {
     TextView feather_count;
 
 
-    @BindView(R.id.name_tag)
-    TextView name_tag;
+    @BindView(R.id.name_vertify)
+    TextView name_vertify;
+
+    @BindView(R.id.name_author_tag)
+    TextView name_author_tag;
+
+
+
+    @BindView(R.id.toVip)
+    ImageView toVip;
+
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
@@ -261,18 +271,31 @@ public class MyFragment extends BaseLazyFragment {
             }
 
             //认证
-            if("1".equals(mUserInfo.getAuth_com_status())){
-                if(!TextUtils.isEmpty(mUserInfo.getPro_summary())){
-                    name_tag.setText(mUserInfo.getPro_summary());
-                }else{
-                    name_tag.setText("写一句话介绍一下自己");
-                }
+            if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
+                name_author_tag.setVisibility(View.VISIBLE);
+                name_vertify.setVisibility(View.GONE);
+                name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                        (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+
+                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                name_author_tag.setCompoundDrawables(null,null,drawable,null);
+
             }else{
-                name_tag.setText("立即职业认证，建立人脉");
-                name_tag.setTextColor(Color.parseColor("#5675A7"));
+                name_vertify.setVisibility(View.VISIBLE);
+                name_author_tag.setVisibility(View.GONE);
+                name_vertify.setText("立即职业认证，建立人脉");
+                name_vertify.setTextColor(Color.parseColor("#5675A7"));
+                KLog.d("tag","h5 职业认证");
+                name_vertify.setOnClickListener(v -> posCertInit());
             }
 
-
+            //是否领过vip 1-领取过，0-未领取过
+            if("1".equals(mUserInfo.getIs_vip())){
+                toVip.setVisibility(View.GONE);
+            }else{
+                toVip.setVisibility(View.VISIBLE);
+            }
 
             ImageUtil.load(mContext,mUserInfo.getAvatar(),head_icon);
 
@@ -339,6 +362,10 @@ public class MyFragment extends BaseLazyFragment {
 
     private void initEvent() {
         mMyItemAdapter.setOnItemClickListener((adapter, view, position) -> {
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
             switch (position){
                 case 0:
                    UIHelper.toFeatherctivity(getActivity());
@@ -375,14 +402,13 @@ public class MyFragment extends BaseLazyFragment {
 
     @OnClick({R.id.toSet,
                 R.id.about_ll,
-                R.id.head_icon,
                 R.id.ll_badge,
                 R.id.part3333_3,
                 R.id.toExchange,
                 R.id.rl_vip_time,
                 R.id.toVip,
                 R.id.toQue,R.id.advice_ll,
-                R.id.toUserInfo,
+                R.id.head_icon,
                 R.id.rl_newmsg})
     public void clicks(View view){
         switch (view.getId()){
@@ -406,7 +432,7 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.toVip:
             case R.id.rl_vip_time:
-                UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("vipmember"));
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
 
                 break;
             case R.id.toExchange:
@@ -420,10 +446,6 @@ public class MyFragment extends BaseLazyFragment {
             case R.id.ll_badge:
                 KLog.d("tag","去徽章详情页");
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
-                break;
-            case R.id.name_tag:
-                KLog.d("tag","h5 职业认证");
-                posCertInit();
                 break;
             case R.id.toSet:
                 UIHelper.toSettingActivity(getActivity());
@@ -509,7 +531,6 @@ public class MyFragment extends BaseLazyFragment {
                             //1-身份证认证页面，2-邮箱提交页面，3-邮箱已提交页面，4-人工审核提交成功页面，5-人工审核失败页面，6-人工审核通过页面
                             int step = temp.getFlow_step();
                             String link = "";
-
                             if(1 == step){
                                 link = StringUtil.getLink("professionidone");
                             }else if(2 == step){

@@ -19,12 +19,30 @@ import java.util.List;
     private String company_name;
     private String position;
     private String auth_com_status;
+    private String auth_email_status;
+    private String auth_card_status;
     private ArrayList<Badge> badge;
     public void setName(String name) {
         this.name = name;
     }
     public String getName() {
         return name;
+    }
+
+    public String getAuth_email_status() {
+        return auth_email_status;
+    }
+
+    public void setAuth_email_status(String auth_email_status) {
+        this.auth_email_status = auth_email_status;
+    }
+
+    public String getAuth_card_status() {
+        return auth_card_status;
+    }
+
+    public void setAuth_card_status(String auth_card_status) {
+        this.auth_card_status = auth_card_status;
     }
 
     public String getUid() {

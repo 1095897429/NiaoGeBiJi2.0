@@ -203,7 +203,7 @@ public class SecretAlertDialog {
                 }).setNegativeButton("不同意并退出", v -> {
             iosAlertDialog2.dismiss();
             mDialog.dismiss();
-            ((Activity)mContext).finish();
+
         }).setCanceledOnTouchOutside(false);
         iosAlertDialog2.setCancelable(false);
         iosAlertDialog2.show();

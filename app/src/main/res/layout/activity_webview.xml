@@ -43,6 +43,25 @@
             android:visibility="visible" />
 
 
+        <TextView
+            android:id="@+id/tv_right"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="赠送"
+            android:maxLength="20"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="@color/text_news_title_color"
+            android:visibility="gone" />
+
+
+
+
+
 
     </RelativeLayout>
 

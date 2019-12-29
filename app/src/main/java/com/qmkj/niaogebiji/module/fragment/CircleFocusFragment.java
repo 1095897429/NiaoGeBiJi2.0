@@ -87,6 +87,9 @@ public class CircleFocusFragment extends BaseLazyFragment {
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
+
+    private String chainName;
+
     public static CircleFocusFragment getInstance(String chainId, String chainName) {
         CircleFocusFragment newsItemFragment = new CircleFocusFragment();
         Bundle args = new Bundle();
@@ -108,6 +111,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+        chainName = getArguments().getString("chainName");
         initSamrtLayout();
         initLayout();
 
@@ -209,24 +213,17 @@ public class CircleFocusFragment extends BaseLazyFragment {
             CircleBean temp;
             for (int i = 0; i < list.size(); i++) {
                 temp  = list.get(i);
+                //获取类型
                 type = StringUtil.getCircleType(temp);
+                //检查links同时添加原创文本
+                StringUtil.addLinksData(temp);
 
-                if(type == CircleRecommentAdapterNew.YC_TEXT){
-                    StringBuilder sb = new StringBuilder();
-                    ArrayList<String> pcLinks = new ArrayList<>();
-                    //在文本的基础上，再检查一下有无link
-                    String regex =  "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
-                    Matcher matcher = Pattern.compile(regex).matcher(temp.getBlog());
-                    while (matcher.find()){
-                        int start =  matcher.start();
-                        int end = matcher.end();
-                        KLog.d("tag","start " + start + " end " + end);
-                        KLog.d("tag"," matcher.group() " +  matcher.group());
-                        sb.append(start).append(":").append(end).append(":");
-                        pcLinks.add(matcher.group());
-
-                    }
-                    temp.setPcLinks(pcLinks);
+                if(type == CircleRecommentAdapterNew.ZF_TEXT ||
+                        type == CircleRecommentAdapterNew.ZF_PIC ||
+                        type == CircleRecommentAdapterNew.ZF_ACTICLE ||
+                        type == CircleRecommentAdapterNew.ZF_LINK){
+                    //检查links同时添加到转发文本
+                    StringUtil.addTransLinksData(temp);
                 }
 
                 //如果判断有空数据，则遍历下一个数据
@@ -253,6 +250,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCircleRecommentAdapterNew = new CircleRecommentAdapterNew(mAllList);
+        mCircleRecommentAdapterNew.setChainName(chainName);
         mRecyclerView.setAdapter(mCircleRecommentAdapterNew);
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完

@@ -159,8 +159,16 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        otherUid = getIntent().getStringExtra("uid");
+
         myUid = StringUtil.getMyUid();
+
+        otherUid = getIntent().getStringExtra("uid");
+
+        //动态h5跳转过来，uid是不带的，那么肯定是自己
+        if(TextUtils.isEmpty(otherUid)){
+            otherUid = myUid;
+        }
+
         mUserInfo = StringUtil.getUserInfoBean();
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
         initLayout();
@@ -207,13 +215,7 @@ public class UserInfoActivity extends BaseActivity {
             part3333.setVisibility(View.VISIBLE);
 
         }
-
-
-
     }
-
-
-
 
     private void getPersonInfo() {
         Map<String,String> map = new HashMap<>();
@@ -336,19 +338,14 @@ public class UserInfoActivity extends BaseActivity {
         medal_count.setTypeface(typeface);
         send_article_num.setTypeface(typeface);
 
-
-
-
         //去关注列表
         part2222_2.setOnClickListener((v)->{
             if(myUid.equals(otherUid)){
                 UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("myconcern"),"");
             }else{
-                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("hisconcern"),"");
+                UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("hisconcern/"  + otherUid),"");
             }
         });
-
-
 
 
         //设置逻辑
@@ -386,10 +383,6 @@ public class UserInfoActivity extends BaseActivity {
                 ll_badge.setVisibility(View.GONE);
             }
         }
-
-
-
-
 
     }
 
@@ -578,7 +571,8 @@ public class UserInfoActivity extends BaseActivity {
                         EventBus.getDefault().post(new PeopleFocusEvent(otherUid,1));
 
                         //重新设置关注数 + 1
-                        medal_count.setText(StringUtil.formatPeopleNum((temp.getFans_count() + 1) + ""));
+                        temp.setFans_count(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFans_count() + 1) + "")));
+                        medal_count.setText(temp.getFans_count() + "");
 
 
                     }
@@ -742,7 +736,7 @@ public class UserInfoActivity extends BaseActivity {
 
     private void showPopupWindowReport(View view,String content) {
         //加载布局
-        View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_report, null);
+        View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_report_userinfo, null);
         PopupWindow mPopupWindow = new PopupWindow(inflate);
         TextView report = inflate.findViewById(R.id.report);
         TextView share = inflate.findViewById(R.id.share);
@@ -898,7 +892,8 @@ public class UserInfoActivity extends BaseActivity {
                         EventBus.getDefault().post(new PeopleFocusEvent(otherUid, 0));
 
                         // - 1
-                        medal_count.setText(StringUtil.formatPeopleNum((temp.getFans_count() - 1) + ""));
+                        temp.setFans_count(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFans_count() - 1) + "")));
+                        medal_count.setText(temp.getFans_count() + "");
                     }
                 });
     }

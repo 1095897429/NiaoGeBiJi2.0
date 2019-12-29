@@ -32,6 +32,8 @@ import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.SecretAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.socks.library.KLog;
@@ -108,6 +110,7 @@ public class LoginActivity extends BaseActivity {
                     if (!isAgree) {
                         showSecretDialog(this);
                     } else {
+                        MobclickAgentUtils.onEvent(UmengEvent.wxlogin_phone_2_0_0);
                         UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
                     }
 
@@ -167,6 +170,8 @@ public class LoginActivity extends BaseActivity {
                 break;
             case R.id.weixinLogin:
 
+
+
                 if (isWeixinAvilible(this)) {
                     loginType = "weixin";
                     if (!mCheckBox.isChecked()) {
@@ -179,6 +184,7 @@ public class LoginActivity extends BaseActivity {
                     if (!isAgree) {
                         showSecretDialog(this);
                     } else {
+                        MobclickAgentUtils.onEvent(UmengEvent.wxlogin_wx_2_0_0);
                         weChatAuth();
                     }
 
@@ -226,7 +232,6 @@ public class LoginActivity extends BaseActivity {
                 "请联系客服处理").setBold().setCanceledOnTouchOutside(false);
         iosAlertDialog.show();
     }
-
 
     /**
      * --------------------------------- 联系客服  ---------------------------------
@@ -282,16 +287,19 @@ public class LoginActivity extends BaseActivity {
                 .setPositiveButton("同意", v -> {
                     SPUtils.getInstance().put("isAgree", true);
                     KLog.d("tag", "同意");
-
+                    MobclickAgentUtils.onEvent(UmengEvent.agreement_agree_2_0_0);
                     if("phone".equals(loginType)){
+                        MobclickAgentUtils.onEvent(UmengEvent.wxlogin_phone_2_0_0);
                         UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
                     }else if("weixin".equals(loginType)){
+                        MobclickAgentUtils.onEvent(UmengEvent.wxlogin_wx_2_0_0);
                         weChatAuth();
                     }
 
 
                 })
                 .setNegativeButton("不同意", v -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.agreement_disagree_2_0_0);
                     KLog.d("tag","弹框内部做了二次弹框的操作");
                 }).setCanceledOnTouchOutside(false);
         iosAlertDialog.setCancelable(false);

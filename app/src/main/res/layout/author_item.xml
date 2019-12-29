@@ -21,8 +21,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@mipmap/icon_fenxiang"/>
+            android:layout_height="60dp" />
 
 
         <TextView
@@ -42,7 +41,7 @@
             android:textSize="13sp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
-            android:text="欢迎在鸟哥笔记发布文章。投稿请添加微信（ngbjxym）"
+            android:text=""
             app:layout_constraintLeft_toRightOf="@+id/head_icon"
             app:layout_constraintTop_toBottomOf="@+id/author_name"
             android:maxLines="2"

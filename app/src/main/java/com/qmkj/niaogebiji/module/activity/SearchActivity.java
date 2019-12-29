@@ -24,6 +24,8 @@ import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
@@ -102,6 +104,9 @@ public class SearchActivity extends BaseActivity {
 
     private String searchKeyWord;
 
+    //当前显示fragment的索引
+    private int myPosition;
+
     @Override
     protected boolean regEvent() {
         return true;
@@ -142,6 +147,9 @@ public class SearchActivity extends BaseActivity {
 
         et_input.setOnEditorActionListener((v, actionId, event) -> {
             if(actionId == EditorInfo.IME_ACTION_SEARCH){
+
+                MobclickAgentUtils.onEvent(UmengEvent.index_search_searchbtn_2_0_0);
+
                 //点击搜索的时候隐藏软键盘
                 KeyboardUtils.hideSoftInput(et_input);
                 //存储数据库
@@ -155,7 +163,14 @@ public class SearchActivity extends BaseActivity {
                 searchKeyWord = myKeyword;
                 insertToDb(myKeyword);
                 // 在这里写搜索的操作,一般都是网络请求数据
-                toSearch(myKeyword);
+
+                if(myPosition == 0){
+                    toSearch(myKeyword);
+                }else{
+                    EventBus.getDefault().post(new SearchWordEvent(searchKeyWord,myPosition));
+                }
+
+
                 return true;
             }
             return false;
@@ -241,6 +256,9 @@ public class SearchActivity extends BaseActivity {
         if(view.getId() == R.id.cancel){
             finish();
         }else if(view.getId() == R.id.delete_history){
+
+            MobclickAgentUtils.onEvent(UmengEvent.index_search_clear_2_0_0);
+
             showDeleteHistory();
         }
     }
@@ -299,6 +317,9 @@ public class SearchActivity extends BaseActivity {
                 textView.setText(bean.getSearch_string());
                 textView.setOnClickListener(v -> {
                     Log.d("tag","我点击的是: " + bean.getSearch_string() + " 随后存入到数据库中 ");
+
+                    KLog.d("tag","埋点 " + "index_search_hot"  + (position + 1) + "_2_0_0");
+                    MobclickAgentUtils.onEvent("index_search_hot"  + (position + 1) + "_2_0_0");
 
                     //隐藏软键盘
                     KeyboardUtils.hideSoftInput(et_input);
@@ -439,7 +460,38 @@ public class SearchActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
+                myPosition =  position;
                 KLog.d("tag", "选中的位置 ：" + position);
+                switch (position){
+                    case 0:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_all_2_0_0);
+                        break;
+                    case 1:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_index_2_0_0);
+                        break;
+
+                    case 2:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_person_2_0_0);
+                        break;
+
+                    case 3:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_weibo_1_2_0_0);
+                        break;
+
+                    case 4:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_wiki_2_0_0);
+                        break;
+
+                    case 5:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_resource_2_0_0);
+                        break;
+                    case 6:
+                        MobclickAgentUtils.onEvent(UmengEvent.index_search_author_2_0_0);
+                        break;
+
+                    default:
+                }
+
             }
 
             @Override

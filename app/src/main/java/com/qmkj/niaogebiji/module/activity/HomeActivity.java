@@ -29,6 +29,8 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
@@ -306,7 +308,7 @@ public class HomeActivity extends BaseActivity {
         switch (layout.getId()){
 
             case R.id.index_first:
-
+                MobclickAgentUtils.onEvent(UmengEvent.index_tab_2_0_0);
                 hideImageStatus();
                 if(null == mFirstFragment){
                     mFirstFragment = FirstFragment.getInstance();
@@ -327,6 +329,7 @@ public class HomeActivity extends BaseActivity {
 
                 break;
             case R.id.index_flash:
+                MobclickAgentUtils.onEvent(UmengEvent.news_tab_2_0_0);
                 hideImageStatus();
                 if(null == mFlashFragment){
                     mFlashFragment = FlashFragment.getInstance();
@@ -336,7 +339,7 @@ public class HomeActivity extends BaseActivity {
                 switchFragment(mFlashFragment);
                 break;
             case R.id.index_tool:
-
+                MobclickAgentUtils.onEvent(UmengEvent.academy_tab_2_0_0);
                 hideImageStatus();
                 if(null == mSchoolFragment){
                     mSchoolFragment = SchoolFragment.getInstance();
@@ -346,6 +349,7 @@ public class HomeActivity extends BaseActivity {
                 switchFragment(mSchoolFragment);
             break;
             case R.id.index_circle:
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_tab_2_0_0);
                 hideImageStatus();
                 if(null == mCircleFragment){
                     mCircleFragment = CircleFragment.getInstance();
@@ -355,6 +359,7 @@ public class HomeActivity extends BaseActivity {
                 switchFragment(mCircleFragment);
                 break;
             case R.id.index_my:
+                MobclickAgentUtils.onEvent(UmengEvent.i_tab_2_0_0);
                 hideImageStatus();
                 if(null == mMyFragment){
                     mMyFragment = MyFragment.getInstance();

@@ -19,6 +19,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.SchoolBaiduAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolBookAdapter;
@@ -67,6 +69,8 @@ public class SchoolFragment extends BaseLazyFragment {
     @BindView(R.id.recycler22)
     RecyclerView recycler22;
 
+    @BindView(R.id.part3333)
+    LinearLayout part3333;
 
 
     @BindView(R.id.search_first)
@@ -196,7 +200,12 @@ public class SchoolFragment extends BaseLazyFragment {
         if(null != mSchoolBean){
             mSchoolBaiDus.addAll(mSchoolBean.getWiki());
             mSchoolTests.addAll(mSchoolBean.getCates());
-            mSchoolBooks.addAll(mSchoolBean.getCourse());
+            if(mSchoolBean.getCourse() != null && !mSchoolBean.getCourse().isEmpty()){
+                mSchoolBooks.addAll(mSchoolBean.getCourse());
+                part3333.setVisibility(View.VISIBLE);
+            }else{
+                part3333.setVisibility(View.GONE);
+            }
         }
 
         mSchoolBaiduAdapter.setNewData(mSchoolBaiDus);
@@ -207,6 +216,9 @@ public class SchoolFragment extends BaseLazyFragment {
     private void initEvent() {
         mSchoolBaiduAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","根据cateid 去wiki");
+
+            MobclickAgentUtils.onEvent("academy_wiki_wikicate" + (position + 1) +"_2_0_0");
+
             SchoolBean.SchoolBaiDu temp =  mSchoolBaiduAdapter.getData().get(position);
             if(!TextUtils.isEmpty(temp.getCate_id() + "")){
                 String link = StringUtil.getLink("wikilist/" + temp.getCate_id());
@@ -215,6 +227,9 @@ public class SchoolFragment extends BaseLazyFragment {
         });
 
         mSchoolTestAdapter.setOnItemClickListener((adapter, view, position) -> {
+
+            MobclickAgentUtils.onEvent("academy_test_test" + (position + 1) +"_2_0_0");
+
             SchoolBean.SchoolTest temp = mSchoolTestAdapter.getData().get(position);
             SchoolBean.Record tempRecord =  temp.getRecord();
             if("0".equals(tempRecord.getIs_tested() + "")){
@@ -233,6 +248,11 @@ public class SchoolFragment extends BaseLazyFragment {
 
         mSchoolBookAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","去课程");
+
+            if(position <= 9){
+                MobclickAgentUtils.onEvent("academy_newcourse_" + (position + 1) +"_2_0_0");
+            }
+
             String link = mSchoolBookAdapter.getData().get(position).getLink();
             if(!TextUtils.isEmpty(link)){
                 UIHelper.toWebViewActivity(getActivity(),link);
@@ -297,6 +317,7 @@ public class SchoolFragment extends BaseLazyFragment {
                 UIHelper.toSearchActivity(getActivity());
                 break;
             case R.id.tomoretest:
+                MobclickAgentUtils.onEvent(UmengEvent.academy_test_more_2_0_0);
                 UIHelper.toTestListActivity(getActivity());
                 break;
             default:

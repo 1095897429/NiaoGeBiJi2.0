@@ -75,12 +75,12 @@
                 android:orientation="vertical">
 
 
-                <com.qmkj.niaogebiji.common.web.MyWebView
+                <com.qmkj.niaogebiji.module.widget.MyWebView
                     android:id="@+id/webview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                </com.qmkj.niaogebiji.common.web.MyWebView>
+                </com.qmkj.niaogebiji.module.widget.MyWebView>
 
             </LinearLayout>
 

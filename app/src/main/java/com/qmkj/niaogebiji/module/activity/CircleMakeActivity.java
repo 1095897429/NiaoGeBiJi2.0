@@ -52,6 +52,8 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.PicPathHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CirclePicItemAdapter;
@@ -231,6 +233,8 @@ public class CircleMakeActivity extends BaseActivity {
                 UIHelper.toWebViewActivity(this,linkurl);
                 break;
             case R.id.make:
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_pictbtn_2_0_0);
+
                 showHeadDialog();
                 break;
             case R.id.to_delete_link:
@@ -240,10 +244,16 @@ public class CircleMakeActivity extends BaseActivity {
                 setStatus(true);
                 break;
             case R.id.link:
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_linkbtn_2_0_0);
+
                 UIHelper.toCircleMakeAddLinkActivity(this,REQCODE);
                 overridePendingTransition(R.anim.activity_enter_right,R.anim.activity_alpha_exit);
                 break;
             case R.id.send:
+
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_message_onekeybtn_2_0_0);
+
+
                 if(mString.length() > num){
                     ToastUtils.showShort("内容最多输入140字");
                     return;

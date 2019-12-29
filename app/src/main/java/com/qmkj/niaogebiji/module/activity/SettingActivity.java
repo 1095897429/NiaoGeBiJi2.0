@@ -38,6 +38,8 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.Base64;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -163,26 +165,36 @@ public class SettingActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.profile_info:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_profile_2_0_0);
+
                 UIHelper.toModifyUserInfo(this,"profile",mPro_summary);
                 break;
             case R.id.change_nickname:
+                MobclickAgentUtils.onEvent(UmengEvent._setting_nickname_2_0_0);
+
                 UIHelper.toModifyUserInfo(this,"nickname",mNickname);
                 break;
             case R.id.change_resetData:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_reset_2_0_0);
+
                 showReSetDataDialog();
                 break;
             case R.id.change_head:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_icon_2_0_0);
                 showHeadDialog();
                 break;
             case R.id.iv_back:
                 finish();
                 break;
             case R.id.exit_ll:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_logout_2_0_0);
 
                 showExitDialog();
 
                 break;
             case R.id.open_push:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_push_2_0_0);
+
                 boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
                 if(isOpen){
                     open_push.setImageResource(R.mipmap.icon_push_close);
@@ -196,6 +208,7 @@ public class SettingActivity extends BaseActivity {
 
                 break;
             case R.id.change_cache:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_clear_2_0_0);
 
                 showCacheDialog();
 
@@ -283,6 +296,7 @@ public class SettingActivity extends BaseActivity {
 
     private void showHeadDialog(){
         HeadAlertDialog dialog = new HeadAlertDialog(this).builder();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.setOnDialogItemClickListener(position1 -> {
             if(0 == position1){
                 if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)

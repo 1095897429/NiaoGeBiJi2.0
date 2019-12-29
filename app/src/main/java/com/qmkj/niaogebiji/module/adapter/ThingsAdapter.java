@@ -46,11 +46,11 @@ public class ThingsAdapter extends BaseQuickAdapter<RecommendBean.Article_list, 
         TextView point11 = helper.getView(R.id.num_feather_text);
         point.setTypeface(typeface);
         point11.setTypeface(typeface);
-        point.setText(item.getPointnum());
+        point.setText(item.getDl_point());
 
         //学习人数
         TextView num = helper.getView(R.id.tag);
-        num.setText(StringUtil.formatPeopleNum(item.getViewnum()) + "次下载");
+        num.setText(StringUtil.formatPeopleNum(item.getDl_times()) + "次下载");
 
 
         helper.itemView.setOnClickListener(view -> {

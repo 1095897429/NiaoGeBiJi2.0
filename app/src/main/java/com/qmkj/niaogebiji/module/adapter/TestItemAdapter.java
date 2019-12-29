@@ -7,10 +7,12 @@ import androidx.annotation.Nullable;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
 
 import java.util.List;
 
@@ -48,7 +50,15 @@ public class TestItemAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, Bas
         if("0".equals(item.getRecord().getIs_tested() + "")){
             helper.setVisible(R.id.is_test_ok,false);
         }else if("1".equals(item.getRecord().getIs_tested() + "")){
-            helper.setVisible(R.id.is_test_ok,true);
+            //通过显示，不通过不显示
+            if(Integer.parseInt(item.getRecord().getScore()) < Integer.parseInt(item.getPass_score())){
+                KLog.d("tag","不及格");
+                helper.setVisible(R.id.is_test_ok,false);
+            }else{
+                helper.setVisible(R.id.is_test_ok,true);
+            }
+
+
         }
 
     }

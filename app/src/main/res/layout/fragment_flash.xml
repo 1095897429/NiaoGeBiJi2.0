@@ -25,10 +25,6 @@
             android:id="@+id/smartRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <com.scwang.smartrefresh.layout.header.ClassicsHeader
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </com.scwang.smartrefresh.layout.header.ClassicsHeader>
 
             <LinearLayout
                 android:id="@+id/flash_222"
@@ -70,6 +66,9 @@
         </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 
+    <include
+        layout="@layout/dialog_waiting"
+        android:visibility="gone" />
 
 
 

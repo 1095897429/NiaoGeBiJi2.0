@@ -20,6 +20,8 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
@@ -142,6 +144,8 @@ public class TestResultActivity extends BaseActivity {
                 break;
             case R.id.iv_right:
             case R.id.toShare:
+                MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_score_share_2_0_0);
+
                 showShareDialog();
                 break;
             case R.id.toTake:

@@ -61,38 +61,38 @@
                    android:orientation="horizontal"
                    >
 
-                   <ImageView
-                       android:id="@+id/dot1"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center_vertical"
-                       android:src="@mipmap/icon_invite_short_pic"
-                       />
-                   <ImageView
-                       android:id="@+id/dot2"
-                       android:layout_marginLeft="10dp"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center_vertical"
-                       android:src="@mipmap/icon_invite_long_pic"
-                       />
-                   <ImageView
-                       android:id="@+id/dot3"
-                       android:layout_marginLeft="10dp"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center_vertical"
-                       android:src="@mipmap/icon_invite_short_pic"
-                       />
+                   <!--<ImageView-->
+                       <!--android:id="@+id/dot1"-->
+                       <!--android:layout_width="wrap_content"-->
+                       <!--android:layout_height="wrap_content"-->
+                       <!--android:layout_gravity="center_vertical"-->
+                       <!--android:src="@mipmap/icon_invite_short_pic"-->
+                       <!--/>-->
+                   <!--<ImageView-->
+                       <!--android:id="@+id/dot2"-->
+                       <!--android:layout_marginLeft="10dp"-->
+                       <!--android:layout_width="wrap_content"-->
+                       <!--android:layout_height="wrap_content"-->
+                       <!--android:layout_gravity="center_vertical"-->
+                       <!--android:src="@mipmap/icon_invite_long_pic"-->
+                       <!--/>-->
+                   <!--<ImageView-->
+                       <!--android:id="@+id/dot3"-->
+                       <!--android:layout_marginLeft="10dp"-->
+                       <!--android:layout_width="wrap_content"-->
+                       <!--android:layout_height="wrap_content"-->
+                       <!--android:layout_gravity="center_vertical"-->
+                       <!--android:src="@mipmap/icon_invite_short_pic"-->
+                       <!--/>-->
 
-                   <ImageView
-                       android:id="@+id/dot4"
-                       android:layout_marginLeft="10dp"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center_vertical"
-                       android:src="@mipmap/icon_invite_short_pic"
-                       />
+                   <!--<ImageView-->
+                       <!--android:id="@+id/dot4"-->
+                       <!--android:layout_marginLeft="10dp"-->
+                       <!--android:layout_width="wrap_content"-->
+                       <!--android:layout_height="wrap_content"-->
+                       <!--android:layout_gravity="center_vertical"-->
+                       <!--android:src="@mipmap/icon_invite_short_pic"-->
+                       <!--/>-->
                </LinearLayout>
 
                <LinearLayout
@@ -245,15 +245,13 @@
            <LinearLayout
                android:background="@drawable/bg_invite_rule"
                android:id="@+id/part3333"
-               android:paddingLeft="24dp"
-               android:paddingRight="24dp"
-               android:paddingTop="27dp"
                android:layout_width="match_parent"
-               android:layout_height="249dp"
+               android:layout_height="match_parent"
                android:orientation="vertical">
 
                <TextView
                    android:text="邀请规则"
+                   android:visibility="gone"
                    android:textSize="17sp"
                    android:textColor="@color/text_first_color"
                    android:layout_width="wrap_content"

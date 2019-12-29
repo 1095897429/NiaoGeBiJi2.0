@@ -206,8 +206,8 @@ dependencies {
 
     implementation 'com.qiniu:qiniu-android-sdk:7.5.0'
 
-    implementation 'cn.jiguang.sdk:jpush:3.1.1'  // 此处以JPush 3.1.1 版本为例。
-    implementation 'cn.jiguang.sdk:jcore:1.1.9'  // 此处以JCore 1.1.9 版本为例
+    implementation 'cn.jiguang.sdk:jpush:3.5.4'  // 此处以JPush 3.5.4 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:2.2.4'  // 此处以JCore 2.2.4 版本为例。
 
     //huawei
     implementation 'com.huawei.android.hms:push:2.6.3.306'
@@ -218,4 +218,7 @@ dependencies {
 
 
     implementation files('libs/miit_mdid_1.0.10.aar')
+
+    //小米集成指南
+//    implementation 'cn.jiguang.sdk.plugin:xiaomi:3.1.8'
 }

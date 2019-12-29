@@ -24,6 +24,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
@@ -137,6 +139,8 @@ public class MyFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
 
+
+
         getUserInfo();
 
         initLayout();
@@ -234,6 +238,7 @@ public class MyFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
 
                         mUserInfo = response.getReturn_data();
+                        KLog.d("tag","邀请链接是 " + mUserInfo.getInvite_url());
                         if(null != mUserInfo){
                             StringUtil.setUserInfoBean(mUserInfo);
                             setUserInfo();
@@ -287,7 +292,10 @@ public class MyFragment extends BaseLazyFragment {
                 name_vertify.setText("立即职业认证，建立人脉");
                 name_vertify.setTextColor(Color.parseColor("#5675A7"));
                 KLog.d("tag","h5 职业认证");
-                name_vertify.setOnClickListener(v -> posCertInit());
+                name_vertify.setOnClickListener(v -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
+                    posCertInit();
+                });
             }
 
             //是否领过vip 1-领取过，0-未领取过
@@ -368,23 +376,35 @@ public class MyFragment extends BaseLazyFragment {
             }
             switch (position){
                 case 0:
-                   UIHelper.toFeatherctivity(getActivity());
+                    MobclickAgentUtils.onEvent(UmengEvent.i_task_2_0_0);
+
+                    UIHelper.toFeatherctivity(getActivity());
                     break;
                 case 1:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_invite_2_0_0);
+
                     UIHelper.toInviteActivity(getActivity());
                     break;
                 case 2:
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
+                    MobclickAgentUtils.onEvent(UmengEvent.i_badge_2_0_0);
+
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
 
                     break;
                 case 3:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_dynamic_2_0_0);
+
                     UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
 
                     break;
                 case 4:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_indexcollect_2_0_0);
+
                     UIHelper.toMyCollectionListActivity(getActivity());
                     break;
                 case 5:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_quanzifollow_2_0_0);
+
                     UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myconcern"),"");
                     break;
 
@@ -409,37 +429,63 @@ public class MyFragment extends BaseLazyFragment {
                 R.id.toVip,
                 R.id.toQue,R.id.advice_ll,
                 R.id.head_icon,
-                R.id.rl_newmsg})
+                R.id.rl_newmsg,
+                R.id.part2222_2
+    })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.part2222_2:
+                //获得徽章
+                MobclickAgentUtils.onEvent(UmengEvent.i_mybadge_2_0_0);
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
+
+                break;
             case R.id.rl_newmsg:
+                MobclickAgentUtils.onEvent(UmengEvent.i_message_2_0_0);
+
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
                 break;
             case R.id.head_icon:
+                MobclickAgentUtils.onEvent(UmengEvent.i_icon_2_0_0);
 
                 UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
 
                 break;
             case R.id.advice_ll:
+                MobclickAgentUtils.onEvent(UmengEvent.i_feedback_2_0_0);
+
                 toUDesk();
                 break;
             case R.id.toQue:
-                UIHelper.toLoginActivity(getActivity());
-                ToastUtils.showShort("h5 页面");
+                MobclickAgentUtils.onEvent(UmengEvent.i_question_2_0_0);
+
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("questions"),"questions");
                 break;
             case R.id.about_ll:
+                MobclickAgentUtils.onEvent(UmengEvent.i_about_2_0_0);
+
                 UIHelper.toAboutUsActivity(getActivity());
                 break;
             case R.id.toVip:
+                MobclickAgentUtils.onEvent(UmengEvent.i_vip_ad_2_0_0);
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
+
+                break;
             case R.id.rl_vip_time:
+                MobclickAgentUtils.onEvent(UmengEvent.i_vip_2_0_0);
+                MobclickAgentUtils.onEvent(UmengEvent.i_renewal_2_0_0);
+
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
 
                 break;
             case R.id.toExchange:
+                MobclickAgentUtils.onEvent(UmengEvent.i_exchange_2_0_0);
                 KLog.d("tag","去羽毛商城");
                 UIHelper.toFeatherProductListActivity(getActivity());
                 break;
             case R.id.part3333_3:
+                MobclickAgentUtils.onEvent(UmengEvent.i_myfeather_2_0_0);
+
                 KLog.d("tag","去羽毛任务");
                 UIHelper.toFeatherctivity(getActivity());
                 break;
@@ -448,6 +494,8 @@ public class MyFragment extends BaseLazyFragment {
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
                 break;
             case R.id.toSet:
+                MobclickAgentUtils.onEvent(UmengEvent.i_setting_2_0_0);
+
                 UIHelper.toSettingActivity(getActivity());
                 break;
 

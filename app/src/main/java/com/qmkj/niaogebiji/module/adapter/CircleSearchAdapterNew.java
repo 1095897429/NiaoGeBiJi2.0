@@ -103,8 +103,10 @@ public class CircleSearchAdapterNew extends BaseQuickAdapter<CircleBean, BaseVie
             TextView sender_name = helper.getView(R.id.sender_name);
             sender_name.setText(item.getName());
             //职位
+            //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
-            sender_tag.setText(item.getCompany_name() + item.getPosition());
+            sender_tag.setText( (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
+                (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
             //是否认证
             if("1".equals(item.getIs_auth())){
                 Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);

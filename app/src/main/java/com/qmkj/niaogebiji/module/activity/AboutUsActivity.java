@@ -23,6 +23,8 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.AppUpdateUtilNew;
 import com.qmkj.niaogebiji.common.utils.ChannelUtil;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -72,14 +74,20 @@ public class AboutUsActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.rl_hezuo:
                 copy("niaogibiji");
+                MobclickAgentUtils.onEvent(UmengEvent.i_about_coop_2_0_0);
+
                 getWechatApi();
                 break;
             case R.id.rl_weixin:
+                MobclickAgentUtils.onEvent(UmengEvent.i_about_wx_2_0_0);
+
                 copy("shjf");
                 getWechatApi();
                 break;
             case R.id.rl_version_code:
 //                checkupd();
+                MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
+
                 showUpdateDialog();
                 break;
             case R.id.icon:

@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
@@ -12,17 +13,25 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
+import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
+import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,13 +47,14 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         super(R.layout.item_flash,data);
     }
 
+
     @Override
     protected void convert(BaseViewHolder helper, FlashBulltinBean.BuilltinBean mBean) {
         //设置子View点击事件
         helper.addOnClickListener(R.id.flash_priase)
                 .addOnClickListener(R.id.flash_share).addOnClickListener(R.id.content_des);
 
-        helper.addOnClickListener(R.id.part1111).addOnClickListener(R.id.part2222).addOnClickListener(R.id.part3333);
+        helper.addOnClickListener(R.id.part2222).addOnClickListener(R.id.part3333);
 
         if(helper.getAdapterPosition() == 0){
             helper.setVisible(R.id.sticky_header,false);
@@ -63,6 +73,41 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         ((TextView)helper.getView(R.id.time)).setTypeface(typeface);
 
 
+        //图片
+        String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+
+
+        //图片
+        String pic_type =  mBean.getPic_type();
+        if("1".equals(pic_type)){
+            helper.setVisible(R.id.ll_part1,true);
+            helper.setVisible(R.id.ll_part2,false);
+            helper.setVisible(R.id.ll_part3,false);
+        }else if("2".equals(pic_type)){
+            helper.setVisible(R.id.ll_part1,false);
+            helper.setVisible(R.id.ll_part2,true);
+            helper.setVisible(R.id.ll_part3,false);
+        }else if("3".equals(pic_type)){
+            helper.setVisible(R.id.ll_part1,false);
+            helper.setVisible(R.id.ll_part2,false);
+            helper.setVisible(R.id.ll_part3,true);
+        }
+
+
+        if("1".equals(pic_type)){
+            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.one_img));
+        }else if("2".equals(pic_type)){
+            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.one_img_1));
+            ImageUtil.load(mContext,mBean.getPic2() + scaleSize,helper.getView(R.id.one_img_2));
+        }else if("3".equals(pic_type)){
+            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.three_img_1));
+            ImageUtil.load(mContext,mBean.getPic2() + scaleSize,helper.getView(R.id.three_img_2));
+            ImageUtil.load(mContext,mBean.getPic3() + scaleSize,helper.getView(R.id.three_img_3));
+        }
+
+
+
+
 
         //拼接链接
         if(!TextUtils.isEmpty(mBean.getLink())){
@@ -76,7 +121,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_flash_link_pic);
             drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
             //居中对齐imageSpan
-            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_flash_link_pic,2);
             SpannableString spanString2 = new SpannableString("icon");
             spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             spanString2.setSpan(clickableSpan,0,4,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -86,14 +131,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
 
         }
 
-        //图片
-        String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
-        if(!TextUtils.isEmpty(mBean.getPic())){
-            helper.setVisible(R.id.flash_img,true);
-            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.flash_img));
-        }else{
-            helper.setVisible(R.id.flash_img,false);
-        }
+
 
 
         //时间

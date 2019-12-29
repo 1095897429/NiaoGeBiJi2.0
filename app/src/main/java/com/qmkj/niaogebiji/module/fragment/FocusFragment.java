@@ -11,6 +11,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -19,6 +20,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -27,12 +30,14 @@ import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -60,8 +65,8 @@ public class FocusFragment extends BaseLazyFragment {
     @BindView(R.id.nestedScrollView)
     NestedScrollView nestedScrollView;
 
-
-    private boolean isShow = false;
+    //是否是最后的文章请求了
+    private boolean isLastActicleRequest;
 
     public static FocusFragment getInstance(String chainId, String chainName) {
         FocusFragment newsItemFragment = new FocusFragment();
@@ -108,7 +113,6 @@ public class FocusFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
                        IndexFocusBean temp = response.getReturn_data();
                         guessYouLikeList = temp.getArticle_list();
-                        isShow = true;
                         listGuessLogic();
                     }
                 });
@@ -160,6 +164,8 @@ public class FocusFragment extends BaseLazyFragment {
         mFocusAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()) {
                 case R.id.more_author:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_follow_more_2_0_0);
+
                     UIHelper.toAuthorListActivity(getActivity());
                     break;
                 default:
@@ -183,13 +189,22 @@ public class FocusFragment extends BaseLazyFragment {
         nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
                 //加载更多,请求过猜你喜欢不加载了
-                if(!isShow){
-                    ++page;
-                    KLog.d("tag","加载更多");
-                    getIndexArticle();
-                }
+                ++page;
+                KLog.d("tag","加载更多");
+                getIndexArticle();
             }
         });
+
+
+        mFocusAdapter.setOnLoadMoreListener(() -> {
+            if(!isLastActicleRequest){
+                ++page;
+                KLog.d("tag","加载更多");
+                getIndexArticle();
+            }else{
+                mFocusAdapter.loadMoreEnd();
+            }
+         },mRecyclerView);
 
 
     }
@@ -203,6 +218,7 @@ public class FocusFragment extends BaseLazyFragment {
             mAllList.clear();
             page = 1;
             getIndexArticle();
+            EventBus.getDefault().post(new toRefreshMoringEvent());
         });
 
     }
@@ -230,18 +246,23 @@ public class FocusFragment extends BaseLazyFragment {
                             mArticle_lists = mIndexFocusBean.getArticle_list();
                             //第一次时进入 未关注文章时，请求猜你喜欢接口
                             if(mArticle_lists.isEmpty() && page == 1){
+                                isLastActicleRequest = true;
                                 mAuther_lists =  mIndexFocusBean.getAuther_list();
                                 setAuthorListByAlone();
                                 recommendAuthorArticleList();
                             }else{
                                 if(1 == page){
+                                    isLastActicleRequest = false;
                                     mAuther_lists =  mIndexFocusBean.getAuther_list();
                                     if(mArticle_lists != null && !mArticle_lists.isEmpty()){
                                         setData2(mArticle_lists);
                                         mFocusAdapter.setNewData(mAllList);
+                                        mFocusAdapter.disableLoadMoreIfNotFullPage();
                                         //如果第一次返回的数据不满10条，则请求猜你喜欢接口
                                         if(mArticle_lists.size() < Constant.SEERVER_NUM){
-
+                                            mFocusAdapter.loadMoreComplete();
+                                            isLastActicleRequest = true;
+                                            recommendAuthorArticleList();
                                         }
                                     }
                                 }else{
@@ -251,7 +272,10 @@ public class FocusFragment extends BaseLazyFragment {
                                         mFocusAdapter.loadMoreComplete();
                                         mFocusAdapter.addData(teList);
                                     }else{
+                                        //本次加载数据完成
+                                        mFocusAdapter.loadMoreComplete();
                                         //已为加载更多无更多数据 -- 请求猜你喜欢数据
+                                        isLastActicleRequest = true;
                                         recommendAuthorArticleList();
                                     }
                                 }

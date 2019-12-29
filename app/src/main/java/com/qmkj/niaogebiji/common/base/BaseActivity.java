@@ -56,6 +56,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.socks.library.KLog;
@@ -179,6 +181,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.index_player_pause_2_0_0);
+
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
                     BaseApp.mMyBinder.pauseMusic();
@@ -191,6 +195,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //每1秒中只处理第一个元素
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.index_player_play_2_0_0);
+
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
                     BaseApp.mMyBinder.playMusic();
@@ -211,6 +217,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         RxView.clicks(close)
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.index_player_close_2_0_0);
+
                     part_audio.setVisibility(View.GONE);
                     isAudaioShow = false;
                     seekbar.setEnabled(true);

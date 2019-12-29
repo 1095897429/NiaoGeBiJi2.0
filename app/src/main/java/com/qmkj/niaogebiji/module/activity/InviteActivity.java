@@ -18,11 +18,13 @@ import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,6 +45,8 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.ViewPagerAdapter;
 import com.qmkj.niaogebiji.module.bean.InviteBean;
@@ -100,6 +104,10 @@ public class InviteActivity extends BaseActivity {
     @BindView(R.id.webview)
     MyWebView mMyWebView;
 
+    @BindView(R.id.dot)
+    LinearLayout dot;
+
+
 
     private InvitePosterBean mPosterBean;
     private String picLink;
@@ -121,7 +129,8 @@ public class InviteActivity extends BaseActivity {
     private ExecutorService mExecutorService;
 
     String permissions1[] = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
     protected int getLayoutId() {
@@ -214,9 +223,27 @@ public class InviteActivity extends BaseActivity {
 
     //初始化小圆点的id
     private void initDot() {
+        dot.removeAllViews();
         dotArray = new ImageView[views.size()];
+        LinearLayout.LayoutParams lp;
         for (int i = 0; i < views.size(); i++) {
-            dotArray[i] =  findViewById(ids[i]);
+
+            ImageView imageView = new ImageView(this);
+            imageView.setId( i + 1);
+            if(i == 1){
+                imageView.setImageResource(R.mipmap.welcome_long_pic);
+            }else{
+                imageView.setImageResource(R.mipmap.welcome_short_pic);
+            }
+            lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            if(i != 0){
+                lp.setMargins(SizeUtils.dp2px(10),0,0,0);
+                imageView.setLayoutParams(lp);
+            }
+
+            dotArray[i] = imageView;
+
+            dot.addView(imageView);
         }
     }
 
@@ -280,22 +307,35 @@ public class InviteActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.iv_text:
                 KLog.d("tag","去 h5界面");
+                MobclickAgentUtils.onEvent(UmengEvent.i_invite_record_2_0_0);
+
                 UIHelper.toWebViewActivity(InviteActivity.this,StringUtil.getLink("invitationrecords"));
                 break;
             case R.id.iv_back:
                 finish();
                 break;
             case R.id.share_wx:
+                MobclickAgentUtils.onEvent(UmengEvent.i_invite_wx_2_0_0);
                 toWxShare(0);
                 break;
             case R.id.share_circle:
+                MobclickAgentUtils.onEvent(UmengEvent.i_invite_moments_2_0_0);
+
                 toWxShare(1);
                 break;
             case R.id.share_qq:
+                MobclickAgentUtils.onEvent(UmengEvent.i_invite_qq_2_0_0);
 
-                toWxShare(3);
+                if(hasPermissions(this,permissions1)){
+                    toWxShare(3);
+                }else{
+                    ActivityCompat.requestPermissions(InviteActivity.this, permissions1, 100);
+                }
+
                 break;
             case R.id.share_save:
+                MobclickAgentUtils.onEvent(UmengEvent.i_invite_save_2_0_0);
+
                 if(hasPermissions(this,permissions1)){
                     toWxShare(2);
                 }else{
@@ -303,8 +343,14 @@ public class InviteActivity extends BaseActivity {
                 }
                 break;
             case R.id.share_link:
+                MobclickAgentUtils.onEvent(UmengEvent.i_invite_copylink_2_0_0);
+
                 RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
                 StringUtil.copyLink(userInfo.getInvite_url());
+
+
+                //验证的话需要在？前面加/
+//                StringUtil.copyLink(" http://share.xy860.com/?ivtoken=O2UDe6Pdagduo9uL#/appshare");
 
                 ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                 ToastUtils.showShort("链接复制成功！");
@@ -322,6 +368,7 @@ public class InviteActivity extends BaseActivity {
         }
 
         mExecutorService.submit(() -> {
+//            picLink = "https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg";
             Bitmap bitmap = StringUtil.getURLimage(picLink);
             Message message = Message.obtain();
             message.obj = bitmap;

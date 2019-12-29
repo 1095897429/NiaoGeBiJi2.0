@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.common.net.api;
 
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
+import com.qmkj.niaogebiji.module.bean.ActicleCommentHeadBean;
 import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
@@ -14,7 +15,7 @@ import com.qmkj.niaogebiji.module.bean.CateAllBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CollectArticleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
+import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
@@ -243,7 +244,7 @@ public interface ApiEncryptService{
     /* 2019.12.9 动态详情 一级评论列表 */
     @FormUrlEncoded
     @POST("app/blog/getBlogComment")
-    Observable<HttpResponse<List<CommentBeanNew>>> getBlogComment(@Field("params") String param);
+    Observable<HttpResponse<List<CommentCircleBean>>> getBlogComment(@Field("params") String param);
 
     /* 2019.12.9 获取七牛云上传token ok */
     @FormUrlEncoded
@@ -387,13 +388,13 @@ public interface ApiEncryptService{
     /* 2019.12.16 动态评论详情*/
     @FormUrlEncoded
     @POST("app/blog/blogCommentDetail")
-    Observable<HttpResponse<CommentBeanNew>> blogCommentDetail(@Field("params") String param);
+    Observable<HttpResponse<CommentCircleBean>> blogCommentDetail(@Field("params") String param);
 
 
     /* 2019.12.16 二级评论列表 */
     @FormUrlEncoded
     @POST("app/blog/getCommentComment")
-    Observable<HttpResponse<List<CommentBeanNew>>> getCommentComment(@Field("params") String param);
+    Observable<HttpResponse<List<CommentCircleBean>>> getCommentComment(@Field("params") String param);
 
     /* 2019.12.16 猜你喜欢 */
     @FormUrlEncoded
@@ -699,6 +700,11 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/my/logout")
     Observable<HttpResponse> logout(@Field("params") String param);
+
+    /* 2019.12.27  文章评论的详情*/
+    @FormUrlEncoded
+    @POST("app/article/getCommentDetail")
+    Observable<HttpResponse<ActicleCommentHeadBean>> getCommentDetail(@Field("params") String param);
 
 
 

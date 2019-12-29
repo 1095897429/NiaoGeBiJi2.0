@@ -14,15 +14,18 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.module.adapter.ActionAdapter;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -159,6 +162,7 @@ public class ActionFragment extends BaseLazyFragment {
             mAct_lists.clear();
             page = 1;
             activitiesList();
+            EventBus.getDefault().post(new toRefreshMoringEvent());
         });
     }
 
@@ -199,6 +203,13 @@ public class ActionFragment extends BaseLazyFragment {
             //TODO 1活动行 2 文章
             String linkType = mActionAdapter.getData().get(position).getLink_type();
             String jump_link = mActionAdapter.getData().get(position).getJump_link();
+
+
+            MobclickAgentUtils.onEvent("index_flow_activity_"+ (position  + 1) +"_2_0_0");
+
+            //进行中有跳转逻辑
+
+
 
             if(!TextUtils.isEmpty(linkType)){
                 if("1".equals(linkType)){

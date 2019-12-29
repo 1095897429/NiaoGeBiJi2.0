@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.bean;
 import com.qmkj.niaogebiji.common.base.BaseBean;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author zhouliang
@@ -95,6 +96,16 @@ public class RegisterLoginBean extends BaseBean {
         private String vip_last_time;
         // 1-领取过，0-未领取过
         private String is_vip;
+
+        private List<User_info.Badge> badge_arr;
+
+        public List<User_info.Badge> getBadge_arr() {
+            return badge_arr;
+        }
+
+        public void setBadge_arr(List<User_info.Badge> badge_arr) {
+            this.badge_arr = badge_arr;
+        }
 
         public String getIs_vip() {
             return is_vip;

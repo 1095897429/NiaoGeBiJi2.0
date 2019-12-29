@@ -6,87 +6,91 @@
     android:layout_height="match_parent">
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="232dp"
-        android:orientation="vertical">
-
-        <ImageView
-            android:visibility="visible"
-            android:src="@mipmap/bg_moring"
-            android:scaleType="centerCrop"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
 
 
-    </RelativeLayout>
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="232dp"
+           android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_back"
-        android:layout_marginTop="37dp"
-        android:layout_marginLeft="16dp"
-        android:visibility="visible"
-        android:src="@mipmap/icon_back"
-        android:layout_width="30dp"
-        android:layout_height="30dp" />
-
-
-    <LinearLayout
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_below="@+id/iv_back"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.core.widget.NestedScrollView
-            android:overScrollMode="never"
-            android:scrollbars="none"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:descendantFocusability="blocksDescendants"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/text"
-                    android:text="营销圈每日内参"
-                    android:textColor="@color/text_first_color"
-                    android:textSize="30sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp" />
+           <ImageView
+               android:visibility="visible"
+               android:src="@mipmap/bg_moring"
+               android:scaleType="centerCrop"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent" />
 
 
+       </RelativeLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler"
-                    android:visibility="visible"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+       <ImageView
+           android:id="@+id/iv_back"
+           android:layout_marginTop="37dp"
+           android:layout_marginLeft="16dp"
+           android:visibility="visible"
+           android:src="@mipmap/icon_back"
+           android:layout_width="30dp"
+           android:layout_height="30dp" />
 
-                <TextView
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="1000dp" />
+
+       <LinearLayout
+           android:id="@+id/part111"
+           android:layout_marginTop="16dp"
+           android:layout_marginLeft="16dp"
+           android:layout_marginRight="16dp"
+           android:layout_below="@+id/iv_back"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:orientation="vertical">
+
+           <androidx.core.widget.NestedScrollView
+               android:overScrollMode="never"
+               android:scrollbars="none"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
+
+               <LinearLayout
+                   android:descendantFocusability="blocksDescendants"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
+
+                   <TextView
+                       android:id="@+id/text"
+                       android:text="营销圈每日内参"
+                       android:textColor="@color/text_first_color"
+                       android:textSize="30sp"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content" />
+
+                   <Space
+                       android:layout_width="match_parent"
+                       android:layout_height="35dp" />
 
 
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                   <androidx.recyclerview.widget.RecyclerView
+                       android:id="@+id/recycler"
+                       android:visibility="visible"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content" />
 
 
+               </LinearLayout>
+           </androidx.core.widget.NestedScrollView>
 
 
+       </LinearLayout>
 
-    </LinearLayout>
+
+   </RelativeLayout>
+
+    <include
+        android:visibility="gone"
+        layout="@layout/activity_empty"/>
 
 
 </RelativeLayout>

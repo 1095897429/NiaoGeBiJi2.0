@@ -14,6 +14,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
@@ -97,12 +99,17 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
 
                 //事件
                 mFirstAuthorAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+
+                    MobclickAgentUtils.onEvent("index_flow_follow_followbtn" + (position + 1) +"_2_0_0");
+
+
                     if(null != mAuthorCancleListener){
                         mAuthorCancleListener.canleOrFocus(position);
                     }
                 });
 
                 mFirstAuthorAdapter.setOnItemClickListener((adapter, view, position) -> {
+                    MobclickAgentUtils.onEvent("index_flow_follow_author" + (position + 1) +"_2_0_0");
 
                     if(null != mAuthorDetailListener){
                         mAuthorDetailListener.authordetail(position);

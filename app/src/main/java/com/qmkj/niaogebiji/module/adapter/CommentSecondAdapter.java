@@ -1,37 +1,34 @@
 package com.qmkj.niaogebiji.module.adapter;
 
-import android.animation.StateListAnimator;
 import android.graphics.Typeface;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.bean.CircleBean;
+import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
+import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
-import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
 import com.qmkj.niaogebiji.module.event.RefreshCircleDetailCommentEvent;
@@ -65,11 +62,27 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
     public  static final int ACTICLE = 1;
     public static final int  CIRCLE = 2;
 
+    //上级圈子评论
+    private CommentCircleBean superiorComment;
+
+    //上级文章评论
+    private CommentBean.FirstComment superiorActicleComment;
+
+
+
+    public void setSuperiorActicleComment(CommentBean.FirstComment superiorActicleComment) {
+        this.superiorActicleComment = superiorActicleComment;
+    }
+
+    public void setSuperiorComment(CommentCircleBean superiorComment) {
+        this.superiorComment = superiorComment;
+    }
+
     public CommentSecondAdapter(List<MulSecondCommentBean> data) {
         super(data);
         //正常
         addItemType(ACTICLE, R.layout.second_comment_item);
-        //正常
+        //圈子
         addItemType(CIRCLE, R.layout.second_comment_item_circle);
     }
 
@@ -83,7 +96,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
 
                 helper.setText(R.id.comment_text,item.getMessage());
                 helper.setText(R.id.nickname,item.getUsername());
-                ImageUtil.load(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
+                ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
 
                 getReplyonActicle(helper,item);
 
@@ -116,15 +129,18 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     showRemoveDialog(item,helper.getAdapterPosition());
                 });
 
+                //头像跳转
+                helper.getView(R.id.head_icon).setOnClickListener(v -> UIHelper.toUserInfoActivity(mContext,item.getUid()));
+
 
                 break;
             case CIRCLE:
-                CommentBeanNew comment = bean.getCircleComment();
+                CommentCircleBean comment = bean.getCircleComment();
                 helper.setText(R.id.comment_text,comment.getComment());
                 helper.setText(R.id.nickname,comment.getUser_info().getName());
-                ImageUtil.load(mContext,comment.getUser_info().getAvatar(),helper.getView(R.id.head_icon));
+                ImageUtil.loadByDefaultHead(mContext,comment.getUser_info().getAvatar(),helper.getView(R.id.head_icon));
 
-                getReply(helper,comment);
+                getCircleReply(helper,comment);
 
                 //发布时间
                 if(StringUtil.checkNull(comment.getCreated_at())){
@@ -153,43 +169,21 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 //删除评论
                 helper.getView(R.id.comment_delete).setOnClickListener(view -> showRemoveDialog(comment,helper.getAdapterPosition()));
 
+                //头像跳转
+                helper.getView(R.id.head_icon).setOnClickListener(v -> UIHelper.toUserInfoActivity(mContext,comment.getUid()));
+
                 default:
         }
     }
 
     private void getIconTypeOnActile(BaseViewHolder helper, CommentBean.FirstComment item) {
-        String username = item.getUsername();
-        String replyname = item.getReplyed_username();
-        if(!TextUtils.isEmpty(username) && username.equals(replyname)){
+        String uid = item.getUid();
+        String myUid = StringUtil.getUserInfoBean().getUid();
+        if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
             helper.setVisible(R.id.comment_delete,true);
         }else{
             helper.setVisible(R.id.comment_delete,false);
         }
-    }
-
-    private void getReplyonActicle(BaseViewHolder helper, CommentBean.FirstComment item) {
-            sb.setLength( 0 );
-            //如果回复者 和 被回复者 一样，则不显示 【回复】
-            String username = item.getUsername();
-            String replyedUsername = item.getReplyed_username();
-            if(!TextUtils.isEmpty(username) &&  !username.equals(replyedUsername)){
-                sb.append("回复 ").append(replyedUsername)
-                        .append(":").append(item.getMessage());
-            }else{
-                sb.append(item.getMessage());
-            }
-
-            if(!TextUtils.isEmpty(username) &&  !username.equals(replyedUsername)){
-                int authorNamelength = replyedUsername.length();
-                spannableString = new SpannableString(sb.toString());
-                ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
-                //中间有 回复 两个字 + 1个空格
-                spannableString.setSpan(fCs2, 3,  3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            }else{
-                spannableString = new SpannableString(sb.toString());
-            }
-
-            helper.setText(R.id.comment_text,spannableString);
     }
 
 
@@ -215,17 +209,21 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        mData.remove(position - 1);
+                        mData.remove(position);
                         notifyDataSetChanged();
                         ToastUtils.showShort("删除成功");
                         EventBus.getDefault().post(new RefreshActicleCommentEvent());
+                        //和圈子有点区别
+                        if(mOnReduceListener != null && mData.size() == 0){
+                            mOnReduceListener.reduce();
+                        }
                     }
                 });
     }
 
 
     /** 删除帖子的评论 */
-    private void showRemoveDialog(CommentBeanNew comment, int position) {
+    private void showRemoveDialog(CommentCircleBean comment, int position) {
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(mContext).builder();
         iosAlertDialog.setPositiveButton("删除", v -> {
             blogdeleteComment(comment,position);
@@ -234,7 +232,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
         iosAlertDialog.show();
     }
 
-    private void blogdeleteComment(CommentBeanNew comment, int position) {
+    private void blogdeleteComment(CommentCircleBean comment, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("comment_id",comment.getId());
         map.put("class",comment.getComment_class());
@@ -246,7 +244,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        mData.remove(position - 1);
+                        mData.remove(position);
                         notifyDataSetChanged();
                         ToastUtils.showShort("删除成功");
                         //TODO 二级评论 - 删除需通知前一个界面列表中某一条数据
@@ -260,7 +258,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 });
     }
 
-    private void getIconType(BaseViewHolder helper, CommentBeanNew comment) {
+    private void getIconType(BaseViewHolder helper, CommentCircleBean comment) {
         String uid = comment.getUid();
         String myUid = StringUtil.getUserInfoBean().getUid();
         if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
@@ -332,7 +330,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     @Override
                     public void onSuccess(HttpResponse response) {
                         //手动修改
-                        MulSecondCommentBean m = mData.get(position - 1);
+                        MulSecondCommentBean m = mData.get(position);
                         CommentBean.FirstComment t = m.getActicleComment();
                         t.setIs_good(1);
                         t.setGood_num((Integer.parseInt(t.getGood_num()) + 1) + "");
@@ -356,7 +354,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                     @Override
                     public void onSuccess(HttpResponse response) {
                         //手动修改
-                        MulSecondCommentBean m = mData.get(position - 1);
+                        MulSecondCommentBean m = mData.get(position);
                         CommentBean.FirstComment t = m.getActicleComment();
                         t.setIs_good(0);
                         t.setGood_num((Integer.parseInt(t.getGood_num()) - 1) + "");
@@ -366,7 +364,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
     }
 
     //圈子
-    private void likeComment(CommentBeanNew circleBean, int position) {
+    private void likeComment(CommentCircleBean circleBean, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("comment_id",circleBean.getId());
         int like = 0;
@@ -385,7 +383,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        CommentBeanNew t =  mData.get(position  - 1).getCircleComment();
+                        CommentCircleBean t =  mData.get(position).getCircleComment();
                         // 测试的
                         int islike = circleBean.getIs_like();
                         if(islike == 0){
@@ -404,33 +402,85 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
     SpannableString spannableString ;
     StringBuilder sb = new StringBuilder();
 
-    private void getReply(BaseViewHolder helper, CommentBeanNew item) {
+
+
+    private void getCircleReply(BaseViewHolder helper, CommentCircleBean item) {
         sb.setLength( 0 );
-        //如果回复者 和 被回复者 一样，则不显示 【回复】
-        User_info userInfo = item.getUser_info();
+
+        //被回复者信息
         User_info p_userInfo = item.getP_user_info();
-        if(!TextUtils.isEmpty(userInfo.getUid()) &&  !userInfo.getUid().equals(p_userInfo.getUid())){
+        if(!TextUtils.isEmpty(item.getPuid()) &&  !item.getPuid().equals(superiorComment.getUid())){
             sb.append("回复 ").append(p_userInfo.getName())
                     .append(":").append(item.getComment());
         }else{
             sb.append(item.getComment());
+
         }
 
-
-        if(!TextUtils.isEmpty(userInfo.getName()) &&  !userInfo.getName().equals(p_userInfo.getName())){
+        if(!TextUtils.isEmpty(item.getPuid()) &&  !item.getPuid().equals(superiorComment.getUid())){
             int authorNamelength = p_userInfo.getName().length();
             spannableString = new SpannableString(sb.toString());
             ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
             //中间有 回复 两个字 + 1个空格
             spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    KLog.d("tag","点击的是 " + p_userInfo.getName());
+                    UIHelper.toUserInfoActivity(mContext,p_userInfo.getUid());
+                }
+            };
+            spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         }else{
             spannableString = new SpannableString(sb.toString());
         }
+
         helper.setText(R.id.comment_text,spannableString);
+        ((TextView)helper.getView(R.id.comment_text)).setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+
+    private void getReplyonActicle(BaseViewHolder helper, CommentBean.FirstComment item) {
+        sb.setLength( 0 );
+        //如果回复者 和 被回复者 一样，则不显示 【回复】
+        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(superiorActicleComment.getUid())){
+            sb.append("回复 ").append(item.getReplyed_username())
+                    .append(":").append(item.getMessage());
+        }else {
+            sb.append(item.getMessage());
+        }
+
+        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(superiorActicleComment.getUid())){
+            int authorNamelength = item.getReplyed_username().length();
+            spannableString = new SpannableString(sb.toString());
+            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+            //中间有 回复 两个字 + 1个空格
+            spannableString.setSpan(fCs2, 3,  3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    KLog.d("tag","点击的是 " + authorNamelength);
+                    UIHelper.toUserInfoActivity(mContext,superiorActicleComment.getUid());
+                }
+            };
+            spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }else{
+            spannableString = new SpannableString(sb.toString());
+        }
+
+        helper.setText(R.id.comment_text,spannableString);
+        ((TextView)helper.getView(R.id.comment_text)).setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 
 
 
+
+
+    //自己删自己的评论，回调
     public interface OnReduceListener{
         void reduce();
     }

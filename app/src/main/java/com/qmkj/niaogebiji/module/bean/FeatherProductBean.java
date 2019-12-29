@@ -25,7 +25,7 @@ public class FeatherProductBean extends BaseBean {
         //以id为明细基准
         private String id;
         private String title;
-        //2是实体 4.书籍
+        //1线上资料 2是实体  3 优惠券 4.书籍
         private String cat;
         private String point;
         private String point_memo;

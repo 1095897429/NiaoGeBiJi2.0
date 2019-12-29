@@ -38,7 +38,7 @@ public class MoringNewsAdapter extends BaseQuickAdapter<MoringAllBean.MoringBean
         helper.setText(R.id.summary,item.getSummary());
 
         if(null != item.getPublished_at()){
-            helper.setText(R.id.toMoreMoring, TimeUtils.millis2String(Long.parseLong(item.getCreated_at())* 1000L,"yyyy/MM/dd"));
+            helper.setText(R.id.toMoreMoring, TimeUtils.millis2String(Long.parseLong(item.getPublished_at())* 1000L,"yyyy/MM/dd"));
 
         }
 

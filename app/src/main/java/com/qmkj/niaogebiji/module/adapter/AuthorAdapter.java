@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,6 +16,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
@@ -48,18 +51,28 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
     @Override
     protected void convert(BaseViewHolder helper, AuthorBean.Author item) {
-        //设置子View点击事件
-//        helper.addOnClickListener(R.id.focus).addOnClickListener(R.id.focus_aleady);
-
 
         TextView chineseTv = helper.getView(R.id.author_name);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
 
-        helper.setText(R.id.author_name,item.getName()).setText(R.id.author_tag,item.getSummary());
+        helper.setText(R.id.author_name,item.getName());
+
+        //作者简介
+        TextView sumary = helper.getView(R.id.author_tag);
+        if(!TextUtils.isEmpty(item.getTitle())){
+            sumary.setText(item.getTitle());
+        }else{
+//            sumary.setText("欢迎在鸟哥笔记发布文章。投稿请添加微信（ngbjxym）");
+            sumary.setText("");
+        }
+
 
         //图片
-        ImageUtil.load(mContext,item.getImg(),helper.getView(R.id.head_icon));
+        if(!TextUtils.isEmpty(item.getImg())){
+            ImageUtil.loadByDefaultHead(mContext,item.getImg(),helper.getView(R.id.head_icon));
+
+        }
 
         //是否关注：1-关注，0-未关注
         if(0 == item.getIs_follow()){
@@ -73,12 +86,24 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
         }
 
         //关注
-        helper.getView(R.id.focus).setOnClickListener(view -> showCancelFocusDialog(helper.getAdapterPosition()));
+        helper.getView(R.id.focus).setOnClickListener(view ->{
+
+            MobclickAgentUtils.onEvent("index_flow_authorlist_followbtn"+ (helper.getAdapterPosition()  + 1) +"_2_0_0");
+
+             showCancelFocusDialog(helper.getAdapterPosition());
+        });
 
         helper.getView(R.id.focus_aleady).setOnClickListener(view -> showCancelFocusDialog(helper.getAdapterPosition()));
 
 
         helper.itemView.setOnClickListener(view -> {
+
+            MobclickAgentUtils.onEvent("index_flow_authorlist_author"+ (helper.getAdapterPosition()  + 1) +"_2_0_0");
+
+            if(helper.getAdapterPosition() <= 2) {
+                MobclickAgentUtils.onEvent("index_search_author_" + (helper.getAdapterPosition() + 1) + "_2_0_0");
+            }
+
             AuthorBean.Author mAuthor = mData.get(helper.getAdapterPosition());
             KLog.d("tag","点击的是 position " + helper.getAdapterPosition() );
             String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());

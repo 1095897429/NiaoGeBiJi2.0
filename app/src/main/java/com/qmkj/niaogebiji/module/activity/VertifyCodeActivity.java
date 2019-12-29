@@ -22,6 +22,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.SystemUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -154,6 +156,7 @@ public class VertifyCodeActivity extends BaseActivity {
 
                 //隐藏软键盘
                 KeyboardUtils.hideSoftInput(et);
+                MobclickAgentUtils.onEvent(UmengEvent.bindphone_in_2_0_0);
                 if("weixin".equals(loginType)){
                     WechatBindAccountViaCode();
                 }else if("phone".equals(loginType)){

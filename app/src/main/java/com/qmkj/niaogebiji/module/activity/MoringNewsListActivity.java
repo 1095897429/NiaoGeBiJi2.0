@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.text.TextPaint;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,12 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.MoringNewsAdapter;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MoringAllBean;
 import com.qmkj.niaogebiji.module.bean.MoringNewsBean;
@@ -48,6 +54,12 @@ public class MoringNewsListActivity extends BaseActivity {
 
     @BindView(R.id.text)
     TextView text;
+
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+    @BindView(R.id.part111)
+    LinearLayout part111;
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
@@ -94,6 +106,7 @@ public class MoringNewsListActivity extends BaseActivity {
 
 
     private void mplist() {
+        KLog.d("tag","page 是 " + page);
         Map<String,String> map = new HashMap<>();
         map.put("page_no",page + "");
         map.put("page_size",pageSize + "");
@@ -114,10 +127,48 @@ public class MoringNewsListActivity extends BaseActivity {
     }
 
     private void setData() {
-        if(!mMoringList.isEmpty()){
-            mMoringNewsAdapter.setNewData(mMoringList);
+        if(page ==  1){
+            if(mMoringList != null && !mMoringList.isEmpty()){
+                setData2(mMoringList);
+                mMoringNewsAdapter.setNewData(mMoringList);
+//                mMoringNewsAdapter.disableLoadMoreIfNotFullPage(mRecyclerView);
+                //如果第一次返回的数据不满10条，则显示无更多数据
+                if(mMoringList.size() < Constant.SEERVER_NUM){
+                    mMoringNewsAdapter.loadMoreEnd();
+                }
+                ll_empty.setVisibility(View.GONE);
+                part111.setVisibility(View.VISIBLE);
+            }else{
+                //第一次加载无数据
+                ll_empty.setVisibility(View.VISIBLE);
+                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("暂无早报内容");
+                ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
+                part111.setVisibility(View.GONE);
+            }
+        }else{
+            if(mMoringList != null && mMoringList.size() > 0){
+                setData2(mMoringList);
+                mMoringNewsAdapter.loadMoreComplete();
+                mMoringNewsAdapter.addData(teList);
+            }else{
+                //已为加载更多无更多数据
+                mMoringNewsAdapter.loadMoreEnd();
+            }
+        }
+
+    }
+
+    List<MoringAllBean.MoringBean> teList = new ArrayList<>();
+    private void setData2(List<MoringAllBean.MoringBean> moringList) {
+        teList.clear();
+        teList.addAll(moringList);
+        if(page==1){
+            moringList.addAll(teList);
         }
     }
+
+
+
 
 
     //初始化布局管理器
@@ -144,6 +195,12 @@ public class MoringNewsListActivity extends BaseActivity {
             String newid =  mMoringNewsAdapter.getData().get(position).getAid();
             EventBus.getDefault().post(new AudioEvent(audio,title,newid));
         });
+
+
+        mMoringNewsAdapter.setOnLoadMoreListener(() -> {
+            ++page;
+            mplist();
+        }, mRecyclerView);
     }
 
 

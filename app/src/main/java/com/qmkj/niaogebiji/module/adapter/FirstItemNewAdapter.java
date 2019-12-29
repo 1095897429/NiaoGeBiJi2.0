@@ -16,6 +16,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
@@ -82,7 +84,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 }
 
                 //热门 + 顶置
-                int act_state = bean.getAct_state();
+                int act_state= bean.getAct_state();
                 if(1 == act_state){
                     helper.setVisible(R.id.top,true);
                     helper.setText(R.id.top,"置顶");
@@ -100,6 +102,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
                 break;
             case THREE_IMG_TYPE:
+
                 RecommendBean.Article_list bean3 = item.getNewsActicleList();
                 helper.setText(R.id.one_img_title,bean3.getTitle());
                 helper.setText(R.id.one_img_auth,bean3.getAuthor());
@@ -109,6 +112,19 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                     String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(bean3.getPublished_at()) * 1000L);
                     helper.setText(R.id.one_img_time, s);
                 }
+
+                int act_state2= bean3.getAct_state();
+                if(1 == act_state2){
+                    helper.setVisible(R.id.top,true);
+                    helper.setText(R.id.top,"置顶");
+                }else if(2 == act_state2){
+                    helper.setVisible(R.id.top,true);
+                    helper.setText(R.id.top,"热门");
+                }else{
+                    helper.setVisible(R.id.top,false);
+                }
+
+
 
                 if(!TextUtils.isEmpty(bean3.getPic())){
                     ImageUtil.load(mContext,bean3.getPic(),helper.getView(R.id.one_img_imgs));
@@ -130,6 +146,17 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
                 if(!TextUtils.isEmpty(beanLong.getPic())){
                     ImageUtil.load(mContext,beanLong.getPic(),helper.getView(R.id.long_img_imgs));
+                }
+
+                int act_state3= beanLong.getAct_state();
+                if(1 == act_state3){
+                    helper.setVisible(R.id.top,true);
+                    helper.setText(R.id.top,"置顶");
+                }else if(2 == act_state3){
+                    helper.setVisible(R.id.top,true);
+                    helper.setText(R.id.top,"热门");
+                }else{
+                    helper.setVisible(R.id.top,false);
                 }
 
                 break;
@@ -176,12 +203,25 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 }
 
                 helper.getView(R.id.one_img_imgs).setOnClickListener(view -> {
-                    String link = t.getActivity().getJump_link();
-                    UIHelper.toWebViewActivity(mContext,link);
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_activity_2_0_0);
+
+
+                    String jump_link = t.getActivity().getJump_link();
+                    String linkType = t.getActivity().getLink_type();
+
+                    if(!TextUtils.isEmpty(linkType)){
+                        if("1".equals(linkType)){
+                            UIHelper.toWebViewActivity(mContext,jump_link);
+                        }else if("2".equals(linkType)){
+                            UIHelper.toNewsDetailActivity(mContext,jump_link);
+                        }
+                    }
+
                 });
 
                 helper.getView(R.id.toMoreActivity).setOnClickListener(view -> {
                     EventBus.getDefault().post(new toFlashEvent("去活动信息流"));
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_activity_more_2_0_0);
                 });
 
                 break;

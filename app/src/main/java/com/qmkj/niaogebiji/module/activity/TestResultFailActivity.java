@@ -36,6 +36,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
@@ -95,17 +97,17 @@ public class TestResultFailActivity extends BaseActivity {
             KLog.d("tag",mins);
         }
 
+
+        //如果已考过的有分数，就用以前的分数
         if(mSchoolTest.getRecord()!= null && mSchoolTest.getRecord().getScore()!= null){
             test_grade.setText(mSchoolTest.getRecord().getScore());
         }else{
             test_grade.setText(mSchoolTest.getMyScore());
         }
 
-
         iv_right.setVisibility(View.VISIBLE);
         iv_right.setImageResource(R.mipmap.icon_test_share_black);
     }
-
 
 
     @OnClick({R.id.iv_back,R.id.iv_right,
@@ -115,10 +117,12 @@ public class TestResultFailActivity extends BaseActivity {
             case R.id.toLook:
                 break;
             case R.id.iv_right:
+                MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_score_share_2_0_0);
                 showShareDialog();
                 break;
             case R.id.toReTest:
                 KLog.d("tag","判断是否预约");
+                MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_score_appointment_2_0_0);
                 showReTestSubmit();
                 break;
             case R.id.iv_back:
@@ -151,9 +155,8 @@ public class TestResultFailActivity extends BaseActivity {
                             ToastUtils.showShort("你在近期参加过该测试。如需重考请在" + TimeUtils.millis2String(time*1000L,"yyyy年MM月dd日") + "再来参加");
                         }else if(2 == temp.getStatus()){
                             UIHelper.toTestDetailActivity(TestResultFailActivity.this,mSchoolTest);
+                            finish();
                         }
-
-
                     }
                 });
     }
@@ -433,6 +436,8 @@ public class TestResultFailActivity extends BaseActivity {
         mCalendar.setTimeInMillis(start);
         long end = mCalendar.getTime().getTime();
 
+
+        start = endTime;
         end = endTime;
 
 

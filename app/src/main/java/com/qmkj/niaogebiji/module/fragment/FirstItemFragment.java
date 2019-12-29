@@ -23,6 +23,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
@@ -450,6 +452,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                 return;
             }
 
+
             int type = mFirstItemAdapter.getData().get(position).getItemType();
             //快讯
             if(type == FirstItemNewAdapter.FLASH_TYPE){
@@ -457,6 +460,10 @@ public class FirstItemFragment extends BaseLazyFragment {
             }else if(type == FirstItemNewAdapter.RIGHT_IMG_TYPE ||
                     type == FirstItemNewAdapter.LONG_IMG_TYPE ||
                     type == FirstItemNewAdapter.THREE_IMG_TYPE ){
+
+                MobclickAgentUtils.onEvent("index_flow_index_article"+ (position  + 1) +"_2_0_0");
+
+
                 String aid = mFirstItemAdapter.getData().get(position).getNewsActicleList().getAid();
                 if (!TextUtils.isEmpty(aid)) {
                     UIHelper.toNewsDetailActivity(getActivity(), aid);
@@ -523,6 +530,8 @@ public class FirstItemFragment extends BaseLazyFragment {
                 part3333.setVisibility(View.GONE);
                 break;
             case R.id.toMoreLoveYou:
+                MobclickAgentUtils.onEvent(UmengEvent.index_flow_understand_2_0_0);
+
                 getProfession();
 
                 break;

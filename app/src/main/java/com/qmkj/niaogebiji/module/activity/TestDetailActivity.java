@@ -32,6 +32,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.TimeAppUtils;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
@@ -148,9 +150,11 @@ public class TestDetailActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.iv_right:
+                MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_starttest_share_2_0_0);
                 showShareDialog();
                 break;
             case R.id.toTest:
+                MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_starttest_2_0_0);
                 getTestQuestions();
                 break;
             case R.id.iv_back:

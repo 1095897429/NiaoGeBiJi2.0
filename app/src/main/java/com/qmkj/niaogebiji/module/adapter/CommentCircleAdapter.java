@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,23 +15,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
+import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
@@ -49,7 +49,7 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-11-21
  * 描述:圈子 1级评论适配器
  */
-public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, BaseViewHolder> {
+public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, BaseViewHolder> {
 
     private int myPotion;
     //对应具体的圈子数据
@@ -63,16 +63,16 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         this.myPotion = myPotion1;
     }
 
-    public CommentAdapterByNewBean(@Nullable List<CommentBeanNew> data) {
+    public CommentCircleAdapter(@Nullable List<CommentCircleBean> data) {
         super(R.layout.first_comment_item,data);
     }
 
     private Limit2ReplyCircleAdapter mLimit2ReplyCircleAdapter;
-    private List<CommentBeanNew.SecondComment> mLimitComments;
+    private List<CommentCircleBean> mLimitComments;
 
 
     @Override
-    protected void convert(BaseViewHolder helper,CommentBeanNew item) {
+    protected void convert(BaseViewHolder helper, CommentCircleBean item) {
         //设置子View点击事件
         helper
                 .addOnClickListener(R.id.ll_has_second_comment)
@@ -83,7 +83,24 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
 
         helper.setText(R.id.nickname,userInfo.getName());
 
-        helper.setText(R.id.name_tag,userInfo.getCompany_name());
+
+        //职位
+        TextView sender_tag = helper.getView(R.id.name_tag);
+        //是否认证
+        if("1".equals(item.getUser_info().getAuth_email_status())||
+            "1".equals(item.getUser_info().getAuth_card_status())){
+            User_info temp = item.getUser_info();
+            Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+            drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+            sender_tag.setCompoundDrawables(null,null,drawable,null);
+            sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
+                    (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+        }else{
+            sender_tag.setCompoundDrawables(null,null,null,null);
+            sender_tag.setText("");
+        }
+
+
 
         ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
 
@@ -98,11 +115,16 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
             helper.setText(R.id.time,"");
         }
 
+        //头像点击
+        helper.getView(R.id.head_icon).setOnClickListener(v -> UIHelper.toUserInfoActivity(mContext,item.getUid()));
+
 
         //点赞数
         TextView zan_num = helper.getView(R.id.zan_num);
         ImageView imageView =  helper.getView( R.id.iamge_priase);
         zanChange(zan_num,imageView,item.getLike_num(),item.getIs_like());
+
+
 
 
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
@@ -115,7 +137,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
 
 
         //二级评论数据
-        List<CommentBeanNew.SecondComment> list = item.getComment_comment();
+        List<CommentCircleBean> list = item.getComment_comment();
         mLimitComments = list;
         //二级评论布局
         LinearLayoutManager talkManager = new LinearLayoutManager(mContext);
@@ -123,6 +145,15 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         RecyclerView recyclerView =  helper.getView(R.id.show_limit_2_reply);
         recyclerView.setLayoutManager(talkManager);
         mLimit2ReplyCircleAdapter = new Limit2ReplyCircleAdapter(mLimitComments);
+        mLimit2ReplyCircleAdapter.setFatherComment(item);
+
+        helper.itemView.setOnClickListener(v -> {
+            KLog.d("tag","11111");
+            if(mToShowDialogListener != null){
+                mToShowDialogListener.func(item);
+            }
+        });
+
         //禁用change动画
         ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         recyclerView.setAdapter(mLimit2ReplyCircleAdapter);
@@ -151,7 +182,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         helper.getView(R.id.comment_delete).setOnClickListener(view -> showRemoveDialog(item,helper.getAdapterPosition()));
     }
 
-    private void getIconType(BaseViewHolder helper, CommentBeanNew item) {
+    private void getIconType(BaseViewHolder helper, CommentCircleBean item) {
         String uid = item.getUid();
         String myUid = StringUtil.getUserInfoBean().getUid();
         if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
@@ -161,7 +192,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
         }
     }
 
-    private void showRemoveDialog(CommentBeanNew comment, int position) {
+    private void showRemoveDialog(CommentCircleBean comment, int position) {
         final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(mContext).builder();
         iosAlertDialog.setPositiveButton("删除", v -> {
             blogdeleteComment(comment,position);
@@ -171,7 +202,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
     }
 
 
-    private void blogdeleteComment(CommentBeanNew comment, int position) {
+    private void blogdeleteComment(CommentCircleBean comment, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("comment_id",comment.getId());
         map.put("class",comment.getComment_class());
@@ -236,7 +267,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
 
 
 
-    private void likeComment(CommentBeanNew circleBean, int position) {
+    private void likeComment(CommentCircleBean circleBean, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("comment_id",circleBean.getId());
         int like = 0;
@@ -255,7 +286,7 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        CommentBeanNew t =  mData.get(position);
+                        CommentCircleBean t =  mData.get(position);
                         // 测试的
                         int islike = circleBean.getIs_like();
                         if(islike == 0){
@@ -279,6 +310,16 @@ public class CommentAdapterByNewBean extends BaseQuickAdapter<CommentBeanNew, Ba
 
     public void setChangeDetailListener(ChangeDetailListener changeDetailListener) {
         mChangeDetailListener = changeDetailListener;
+    }
+
+
+    public toShowDialogListener mToShowDialogListener;
+    public interface toShowDialogListener{
+        void func(CommentCircleBean item);
+    }
+
+    public void setToShowDialogListener(toShowDialogListener toShowDialogListener) {
+        mToShowDialogListener = toShowDialogListener;
     }
 }
 

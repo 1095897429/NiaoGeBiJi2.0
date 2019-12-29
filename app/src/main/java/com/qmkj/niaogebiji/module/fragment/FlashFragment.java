@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
@@ -31,6 +32,8 @@ import com.qmkj.niaogebiji.common.dialog.ShareFlashDialog;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.ZXingUtils;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
@@ -103,6 +106,31 @@ public class FlashFragment extends BaseLazyFragment  {
     }
 
 
+    @BindView(R.id.loading_dialog)
+    LinearLayout loading_dialog;
+
+    @BindView(R.id.lottieAnimationView)
+    LottieAnimationView lottieAnimationView;
+
+    public void showWaitingDialog() {
+        loading_dialog.setVisibility(View.VISIBLE);
+        lottieAnimationView.setImageAssetsFolder("images");
+        lottieAnimationView.setAnimation("images/loading.json");
+        lottieAnimationView.loop(true);
+        lottieAnimationView.playAnimation();
+    }
+
+    /**
+     * 隐藏等待提示框
+     */
+    public void hideWaitingDialog() {
+        if(null != lottieAnimationView){
+            loading_dialog.setVisibility(View.GONE);
+            lottieAnimationView.cancelAnimation();
+        }
+    }
+
+
     @Override
     protected boolean regEvent() {
         return true;
@@ -115,6 +143,7 @@ public class FlashFragment extends BaseLazyFragment  {
 
     @Override
     protected void initView() {
+        showWaitingDialog();
         typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Black.otf");
         initSamrtLayout();
         initLayout();
@@ -187,6 +216,10 @@ public class FlashFragment extends BaseLazyFragment  {
 
             switch (view.getId()){
                 case R.id.flash_priase:
+                    if(position <= 9){
+                        MobclickAgentUtils.onEvent("news_share" + (position + 1) + "_2_0_0");
+                    }
+
                     if(mTempBuilltinBean.getIs_good() == 0){
                         goodBulletin(mTempBuilltinBean.getId());
                     }else{
@@ -194,6 +227,10 @@ public class FlashFragment extends BaseLazyFragment  {
                     }
                     break;
                 case R.id.flash_share:
+                    if(position <= 9){
+                        MobclickAgentUtils.onEvent("news_laud" + (position + 1) + "_2_0_0");
+                    }
+
                     showShareDialog();
                     break;
                 case R.id.part1111:
@@ -237,6 +274,7 @@ public class FlashFragment extends BaseLazyFragment  {
                     @Override
                     public void onSuccess(HttpResponse<FlashBulltinBean> response) {
 
+                        hideWaitingDialog();
                         mFlashBulltinBean = response.getReturn_data();
                         if(null != mFlashBulltinBean){
 
@@ -260,6 +298,10 @@ public class FlashFragment extends BaseLazyFragment  {
                         }
                     }
 
+                    @Override
+                    public void onNetFail(String msg) {
+                        hideWaitingDialog();
+                    }
                 });
     }
 

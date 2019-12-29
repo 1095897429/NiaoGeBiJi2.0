@@ -100,6 +100,7 @@
                 android:id="@+id/et_input"
                 android:gravity="left|center"
                 android:singleLine="true"
+                android:hint="链接需要以http 或 https 开头"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:background="@drawable/bg_corners_8_gray"

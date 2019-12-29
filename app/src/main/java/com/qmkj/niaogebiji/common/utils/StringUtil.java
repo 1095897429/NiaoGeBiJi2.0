@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,6 +53,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.CircleSearchAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -63,6 +66,7 @@ import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
+import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -160,7 +164,6 @@ public class StringUtil {
             HttpURLConnection conn = (HttpURLConnection) myurl.openConnection();
             conn.setConnectTimeout(6000);//设置超时
             conn.setDoInput(true);
-            conn.setUseCaches(false);//不缓存
             conn.connect();
             InputStream is = conn.getInputStream();//获得图片的数据流
             bmp = BitmapFactory.decodeStream(is);//读取图像数据
@@ -231,6 +234,8 @@ public class StringUtil {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position) {
                 case 0:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_detail_share_moments_2_0_0);
+
                     //用于验证微信分享成功 显示弹框 判断
                     Constant.isActicleShare = true;
                     ShareBean bean1 = new ShareBean();
@@ -242,6 +247,8 @@ public class StringUtil {
                     StringUtil.shareWxByWeb(activity, bean1);
                     break;
                 case 1:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_detail_share_wx_2_0_0);
+
                     //用于验证微信分享成功 显示弹框 判断
                     Constant.isActicleShare = true;
 
@@ -255,9 +262,11 @@ public class StringUtil {
                     StringUtil.shareWxByWeb(activity, bean);
                     break;
                 case 2:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_detail_share_copylink_2_0_0);
+
                     if (null != mNewsDetailBean) {
                         KLog.d("tag", "复制链接");
-                        StringUtil.copyLink(mNewsDetailBean.getShare_url());
+                        StringUtil.copyLink(mNewsDetailBean.getTitle() + "\n" +  mNewsDetailBean.getShare_url());
                     }
 
                     break;
@@ -620,8 +629,8 @@ public class StringUtil {
         }
 
         //拼接链接
-        Drawable drawableLink = activity.getResources().getDrawable(R.mipmap.icon_link_http);
-        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+//        Drawable drawableLink = activity.getResources().getDrawable(R.mipmap.icon_link_http);
+//        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
 
         spanString2 = new SpannableString(newContent);
 
@@ -638,7 +647,7 @@ public class StringUtil {
             };
 
             //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
-            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_link_http,2);
             spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -708,7 +717,7 @@ public class StringUtil {
             };
 
             //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
-            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_link_http,2);
             spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -729,14 +738,16 @@ public class StringUtil {
     @RequiresPermission(READ_PHONE_STATE)
     public static String getIMEI() {
         TelephonyManager tm = (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return  Settings.Secure.getString(BaseApp.getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 Class clazz = tm.getClass();
                 //noinspection unchecked
                 Method getImeiMethod = clazz.getDeclaredMethod("getImei");
                 getImeiMethod.setAccessible(true);
                 String imei = (String) getImeiMethod.invoke(tm);
-                if (imei != null){
+                if (imei != null) {
                     return imei;
                 }
             } catch (Exception e) {
@@ -748,7 +759,6 @@ public class StringUtil {
             return imei;
         }
         return "";
-
 }
 
 
@@ -766,6 +776,20 @@ public class StringUtil {
 
 
 
+
+    //设置页面的透明度   1表示不透明
+    public static void setBackgroundAlpha(Activity activity, float bgAlpha) {
+        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+        lp.alpha = bgAlpha;
+        if (bgAlpha == 1) {
+            //不移除该Flag的话,在有视频的页面上的视频会出现黑屏的bug
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        } else {
+            //此行代码主要是解决在华为手机上半透明效果无效的bug
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        }
+        activity.getWindow().setAttributes(lp);
+    }
 
 
 

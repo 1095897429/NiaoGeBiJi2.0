@@ -29,12 +29,8 @@
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/part3333"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="16dp"
-        android:paddingTop="16dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:layout_width="match_parent"
@@ -43,6 +39,7 @@
 
         <!-- 未关注 -->
         <TextView
+            android:layout_margin="16dp"
             android:id="@+id/noFocus"
             android:text="关注"
             android:visibility="gone"
@@ -55,6 +52,7 @@
 
         <!-- 已关注 -->
         <TextView
+            android:layout_margin="16dp"
             android:id="@+id/alreadFocus"
             android:text="已关注"
             android:visibility="gone"
@@ -67,6 +65,7 @@
 
         <!-- 他屏蔽你 -->
         <TextView
+            android:layout_margin="16dp"
             android:id="@+id/himcloseme"
             android:text="TA屏蔽了你，不能关注"
             android:visibility="gone"

@@ -18,6 +18,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.ViewPagerAdapter;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -60,6 +62,8 @@ public class WelcomeActivity extends BaseActivity {
     //小圆点id
     private int[] ids={R.id.dot1,R.id.dot2,R.id.dot3,R.id.dot4};
 
+    private int mPosition;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_welcome;
@@ -69,8 +73,6 @@ public class WelcomeActivity extends BaseActivity {
     protected void initView() {
         initViewPage();
         initDot();
-
-
         getFriends();
 
     }
@@ -135,6 +137,8 @@ public class WelcomeActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
 
+                mPosition = position;
+
                 // 设置底部小点选中状态
                 for(int i = 0;i<ids.length;i ++){
                     if(position==i){
@@ -159,6 +163,8 @@ public class WelcomeActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.btn:
+                MobclickAgentUtils.onEvent("welcomeout_in" + (mPosition + 1) +"_2_0_0");
+                KLog.d("tag","which " + "welcomeout_in" + (mPosition + 1) +"_2_0_0");
                 SPUtils.getInstance().put("isFirstCome",true);
                 UIHelper.toLoginActivity(WelcomeActivity.this);
                 finish();

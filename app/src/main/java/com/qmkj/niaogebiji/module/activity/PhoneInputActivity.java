@@ -23,6 +23,8 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.socks.library.KLog;
 
 import java.util.HashMap;
@@ -105,7 +107,7 @@ public class PhoneInputActivity extends BaseActivity {
 //        toUDesk();
 
         //2 否 手机号今天是否已经获取超过5次验证码 - 显示错误信息
-
+        MobclickAgentUtils.onEvent(UmengEvent.bindphone_bind_2_0_0);
         UIHelper.toVertifyCodeActivity(PhoneInputActivity.this,mobile,wechat_token,loginType);
     }
 

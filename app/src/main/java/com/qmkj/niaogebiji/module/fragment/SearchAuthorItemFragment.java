@@ -149,7 +149,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
                                 if(tempList != null && tempList.size() > 0){
                                     setData2(tempList);
                                     mAuthorAdapter.loadMoreComplete();
-                                    mAuthorAdapter.addData(tempList);
+                                    mAuthorAdapter.addData(teList);
                                 }else{
                                     //已为加载更多无更多数据
                                     mAuthorAdapter.loadMoreComplete();
@@ -180,6 +180,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
         for (int i = 0; i < list.size(); i++) {
             author = new AuthorBean.Author();
             author.setId(list.get(i).getAid());
+            author.setTitle(list.get(i).getTitle());
             author.setName(list.get(i).getAuthor());
             author.setImg(list.get(i).getPic());
             author.setIs_follow(list.get(i).getIs_follow());
@@ -244,6 +245,14 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
         KLog.d("tag","myKeyword = " + myKeyword);
+
+        if(event.getPosition() == 6){
+            XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+            smartRefreshLayout.setRefreshHeader(header);
+            mList.clear();
+            page =  1;
+            searchAuthor();
+        }
     }
 
 

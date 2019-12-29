@@ -237,6 +237,12 @@ public class SeachThinsItemFragment extends BaseLazyFragment {
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
         KLog.d("tag","myKeyword = " + myKeyword);
+
+        if(event.getPosition() == 5){
+            mList.clear();
+            page =  1;
+            searchMaterial();
+        }
     }
 
 

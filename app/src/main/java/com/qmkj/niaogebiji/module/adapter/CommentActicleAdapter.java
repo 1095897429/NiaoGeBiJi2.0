@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.adapter;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -25,11 +26,13 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -45,17 +48,17 @@ import io.reactivex.schedulers.Schedulers;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-21
- * 描述:1级评论适配器
+ * 描述:文章1级评论适配器
  */
-public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, BaseViewHolder> {
+public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstComment, BaseViewHolder> {
 
-    public CommentAdapter(@Nullable List<CommentBean.FirstComment> data) {
+    public CommentActicleAdapter(@Nullable List<CommentBean.FirstComment> data) {
         super(R.layout.first_comment_item_new,data);
     }
 
 
     private Limit2ReplyAdapter mLimit2ReplyAdapter;
-    private List<CommentBean.SecondComment> mLimitComments;
+    private List<CommentBean.FirstComment> mLimitComments;
 
     @Override
     protected void convert(BaseViewHolder helper,CommentBean.FirstComment item) {
@@ -68,26 +71,23 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         getIconType(helper,item);
 
         //评论时间
-        if(!TextUtils.isEmpty(item.getDateline())){
+        if(StringUtil.checkNull(item.getDateline())){
             String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(item.getDateline()) * 1000L);
-            if(!TextUtils.isEmpty(s)){
-                if("天前".contains(s)){
-                    helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(item.getDateline()) * 1000L,"yyyy/MM/dd"));
-                }else{
-                    helper.setText(R.id.time,s);
-                }
-            }
+            helper.setText(R.id.time,s);
         }else{
             helper.setText(R.id.time,"");
         }
 
+
         //评论者
         helper.setText(R.id.nickname,item.getUsername());
-        //评论者公司
-        helper.setText(R.id.name_tag,item.getCompany_name());
+        //职位
+        TextView sender_tag = helper.getView(R.id.name_tag);
+        sender_tag.setText(item.getCompany_name() + item.getPosition());
+
         //评论者头像
         if(!TextUtils.isEmpty(item.getAvatar())){
-            ImageUtil.load(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
+            ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
         }
         //评论正文
         helper.setText(R.id.comment_text,item.getMessage());
@@ -99,6 +99,8 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
 
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
             if("0".equals(item.getIs_good() + "")){
+                MobclickAgentUtils.onEvent("index_detail_comment_laud"+ (helper.getAdapterPosition()  + 1) +"_2_0_0");
+
                 goodArticle(item,helper.getAdapterPosition());
             }else if("1".equals(item.getIs_good() + "")){
                 cancelGoodArticle(item,helper.getAdapterPosition());
@@ -107,7 +109,7 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
 
 
         //二级评论数据
-        List<CommentBean.SecondComment> list = item.getCommentslist();
+        List<CommentBean.FirstComment> list = item.getCommentslist();
         mLimitComments = list;
         if(mLimitComments.size() > 2){
             mLimitComments = mLimitComments.subList(0,2);
@@ -118,6 +120,7 @@ public class CommentAdapter extends BaseQuickAdapter<CommentBean.FirstComment, B
         RecyclerView recyclerView =  helper.getView(R.id.show_limit_2_reply);
         recyclerView.setLayoutManager(talkManager);
         mLimit2ReplyAdapter = new Limit2ReplyAdapter(mLimitComments);
+        mLimit2ReplyAdapter.setFatherComment(item);
         //禁用change动画
         ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         recyclerView.setAdapter(mLimit2ReplyAdapter);

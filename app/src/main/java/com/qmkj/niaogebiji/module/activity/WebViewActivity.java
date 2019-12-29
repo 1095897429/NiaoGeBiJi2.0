@@ -109,11 +109,26 @@ public class WebViewActivity extends BaseActivity {
         mMyWebView.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
 
         mMyWebView.setWebViewClient(new WebViewClient(){
-
+            //给的链接是 https://pan.baidu.com/s/1CARAgwkjH7JzM61LunaQTQ
+            //  怎么跳转到了 -- bdnetdisk://n/action.SHARE_LINK?m_n_v=8.3.0&surl=CARAgwkjH7JzM61LunaQTQ&origin=2
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 KLog.d("tag","---- " + url);
-                return false;
+
+                if (url == null) return false;
+
+                try{
+                    if(!url.startsWith("http://") && !url.startsWith("https://")){
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+                        return true;
+                    }
+                }catch (Exception e){//防止crash (如果手机上没有安装处理某个scheme开头的url的APP, 会导致crash)
+                    return true;//没有安装该app时，返回true，表示拦截自定义链接，但不跳转，避免弹出上面的错误页面
+                }
+
+                view.loadUrl(url);
+                return true;
             }
 
 

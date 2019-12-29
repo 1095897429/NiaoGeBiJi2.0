@@ -34,6 +34,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
@@ -293,7 +294,15 @@ public class SearchCircleFragment extends BaseLazyFragment {
         //item点击事件
         mCircleSearchAdapterNew.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag", "评论去圈子详情");
+
             blog_id = mAllList.get(position).getId();
+
+            if(position <= 2) {
+                MobclickAgentUtils.onEvent("index_search_weibo_" + (position + 1) + "_2_0_0");
+            }
+
+
+
         });
 
 
@@ -320,6 +329,11 @@ public class SearchCircleFragment extends BaseLazyFragment {
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
         KLog.d("tag","myKeyword = " + myKeyword);
+        if(event.getPosition() == 3){
+            mAllList.clear();
+            page =  1;
+            searchBlog();
+        }
     }
 
 

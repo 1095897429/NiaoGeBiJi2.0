@@ -248,6 +248,15 @@ public class RecommendBean extends BaseBean {
         private String share_pic;
         private String article_point;
 
+        private String dl_times;
+
+        public String getDl_times() {
+            return dl_times;
+        }
+
+        public void setDl_times(String dl_times) {
+            this.dl_times = dl_times;
+        }
 
         public int getAct_state() {
             return act_state;

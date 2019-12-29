@@ -16,7 +16,7 @@
             android:layout_centerVertical="true"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@mipmap/icon_fenxiang"/>
+            android:src="@mipmap/icon_head_default"/>
 
         <LinearLayout
             android:layout_marginLeft="8dp"
@@ -43,7 +43,7 @@
                         android:ellipsize="end"
                         android:lineSpacingExtra="2dp"
                         android:maxLines="1"
-                        android:text="名称0"
+                        android:text=""
                         android:textColor="@color/text_first_color"
                         android:textSize="16sp" />
 
@@ -51,19 +51,16 @@
                         android:layout_width="8dp"
                         android:layout_height="match_parent" />
 
-                    <ImageView
-                        android:background="#D8D8D8"
-                        android:layout_width="28dp"
-                        android:layout_height="20dp" />
 
-                    <Space
-                        android:layout_width="4dp"
-                        android:layout_height="match_parent" />
+                    <LinearLayout
+                        android:id="@+id/ll_badge"
+                        android:layout_marginLeft="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
-                    <ImageView
-                        android:background="#D8D8D8"
-                        android:layout_width="28dp"
-                        android:layout_height="20dp" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -79,11 +76,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:drawableRight="@mipmap/icon_authen_company"
-                android:drawablePadding="4dp"
                 android:lineSpacingExtra="2dp"
                 android:maxLines="1"
-                android:text="上海青墨网络科技有限公司产品经理"
+                android:text=""
                 android:textColor="#AAAEB3"
                 android:textSize="13sp" />
 

@@ -18,6 +18,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.BaiduItemAdapter;
 import com.qmkj.niaogebiji.module.bean.SearchAllBaiduBean;
@@ -222,9 +223,11 @@ public class SearchBaiDuItemFragment extends BaseLazyFragment {
 
         mBaiduItemAdapter.setOnItemClickListener((adapter, view, position) -> {
 
+            if(position <= 2) {
+                MobclickAgentUtils.onEvent("index_search_wiki_" + (position + 1) + "_2_0_0");
+            }
 
             String link = StringUtil.getLink("wikidetail/" + mBaiduItemAdapter.getData().get(position).getWord_id());
-
             UIHelper.toWebViewActivityWithOnStep(getActivity(),link);
         });
     }
@@ -240,7 +243,12 @@ public class SearchBaiDuItemFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
-        KLog.d("tag","myKeyword = " + myKeyword);
+        KLog.d("tag","百科 ==  myKeyword = " + myKeyword);
+        if(event.getPosition() == 4){
+            mList.clear();
+            page =  1;
+            searchWiki();
+        }
     }
 
 

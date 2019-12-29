@@ -17,6 +17,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.SearchAllAdapter;
 import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
@@ -291,6 +293,7 @@ public class SearchAllFragment extends BaseLazyFragment {
         for (int i = 0; i < authors.size(); i++) {
             author = new AuthorBean.Author();
             author.setId(authors.get(i).getAid());
+            author.setTitle(authors.get(i).getTitle());
             author.setName(authors.get(i).getAuthor());
             author.setImg(authors.get(i).getPic());
             author.setIs_follow(authors.get(i).getIs_follow());
@@ -430,21 +433,33 @@ public class SearchAllFragment extends BaseLazyFragment {
             int  type = mSearchAllAdapter.getData().get(position).getItemType();
             switch (type){
                 case SearchAllAdapter.GANHUO:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_search_index_more_2_0_0);
+
                     EventBus.getDefault().post(new LookMoreEvent(1));
                     break;
                 case SearchAllAdapter.PEOPLE:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_search_person_more_2_0_0);
+
                     EventBus.getDefault().post(new LookMoreEvent(2));
                     break;
                 case SearchAllAdapter.DYNAMIC:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_search_weibo_more_2_0_0);
+
                     EventBus.getDefault().post(new LookMoreEvent(3));
                     break;
                 case SearchAllAdapter.BAIDU:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_search_wiki_more_2_0_0);
+
                     EventBus.getDefault().post(new LookMoreEvent(4));
                     break;
                 case SearchAllAdapter.DATA:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_search_resource_more_2_0_0);
+
                     EventBus.getDefault().post(new LookMoreEvent(5));
                     break;
                 case SearchAllAdapter.AUTHOR:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_search_author_more_2_0_0);
+
                     EventBus.getDefault().post(new LookMoreEvent(6));
                     break;
                 default:

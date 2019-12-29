@@ -277,7 +277,11 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchWordEvent(SearchWordEvent event) {
         myKeyword = event.getWord();
-//        KLog.d("tag","myKeyword = " + myKeyword);
+        if(event.getPosition() == 2){
+            mList.clear();
+            page =  1;
+            searchPeople();
+        }
     }
 
 

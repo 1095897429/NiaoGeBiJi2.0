@@ -47,6 +47,34 @@ public class FlashBulltinBean extends BaseBean {
         //显示 头条 icon  top = 1 显示
         private String top;
 
+        private String pic2;
+        private String pic3;
+        private String pic_type;
+
+        public String getPic2() {
+            return pic2;
+        }
+
+        public void setPic2(String pic2) {
+            this.pic2 = pic2;
+        }
+
+        public String getPic3() {
+            return pic3;
+        }
+
+        public void setPic3(String pic3) {
+            this.pic3 = pic3;
+        }
+
+        public String getPic_type() {
+            return pic_type;
+        }
+
+        public void setPic_type(String pic_type) {
+            this.pic_type = pic_type;
+        }
+
         public String getTop() {
             return top;
         }

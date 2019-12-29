@@ -126,11 +126,14 @@ public class LaunchPermissDialog {
 
         public void show() {
             setLayout();
-            mDialog.show();
+            if(mDialog != null){
+                mDialog.show();
+            }
+
         }
 
         public void dismiss() {
-            if(mDialog.isShowing()){
+            if(mDialog != null && mDialog.isShowing()){
                 mDialog.dismiss();
             }
         }

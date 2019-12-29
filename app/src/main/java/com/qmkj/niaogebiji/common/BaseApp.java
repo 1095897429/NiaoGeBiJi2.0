@@ -39,7 +39,6 @@ import cn.udesk.UdeskSDKManager;
  */
 public class BaseApp extends Application {
 
-    private static boolean isAudioShow;
 
     public static final String TAG = "BaseApp";
     private static BaseApp myApp;
@@ -59,7 +58,7 @@ public class BaseApp extends Application {
     private MiitHelper.AppIdsUpdater appIdsUpdater = new MiitHelper.AppIdsUpdater() {
         @Override
         public void OnIdsAvalid(@NonNull String ids) {
-            Log.e("++++++ids: ", ids);
+            Log.e("tag", "++++++ids" +  ids);
             oaid = ids;
         }
     };

@@ -40,11 +40,14 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
+import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
@@ -100,6 +103,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         isFromUserInfo = fromUserInfo;
     }
 
+
+    private String chainName;
+
+    public void setChainName(String chainName) {
+        this.chainName = chainName;
+    }
+
     public CircleRecommentAdapterNew(List<CircleBean> data) {
         super(R.layout.first_circle_item_all,data);
     }
@@ -130,17 +140,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             sender_name.setText(userInfo.getName());
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
-            StringBuilder name =  new StringBuilder() ;
-            name.setLength(0);
-            if(null != userInfo.getCompany_name()){
-                name.append(userInfo.getCompany_name());
-            }
+            sender_tag.setText( (TextUtils.isEmpty(userInfo.getCompany_name())?"":userInfo.getCompany_name()) +
+                    (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
 
-            if(null != userInfo.getPosition()){
-                name.append(userInfo.getPosition());
-            }
-
-            sender_tag.setText(name.toString());
             //是否认证
             if("1".equals(userInfo.getAuth_email_status()) || "1".equals(userInfo.getAuth_card_status())){
                 Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
@@ -213,14 +215,25 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
             if(item.getP_blog() != null && item.getP_blog().getP_user_info() != null){
                 CircleBean.P_user_info temp =item.getP_blog().getP_user_info();
-                helper.setText(R.id.transfer_zf_author,temp.getName()  + "  " + temp.getCompany_name() +
-                        temp.getPosition());
+                TextView  transfer_zf_author  = helper.getView(R.id.transfer_zf_author);
+                transfer_zf_author.setText(temp.getName() +(TextUtils.isEmpty(temp.getCompany_name())?"":item.getCompany_name()) +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
             }
         }
 
-
         //item点击事件
-        helper.itemView.setOnClickListener(view -> UIHelper.toCommentDetailActivity(mContext,item.getId()));
+        helper.itemView.setOnClickListener(v -> {
+            if(helper.getAdapterPosition() <= 9){
+                if("推荐".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_recommendlist_quanzi"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }else if("关注 ".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_follow_quanzi"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }
+            }
+
+            UIHelper.toCommentDetailActivity(mContext,item.getId());
+        });
+
 
 
         //item长按事件
@@ -233,17 +246,48 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         //link点击
         helper.getView(R.id.part_yc_link).setOnClickListener(view -> UIHelper.toWebViewActivity(mContext, item.getLink()));
+
         //文章点击
         helper.getView(R.id.part_yc_acticle).setOnClickListener(view -> UIHelper.toNewsDetailActivity(mContext, item.getArticle_id()));
 
         //点赞
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
+            if(helper.getAdapterPosition() <= 9){
+
+
+                if("推荐".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_recommendlist_laud"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }else if("关注 ".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_follow_laud"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }
+            }
             likeBlog(item,helper.getAdapterPosition());
+        });
+
+        //评论
+        helper.getView(R.id.circle_comment).setOnClickListener(view -> {
+            if(helper.getAdapterPosition() <= 9){
+
+                if("推荐".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_recommendlist_comment"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }else if("关注 ".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_follow_comment"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }
+            }
+            UIHelper.toCommentDetailActivity(mContext,item.getId());
         });
 
         //分享
         helper.getView(R.id.circle_share).setOnClickListener(view -> {
-            showShareDialog(item);
+            if(helper.getAdapterPosition() <= 9){
+
+                if("推荐".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_recommendlist_share"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }else if("关注 ".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_follow_share"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }
+            }
+            showShareDialog(item,helper.getAdapterPosition());
         });
 
         //转发帖子点击事件
@@ -251,6 +295,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId());
 
         });
+
+        //转发图片点击预览
+//        helper.getView(R.id.part_zf_pic).setOnClickListener(view -> {
+//            UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId());
+//
+//
+//        });
 
         //帖子举报/删除 -- 为了增大触摸面积
         helper.getView(R.id.ll_report).setOnClickListener(view -> {
@@ -260,12 +311,20 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 showRemoveDialog(item,helper.getAdapterPosition());
             }else{
                 showPopupWindow(item,helper.getView(R.id.circle_report));
-                setBackgroundAlpha((Activity) mContext, 0.6f);
+                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
             }
         });
 
         //去个人中心
         helper.getView(R.id.part1111).setOnClickListener(view -> {
+
+            if(helper.getAdapterPosition() <= 9){
+                if("推荐".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_recommendlist_"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }else if("关注 ".equals(chainName)){
+                    MobclickAgentUtils.onEvent("quanzi_follow_"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
+                }
+            }
             UIHelper.toUserInfoActivity(mContext,item.getUid());
         });
 
@@ -347,10 +406,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 ((SimpleItemAnimator)recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView2.setAdapter(mCircleTransferPicAdapter);
 
-//                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId(),item.getP_blog().getCircleType(),helper.getAdapterPosition()));
-
-
-                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId()));
+                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) ->
+                        UIHelper.toPicPreViewActivity(mContext,  (ArrayList<String>) item.getP_blog().getImages(),position)
+                );
 
                 break;
             case 22:
@@ -359,156 +417,26 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 String tempLink2   = StringUtil.getDomain(item.getP_blog().getLink());
                 helper.setText(R.id.transfer_link_http,tempLink2);
                 helper.setImageResource(R.id.transer_link_img,R.mipmap.icon_link_logo);
+                //转发link跳转
+                helper.getView(R.id.part_zf_article).setOnClickListener(v ->
+                       UIHelper.toWebViewActivity(mContext,item.getP_blog().getLink()));
+
                 break;
             case 33:
                 if(!TextUtils.isEmpty(item.getP_blog().getArticle_image())){
                     ImageUtil.load(mContext,item.getP_blog().getArticle_image(),helper.getView(R.id.transfer_article_img));
                 }
                 helper.setText(R.id.transfer_article_title,item.getP_blog().getArticle_title());
+
+                //转发文章跳转
+                helper.getView(R.id.part_zf_article).setOnClickListener(v -> UIHelper.toNewsDetailActivity(mContext,item.getP_blog().getArticle_id()));
+
                 break;
                 default:
         }
 
 
     }
-    SpannableString spanString2;
-    private void getIconLinkShow(CircleBean item, TextView msg) {
-        String content = item.getBlog();
-        String icon = "[icon]";
-        //获取链接
-        int size  =  item.getPcLinks().size();
-        if(size >  0){
-            for (int k = 0; k < size; k++) {
-                content = content.replace(item.getPcLinks().get(k),icon);
-            }
-        }
-        KLog.d("tag","最新字符串是 " + content);
-
-        String newContent = content;
-
-        //保存字符的开始下标
-        List<Integer> pos = new ArrayList<>();
-
-        int c = 0;
-        for(int i = 0; i< size ;i++ ){
-            c = content.indexOf(icon,c);
-            //如果有S这样的子串。则C的值不是-1.
-            if(c != -1){
-                //记录找到字符的索引
-                pos.add(c);
-                //记录字符串后面的
-                c = c + 1;
-                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
-                //将剩下的字符冲洗取出放到str中
-                //content = content.substring(c + 1);
-            }
-            else {
-                //i++;
-                KLog.d("tag","没有");
-                break;
-            }
-        }
-
-        //拼接链接
-        Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_link_http);
-        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
-
-        spanString2 = new SpannableString(newContent);
-
-        int w;
-        for (int k = 0; k < size; k++) {
-            w = k;
-            int finalW = w;
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    String li = item.getPcLinks().get(finalW);
-                    KLog.d("tag","点击了网页 " + li);
-                    UIHelper.toWebViewActivity(mContext,li);
-                }
-            };
-
-            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
-            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
-            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        }
-        //累加的原因找到了，用了append,需要用setText
-        msg.setText(spanString2);
-        //下面语句不写的话，点击clickablespan没效果
-        msg.setMovementMethod(LinkMovementMethod.getInstance());
-
-    }
-
-    private void getTransIconLinkShow(CircleBean.P_blog item, TextView msg) {
-        String content = item.getBlog();
-        String icon = "[icon]";
-        //获取链接
-        int size  =  item.getPcLinks().size();
-        if(size >  0){
-            for (int k = 0; k < size; k++) {
-                content = content.replace(item.getPcLinks().get(k),icon);
-            }
-        }
-        KLog.d("tag","最新字符串是 " + content);
-
-        String newContent = content;
-
-        //保存字符的开始下标
-        List<Integer> pos = new ArrayList<>();
-
-        int c = 0;
-        for(int i = 0; i< size ;i++ ){
-            c = content.indexOf(icon,c);
-            //如果有S这样的子串。则C的值不是-1.
-            if(c != -1){
-                //记录找到字符的索引
-                pos.add(c);
-                //记录字符串后面的
-                c = c + 1;
-                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
-                //将剩下的字符冲洗取出放到str中
-                //content = content.substring(c + 1);
-            }
-            else {
-                //i++;
-                KLog.d("tag","没有");
-                break;
-            }
-        }
-
-        //拼接链接
-        Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_link_http);
-        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
-
-        spanString2 = new SpannableString(newContent);
-
-        int w;
-        for (int k = 0; k < size; k++) {
-            w = k;
-            int finalW = w;
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    String li = item.getPcLinks().get(finalW);
-                    KLog.d("tag","点击了网页 " + li);
-                    UIHelper.toWebViewActivity(mContext,li);
-                }
-            };
-
-            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
-            CenterAlignImageSpan imageSpan = new CenterAlignImageSpan(drawableLink);
-            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        }
-        //累加的原因找到了，用了append,需要用setText
-        msg.setText(spanString2);
-        //下面语句不写的话，点击clickablespan没效果
-        msg.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
 
     //通过uid加载布局
     private void getIconType(BaseViewHolder helper, CircleBean item) {
@@ -664,13 +592,19 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
 
-    private void showShareDialog(CircleBean item) {
+    private void showShareDialog(CircleBean item, int adapterPosition) {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
         alertDialog.setShareDynamicView().setTitleGone();
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position) {
                 case 0:
+                    if("推荐".equals(chainName)){
+                        MobclickAgentUtils.onEvent("quanzi_recommendlist_share_moments"+ (adapterPosition + 1) +"_2_0_0");
+                    }else if("关注 ".equals(chainName)){
+                        MobclickAgentUtils.onEvent("quanzi_follow_share_moments"+ (adapterPosition + 1) +"_2_0_0");
+                    }
+
                     ShareBean bean1 = new ShareBean();
                     bean1.setShareType("circle_link");
                     bean1.setLink(item.getShare_url());
@@ -690,7 +624,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
-                    KLog.d("tag","朋友 是链接");
+                    if("推荐".equals(chainName)){
+                        MobclickAgentUtils.onEvent("quanzi_recommendlist_share_friends"+ (adapterPosition + 1) +"_2_0_0");
+                    }else if("关注 ".equals(chainName)){
+                        MobclickAgentUtils.onEvent("quanzi_follow_share_friends"+ (adapterPosition + 1) +"_2_0_0");
+                    }
                     ShareBean bean = new ShareBean();
                     bean.setShareType("weixin_link");
                     bean.setLink(item.getShare_url());
@@ -710,6 +648,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 4:
+                    if("推荐".equals(chainName)){
+                        MobclickAgentUtils.onEvent("quanzi_follow_share_forward"+ (adapterPosition + 1) +"_2_0_0");
+                    }else if("关注 ".equals(chainName)){
+                        MobclickAgentUtils.onEvent("quanzi_follow_share_forward"+ (adapterPosition + 1) +"_2_0_0");
+                    }
                     KLog.d("tag", "转发到动态");
                     UIHelper.toTranspondActivity(mContext,item);
                     //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
@@ -744,7 +687,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //消失时将透明度设置回来
         mPopupWindow.setOnDismissListener(() -> {
             if (null != mContext) {
-                setBackgroundAlpha((Activity) mContext, 1f);
+                StringUtil.setBackgroundAlpha((Activity) mContext, 1f);
             }
         });
 
@@ -817,19 +760,5 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 });
     }
 
-
-    //设置页面的透明度   1表示不透明
-    public static void setBackgroundAlpha(Activity activity, float bgAlpha) {
-        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
-        lp.alpha = bgAlpha;
-        if (bgAlpha == 1) {
-            //不移除该Flag的话,在有视频的页面上的视频会出现黑屏的bug
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        } else {
-            //此行代码主要是解决在华为手机上半透明效果无效的bug
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        }
-        activity.getWindow().setAttributes(lp);
-    }
 
 }

@@ -33,6 +33,11 @@
         layout="@layout/activity_empty"/>
 
 
+    <include
+        layout="@layout/dialog_waiting"
+        android:visibility="gone" />
+
+
 
 
 </RelativeLayout>

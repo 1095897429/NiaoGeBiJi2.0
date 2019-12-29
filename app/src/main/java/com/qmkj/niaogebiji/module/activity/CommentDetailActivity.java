@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,12 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,9 +28,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -37,7 +37,6 @@ import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
-import com.qmkj.niaogebiji.common.dialog.TalkAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.TalkCircleAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -48,18 +47,13 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CirclePicAdapter;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.CircleTransferPicAdapter;
-import com.qmkj.niaogebiji.module.adapter.CommentAdapter;
-import com.qmkj.niaogebiji.module.adapter.CommentAdapterByNewBean;
+import com.qmkj.niaogebiji.module.adapter.CommentCircleAdapter;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
-import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentBeanNew;
-import com.qmkj.niaogebiji.module.bean.CommentOkBean;
+import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
-import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
-import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
 import com.qmkj.niaogebiji.module.event.RefreshCircleDetailCommentEvent;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -89,11 +83,8 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-11-21
  * 描述:一级评论 (帖子 文章 快讯)
  *
- * 0.showTalkDialog
- * 1.showTalkDialogFirstComment
- * 2.
  *
- * 1级适配器 CommentAdapterByNewBean
+ * 1级适配器 CommentCircleAdapter
  * 2级适配器 CommentSecondAdapter
  * zanPosition 记录到二级评论时评论的索引
  *
@@ -106,6 +97,7 @@ import io.reactivex.schedulers.Schedulers;
  * 重点
  * 0.评论的实体叫做CommentBeanNew ，圈子叫做CircleBean
  * 1.构建临时变量 oneComment ，在每次点击列表item时重新赋值
+ * 2.二级评论实体adapter中多实体
  */
 
 
@@ -141,6 +133,16 @@ public class CommentDetailActivity extends BaseActivity {
 
     @BindView(R.id.zan_num)
     TextView zan_num;
+
+    @BindView(R.id.ll_report)
+    LinearLayout ll_report;
+
+    @BindView(R.id.circle_remove)
+    ImageView circle_remove;
+
+    @BindView(R.id.circle_report)
+    ImageView circle_report;
+
 
     @BindView(R.id.image_circle_priase)
     ImageView image_circle_priase;
@@ -218,8 +220,6 @@ public class CommentDetailActivity extends BaseActivity {
     TextView transfer_article_title;
 
 
-
-
     @BindView(R.id.transfer_link_text)
     TextView transfer_link_text;
 
@@ -239,31 +239,36 @@ public class CommentDetailActivity extends BaseActivity {
     @BindView(R.id.pic_recyler)
     RecyclerView pic_recyler;
 
+    @BindView(R.id.all_part_empty)
+    LinearLayout all_part_empty;
+
+
+
 
     //1级 适配器
-    CommentAdapterByNewBean mCommentAdapter;
+    CommentCircleAdapter mCommentAdapter;
     //组合集合
-    List<CommentBeanNew> mAllList = new ArrayList<>();
+    List<CommentCircleBean> mAllList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
-
-    private int page = 1;
-
-    private String blog_id = "";
-
-    //点击1级评论的id,此id就是整个item的id
-    private String blog_comment_id = "";
-    //圈子明细
+    //圈子明细 1
     private CircleBean mCircleBean;
-    //评论内容
-    String commentString;
-    //一级集合
-    private List<CommentBeanNew> mCommentBeanNewList = new ArrayList<>();
-    //布局类型 请求数据后加载
-    private int layoutType;
-    //评论的是 一级评论还是二级评论
+    //页数 2
+    private int page = 1;
+    //临时评论数据 3
+    private CommentCircleBean oneTempComment;
+    //临时评论数据 4
+    private CommentCircleBean secondTempComment;
+    //当前展现的层级 5
     private boolean isSecondComment = false;
+    //用于记录在二级评论点赞后，一级界面数据没有刷新 6
+    private int zanPosition;
+
+
+    //一级集合
+    private List<CommentCircleBean> mCommentCircleBeanList = new ArrayList<>();
+
 
     private int myPotion = -1;
 
@@ -280,14 +285,23 @@ public class CommentDetailActivity extends BaseActivity {
     @Override
     protected void initView() {
         myPotion = getIntent().getExtras().getInt("clickPostion");
-        blog_id = getIntent().getExtras().getString("blog_id");
-        layoutType = getIntent().getExtras().getInt("layoutType");
+        String blog_id = getIntent().getExtras().getString("blog_id");
+        blogDetail(blog_id);
         initLayout();
         initPicLayout();
         initSamrtLayout();
         initTransferPicLayout();
-        blogDetail();
-        getBlogCommentList();
+    }
+
+    private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mAllList.clear();
+            page = 1;
+            blogDetail(mCircleBean.getId());
+        });
     }
 
 
@@ -328,16 +342,15 @@ public class CommentDetailActivity extends BaseActivity {
                 break;
             case R.id.circle_comment:
             case R.id.toComment:
-                //TODO 弹框1
-                showTalkDialog(-1,"","aimtodynamic","");
+                //TODO 弹框评论圈子
+                showTalkDialog(mCircleBean.getId(),"");
                 break;
             default:
         }
     }
 
 
-
-    /** --------------------------------- 二级评论列表 及 点击事件---------------------------------*/
+    /** ------------------------------------------------------------------ 二级评论列表 及 点击事件------------------------------------------*/
     int secondPage = 1;
     LinearLayout ll_second_empty;
     RelativeLayout totalk;
@@ -347,43 +360,49 @@ public class CommentDetailActivity extends BaseActivity {
     LinearLayout comment_priase;
     ImageView zan_second_img_second;
     ImageView icon;
-    View headView;
     BottomSheetDialog bottomSheetDialog;
-    CommentSecondAdapter bottomSheetAdapter;
+    CommentSecondAdapter mCommentSecondAdapter;
     BottomSheetBehavior mDialogBehavior;
 
     List<MulSecondCommentBean> allSecondComments = new ArrayList<>();
     TextView nickname_second;
+    LinearLayout last_reply_ll;
     TextView comment_text_second;
     TextView time_publish_second;
     TextView zan_second_num_second;
     TextView comment_num_second;
 
-    private void showSheetDialog() {
+    private void showSecondDialog(CommentCircleBean superiorComment) {
         View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
         mSecondRV = view.findViewById(R.id.recycler);
-        ll_second_empty = view.findViewById(R.id.ll_second_empty);
-        icon = view.findViewById(R.id.icon);
+        zan_second_num_second = view.findViewById(R.id.zan_second_num_second);
+        last_reply_ll = view.findViewById(R.id.last_reply_ll);
+        nickname_second = view.findViewById(R.id.nickname_second);
+        comment_text_second = view.findViewById(R.id.comment_text_second);
+        time_publish_second = view.findViewById(R.id.time_publish_second);
+        head_second_icon = view.findViewById(R.id.head_second_icon);
+        zan_second_img_second = view.findViewById(R.id.zan_second_img_second);
+        comment_priase = view.findViewById(R.id.comment_priase);
         comment_num_second = view.findViewById(R.id.comment_num_second);
         second_close = view.findViewById(R.id.second_close);
         second_close.setOnClickListener(view12 -> bottomSheetDialog.dismiss());
+        ll_second_empty = view.findViewById(R.id.ll_second_empty);
+        icon = view.findViewById(R.id.icon);
         totalk = view.findViewById(R.id.totalk);
         totalk.setOnClickListener(view1 -> {
-            //此处逻辑和点击一级评论item一样
             isSecondComment = true;
-            KLog.d("tag","点击此评论的id 为  " + oneComment.getId());
-            showTalkDialogSecondComment(-1, oneComment);
+            KLog.d("tag","评论的是一级评论，同时点击此评论的id 为  " + superiorComment.getId());
+            showTalkDialogSecondComment(-1, superiorComment);
         });
 
-        bottomSheetAdapter = new CommentSecondAdapter(allSecondComments);
+        mCommentSecondAdapter = new CommentSecondAdapter(allSecondComments);
+        mCommentSecondAdapter.setSuperiorComment(superiorComment);
         mSecondRV.setHasFixedSize(true);
         ((SimpleItemAnimator)mSecondRV.getItemAnimator()).setSupportsChangeAnimations(false);
         mSecondRV.setLayoutManager(new LinearLayoutManager(this));
-        mSecondRV.setAdapter(bottomSheetAdapter);
-
+        mSecondRV.setAdapter(mCommentSecondAdapter);
         bottomSheetDialog = new BottomSheetDialog(this, R.style.MyCommentDialog);
         bottomSheetDialog.setContentView(view);
-
         mDialogBehavior = BottomSheetBehavior.from((View) view.getParent());
         mDialogBehavior.setPeekHeight(ScreenUtils.getScreenHeight());
         mDialogBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -410,68 +429,64 @@ public class CommentDetailActivity extends BaseActivity {
         });
         bottomSheetDialog.show();
 
-        bottomSheetAdapter.setOnItemClickListener((adapter, view1, position) -> {
-            //此处逻辑和点击一级评论item一样
-            isSecondComment = true;
-            oneComment = bottomSheetAdapter.getData().get(position).getCircleComment();
-            KLog.d("tag","点击此评论的id 为  " + oneComment.getId() + " 被回复的人事 " + oneComment.getUser_info().getName());
-            showTalkDialogSecondComment(position, oneComment);
-
-        });
-
-        bottomSheetAdapter.setOnItemChildClickListener((adapter, view13, position) -> {
-            isSecondComment = true;
-            oneComment = bottomSheetAdapter.getData().get(position).getCircleComment();
-            KLog.d("tag","点击此评论的id 为  " + oneComment.getId() + " 被回复的人是 " + oneComment.getUser_info().getName());
-            showTalkDialogSecondComment(position, oneComment);
-        });
-
-        initScondEvent();
-        allSecondComments.clear();
-        blog_comment_id = oneComment.getId();
-        getSecondCommentComment();
-    }
-
-
-
-    private void setSecondHeadData(CommentBeanNew temp) {
-        //底部使用者头像
-        ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),icon);
-        //设置一些头信息
-        headView = LayoutInflater.from(this).inflate(R.layout.second_comment_head,null);
-        zan_second_num_second = headView.findViewById(R.id.zan_second_num_second);
-        nickname_second = headView.findViewById(R.id.nickname_second);
-        comment_text_second = headView.findViewById(R.id.comment_text_second);
-        time_publish_second = headView.findViewById(R.id.time_publish_second);
-        head_second_icon = headView.findViewById(R.id.head_second_icon);
-        zan_second_img_second = headView.findViewById(R.id.zan_second_img_second);
-        comment_priase = headView.findViewById(R.id.comment_priase);
-        bottomSheetAdapter.setHeaderView(headView);
-
-        comment_num_second.setText(temp.getComment_num() + "条回复");
-        nickname_second.setText(temp.getUser_info().getName());
-        comment_text_second.setText(temp.getComment());
-        ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
+        //设值
+        comment_num_second.setText(superiorComment.getComment_num() + "条回复");
+        nickname_second.setText(superiorComment.getUser_info().getName());
+        comment_text_second.setText(superiorComment.getComment());
+        ImageUtil.load(this,superiorComment.getUser_info().getAvatar(),head_second_icon);
         //发布时间
-        if(StringUtil.checkNull(temp.getCreated_at())){
-            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getCreated_at()) * 1000L);
+        if(StringUtil.checkNull(superiorComment.getCreated_at())){
+            String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(superiorComment.getCreated_at()) * 1000L);
             time_publish_second.setText(s);
         }
+        nickname_second.setText(superiorComment.getUser_info().getName());
+        comment_text_second.setText(superiorComment.getComment());
+        ImageUtil.loadByDefaultHead(this,superiorComment.getUser_info().getAvatar(),head_second_icon);
+        zanChange(zan_second_num_second,zan_second_img_second,superiorComment.getLike_num(),superiorComment.getIs_like());
 
-        nickname_second.setText(temp.getUser_info().getName());
-        comment_text_second.setText(temp.getComment());
-        ImageUtil.load(this,temp.getUser_info().getAvatar(),head_second_icon);
-
-        //点赞
-        zanChange(zan_second_num_second,zan_second_img_second,temp.getLike_num(),temp.getIs_like());
-
-        comment_priase.setOnClickListener((view)->{
-            likeComment(temp);
+        //赞赞赞
+        comment_priase.setOnClickListener((view22)->{
+            likeComment(superiorComment);
         });
+
+        //头像跳转
+        head_second_icon.setOnClickListener(v -> UIHelper.toUserInfoActivity(CommentDetailActivity.this,superiorComment.getUid()));
+
+
+        mCommentSecondAdapter.setOnLoadMoreListener(() -> {
+            ++secondPage;
+            KLog.d("tag","加载更多");
+            getSecondCommentComment(superiorComment.getId());
+        },mSecondRV);
+
+
+        mCommentSecondAdapter.setOnItemClickListener((adapter, view1, position) -> {
+            //此处逻辑和点击一级评论item一样
+            isSecondComment = true;
+            secondTempComment = mCommentSecondAdapter.getData().get(position).getCircleComment();
+            KLog.d("tag","点击此评论的id 为  " + this.secondTempComment.getId() + " 被回复的人事 " + this.secondTempComment.getUser_info().getName());
+            showTalkDialogSecondComment(position,secondTempComment);
+
+        });
+
+        mCommentSecondAdapter.setOnItemChildClickListener((adapter, view13, position) -> {
+            isSecondComment = true;
+            secondTempComment = mCommentSecondAdapter.getData().get(position).getCircleComment();
+            KLog.d("tag","点击此评论的id 为  " + this.secondTempComment.getId() + " 被回复的人是 " + this.secondTempComment.getUser_info().getName());
+            showTalkDialogSecondComment(position, this.secondTempComment);
+        });
+
+        mCommentSecondAdapter.setOnReduceListener(() -> {
+          setSecondReply(superiorComment,-1);
+        });
+
+        secondPage = 1;
+        allSecondComments.clear();
+        getSecondCommentComment(superiorComment.getId());
     }
 
 
-    private void getSecondCommentComment() {
+    private void getSecondCommentComment(String blog_comment_id) {
         Map<String,String> map = new HashMap<>();
         map.put("blog_comment_id",blog_comment_id + "");
         map.put("page",secondPage + "");
@@ -480,34 +495,36 @@ public class CommentDetailActivity extends BaseActivity {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<CommentBeanNew>>>() {
+                .subscribe(new BaseObserver<HttpResponse<List<CommentCircleBean>>>() {
                     @Override
-                    public void onSuccess(HttpResponse<List<CommentBeanNew>> response) {
-                        List<CommentBeanNew> mCommentSList = response.getReturn_data();
+                    public void onSuccess(HttpResponse<List<CommentCircleBean>> response) {
+                        List<CommentCircleBean> mCommentSList = response.getReturn_data();
                         if(1 == secondPage){
                             if(!mCommentSList.isEmpty()){
                                 setData2(mCommentSList);
-                                bottomSheetAdapter.setNewData(allSecondComments);
+                                mCommentSecondAdapter.setNewData(allSecondComments);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
                                 if(mCommentSList.size() < Constant.SEERVER_NUM){
-                                    bottomSheetAdapter.loadMoreEnd();
+                                    mCommentSecondAdapter.loadMoreEnd();
                                 }
-                                mSecondRV.setVisibility(View.VISIBLE);
                                 ll_second_empty.setVisibility(View.GONE);
+                                last_reply_ll.setVisibility(View.VISIBLE);
+                                mSecondRV.setVisibility(View.VISIBLE);
                             }else{
                                 mSecondRV.setVisibility(View.GONE);
+                                last_reply_ll.setVisibility(View.GONE);
                                 ll_second_empty.setVisibility(View.VISIBLE);
                             }
                         }else{
                             //已为加载更多有数据
                             if(mCommentSList != null && mCommentSList.size() > 0){
                                 setData2(mCommentSList);
-                                bottomSheetAdapter.loadMoreComplete();
-                                bottomSheetAdapter.addData(mMulSecondCommentBeans);
+                                mCommentSecondAdapter.loadMoreComplete();
+                                mCommentSecondAdapter.addData(mMulSecondCommentBeans);
                             }else{
                                 //已为加载更多无更多数据
-                                bottomSheetAdapter.loadMoreComplete();
-                                bottomSheetAdapter.loadMoreEnd();
+                                mCommentSecondAdapter.loadMoreComplete();
+                                mCommentSecondAdapter.loadMoreEnd();
                             }
                         }
                     }
@@ -519,8 +536,8 @@ public class CommentDetailActivity extends BaseActivity {
                             if(page == 1){
                                 setData2(null);
                             }else{
-                                bottomSheetAdapter.loadMoreComplete();
-                                bottomSheetAdapter.loadMoreEnd();
+                                mCommentSecondAdapter.loadMoreComplete();
+                                mCommentSecondAdapter.loadMoreEnd();
                             }
                         }
                     }
@@ -530,7 +547,7 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     List<MulSecondCommentBean> mMulSecondCommentBeans = new ArrayList<>();
-    private void setData2(List<CommentBeanNew> list) {
+    private void setData2(List<CommentCircleBean> list) {
         mMulSecondCommentBeans.clear();
         MulSecondCommentBean bean;
         for (int i = 0; i < list.size(); i++) {
@@ -545,21 +562,8 @@ public class CommentDetailActivity extends BaseActivity {
         }
     }
 
-    private void initScondEvent() {
-        bottomSheetAdapter.setOnLoadMoreListener(() -> {
-            ++secondPage;
-            KLog.d("tag","加载更多");
-        },mSecondRV);
-
-        setSecondHeadData(oneComment);
-    }
-
-
-
 
     /** --------------------------------- 点赞评论  ---------------------------------*/
-    //用于记录在二级评论点赞后，一级界面数据没有刷新
-    private int zanPosition;
 
 
     private void zanCommentChange(TextView com_text,TextView zan_num, ImageView zan_img,
@@ -608,8 +612,6 @@ public class CommentDetailActivity extends BaseActivity {
     private void zanChange(TextView zan_num,ImageView imageView, String good_num, int is_good) {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
         zan_num.setTypeface(typeface);
-
-
         if(StringUtil.checkNull(good_num)){
             if("0".equals(good_num)){
                 zan_num.setText("赞");
@@ -641,8 +643,9 @@ public class CommentDetailActivity extends BaseActivity {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mCommentAdapter = new CommentAdapterByNewBean(mAllList);
+        mCommentAdapter = new CommentCircleAdapter(mAllList);
         mCommentAdapter.setMyPotion(myPotion);
+        mCommentAdapter.setCircleBean(mCircleBean);
         mRecyclerView.setAdapter(mCommentAdapter);
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -656,7 +659,7 @@ public class CommentDetailActivity extends BaseActivity {
     }
 
 
-    private void getBlogCommentList() {
+    private void getBlogCommentList(String blog_id) {
         Map<String,String> map = new HashMap<>();
         map.put("blog_id",blog_id + "");
         map.put("page",page + "");
@@ -665,20 +668,20 @@ public class CommentDetailActivity extends BaseActivity {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<CommentBeanNew>>>() {
+                .subscribe(new BaseObserver<HttpResponse<List<CommentCircleBean>>>() {
                     @Override
-                    public void onSuccess(HttpResponse<List<CommentBeanNew>> response) {
-                        mCommentBeanNewList = response.getReturn_data();
+                    public void onSuccess(HttpResponse<List<CommentCircleBean>> response) {
+                        mCommentCircleBeanList = response.getReturn_data();
                             if(1 == page){
                                 setCommentListData();
                                 mCommentAdapter.setNewData(mAllList);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(mCommentBeanNewList.size() < Constant.SEERVER_NUM){
+                                if(mCommentCircleBeanList.size() < Constant.SEERVER_NUM){
                                     mCommentAdapter.loadMoreEnd();
                                 }
                             }else{
                                 //已为加载更多有数据
-                                if(mCommentBeanNewList != null && mCommentBeanNewList.size() > 0){
+                                if(mCommentCircleBeanList != null && mCommentCircleBeanList.size() > 0){
                                     setCommentListData();
                                     mCommentAdapter.loadMoreComplete();
                                     mCommentAdapter.addData(mAllList);
@@ -708,10 +711,10 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     private void setCommentListData() {
-        if(!mCommentBeanNewList.isEmpty()){
-            CommentBeanNew bean1 ;
-            for (int i = 0; i < mCommentBeanNewList.size(); i++) {
-                bean1 = mCommentBeanNewList.get(i);
+        if(!mCommentCircleBeanList.isEmpty()){
+            CommentCircleBean bean1 ;
+            for (int i = 0; i < mCommentCircleBeanList.size(); i++) {
+                bean1 = mCommentCircleBeanList.get(i);
                 mAllList.add(bean1);
             }
             mRecyclerView.setVisibility(View.VISIBLE);
@@ -726,62 +729,87 @@ public class CommentDetailActivity extends BaseActivity {
         }
     }
 
-    //临时需要评论数据
-    private CommentBeanNew oneComment;
+
     private void initEvent() {
         mCommentAdapter.setOnItemClickListener((adapter, view, position) -> {
             isSecondComment = false;
-            oneComment = mCommentAdapter.getData().get(position);
-            KLog.d("tag","点击此评论的id 为  " + oneComment.getId());
-            showTalkDialogFirstComment(position,oneComment);
+            oneTempComment = mCommentAdapter.getData().get(position);
+            KLog.d("tag","点击此评论的id 为  " + oneTempComment.getId());
+            showTalkDialogFirstComment(position,oneTempComment);
         });
 
         mCommentAdapter.setOnLoadMoreListener(() -> {
             ++page;
             KLog.d("tag","加载更多");
+            getBlogCommentList(mCircleBean.getId());
         },mRecyclerView);
 
 
 
+        mCommentAdapter.setToShowDialogListener(item -> {
+            showSecondDialog(item);
+        });
+
         mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()){
                 case R.id.toFirstComment:
-                    oneComment = mCommentAdapter.getData().get(position);
-                    KLog.d("tag","点击此评论的id 为  " + oneComment.getId());
-                    showTalkDialogFirstComment(position, oneComment);
+                    oneTempComment = mCommentAdapter.getData().get(position);
+                    KLog.d("tag","点击此评论的id 为  " + oneTempComment.getId());
+                    showTalkDialogFirstComment(position, oneTempComment);
                     break;
                 case R.id.ll_has_second_comment:
                     //🍅 记录帖子position
                     zanPosition  = position;
-                    oneComment = mCommentAdapter.getData().get(position);
-                    showSheetDialog();
-                    break;
-                case R.id.comment_priase:
-                    KLog.d("tag","帖子点赞");
-                    break;
+                    //得到点击索引的item
+                    oneTempComment = mCommentAdapter.getData().get(position);
+                    blogCommentDetail(oneTempComment.getId());
 
+
+                    break;
                 default:
             }
         });
     }
 
+
+    //动态评论id
+    private void blogCommentDetail(String blog_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_comment_id",blog_id + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().blogCommentDetail(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<CommentCircleBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<CommentCircleBean> response) {
+                        oneTempComment = response.getReturn_data();
+
+                        showSecondDialog(oneTempComment);
+
+                    }
+                });
+
+    }
+
     /** --------------------------------- 一级评论弹框 ---------------------------------*/
 
-    private void showTalkDialogFirstComment(int position,CommentBeanNew beanNew) {
+    private void showTalkDialogFirstComment(int position, CommentCircleBean beanNew) {
         final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
         talkAlertDialog.setHint(beanNew.getUser_info().getName());
         talkAlertDialog.setTalkLisenter((position1, words) -> {
-            commentString = words;
-            createCommentComment(oneComment);
+            createCommentComment(oneTempComment,words);
         });
         talkAlertDialog.show();
     }
 
 
-    private void createCommentComment(CommentBeanNew temp) {
+    //评论 以及 评论的评论 
+    private void createCommentComment(CommentCircleBean temp,String words) {
         Map<String,String> map = new HashMap<>();
-        map.put("comment",commentString);
+        map.put("comment",words);
         map.put("class",temp.getComment_class());
         map.put("comment_id",temp.getId());
         map.put("create_uid",temp.getUid());
@@ -793,30 +821,41 @@ public class CommentDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
-                        KLog.d("tag","response " + response.getReturn_code());
                         ToastUtils.showShort("评论成功");
                         if(!isSecondComment){
-                            //直接刷新
+                            //评论列表直接刷新
                             page = 1;
                             mAllList.clear();
-                            getBlogCommentList();
+                            getBlogCommentList(mCircleBean.getId());
                         }else{
                             secondPage = 1;
                             allSecondComments.clear();
-                            getSecondCommentComment();
-
+                            getSecondCommentComment(oneTempComment.getId());
                             EventBus.getDefault().post(new RefreshCircleDetailCommentEvent());
+                            //增加1
+                            setSecondReply(oneTempComment,1);
                         }
-
                     }
                 });
     }
 
 
-    /** --------------------------------- 一级圈子列表 及 点击事件---------------------------------*/
-    private void blogDetail() {
+    private void setSecondReply(CommentCircleBean bean,int value){
+        bean.setComment_num(((Integer.parseInt(bean.getComment_num())  +  value) + ""));
+        comment_num_second.setText(bean.getComment_num() + "条回复");
+        //如果没有数据了，显示空布局
+        if("0".equals(bean.getComment_num())){
+            last_reply_ll.setVisibility(View.GONE);
+            ll_second_empty.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    /** --------------------------------- 一级圈子列表 及 点击事件---------------------------------
+     * @param blog_id*/
+    private void blogDetail(String blog_id) {
         Map<String,String> map = new HashMap<>();
-        map.put("blog_id",blog_id + "");
+        map.put("blog_id", blog_id + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().blogDetail(result)
                 .subscribeOn(Schedulers.newThread())
@@ -829,10 +868,13 @@ public class CommentDetailActivity extends BaseActivity {
                             smartRefreshLayout.finishRefresh();
                         }
                         mCircleBean = response.getReturn_data();
-                        if(mCommentAdapter != null){
-                            mCommentAdapter.setCircleBean(mCircleBean);
-                        }
                         setData();
+
+                        //如果在这里initLayout的话，下拉刷新时界面会闪烁
+                        if(mCommentAdapter == null){
+                            initLayout();
+                        }
+                        getBlogCommentList(mCircleBean.getId());
                     }
 
                     @Override
@@ -840,6 +882,17 @@ public class CommentDetailActivity extends BaseActivity {
                         if(smartRefreshLayout != null){
                             smartRefreshLayout.finishRefresh();
                         }
+                        all_part_empty.setVisibility(View.VISIBLE);
+                    }
+
+                    //{"return_code":"60001","return_msg":"\u5708\u5b50\u52a8\u6001\u4e0d\u5b58\u5728","return_data":{}}
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
+                        if(smartRefreshLayout != null){
+                            smartRefreshLayout.finishRefresh();
+                        }
+                        all_part_empty.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -848,6 +901,11 @@ public class CommentDetailActivity extends BaseActivity {
     @SuppressLint("SetTextI18n")
     private void setData() {
         if(mCircleBean.getUser_info() != null){
+
+            //加载不同的布局
+            getIconType(mCircleBean);
+
+
             // 检查links同时添加原创文本
             mCircleBean  =  StringUtil.addLinksData(mCircleBean);
             // 对有links的原创文本进行富文本
@@ -859,7 +917,8 @@ public class CommentDetailActivity extends BaseActivity {
             //底部使用者头像
             ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),user_head_icon);
             //职位
-            sender_tag.setText(mCircleBean.getUser_info().getCompany_name() + mCircleBean.getUser_info().getPosition());
+            sender_tag.setText( (TextUtils.isEmpty(mCircleBean.getUser_info().getCompany_name())?"":mCircleBean.getUser_info().getCompany_name()) +
+                    (TextUtils.isEmpty(mCircleBean.getUser_info().getPosition())?"":mCircleBean.getUser_info().getPosition()));
 
             //是否认证
             if("1".equals(mCircleBean.getUser_info().getAuth_email_status())
@@ -899,7 +958,7 @@ public class CommentDetailActivity extends BaseActivity {
 
         }
 
-        layoutType = StringUtil.getCircleType(mCircleBean);
+        int layoutType = StringUtil.getCircleType(mCircleBean);
 
         mCircleBean  =  StringUtil.addLinksData(mCircleBean);
 
@@ -991,13 +1050,12 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     /** --------------------------------- 二级评论弹框 ---------------------------------*/
-    private void showTalkDialogSecondComment(int position,CommentBeanNew beanNew) {
+    private void showTalkDialogSecondComment(int position, CommentCircleBean beanNew) {
         final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
         talkAlertDialog.setMyPosition(position);
         talkAlertDialog.setHint(beanNew.getUser_info().getName());
         talkAlertDialog.setTalkLisenter((position1, words) -> {
-            commentString = words;
-            createCommentComment(beanNew);
+            createCommentComment(beanNew,words);
         });
         talkAlertDialog.show();
     }
@@ -1005,24 +1063,21 @@ public class CommentDetailActivity extends BaseActivity {
 
     /** --------------------------------- 动态评论弹框 ---------------------------------*/
 
-    private void showTalkDialog(int position,String talkCid,String from,String replyWho) {
+    private void showTalkDialog(String blog_id, String replyWho) {
         final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
-        talkAlertDialog.setMyPosition(position);
         if(!TextUtils.isEmpty(replyWho)){
             talkAlertDialog.setHint(replyWho);
         }
         talkAlertDialog.setTalkLisenter((position1, words) -> {
-            KLog.d("tag","接受到的文字是 " + words);
-            commentString = words;
-            createBlogComment();
+            createBlogComment(blog_id,words);
         });
         talkAlertDialog.show();
     }
 
-    private void createBlogComment() {
+    private void createBlogComment(String blog_id,String words) {
         Map<String,String> map = new HashMap<>();
         map.put("blog_id",blog_id);
-        map.put("comment",commentString);
+        map.put("comment",words);
         map.put("create_uid",mCircleBean.getUid());
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().createBlogComment(result)
@@ -1037,18 +1092,13 @@ public class CommentDetailActivity extends BaseActivity {
                         //直接刷新
                         page = 1;
                         mAllList.clear();
-                        getBlogCommentList();
-
-                        //手动添加 评论数1
-                        mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) + 1) + "");
-                        //更新首页列表中数据
-//                        if(-1 != myPotion){
-//                            EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
-//                        }
-                        EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
+                        getBlogCommentList(mCircleBean.getId());
 
                         //全部回复重定义
+                        mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) + 1) + "");
                         first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条评论");
+                        //回调列表事件
+                        EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),mCircleBean.getLike_num(),mCircleBean.getComment_num()));
                         //顶部帖子重定义
                         zanCommentChange(comment,zan_num,image_circle_priase,
                                 mCircleBean.getLike_num() + "",mCircleBean.getIs_like(),mCircleBean.getComment_num());
@@ -1060,7 +1110,7 @@ public class CommentDetailActivity extends BaseActivity {
 
 
     //二级评论上的圈子
-    private void likeComment(CommentBeanNew circleBean) {
+    private void likeComment(CommentCircleBean circleBean) {
         Map<String,String> map = new HashMap<>();
         map.put("comment_id",circleBean.getId());
         int like = 0;
@@ -1091,8 +1141,12 @@ public class CommentDetailActivity extends BaseActivity {
                         }
                         //更新头部数据
                         zanChange(zan_second_num_second,zan_second_img_second,circleBean.getLike_num(),circleBean.getIs_like());
-                        //更新第一列表数据
-                        mCommentAdapter.notifyItemChanged(zanPosition);
+                        //更新第一列表数据 需要加上改变后的数据
+                        if(zanPosition != -1){
+                            mCommentAdapter.getData().get(zanPosition).setLike_num(circleBean.getLike_num());
+                            mCommentAdapter.getData().get(zanPosition).setIs_like(circleBean.getIs_like());
+                            mCommentAdapter.notifyItemChanged(zanPosition);
+                        }
                     }
                 });
     }
@@ -1183,17 +1237,6 @@ public class CommentDetailActivity extends BaseActivity {
         mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toPicPreViewActivity(mContext,  mCircleBean.getImages(),position));
     }
 
-    private void initSamrtLayout() {
-        XnClassicsHeader header =  new XnClassicsHeader(this);
-        smartRefreshLayout.setRefreshHeader(header);
-        smartRefreshLayout.setEnableLoadMore(false);
-        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
-            mAllList.clear();
-            page = 1;
-            blogDetail();
-            getBlogCommentList();
-        });
-    }
 
 
     /** 更新评论数据 */
@@ -1201,7 +1244,7 @@ public class CommentDetailActivity extends BaseActivity {
     public void onRefreshCircleDetailCommentEvent(RefreshCircleDetailCommentEvent event){
         page = 1;
         mAllList.clear();
-        getBlogCommentList();
+        getBlogCommentList(mCircleBean.getId());
     }
 
 
@@ -1261,6 +1304,113 @@ public class CommentDetailActivity extends BaseActivity {
             }
         });
         alertDialog.show();
+    }
+
+
+
+    //通过uid加载布局
+    private void getIconType(CircleBean item) {
+        String uid = item.getUid();
+        String myUid = StringUtil.getUserInfoBean().getUid();
+        ll_report.setVisibility(View.VISIBLE);
+        if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
+            circle_remove.setVisibility(View.VISIBLE);
+            circle_report.setVisibility(View.GONE);
+        }else{
+            circle_remove.setVisibility(View.GONE);
+            circle_report.setVisibility(View.VISIBLE);
+        }
+
+        //帖子举报/删除 -- 为了增大触摸面积
+        ll_report.setOnClickListener(view -> {
+            if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
+                showRemoveDialog(item);
+            }else{
+                showPopupWindow(item,circle_report);
+                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
+            }
+        });
+    }
+
+
+
+    private void showRemoveDialog(CircleBean circleBean) {
+        final CleanHistoryDialog iosAlertDialog = new CleanHistoryDialog(mContext).builder();
+        iosAlertDialog.setPositiveButton("删除", v -> {
+            deleteBlog(circleBean);
+        }).setNegativeButton("取消", v -> {
+        }).setMsg("确定要删除这条动态？").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    private void deleteBlog(CircleBean mCircleBean) {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",mCircleBean.getId());
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().deleteBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        finish();
+                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void showPopupWindow(CircleBean circleBean,View view) {
+        //加载布局
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.popupwindow_report, null);
+        PopupWindow mPopupWindow = new PopupWindow(inflate);
+        TextView report = inflate.findViewById(R.id.report);
+        TextView share = inflate.findViewById(R.id.share);
+        //必须设置宽和高
+        mPopupWindow.setWidth(SizeUtils.dp2px(80f));
+        mPopupWindow.setHeight(SizeUtils.dp2px(44f));
+        //点击其他地方隐藏,false为无反应
+        mPopupWindow.setFocusable(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //以view的左下角为原点，xoff为正表示向x轴正方向偏移像素
+            mPopupWindow.showAsDropDown(view, -SizeUtils.dp2px(52f + 12), SizeUtils.dp2px(10f));
+        }
+        //对popupWindow进行显示
+        mPopupWindow.update();
+        //消失时将透明度设置回来
+        mPopupWindow.setOnDismissListener(() -> {
+            if (null != mContext) {
+                StringUtil.setBackgroundAlpha((Activity) mContext, 1f);
+            }
+        });
+
+        report.setOnClickListener(view1 -> {
+            reportBlog(circleBean);
+            mPopupWindow.dismiss();
+        });
+
+        share.setOnClickListener(view1 -> {
+            mPopupWindow.dismiss();
+        });
+    }
+
+
+    private void reportBlog(CircleBean mCircleBean) {
+        Map<String,String> map = new HashMap<>();
+        map.put("blog_id",mCircleBean.getId());
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().reportBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        ToastUtils.showShort("举报成功");
+                    }
+
+                });
     }
 
 

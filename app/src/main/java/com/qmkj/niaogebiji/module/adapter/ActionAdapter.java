@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.adapter;
 
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -10,6 +11,8 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
@@ -80,6 +83,17 @@ public class ActionAdapter extends BaseQuickAdapter<ActionBean.Act_list, BaseVie
             helper.setVisible(R.id.relate_data,false);
         }
 
+        //相关资料 跳转
+        helper.getView(R.id.relate_data).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MobclickAgentUtils.onEvent("index_flow_activity_resource"+ (helper.getAdapterPosition()  + 1) +"_2_0_0");
+                UIHelper.toWebViewActivity(mContext,item.getDocument_link());
+            }
+        });
+
+
+
         //头像
         ImageUtil.load(mContext,item.getPic(),helper.getView(R.id.img_1));
 
@@ -114,9 +128,28 @@ public class ActionAdapter extends BaseQuickAdapter<ActionBean.Act_list, BaseVie
         String status = item.getAct_status() + "";
         if("2".equals(status)){
             helper.setImageResource(R.id.action_status,R.mipmap.icon_apply);
+            // 活动跳转
+            helper.getView(R.id.action_status).setOnClickListener(v -> {
+                MobclickAgentUtils.onEvent("index_flow_activity_signup"+ (helper.getAdapterPosition()  + 1) +"_2_0_0");
+
+
+                String linkType =item.getLink_type();
+                String jump_link = item.getJump_link();
+                if(!TextUtils.isEmpty(linkType)){
+                    if("1".equals(linkType)){
+                        UIHelper.toWebViewActivity(mContext,jump_link);
+                    }else if("2".equals(linkType)){
+                        UIHelper.toNewsDetailActivity(mContext,jump_link);
+                    }
+                }
+
+            });
+
         }else if("4".equals(status)){
             helper.setImageResource(R.id.action_status,R.mipmap.icon_finish);
         }
+
+
     }
 }
 

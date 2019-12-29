@@ -34,6 +34,8 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
@@ -281,11 +283,12 @@ public class FirstFragment extends BaseLazyFragment {
         tool_recycler.setNestedScrollingEnabled(true);
         tool_recycler.setHasFixedSize(true);
         mToolItemAdapter.setOnItemClickListener((adapter, view, position) -> {
+
+            MobclickAgentUtils.onEvent("index_tools_tools" + (position + 1) + "_2_0_0");
+
             ToollndexBean temp =  mToolItemAdapter.getData().get(position);
             if("0".equals(temp.getType())){
-                Toast.makeText(getContext(),"去 webview",Toast.LENGTH_SHORT).show();
             }else if("1".equals(temp.getType())){
-                Toast.makeText(getContext(),"去 小程序",Toast.LENGTH_SHORT).show();
             }else{
                 UIHelper.toToolEditActivity(getActivity());
             }
@@ -407,6 +410,16 @@ public class FirstFragment extends BaseLazyFragment {
 
             @Override
             public void onPageSelected(int position) {
+                if(position == 0){
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_follow_tab_2_0_0);
+
+                }else if(position == 1){
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_index_tab_2_0_0);
+
+                }else if(position == 2){
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_activity_tab_2_0_0);
+
+                }
 
             }
 
@@ -425,32 +438,46 @@ public class FirstFragment extends BaseLazyFragment {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toVip:
+                MobclickAgentUtils.onEvent(UmengEvent.index_tools_vip_2_0_0);
+
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
                 break;
             case R.id.moring_content:
             case R.id.ll_moring:
+                MobclickAgentUtils.onEvent(UmengEvent.index_morning_morning_2_0_0);
+
                 String aid = mMoringBean.getAid();
                 UIHelper.toNewsDetailActivity(getActivity(),aid);
                 break;
             case R.id.rl_sign:
+                MobclickAgentUtils.onEvent(UmengEvent.index_sign_2_0_0);
+
                 UIHelper.toFeatherctivity(getActivity());
                 break;
             case R.id.search_part:
+                MobclickAgentUtils.onEvent(UmengEvent.index_searchbar_2_0_0);
+
                 UIHelper.toSearchActivity(getActivity());
                 break;
             case R.id.icon_catogory:
+                MobclickAgentUtils.onEvent(UmengEvent.index_flow_category_2_0_0);
+
                 UIHelper.toCategoryActivity(getActivity());
                 //参数一：Activity2进入动画  参数二：Activity1退出动画
                 getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
                 break;
             case R.id.listenMoring:
-                    String audio =  mMoringBean.getVideo();
+                MobclickAgentUtils.onEvent(UmengEvent.index_morning_play_2_0_0);
+
+                String audio =  mMoringBean.getVideo();
                     String title = mMoringBean.getSummary();
                     String newid = mMoringBean.getAid();
                     EventBus.getDefault().post(new AudioEvent(audio,title,newid));
 
                 break;
             case R.id.toMoreMoring:
+                MobclickAgentUtils.onEvent(UmengEvent.index_morning_more_2_0_0);
+
                 UIHelper.toMoringActivity(getActivity());
                 break;
 

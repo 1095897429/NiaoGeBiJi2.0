@@ -23,7 +23,7 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/head_icon"
-                android:src="@mipmap/icon_fenxiang"
+                android:src="@mipmap/icon_head_default"
                 android:layout_width="32dp"
                 android:layout_height="32dp" />
 
@@ -74,7 +74,7 @@
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
-                    android:text="上海青墨网络科技有限公司产品经理"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 

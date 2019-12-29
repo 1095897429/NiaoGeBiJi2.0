@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -90,6 +91,8 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
+    private String chainName;
+
     public static CircleRecommendFragmentNew getInstance(String chainId, String chainName) {
         CircleRecommendFragmentNew newsItemFragment = new CircleRecommendFragmentNew();
         Bundle args = new Bundle();
@@ -111,6 +114,8 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+        chainName = getArguments().getString("chainName");
+        showWaitingDialog();
         initSamrtLayout();
         initLayout();
     }
@@ -134,6 +139,8 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
+
+                          hideWaitingDialog();
 
                             List<CircleBean> serverData = response.getReturn_data();
                             if(1 == page){
@@ -173,6 +180,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                         }
+                        hideWaitingDialog();
                         if("解析错误".equals(msg)){
                             if(page == 1){
                                 setData2(null);
@@ -265,6 +273,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCircleRecommentAdapterNew = new CircleRecommentAdapterNew(mAllList);
+        mCircleRecommentAdapterNew.setChainName(chainName);
         mRecyclerView.setAdapter(mCircleRecommentAdapterNew);
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -302,7 +311,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
         mAllList.clear();
         page = 1;
         recommendBlogList();
-        mRecyclerView.smoothScrollToPosition(0);
     }
 
 //    private void initExitAnim(){
@@ -386,6 +394,34 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             //TODO 12.17 留给自己的疑问：出现情况是，如果是page = 2的 时候，会变化吗
         }
     }
+
+
+
+    @BindView(R.id.loading_dialog)
+    LinearLayout loading_dialog;
+
+    @BindView(R.id.lottieAnimationView)
+    LottieAnimationView lottieAnimationView;
+
+    public void showWaitingDialog() {
+        loading_dialog.setVisibility(View.VISIBLE);
+        lottieAnimationView.setImageAssetsFolder("images");
+        lottieAnimationView.setAnimation("images/loading.json");
+        lottieAnimationView.loop(true);
+        lottieAnimationView.playAnimation();
+    }
+
+    /**
+     * 隐藏等待提示框
+     */
+    public void hideWaitingDialog() {
+        if(null != lottieAnimationView){
+            loading_dialog.setVisibility(View.GONE);
+            lottieAnimationView.cancelAnimation();
+        }
+    }
+
+
 }
 
 

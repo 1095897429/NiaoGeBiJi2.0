@@ -41,9 +41,18 @@ public class CommentBean extends BaseBean {
         private String avatar;
         private String company_name;
         private String position;
-        //二级评论
-        private List<SecondComment> commentslist;
 
+        private String relatedid;
+        //二级评论
+        private List<FirstComment> commentslist;
+
+        public String getRelatedid() {
+            return relatedid;
+        }
+
+        public void setRelatedid(String relatedid) {
+            this.relatedid = relatedid;
+        }
 
         public String getReplyed_username() {
             return replyed_username;
@@ -146,13 +155,13 @@ public class CommentBean extends BaseBean {
             return avatar;
         }
 
-        public void setCommentslist(List<SecondComment> commentslist) {
-            this.commentslist = commentslist;
-        }
-        public List<SecondComment> getCommentslist() {
+        public List<FirstComment> getCommentslist() {
             return commentslist;
         }
 
+        public void setCommentslist(List<FirstComment> commentslist) {
+            this.commentslist = commentslist;
+        }
     }
 
     //二级评论

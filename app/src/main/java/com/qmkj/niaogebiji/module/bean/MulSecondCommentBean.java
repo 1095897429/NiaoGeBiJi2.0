@@ -15,7 +15,7 @@ public class MulSecondCommentBean extends BaseBean implements MultiItemEntity {
     private CommentBean.FirstComment mActicleComment;
 
     //圈子评论 真实的
-    private CommentBeanNew mCircleComment;
+    private CommentCircleBean mCircleComment;
 
     //类型
     private int itemType;
@@ -37,11 +37,11 @@ public class MulSecondCommentBean extends BaseBean implements MultiItemEntity {
         mActicleComment = acticleComment;
     }
 
-    public CommentBeanNew getCircleComment() {
+    public CommentCircleBean getCircleComment() {
         return mCircleComment;
     }
 
-    public void setCircleComment(CommentBeanNew circleComment) {
+    public void setCircleComment(CommentCircleBean circleComment) {
         mCircleComment = circleComment;
     }
 }

@@ -380,7 +380,7 @@
 
                     <TextView
                         android:id="@+id/data_link_num_down"
-                        android:text="下载数 20238"
+                        android:text=""
                         android:textSize="11sp"
                         android:textColor="#818386"
                         android:gravity="center"

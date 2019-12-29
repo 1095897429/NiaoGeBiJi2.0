@@ -21,6 +21,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
@@ -337,16 +339,24 @@ public class SearchActicleItemFragment extends BaseLazyFragment {
                 return;
             }
 
-            int type = mFirstItemAdapter.getData().get(position).getItemType();
-            //快讯
-            if(type == 4){
-                EventBus.getDefault().post(new toFlashEvent("去快讯信息流"));
-            }else if(type == 1){
-                String aid = mFirstItemAdapter.getData().get(position).getNewsActicleList().getAid();
-                if (!TextUtils.isEmpty(aid)) {
-                    UIHelper.toNewsDetailActivity(getActivity(), aid);
-                }
+            if(position <= 2) {
+                MobclickAgentUtils.onEvent("index_search_index_" + (position + 1) + "_2_0_0");
             }
+
+
+            String aid = mFirstItemAdapter.getData().get(position).getNewsActicleList().getAid();
+            if (!TextUtils.isEmpty(aid)) {
+                UIHelper.toNewsDetailActivity(getActivity(), aid);
+            }
+
+//
+//            int type = mFirstItemAdapter.getData().get(position).getItemType();
+//            //快讯
+//            if(type == 4){
+//                EventBus.getDefault().post(new toFlashEvent("去快讯信息流"));
+//            }else if(type == 1){
+//
+//            }
 
         });
 

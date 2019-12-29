@@ -9,12 +9,23 @@ package com.qmkj.niaogebiji.module.event;
 public class SearchWordEvent {
 
     private String word;
+    //哪个界面
+    private int position;
 
     public SearchWordEvent(String word) {
         this.word = word;
     }
 
+    public SearchWordEvent(String word, int position) {
+        this.word = word;
+        this.position = position;
+    }
+
     public String getWord() {
         return word;
+    }
+
+    public int getPosition() {
+        return position;
     }
 }

@@ -179,7 +179,7 @@ public class FeatherListDetailActivity  extends BaseActivity {
                 }
             }
 
-            //判断点击商品的类型
+            //TODO 书籍(4)  + 实体礼品(2)  判断点击商品的类型
             if(null != mProductean){
                 if("2".equals(mProductean.getCat())
                         || "4".equals(mProductean.getCat())){

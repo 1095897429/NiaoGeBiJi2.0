@@ -41,6 +41,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
@@ -187,6 +189,27 @@ public class CircleFragment extends BaseLazyFragment {
         //设置当前显示标签页为第二页
         mViewPager.setCurrentItem(1);
 
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0){
+                    MobclickAgentUtils.onEvent(UmengEvent.quanzi_followtab_2_0_0);
+                }else if(position == 1){
+                    MobclickAgentUtils.onEvent(UmengEvent.quanzi_recommendtab_2_0_0);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
 
@@ -208,6 +231,9 @@ public class CircleFragment extends BaseLazyFragment {
                 changeData();
                 break;
             case R.id.search_part:
+
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_searchbar_2_0_0);
+
                 UIHelper.toSearchActivity(getActivity());
                 break;
             case R.id.rl_newmsg:
@@ -218,12 +244,17 @@ public class CircleFragment extends BaseLazyFragment {
 //                ll_circle_send.startAnimation(translateAnimation);
 
 //                initAnim();
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_message_2_0_0);
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
                 break;
             case R.id.icon_send_msg:
                 if(StringUtil.isFastClick()){
                     return;
                 }
+
+
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_2_0_0);
+
 
                 //① 用getActivity方法发起调用，只有父Activity的onActivityResult会调用，Fragment中的onActivityResult不会被调用
                 Intent intent = new Intent(getActivity(), CircleMakeActivity.class);

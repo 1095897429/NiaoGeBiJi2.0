@@ -17,6 +17,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.qmkj.niaogebiji.R;
@@ -110,13 +112,15 @@ public class WebViewActivity extends BaseActivity {
 
         mMyWebView.setWebViewClient(new WebViewClient(){
             //给的链接是 https://pan.baidu.com/s/1CARAgwkjH7JzM61LunaQTQ
-            //  怎么跳转到了 -- bdnetdisk://n/action.SHARE_LINK?m_n_v=8.3.0&surl=CARAgwkjH7JzM61LunaQTQ&origin=2
+            //  url-scheme deeplink-- bdnetdisk://n/action.SHARE_LINK?m_n_v=8.3.0&surl=CARAgwkjH7JzM61LunaQTQ&origin=2
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 KLog.d("tag","---- " + url);
-
-                if (url == null) return false;
-
+                Uri uri = Uri.parse(url);
+                KLog.e("打印Scheme", uri.getScheme() + "==" + url);
+                if (url == null) {
+                    return false;
+                }
                 try{
                     if(!url.startsWith("http://") && !url.startsWith("https://")){
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -124,12 +128,19 @@ public class WebViewActivity extends BaseActivity {
                         return true;
                     }
                 }catch (Exception e){//防止crash (如果手机上没有安装处理某个scheme开头的url的APP, 会导致crash)
+                    KLog.e("tag", "ActivityNotFoundException: " + e.getLocalizedMessage());
+                    //自行处理
+                    if(!TextUtils.isEmpty(url) && url.startsWith("bdnetdisk")){
+                        ToastUtils.showShort("您未安装相应的百度网盘app");
+                    }
                     return true;//没有安装该app时，返回true，表示拦截自定义链接，但不跳转，避免弹出上面的错误页面
                 }
 
-                view.loadUrl(url);
-                return true;
+                //处理http和https开头的url
+//                view.loadUrl(url);
+                return false;
             }
+
 
 
             @Override
@@ -140,8 +151,6 @@ public class WebViewActivity extends BaseActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-//                KLog.d("tag","---- " + url);
-//                toGiveToken();
             }
 
             @Override

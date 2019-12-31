@@ -32,12 +32,6 @@ public class MediaService extends Service {
     private MyBinder mBinder = new MyBinder();
     //标记当前歌曲的序号
     private int i = 0;
-    //歌曲路径
-    public static String[] musicPath = new String[]{
-          "https://sharefs.yun.kugou.com/201912111738/fed25fbad75e98a6c8a039e2972aa549/G010/M07/1D/03/Sg0DAFUBbC-AaUHgADsTIx9YQdY068.mp3",
-          "https://sharefs.yun.kugou.com/201912111142/f0738d11b52775f12cfafc49c428106f/G180/M07/04/08/9A0DAF3FKAqATsbCACy595OooJM759.mp3",
-            "https://sharefs.yun.kugou.com/201912111201/dea428b56666bd137df2f31d8543919e/G134/M00/07/03/JocBAFxFxtiAGHTpAD93JySh5zM584.mp3"
-    };
 
 
     public MediaPlayer mMediaPlayer;

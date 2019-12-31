@@ -97,6 +97,17 @@ public class RegisterLoginBean extends BaseBean {
         // 1-领取过，0-未领取过
         private String is_vip;
 
+        private String is_180_vip;
+
+
+        public String getIs_180_vip() {
+            return is_180_vip;
+        }
+
+        public void setIs_180_vip(String is_180_vip) {
+            this.is_180_vip = is_180_vip;
+        }
+
         private List<User_info.Badge> badge_arr;
 
         public List<User_info.Badge> getBadge_arr() {

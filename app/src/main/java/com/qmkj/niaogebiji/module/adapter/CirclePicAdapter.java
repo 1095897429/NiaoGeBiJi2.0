@@ -45,6 +45,18 @@ public class CirclePicAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
     String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
 
     @Override
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//        KLog.d("tag","onCreateViewHolder");
+        return super.onCreateViewHolder(parent, viewType);
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int positions) {
+        super.onBindViewHolder(holder, positions);
+//        KLog.d("tag","onBindViewHolder");
+    }
+
+    @Override
     protected void convert(BaseViewHolder helper,String item) {
 
         //投机取巧的方法
@@ -65,6 +77,8 @@ public class CirclePicAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
             if(totalSize != 3){
                 textView.setVisibility(View.VISIBLE);
                 textView.setText("+ "  + ( totalSize - 3));
+            }else{
+                textView.setVisibility(View.GONE);
             }
         }else{
             textView.setVisibility(View.GONE);

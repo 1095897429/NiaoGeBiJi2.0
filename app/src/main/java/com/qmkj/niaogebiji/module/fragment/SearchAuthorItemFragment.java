@@ -19,6 +19,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
+import com.qmkj.niaogebiji.module.adapter.AuthorSearchAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.SearchAllAuthorBean;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
@@ -60,7 +61,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
     SmartRefreshLayout smartRefreshLayout;
 
     //适配器
-    AuthorAdapter mAuthorAdapter;
+    AuthorSearchAdapter mAuthorAdapter;
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
@@ -213,7 +214,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mAuthorAdapter = new AuthorAdapter(mList);
+        mAuthorAdapter = new AuthorSearchAdapter(mList);
         mRecyclerView.setAdapter(mAuthorAdapter);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);

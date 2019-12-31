@@ -33,6 +33,7 @@ import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
 import com.qmkj.niaogebiji.module.event.RefreshCircleDetailCommentEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -80,7 +81,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
 
     public CommentSecondAdapter(List<MulSecondCommentBean> data) {
         super(data);
-        //正常
+        //文章
         addItemType(ACTICLE, R.layout.second_comment_item);
         //圈子
         addItemType(CIRCLE, R.layout.second_comment_item_circle);
@@ -95,10 +96,25 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 CommentBean.FirstComment item = bean.getActicleComment();
 
                 helper.setText(R.id.comment_text,item.getMessage());
-                helper.setText(R.id.nickname,item.getUsername());
+                TextView nickname = helper.getView(R.id.nickname);
+
+                //名称 + 认证
+                if("1".equals(item.getAuth_status())){
+                    nickname.setText(item.getUsername() + (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
+                            (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+                }else{
+                    nickname.setText(item.getUsername() + " TA还未职业认证");
+                }
+
+
                 ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
 
                 getReplyonActicle(helper,item);
+
+
+                helper.setVisible(R.id.toSecondComment,true);
+
+                helper.addOnClickListener(R.id.toSecondComment);
 
 
                 //发布时间
@@ -130,7 +146,13 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 });
 
                 //头像跳转
-                helper.getView(R.id.head_icon).setOnClickListener(v -> UIHelper.toUserInfoActivity(mContext,item.getUid()));
+                helper.getView(R.id.head_icon).setOnClickListener(v ->{
+
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+                    UIHelper.toUserInfoActivity(mContext,item.getUid());
+                });
 
 
                 break;
@@ -170,7 +192,13 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 helper.getView(R.id.comment_delete).setOnClickListener(view -> showRemoveDialog(comment,helper.getAdapterPosition()));
 
                 //头像跳转
-                helper.getView(R.id.head_icon).setOnClickListener(v -> UIHelper.toUserInfoActivity(mContext,comment.getUid()));
+                helper.getView(R.id.head_icon).setOnClickListener(v ->{
+
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+                    UIHelper.toUserInfoActivity(mContext,comment.getUid());
+                });
 
                 default:
         }
@@ -297,7 +325,7 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
         zan_num.setTypeface(typeface);
         if("0".equals(good_num)){
-            zan_num.setText("赞");
+            zan_num.setText("");
         }else{
             int size = Integer.parseInt(good_num);
             if(size > 99){
@@ -405,71 +433,119 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
 
 
     private void getCircleReply(BaseViewHolder helper, CommentCircleBean item) {
-        sb.setLength( 0 );
+        sb.setLength(0);
 
-        //被回复者信息
+
+//        //被回复者信息
+//        User_info p_userInfo = item.getP_user_info();
+//        if(!TextUtils.isEmpty(item.getPuid()) &&  !item.getPuid().equals(superiorComment.getUid())){
+//            sb.append("回复 ").append(p_userInfo.getName())
+//                    .append(":").append(item.getComment());
+//        }else{
+//            sb.append(item.getComment());
+//
+//        }
+//
+//        if(!TextUtils.isEmpty(item.getPuid()) &&  !item.getPuid().equals(superiorComment.getUid())){
+//            int authorNamelength = p_userInfo.getName().length();
+//            spannableString = new SpannableString(sb.toString());
+//            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//            //中间有 回复 两个字 + 1个空格
+//            spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//            ClickableSpan clickableSpan = new ClickableSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    KLog.d("tag","点击的是 " + p_userInfo.getName());
+//                    UIHelper.toUserInfoActivity(mContext,p_userInfo.getUid());
+//                }
+//            };
+//            spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//
+//        }else{
+//            spannableString = new SpannableString(sb.toString());
+//        }
+//
+//        helper.setText(R.id.comment_text,spannableString);
+//        ((TextView)helper.getView(R.id.comment_text)).setMovementMethod(LinkMovementMethod.getInstance());
+
+
+
         User_info p_userInfo = item.getP_user_info();
-        if(!TextUtils.isEmpty(item.getPuid()) &&  !item.getPuid().equals(superiorComment.getUid())){
-            sb.append("回复 ").append(p_userInfo.getName())
-                    .append(":").append(item.getComment());
-        }else{
-            sb.append(item.getComment());
+        sb.append("回复 ").append(p_userInfo.getName())
+                .append(":").append(item.getComment().trim());
 
-        }
+        int authorNamelength = p_userInfo.getName().length();
+        spannableString = new SpannableString(sb.toString().trim());
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
-        if(!TextUtils.isEmpty(item.getPuid()) &&  !item.getPuid().equals(superiorComment.getUid())){
-            int authorNamelength = p_userInfo.getName().length();
-            spannableString = new SpannableString(sb.toString());
-            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
-            //中间有 回复 两个字 + 1个空格
-            spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    KLog.d("tag","点击的是 " + p_userInfo.getName());
-                    UIHelper.toUserInfoActivity(mContext,p_userInfo.getUid());
-                }
-            };
-            spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        }else{
-            spannableString = new SpannableString(sb.toString());
-        }
-
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + p_userInfo.getName());
+                UIHelper.toUserInfoActivity(mContext,p_userInfo.getUid());
+            }
+        };
+        spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         helper.setText(R.id.comment_text,spannableString);
         ((TextView)helper.getView(R.id.comment_text)).setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 
 
     private void getReplyonActicle(BaseViewHolder helper, CommentBean.FirstComment item) {
-        sb.setLength( 0 );
+        sb.setLength(0);
         //如果回复者 和 被回复者 一样，则不显示 【回复】
-        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(superiorActicleComment.getUid())){
-            sb.append("回复 ").append(item.getReplyed_username())
-                    .append(":").append(item.getMessage());
-        }else {
-            sb.append(item.getMessage());
-        }
+//        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(superiorActicleComment.getUid())){
+//            sb.append("回复 ").append(item.getReplyed_username())
+//                    .append(":").append(item.getMessage());
+//        }else {
+//            sb.append(item.getMessage());
+//        }
+//
+//        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(superiorActicleComment.getUid())){
+//            int authorNamelength = item.getReplyed_username().length();
+//            spannableString = new SpannableString(sb.toString());
+//            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//            //中间有 回复 两个字 + 1个空格
+//            spannableString.setSpan(fCs2, 3,  3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//            ClickableSpan clickableSpan = new ClickableSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    KLog.d("tag","点击的是 " + authorNamelength);
+//                    UIHelper.toUserInfoActivity(mContext,superiorActicleComment.getUid());
+//                }
+//            };
+//            spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }else{
+//            spannableString = new SpannableString(sb.toString());
+//        }
+//
+//        helper.setText(R.id.comment_text,spannableString);
+//        ((TextView)helper.getView(R.id.comment_text)).setMovementMethod(LinkMovementMethod.getInstance());
 
-        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(superiorActicleComment.getUid())){
-            int authorNamelength = item.getReplyed_username().length();
-            spannableString = new SpannableString(sb.toString());
-            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
-            //中间有 回复 两个字 + 1个空格
-            spannableString.setSpan(fCs2, 3,  3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    KLog.d("tag","点击的是 " + authorNamelength);
-                    UIHelper.toUserInfoActivity(mContext,superiorActicleComment.getUid());
-                }
-            };
-            spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }else{
-            spannableString = new SpannableString(sb.toString());
-        }
+
+        sb.append("回复 ").append(item.getReplyed_username())
+                .append(":").append(item.getMessage().trim());
+
+        int authorNamelength = item.getReplyed_username().length();
+        spannableString = new SpannableString(sb.toString().trim());
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spannableString.setSpan(fCs2, 3,  3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + authorNamelength);
+                UIHelper.toUserInfoActivity(mContext,item.getReplyed_uid());
+            }
+        };
+        spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         helper.setText(R.id.comment_text,spannableString);
         ((TextView)helper.getView(R.id.comment_text)).setMovementMethod(LinkMovementMethod.getInstance());

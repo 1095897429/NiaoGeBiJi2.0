@@ -72,6 +72,7 @@
 
                 <LinearLayout
                     android:id="@+id/phoneLogin"
+                    android:visibility="gone"
                     android:background="@drawable/bg_corners_12_gray"
                     android:layout_width="match_parent"
                     android:gravity="center"

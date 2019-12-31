@@ -167,6 +167,13 @@ public class TranspondActivity extends BaseActivity {
                     ToastUtils.showShort("内容最多输入140字");
                     return;
                 }
+
+                //同时评论
+                if(mCheckbox.isChecked()){
+                    blog_is_comment = 1;
+                }
+
+
                 createBlog();
 
 
@@ -212,7 +219,7 @@ public class TranspondActivity extends BaseActivity {
         map.put("article_id", article_id + "");
         map.put("article_title", article_title + "");
         map.put("article_image",article_image + "");
-        String result = RetrofitHelper.commonParam(map);
+        String result =  RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().createBlog(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -221,12 +228,6 @@ public class TranspondActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse response) {
                         ToastUtils.showShort("转发成功");
-
-                        //同时评论
-                        if(mCheckbox.isChecked()){
-
-                        }
-
                         EventBus.getDefault().post(new SendOkCircleEvent());
                         finish();
                     }

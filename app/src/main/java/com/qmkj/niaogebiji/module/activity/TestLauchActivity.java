@@ -195,7 +195,8 @@ public class TestLauchActivity extends BaseActivity {
         mAllList.clear();
 
         String title = list.get(currentNum - 1).getQuestion();
-        test_title.setText(title + "(" + (list.get(currentNum-1).getAnswer()) +")");
+        test_title.setText(title);
+//        test_title.setText(title + "(" + (list.get(currentNum-1).getAnswer()) +")");
 
         TestBean bean1 ;
         List<String> options = list.get(currentNum - 1).getOption();

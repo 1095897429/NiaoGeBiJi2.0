@@ -31,8 +31,9 @@ public class Constant {
 
 
     //测试环境
-    public static final String TEST_URL = "http://apph5.xy860.com/";
-//    public static final String TEST_URL = "http://192.168.14.70:8080/";
+//    public static final String TEST_URL = "http://apph5.xy860.com/";
+    //测试正式
+    public static final String TEST_URL = "http://apph5.niaogebiji.com/";
 
 
     //正式环境

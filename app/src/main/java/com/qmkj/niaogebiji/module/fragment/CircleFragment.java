@@ -223,6 +223,11 @@ public class CircleFragment extends BaseLazyFragment {
 
     })
     public void clicks(View view){
+
+        if(StringUtil.isFastClick()){
+            return;
+        }
+
         switch (view.getId()){
             case R.id.icon_send_cancel:
                 showDeleteCircle();

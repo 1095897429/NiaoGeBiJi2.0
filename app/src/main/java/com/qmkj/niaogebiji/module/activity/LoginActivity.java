@@ -92,7 +92,6 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        KLog.d("tag", mCheckBox.isChecked() + "");
         initEvent();
 
         RxView.clicks(phoneLogin)

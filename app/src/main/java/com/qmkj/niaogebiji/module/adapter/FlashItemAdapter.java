@@ -42,6 +42,13 @@ import java.util.List;
  */
 public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.BuilltinBean, BaseViewHolder> {
 
+    private CirclePicAdapter mCirclePicAdapter;
+
+    private  int i ;
+    private  Rect rect ;
+    private int j;
+    private  Rect firstAndLastRect;
+
 
     public FlashItemAdapter(@Nullable List<FlashBulltinBean.BuilltinBean> data) {
         super(R.layout.item_flash,data);
@@ -66,6 +73,10 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
                 helper.setVisible(R.id.sticky_header,true);
             }
         }
+
+        //showTime
+        helper.setText(R.id.header_textview,mBean.getShow_time());
+
         helper.setText(R.id.content_des,mBean.getContent());
 
         //时间
@@ -77,36 +88,71 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
 
 
+
         //图片
         String pic_type =  mBean.getPic_type();
         if("1".equals(pic_type)){
-            helper.setVisible(R.id.ll_part1,true);
-            helper.setVisible(R.id.ll_part2,false);
-            helper.setVisible(R.id.ll_part3,false);
-        }else if("2".equals(pic_type)){
+            helper.setVisible(R.id.ll_pic_3,false);
+
+            String pcc = mBean.getPic();
+            if(!TextUtils.isEmpty(pcc)){
+                helper.setVisible(R.id.ll_part1,true);
+            }else{
+                helper.setVisible(R.id.ll_part1,false);
+            }
+
+
+        }else if("2".equals(pic_type) || "3".equals(pic_type)){
             helper.setVisible(R.id.ll_part1,false);
-            helper.setVisible(R.id.ll_part2,true);
-            helper.setVisible(R.id.ll_part3,false);
-        }else if("3".equals(pic_type)){
-            helper.setVisible(R.id.ll_part1,false);
-            helper.setVisible(R.id.ll_part2,false);
-            helper.setVisible(R.id.ll_part3,true);
+            helper.setVisible(R.id.ll_pic_3,true);
         }
 
 
         if("1".equals(pic_type)){
-            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.one_img));
-        }else if("2".equals(pic_type)){
-            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.one_img_1));
-            ImageUtil.load(mContext,mBean.getPic2() + scaleSize,helper.getView(R.id.one_img_2));
-        }else if("3".equals(pic_type)){
-            ImageUtil.load(mContext,mBean.getPic() + scaleSize,helper.getView(R.id.three_img_1));
-            ImageUtil.load(mContext,mBean.getPic2() + scaleSize,helper.getView(R.id.three_img_2));
-            ImageUtil.load(mContext,mBean.getPic3() + scaleSize,helper.getView(R.id.three_img_3));
+            ImageUtil.load(mContext,mBean.getPic() ,helper.getView(R.id.one_img));
+            ArrayList<String> onePics = new ArrayList<>();
+            onePics.add(mBean.getPic());
+            helper.getView(R.id.one_img).setOnClickListener(v -> UIHelper.toPicPreViewActivity(mContext, onePics, 0,true));
+        }else if("2".equals(pic_type) || "3".equals(pic_type)) {
+            ArrayList<String> mPics = new ArrayList<>();
+            if (!TextUtils.isEmpty(mBean.getPic3())) {
+                mPics.add(mBean.getPic() );
+                mPics.add(mBean.getPic2() );
+                mPics.add(mBean.getPic3() );
+            } else {
+                mPics.add(mBean.getPic() );
+                mPics.add(mBean.getPic2() );
+            }
+            //二级评论布局
+            GridLayoutManager layoutManager = new GridLayoutManager(mContext, 3);
+            RecyclerView recyclerView = helper.getView(R.id.pic_recyler);
+            recyclerView.setLayoutManager(layoutManager);
+
+            //TODO 如果没有加这个，这个会导致重复添加
+            if (firstAndLastRect == null) {
+                i = SizeUtils.dp2px(8);
+                rect = new Rect(0, 0, i, 0);
+                j = SizeUtils.dp2px(0);
+                firstAndLastRect = new Rect(j, 0, i, 0);
+                HorizontalSpacesDecoration spacesDecoration = new HorizontalSpacesDecoration(rect, firstAndLastRect);
+                recyclerView.addItemDecoration(spacesDecoration);
+
+            }
+
+            CirclePicAdapter mCirclePicAdapter = new CirclePicAdapter(mPics);
+            mCirclePicAdapter.setTotalSize(mPics.size());
+            //禁用change动画
+            ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            recyclerView.setAdapter(mCirclePicAdapter);
+
+
+            //预览事件
+            mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
+                KLog.d("tag", "点击预览");
+                UIHelper.toPicPreViewActivity(mContext, mPics, position,true);
+            });
+
         }
-
-
-
 
 
         //拼接链接
@@ -115,7 +161,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
                 @Override
                 public void onClick(View widget) {
                     KLog.d("tag","点击了快讯link " + mBean.getLink());
-                    UIHelper.toWebViewActivity(mContext,mBean.getLink());
+                    UIHelper.toWebViewActivityWithOnLayout(mContext,mBean.getLink(),"");
                 }
             };
             Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_flash_link_pic);

@@ -25,6 +25,7 @@ import com.qmkj.niaogebiji.module.bean.FristActionBean;
 import com.qmkj.niaogebiji.module.bean.IncomeBean;
 import com.qmkj.niaogebiji.module.bean.IndexBulltin;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.bean.InitDataBean;
 import com.qmkj.niaogebiji.module.bean.InvitePosterBean;
 import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
 import com.qmkj.niaogebiji.module.bean.MoringAllBean;
@@ -707,6 +708,10 @@ public interface ApiEncryptService{
     Observable<HttpResponse<ActicleCommentHeadBean>> getCommentDetail(@Field("params") String param);
 
 
+    /* 2019.12.30  初始化*/
+    @FormUrlEncoded
+    @POST("app/init/getInitData")
+    Observable<HttpResponse<InitDataBean>> getInitData(@Field("params") String param);
 
 
 

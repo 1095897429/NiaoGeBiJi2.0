@@ -139,8 +139,6 @@ public class MyFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
 
-
-
         getUserInfo();
 
         initLayout();
@@ -294,12 +292,16 @@ public class MyFragment extends BaseLazyFragment {
                 KLog.d("tag","h5 职业认证");
                 name_vertify.setOnClickListener(v -> {
                     MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+
                     posCertInit();
                 });
             }
 
-            //是否领过vip 1-领取过，0-未领取过
-            if("1".equals(mUserInfo.getIs_vip())){
+            //是否领过vip 1-领取过，0-未领取过 180天字段
+            if("1".equals(mUserInfo.getIs_180_vip())){
                 toVip.setVisibility(View.GONE);
             }else{
                 toVip.setVisibility(View.VISIBLE);
@@ -388,7 +390,7 @@ public class MyFragment extends BaseLazyFragment {
                 case 2:
                     MobclickAgentUtils.onEvent(UmengEvent.i_badge_2_0_0);
 
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
+                    UIHelper.toWebViewBadgeActivity(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
 
                     break;
                 case 3:
@@ -433,11 +435,15 @@ public class MyFragment extends BaseLazyFragment {
                 R.id.part2222_2
     })
     public void clicks(View view){
+        if(StringUtil.isFastClick()){
+            return;
+        }
+
         switch (view.getId()){
             case R.id.part2222_2:
                 //获得徽章
                 MobclickAgentUtils.onEvent(UmengEvent.i_mybadge_2_0_0);
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
+                UIHelper.toWebViewBadgeActivity(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
 
                 break;
             case R.id.rl_newmsg:
@@ -491,7 +497,7 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.ll_badge:
                 KLog.d("tag","去徽章详情页");
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
+                UIHelper.toWebViewBadgeActivity(getActivity(),StringUtil.getLink("mybadge"),"mybadge");
                 break;
             case R.id.toSet:
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_2_0_0);

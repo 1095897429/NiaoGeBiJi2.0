@@ -1,13 +1,20 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.http.SslError;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
@@ -18,9 +25,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
@@ -29,10 +39,18 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.push.JPushReceiver;
+import com.qmkj.niaogebiji.common.service.MediaService;
+import com.qmkj.niaogebiji.common.utils.AppUpdateUtilNew;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
@@ -43,18 +61,26 @@ import com.qmkj.niaogebiji.module.fragment.SchoolFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolFragment;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
-import static android.view.View.VISIBLE;
 
 public class HomeActivity extends BaseActivity {
 
+    public static final int FLASH = 1;
+    public static final int H5_TO_ACTICLE = 5;
+    public static final int JPUSH_TO_FLASH = 10;
 
     @BindView(R.id.index_first_icon)
     ImageView index_first_icon;
@@ -125,7 +151,6 @@ public class HomeActivity extends BaseActivity {
     FirstFragment mFirstFragment;
     FlashFragment mFlashFragment;
     SchoolFragment mSchoolFragment;
-//    ToolFragment mToolFragment;
     CircleFragment mCircleFragment;
     MyFragment mMyFragment;
     Fragment mCurrentFragment;
@@ -144,6 +169,94 @@ public class HomeActivity extends BaseActivity {
     protected int getLayoutId() {
         return R.layout.activity_home;
     }
+
+
+
+    private JPushBean mJPushBean;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        KLog.e("tag","HomeActivity  onCreate");
+        super.onCreate(savedInstanceState);
+        if(null != getIntent().getExtras()){
+//            mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
+//            if(mJPushBean !=  null){
+//                toDiffer(mJPushBean,this);
+//            }
+
+            //应用关闭，点击会进入这里 -- 然后在 initData中做操作
+            fromType =  getIntent().getExtras().getInt("type");
+
+
+        }
+
+
+        initService();
+    }
+
+
+    //“绑定”服务的intent
+    Intent MediaServiceIntent;
+    public static MediaService.MyBinder mMyBinder;
+
+    public static MediaService mMediaService;
+
+    private void initService() {
+        MediaServiceIntent = new Intent(this, MediaService.class);
+        //绑定播放音乐的服务
+        bindService(MediaServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+
+    //TODO 2019.12.17 接入极光 ，华为sdk 时 就会报service连接不上
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMyBinder = (MediaService.MyBinder) service;
+            Log.d("tag", "Service与Activity已连接");
+            mMediaService = ((MediaService.MyBinder) service).getInstance();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+
+    private void toDiffer(JPushBean javaBean, Context context) {
+        String jump_type = javaBean.getJump_type();
+        String jump_info = javaBean.getJump_info();
+        KLog.d("tag","主界面跳转 ");
+        Intent i  = null;
+        try{
+            if("1".equals(jump_type)){
+                i =  new Intent(context, UserInfoActivity.class);
+            }else if("20".equals(jump_type)){
+                i =  new Intent(context, NewsDetailActivity.class);
+                i.putExtra("newsId",jump_info);
+            }else if("31".equals(jump_type)){
+                i = new Intent(context,HomeActivity.class);
+            }else if("50".equals(jump_type)){
+                i = new Intent(context, CommentDetailActivity.class);
+                Bundle  bundle = new Bundle();
+                bundle.putString("blog_id",jump_info);
+                i.putExtras(bundle);
+            }else if("60".equals(jump_type)){
+                //wiki
+            }else if("70".equals(jump_type)){
+
+            }
+
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            context.startActivity(i);
+        }catch (Throwable throwable){
+
+        }
+
+
+    }
+
 
 
 
@@ -184,6 +297,9 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        getUserInfo();
+
         mMyWebView = new MyWebView(getApplicationContext());
         mMyWebView.loadUrl(StringUtil.getLink("myactivity"));
         toGiveToken();
@@ -239,6 +355,13 @@ public class HomeActivity extends BaseActivity {
     @Override
     public void initData() {
         initFragment();
+//        registerMessageReceiver();  // used for receive msg
+
+        checkupd();
+
+        if(JPUSH_TO_FLASH == fromType){
+            bottomClick(findViewById(R.id.index_flash));
+        }
     }
 
     /** 默认的Fragment */
@@ -334,7 +457,7 @@ public class HomeActivity extends BaseActivity {
                 if(null == mFlashFragment){
                     mFlashFragment = FlashFragment.getInstance();
                 }
-                index_flash_icon.setImageResource(R.mipmap.icon_index_11);
+                index_flash_icon.setImageResource(R.mipmap.icon_index_01);
                 index_flash_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mFlashFragment);
                 break;
@@ -344,7 +467,7 @@ public class HomeActivity extends BaseActivity {
                 if(null == mSchoolFragment){
                     mSchoolFragment = SchoolFragment.getInstance();
                 }
-                index_school_icon.setImageResource(R.mipmap.icon_index_01);
+                index_school_icon.setImageResource(R.mipmap.icon_index_11);
                 index_school_text.setTextColor(Color.parseColor("#333333"));
                 switchFragment(mSchoolFragment);
             break;
@@ -427,10 +550,131 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        KLog.e("tag","HomeActivity  onNewIntent");
         if(intent.getExtras() != null){
             fromType =  intent.getExtras().getInt("type");
-            bottomClick(findViewById(R.id.index_first));
-            EventBus.getDefault().post(new toActicleEvent("去干货"));
+            if(H5_TO_ACTICLE == fromType){
+                bottomClick(findViewById(R.id.index_first));
+                EventBus.getDefault().post(new toActicleEvent("去干货"));
+            }else if(JPUSH_TO_FLASH == fromType){
+                bottomClick(findViewById(R.id.index_flash));
+            }
         }
     }
+
+
+
+    private void getUserInfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+                        StringUtil.setUserInfoBean(response.getReturn_data());
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+
+                    }
+                });
+
+    }
+
+
+
+    /** --------------------------------- 推送  ---------------------------------*/
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
+    public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
+    public static boolean isForeground = false;
+    private JPushReceiver mMessageReceiver;
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_EXTRAS = "extras";
+
+
+    public void registerMessageReceiver() {
+        mMessageReceiver = new JPushReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        filter.addAction(MESSAGE_RECEIVED_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filter);
+    }
+
+
+    /** --------------------------------- 版本更新  ---------------------------------*/
+    //是否强更：1-是,0-否
+    private VersionBean mVersionBean;
+
+    private String serverVersionCode;
+
+    private String apkUrl;
+
+    private String note;
+
+    private String forceUpdat;
+
+    private void checkupd() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+
+        RetrofitHelper.getApiService().checkupd(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<VersionBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<VersionBean> response) {
+                        mVersionBean = response.getReturn_data();
+                        if(null != mVersionBean){
+                            if(null != mVersionBean.getList() && !mVersionBean.getList().isEmpty() && null != mVersionBean.getList().get(0)){
+                                serverVersionCode = mVersionBean.getList().get(0).getVersion_code();
+                                apkUrl = mVersionBean.getList().get(0).getUrl();
+                                note = mVersionBean.getList().get(0).getUpdate_desc();
+                                forceUpdat = mVersionBean.getList().get(0).getForce_update_flag();
+                                KLog.d("tag","手机的VersionCode " + AppUtils.getAppVersionCode() + "");
+
+                                //当前的版本小于 后台返回的版本提示更新
+                                if(!TextUtils.isEmpty(serverVersionCode)){
+                                    if(AppUtils.getAppVersionCode() < Integer.parseInt(serverVersionCode)){
+                                        boolean isForce = forceUpdat.equals("1") ? true : false;
+                                        showUpdateDialog(isForce);
+                                    }else{
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                });
+    }
+
+
+    private void showUpdateDialog(boolean isForce) {
+        AppUpdateUtilNew updateUtil = new AppUpdateUtilNew(HomeActivity.this,apkUrl);
+        updateUtil.showUpdateDialog(note,isForce);
+
+    }
+
 }
+
+
+
+

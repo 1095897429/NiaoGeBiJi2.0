@@ -31,6 +31,7 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -83,7 +84,15 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         helper.setText(R.id.nickname,item.getUsername());
         //职位
         TextView sender_tag = helper.getView(R.id.name_tag);
-        sender_tag.setText(item.getCompany_name() + item.getPosition());
+
+        if("1".equals(item.getAuth_status())){
+            sender_tag.setText( (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
+                    (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+        }else{
+            sender_tag.setText("TA还未职业认证");
+        }
+
+
 
         //评论者头像
         if(!TextUtils.isEmpty(item.getAvatar())){
@@ -121,6 +130,16 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         recyclerView.setLayoutManager(talkManager);
         mLimit2ReplyAdapter = new Limit2ReplyAdapter(mLimitComments);
         mLimit2ReplyAdapter.setFatherComment(item);
+
+        mLimit2ReplyAdapter.setOnActicleToSecondListener(new Limit2ReplyAdapter.OnActicleToSecondListener() {
+            @Override
+            public void toActicleSecond() {
+                if(null != mToShowActicleDialogListener){
+                    mToShowActicleDialogListener.func(item,helper.getAdapterPosition());
+                }
+            }
+        });
+
         //禁用change动画
         ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         recyclerView.setAdapter(mLimit2ReplyAdapter);
@@ -271,5 +290,13 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
     }
 
 
+    public toShowActicleDialogListener mToShowActicleDialogListener;
+    public interface toShowActicleDialogListener{
+        void func(CommentBean.FirstComment item,int position);
+    }
+
+    public void setToShowActicleDialogListener(toShowActicleDialogListener toShowActicleDialogListener) {
+        mToShowActicleDialogListener = toShowActicleDialogListener;
+    }
 }
 

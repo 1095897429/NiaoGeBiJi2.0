@@ -159,8 +159,8 @@ public class SchoolFragment extends BaseLazyFragment {
         }
 
         showWaitingDialog();
-        initSamrtLayout();
         initLayout0();
+        initSamrtLayout();
         initLayout1();
         initLayout2();
         initEvent();
@@ -196,9 +196,30 @@ public class SchoolFragment extends BaseLazyFragment {
                 });
     }
 
+
+    private void initLayout0() {
+
+        mGridLayoutManager = new GridLayoutManager(getActivity(),5);
+        //设置布局管理器
+        recycler00.setLayoutManager(mGridLayoutManager);
+        mSchoolBaiduAdapter = new SchoolBaiduAdapter(mSchoolBaiDus);
+        recycler00.setAdapter(mSchoolBaiduAdapter);
+        //解决数据加载不完
+        recycler00.setNestedScrollingEnabled(true);
+        recycler00.setHasFixedSize(true);
+    }
+
+
     private void setData() {
         if(null != mSchoolBean){
             mSchoolBaiDus.addAll(mSchoolBean.getWiki());
+
+            if(mSchoolBaiDus.size() > 0){
+                mGridLayoutManager = new GridLayoutManager(getActivity(),mSchoolBaiDus.size());
+                //设置布局管理器
+                recycler00.setLayoutManager(mGridLayoutManager);
+            }
+
             mSchoolTests.addAll(mSchoolBean.getCates());
             if(mSchoolBean.getCourse() != null && !mSchoolBean.getCourse().isEmpty()){
                 mSchoolBooks.addAll(mSchoolBean.getCourse());
@@ -221,12 +242,18 @@ public class SchoolFragment extends BaseLazyFragment {
 
             SchoolBean.SchoolBaiDu temp =  mSchoolBaiduAdapter.getData().get(position);
             if(!TextUtils.isEmpty(temp.getCate_id() + "")){
+                if(StringUtil.isFastClick()){
+                    return;
+                }
                 String link = StringUtil.getLink("wikilist/" + temp.getCate_id());
                 UIHelper.toWebViewActivityWithOnStep(getActivity(),link);
             }
         });
 
         mSchoolTestAdapter.setOnItemClickListener((adapter, view, position) -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
 
             MobclickAgentUtils.onEvent("academy_test_test" + (position + 1) +"_2_0_0");
 
@@ -237,8 +264,10 @@ public class SchoolFragment extends BaseLazyFragment {
             }else if("1".equals(tempRecord.getIs_tested() + "")){
                 if(Integer.parseInt(tempRecord.getScore()) < Integer.parseInt(temp.getPass_score())){
                     KLog.d("tag","不及格");
+                    temp.setMyScore(tempRecord.getScore());
                     UIHelper.toTestResultFailActivity(getActivity(),temp);
                 }else{
+                    temp.setMyScore(tempRecord.getScore());
                     UIHelper.toTestResultActivity(getActivity(),temp);
                 }
             }
@@ -248,6 +277,10 @@ public class SchoolFragment extends BaseLazyFragment {
 
         mSchoolBookAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","去课程");
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
 
             if(position <= 9){
                 MobclickAgentUtils.onEvent("academy_newcourse_" + (position + 1) +"_2_0_0");
@@ -286,16 +319,7 @@ public class SchoolFragment extends BaseLazyFragment {
         recycler11.setHasFixedSize(true);
     }
 
-    private void initLayout0() {
-        mGridLayoutManager = new GridLayoutManager(getActivity(),5);
-        //设置布局管理器
-        recycler00.setLayoutManager(mGridLayoutManager);
-        mSchoolBaiduAdapter = new SchoolBaiduAdapter(mSchoolBaiDus);
-        recycler00.setAdapter(mSchoolBaiduAdapter);
-        //解决数据加载不完
-        recycler00.setNestedScrollingEnabled(true);
-        recycler00.setHasFixedSize(true);
-    }
+
 
     //点击切换fragement会调用
     @Override

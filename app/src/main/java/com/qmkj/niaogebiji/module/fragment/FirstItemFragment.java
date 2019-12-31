@@ -41,6 +41,7 @@ import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
+import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -97,7 +98,7 @@ public class FirstItemFragment extends BaseLazyFragment {
     //组合集合
     List<MultiNewsBean> mAllList = new ArrayList<>();
     //布局管理器
-    LinearLayoutManager mLinearLayoutManager;
+    RecyclerViewNoBugLinearLayoutManager mLinearLayoutManager;
 
 
     //通过此方式实例化Fragment
@@ -152,12 +153,23 @@ public class FirstItemFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<FristActionBean> response) {
+
+                        if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         mFristActionBean = response.getReturn_data();
                         setActivityData();
                     }
 
                     @Override
                     public void onNetFail(String msg) {
+                        if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         setActivityData();
                     }
                 });
@@ -242,11 +254,19 @@ public class FirstItemFragment extends BaseLazyFragment {
 
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
+                            mIsRefreshing = false;
                         }
 
                         temp = response.getReturn_data();
-
                         recommendActivity();
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
+                            smartRefreshLayout.finishRefresh();
+                        }
 
                     }
                 });
@@ -288,6 +308,8 @@ public class FirstItemFragment extends BaseLazyFragment {
                             bean1.setItemType(3);
                         }else if("3".equals(pic_type)){
                             bean1.setItemType(2);
+                        }else{
+                            bean1.setItemType(1);
                         }
                         bean1.setNewsActicleList(itemBean);
                         mAllList.add(bean1);
@@ -315,6 +337,8 @@ public class FirstItemFragment extends BaseLazyFragment {
                         bean1.setItemType(3);
                     }else if("3".equals(pic_type)){
                         bean1.setItemType(2);
+                    }else{
+                        bean1.setItemType(1);
                     }
                     bean1.setNewsActicleList(itemBean);
                     mAllList.add(bean1);
@@ -344,6 +368,8 @@ public class FirstItemFragment extends BaseLazyFragment {
                     bean1.setItemType(3);
                 }else if("3".equals(pic_type)){
                     bean1.setItemType(2);
+                }else {
+                    bean1.setItemType(1);
                 }
                 bean1.setNewsActicleList(itemBean);
                 tempList.add(bean1);
@@ -394,12 +420,15 @@ public class FirstItemFragment extends BaseLazyFragment {
 //        animatorSet.start();
     }
 
+    private boolean mIsRefreshing;
+
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
+            mIsRefreshing = true;
             page = 1;
             recommendlist();
             //更懂你
@@ -407,13 +436,23 @@ public class FirstItemFragment extends BaseLazyFragment {
 
             EventBus.getDefault().post(new toRefreshMoringEvent());
         });
+
+        mRecyclerView.setOnTouchListener(
+                (v, event) -> {
+                    if (mIsRefreshing) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+        );
     }
 
 
 
     //初始化布局管理器
     private void initLayout() {
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager = new RecyclerViewNoBugLinearLayoutManager(getActivity());
         //设置默认垂直布局
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         //设置布局管理器
@@ -434,7 +473,7 @@ public class FirstItemFragment extends BaseLazyFragment {
             recommendlist();
         },mRecyclerView);
 
-        mRecyclerView.addOnScrollListener(new RvScrollListener());
+//        mRecyclerView.addOnScrollListener(new RvScrollListener());
 
         mFirstItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()){
@@ -515,7 +554,10 @@ public class FirstItemFragment extends BaseLazyFragment {
         if(getUserVisibleHint()){
             KLog.d("tag","我是干货界面，我刷新了");
             mRecyclerView.scrollToPosition(0);
+            mIsRefreshing = true;
+//            mFirstItemAdapter.notifyDataSetChanged();
             smartRefreshLayout.autoRefresh();
+
         }
     }
 
@@ -523,6 +565,9 @@ public class FirstItemFragment extends BaseLazyFragment {
 
     @OnClick({R.id.to_tomorow, R.id.toMoreLoveYou})
     public void clicks(View view){
+        if(StringUtil.isFastClick()){
+            return;
+        }
         switch (view.getId()){
             case R.id.to_tomorow:
                 //明天提示
@@ -532,6 +577,9 @@ public class FirstItemFragment extends BaseLazyFragment {
             case R.id.toMoreLoveYou:
                 MobclickAgentUtils.onEvent(UmengEvent.index_flow_understand_2_0_0);
 
+                if(StringUtil.isFastClick()){
+                    return;
+                }
                 getProfession();
 
                 break;

@@ -470,9 +470,26 @@ public static java.lang.String TABLENAME;
 -keep class com.hianalytics.android.**{*;}
 -keep class com.huawei.updatesdk.**{*;}
 -keep class com.huawei.hms.**{*;}
--keep class com.huawei.android.hms.agent.**{*;}
 
 
 #oaid
 -keep class com.bun.miitmdid.core.** {*;}
 
+#小米推送
+#-dontwarncom.xiaomi.push.**
+#-keepclasscom.xiaomi.push.**{*;}
+
+#oppo推送
+-dontwarn com.coloros.mcsdk.**
+-keep class com.coloros.mcsdk.** { *; }
+
+#极光推送
+-dontoptimize
+-dontpreverify
+
+-dontwarn cn.jpush.**
+-keep class cn.jpush.** { *; }
+-keep class * extends cn.jpush.android.helpers.JPushMessageReceiver { *; }
+
+-dontwarn cn.jiguang.**
+-keep class cn.jiguang.** { *; }

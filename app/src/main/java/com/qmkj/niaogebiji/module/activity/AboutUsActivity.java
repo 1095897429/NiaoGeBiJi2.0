@@ -25,6 +25,9 @@ import com.qmkj.niaogebiji.common.utils.AppUpdateUtilNew;
 import com.qmkj.niaogebiji.common.utils.ChannelUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.InitDataBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -48,6 +51,18 @@ public class AboutUsActivity extends BaseActivity {
     @BindView(R.id.tv_title)
     TextView tv_title;
 
+    @BindView(R.id.wx_name)
+    TextView wx_name;
+
+
+    @BindView(R.id.hezuo_name)
+    TextView hezuo_name;
+
+
+    @BindView(R.id.version_code)
+    TextView version_code;
+
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_aboutus;
@@ -56,6 +71,8 @@ public class AboutUsActivity extends BaseActivity {
     @Override
     protected void initView() {
         tv_title.setText("关于我们");
+
+        version_code.setText(AppUtils.getAppVersionName() + "");
         tv_title.setOnClickListener(view -> {
 
         });
@@ -65,6 +82,30 @@ public class AboutUsActivity extends BaseActivity {
 
             }
         });
+
+        getInitData();
+
+    }
+
+    InitDataBean  initDataBean;
+    private void getInitData() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getInitData(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<InitDataBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<InitDataBean> response) {
+
+                        initDataBean = response.getReturn_data();
+                        if(null != initDataBean){
+                            wx_name.setText(initDataBean.getWechat_service_id());
+                            hezuo_name.setText(initDataBean.getWechat_business_target_id());
+                        }
+                    }
+                });
     }
 
     @OnClick({R.id.iv_back,R.id.icon,R.id.rl_weixin,
@@ -73,22 +114,24 @@ public class AboutUsActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.rl_hezuo:
-                copy("niaogibiji");
+                copy(initDataBean.getWechat_business_target_id());
                 MobclickAgentUtils.onEvent(UmengEvent.i_about_coop_2_0_0);
+
+                ToastUtils.showShort("已复制到剪贴板！请打开微信粘贴搜索   并直接打开微信");
 
                 getWechatApi();
                 break;
             case R.id.rl_weixin:
                 MobclickAgentUtils.onEvent(UmengEvent.i_about_wx_2_0_0);
 
-                copy("shjf");
+                copy(initDataBean.getWechat_service_id());
                 getWechatApi();
+
+                ToastUtils.showShort("已复制到剪贴板！请打开微信粘贴搜索   并直接打开微信");
                 break;
             case R.id.rl_version_code:
-//                checkupd();
+                checkupd();
                 MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
-
-                showUpdateDialog();
                 break;
             case R.id.icon:
                 String channel = ChannelUtil.getChannel(AboutUsActivity.this);
@@ -128,6 +171,8 @@ public class AboutUsActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<VersionBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<VersionBean> response) {
+                        mVersionBean = response.getReturn_data();
+                        KLog.d("tag",response.getReturn_data());
                         if(null != mVersionBean){
                             if(null != mVersionBean.getList() && !mVersionBean.getList().isEmpty() && null != mVersionBean.getList().get(0)){
                                 serverVersionCode = mVersionBean.getList().get(0).getVersion_code();
@@ -184,5 +229,9 @@ public class AboutUsActivity extends BaseActivity {
             ToastUtils.showShort("检查到您手机没有安装微信，请安装后使用该功能");
         }
     }
+
+
+
+
 
 }

@@ -94,19 +94,19 @@ public class ImageBrowseAdapter extends PagerAdapter {
         });
 
         //长按事件 下载
-        photoView.setOnLongClickListener(view -> {
-            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            } else {
-                mExecutorService.submit(() -> {
-                    bitmap =  StringUtil.getBitmap(imageList.get(position));
-                    mHandler.sendEmptyMessage(0x113);
-                });
-            }
-
-            return false;
-        });
+//        photoView.setOnLongClickListener(view -> {
+//            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+//            } else {
+//                mExecutorService.submit(() -> {
+//                    bitmap =  StringUtil.getBitmap(imageList.get(position));
+//                    mHandler.sendEmptyMessage(0x113);
+//                });
+//            }
+//
+//            return false;
+//        });
 
         container.addView(photoView);
         return photoView;

@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.common.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -47,6 +48,7 @@ import com.google.gson.Gson;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
+import com.qmkj.niaogebiji.common.base.BaseBean;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -97,6 +99,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static com.umeng.socialize.utils.ContextUtil.getPackageName;
 
 /**
  * @author zhouliang
@@ -561,8 +564,8 @@ public class StringUtil {
         while (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
-            KLog.d("tag", "start " + start + " end " + end);
-            KLog.d("tag", " matcher.group() " + matcher.group());
+//            KLog.d("tag", "start " + start + " end " + end);
+//            KLog.d("tag", " matcher.group() " + matcher.group());
             sb.append(start).append(":").append(end).append(":");
             pcLinks.add(matcher.group());
 
@@ -582,8 +585,8 @@ public class StringUtil {
         while (matcher.find()){
             int start =  matcher.start();
             int end = matcher.end();
-            KLog.d("tag","start " + start + " end " + end);
-            KLog.d("tag"," matcher.group() " +  matcher.group());
+//            KLog.d("tag","start " + start + " end " + end);
+//            KLog.d("tag"," matcher.group() " +  matcher.group());
             sb.append(start).append(":").append(end).append(":");
             pcLinks.add(matcher.group());
         }
@@ -670,7 +673,7 @@ public class StringUtil {
                 content = content.replace(item.getPcLinks().get(k),icon);
             }
         }
-        KLog.d("tag","最新字符串是 " + content);
+//        KLog.d("tag","最新字符串是 " + content);
 
         String newContent = content;
 
@@ -791,8 +794,28 @@ public class StringUtil {
         activity.getWindow().setAttributes(lp);
     }
 
-
-
+    /**
+     * 判断应用是否已经启动
+     * @param context 一个context
+     * @param packageName 要判断应用的包名
+     * @return boolean
+     */
+    public static boolean isAppAlive(Context context, String packageName){
+        ActivityManager activityManager =
+                (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processInfos
+                = activityManager.getRunningAppProcesses();
+        for(int i = 0; i < processInfos.size(); i++){
+            if(processInfos.get(i).processName.equals(packageName)){
+                Log.i("NotificationLaunch",
+                        String.format("the %s is running, isAppAlive return true", packageName));
+                return true;
+            }
+        }
+        Log.i("NotificationLaunch",
+                String.format("the %s is not running, isAppAlive return false", packageName));
+        return false;
+    }
 
 
 }

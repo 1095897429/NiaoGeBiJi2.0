@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,6 +13,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -163,6 +165,8 @@ public class FlashFragment extends BaseLazyFragment  {
         today_time.setTypeface(typeface);
     }
 
+
+    @SuppressLint("ClickableViewAccessibility")
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
@@ -172,6 +176,7 @@ public class FlashFragment extends BaseLazyFragment  {
             page = 1;
             getBulletinList();
         });
+
     }
 
 
@@ -207,7 +212,7 @@ public class FlashFragment extends BaseLazyFragment  {
         },mRecyclerView);
 
         //监听RecyclerView滚动，实现粘性头部
-        mRecyclerView.addOnScrollListener(new RvScrollListener());
+//        mRecyclerView.addOnScrollListener(new RvScrollListener());
 
         mFlashItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
 
@@ -284,7 +289,7 @@ public class FlashFragment extends BaseLazyFragment  {
                             }
                             if(1 == page){
                                 mFlashItemAdapter.setNewData(mBuilltinBeans);
-                                header_textview.setText( mBuilltinBeans.get(0).getDay_dec() + "  " + mBuilltinBeans.get(0).getShow_time());
+                                header_textview.setText( mBuilltinBeans.get(0).getDay_dec() + "" + mBuilltinBeans.get(0).getShow_time());
                             }else{
                                 //已为加载更多有数据
                                 if(mBuilltinBeans != null && mBuilltinBeans.size() > 0){

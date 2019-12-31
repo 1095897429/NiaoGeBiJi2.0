@@ -3,6 +3,8 @@ package com.qmkj.niaogebiji.module.activity;
 import android.animation.ObjectAnimator;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,6 +61,16 @@ public class CategoryListActivity extends BaseActivity {
     @BindView(R.id.tv_title)
     TextView tv_title;
 
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
+
+    @BindView(R.id.tv_empty)
+    TextView tv_empty;
+
+
     private int pageSize = 10 ;
 
     private String catid;
@@ -107,13 +119,22 @@ public class CategoryListActivity extends BaseActivity {
 
                         ActicleAllBean temp  = response.getReturn_data();
                         List<RecommendBean.Article_list> articles = temp.getList();
-                        if(null != articles && !articles.isEmpty()){
+
                             if(1 == page){
-                                setActicleData(articles);
-                                mFirstItemNewAdapter.setNewData(mAllList);
-                                //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(articles.size() < Constant.SEERVER_NUM){
-                                    mFirstItemNewAdapter.loadMoreEnd();
+                                if(null != articles && !articles.isEmpty()){
+                                    setActicleData(articles);
+                                    mFirstItemNewAdapter.setNewData(mAllList);
+                                    //如果第一次返回的数据不满10条，则显示无更多数据
+                                    if(articles.size() < Constant.SEERVER_NUM){
+                                        mFirstItemNewAdapter.loadMoreComplete();
+                                        mFirstItemNewAdapter.loadMoreEnd();
+                                    }
+                                }else{
+                                    //第一次加载无数据
+                                    ll_empty.setVisibility(View.VISIBLE);
+                                    ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("暂无内容");
+                                    ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
+                                    mRecyclerView.setVisibility(View.GONE);
                                 }
                             }else{
                                 //已为加载更多有数据
@@ -127,7 +148,6 @@ public class CategoryListActivity extends BaseActivity {
                                 }
                             }
                         }
-                    }
                 });
     }
 

@@ -78,7 +78,7 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1.0.0"
+                android:text=""
                 android:textColor="@color/setting_text_default"
                 android:textSize="11sp"
                 />
@@ -123,7 +123,7 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="niaogebiji"
+                android:text=""
                 android:textColor="@color/setting_text_default"
                 android:textSize="11sp"
                 />
@@ -164,7 +164,7 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="微信：shjf"
+                android:text=""
                 android:textColor="@color/setting_text_default"
                 android:textSize="11sp"
                 />

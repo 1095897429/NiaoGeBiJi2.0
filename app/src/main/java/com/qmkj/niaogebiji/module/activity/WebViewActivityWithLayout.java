@@ -56,6 +56,8 @@ import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
+import com.qmkj.niaogebiji.module.bean.MessageUserBean;
+import com.qmkj.niaogebiji.module.bean.MessageVipBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -95,14 +97,13 @@ import io.reactivex.schedulers.Schedulers;
  * 4.vip
  *
  */
-public class WebViewActivityWithLayout extends BaseActivity {
+public class WebViewActivityWithLayout extends WebViewAllActivity {
 
     @BindView(R.id.tv_title)
     TextView tv_title;
 
     @BindView(R.id.tv_canccle)
     TextView tv_cancle;
-
 
     @BindView(R.id.tv_done)
     TextView tv_done;
@@ -141,77 +142,6 @@ public class WebViewActivityWithLayout extends BaseActivity {
         return R.layout.activity_webview_1;
     }
 
-
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    @Override
-    protected void initView() {
-        link = getIntent().getStringExtra("link");
-        fromWhere = getIntent().getStringExtra("fromWhere");
-        KLog.d("tag","link " + link);
-
-        if(fromWhere.equals("显示一键已读消息")){
-            tv_right.setVisibility(View.VISIBLE);
-        }else if(fromWhere.equals("mybadge")){
-            allpart.setBackgroundColor(getResources().getColor(R.color.badge_color));
-            iv_back.setImageResource(R.mipmap.icon_back_white);
-            tv_title.setVisibility(View.GONE);
-        }else if(fromWhere.equals("editbadge")) {
-            allpart.setBackgroundColor(Color.parseColor("#2C2C2E"));
-            iv_back.setVisibility(View.GONE);
-            tv_title.setText("编辑展示徽章");
-            tv_done.setVisibility(View.VISIBLE);
-            tv_cancle.setVisibility(View.VISIBLE);
-        }else if(fromWhere.equals("vipmember")){
-            getUserInfo();
-            getVipStatus();
-        }else if(fromWhere.equals("webview_badges")){
-            allpart.setBackgroundColor(Color.parseColor("#2C2C2E"));
-            tv_title.setText("展示徽章");
-            iv_back.setVisibility(View.VISIBLE);
-        }
-
-
-        if(TextUtils.isEmpty(link)){
-            return;
-        }
-
-        initSetting();
-
-
-        mMyWebChromeClient = new MyWebChromeClientJieTu(this,mProgressBar,tv_title);
-
-
-        //js交互 -- 给js调用app的方法，xnNative是协调的对象
-        webview.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
-
-        webview.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                KLog.d("tag","---- " + url);
-                return false;
-            }
-
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed(); // 接受所有网站的证书
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-            }
-        });
-
-        webview.setWebChromeClient(mMyWebChromeClient);
-        webview.loadUrl(link);
-    }
 
     private void getVipStatus() {
         Map<String,String> map = new HashMap<>();
@@ -333,19 +263,22 @@ public class WebViewActivityWithLayout extends BaseActivity {
 
     @OnClick({R.id.iv_back,
             R.id.tv_right,
-            R.id.tv_done,
+//            R.id.tv_done,
             R.id.tv_zengsong,
             R.id.tv_canccle
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.tv_canccle:
+                finish();
+                break;
             case R.id.tv_zengsong:
                 String link = StringUtil.getLink("vipshare");
                 UIHelper.toWebViewActivityWithOnLayout(this,link,"vipshare");
                 break;
-            case R.id.tv_done:
-                tallMesToH5();
-                break;
+//            case R.id.tv_done:
+//                tallMesToH5();
+//                break;
             case R.id.tv_right:
 
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_recommendlist_laud10_2_0_0);
@@ -359,22 +292,7 @@ public class WebViewActivityWithLayout extends BaseActivity {
         }
     }
 
-    private void tallMesToH5() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            String result = "javascript:" + "finish()";
-            KLog.d("tag",result + "");
-            if (webview != null){
-                //传递参数
-                webview.loadUrl(result);
-            }
-        } else {//4.4以上 包括4.4
-            String result =  "javascript:" + "finish()";
-            KLog.d("tag",result);
-            if (webview != null){
-                webview.evaluateJavascript(result, value -> {});
-            }
-        }
-    }
+
 
     // 1-单个已读，2-所有已读
     private String mesId = "";
@@ -545,6 +463,22 @@ public class WebViewActivityWithLayout extends BaseActivity {
                         //VIP 个人分享
                         RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
                         showShareVipDialog(userInfo);
+                    }else if("toVipMember".equals(result)){
+                        String link = StringUtil.getLink("vipmember");
+                        UIHelper.toWebViewActivityWithOnLayout(WebViewActivityWithLayout.this,link,"vipmember");
+                    }else if("toUserDetail".equals(result)){
+                        //关注列表去跳转
+                        MessageUserBean javaBean = JSON.parseObject(param, MessageUserBean.class);
+                        MessageUserBean.H5UserBean bean = javaBean.getParams();
+                        String uid =  bean.getUid();
+                        UIHelper.toUserInfoActivity(WebViewActivityWithLayout.this,uid);
+                    }else if("toQuesPage".equals(result)){
+
+                        MessageVipBean javaBean = JSON.parseObject(param, MessageVipBean.class);
+                        MessageVipBean.VipBean bean = javaBean.getParams();
+                        String active =  bean.getActive();
+                        UIHelper.toWebViewActivityWithOnLayout(WebViewActivityWithLayout.this,StringUtil.getLink("questions/" + active),"questions");
+
                     }
 
                 } catch (JSONException e) {

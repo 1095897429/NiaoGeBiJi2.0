@@ -184,7 +184,7 @@
         <RelativeLayout
             android:layout_marginTop="9dp"
             android:id="@+id/tool_part"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="76dp"
             android:paddingLeft="16dp"
@@ -202,6 +202,7 @@
 
             <LinearLayout
                 android:id="@+id/toVip"
+                android:visibility="gone"
                 android:background="@mipmap/icon_no_vip"
                 android:layout_width="match_parent"
                 android:layout_height="76dp"

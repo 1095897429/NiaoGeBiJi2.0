@@ -60,8 +60,8 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
         //作者简介
         TextView sumary = helper.getView(R.id.author_tag);
-        if(!TextUtils.isEmpty(item.getTitle())){
-            sumary.setText(item.getTitle());
+        if(!TextUtils.isEmpty(item.getSummary())){
+            sumary.setText(item.getSummary());
         }else{
 //            sumary.setText("欢迎在鸟哥笔记发布文章。投稿请添加微信（ngbjxym）");
             sumary.setText("");

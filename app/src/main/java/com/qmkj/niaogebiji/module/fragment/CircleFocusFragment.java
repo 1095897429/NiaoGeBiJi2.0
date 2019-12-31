@@ -121,12 +121,12 @@ public class CircleFocusFragment extends BaseLazyFragment {
         String regex = "https?://(?:[-\\w.]|(?:%[\\da-fA-F]{2}))+[^\\u4e00-\\u9fa5]+[\\w-_/?&=#%:]{0}";
         Matcher matcher = Pattern.compile(regex).matcher(content);
         int size = matcher.groupCount();
-        KLog.d("tag","link条数 " + size);
+//        KLog.d("tag","link条数 " + size);
         while (matcher.find()){
             int start =  matcher.start();
             int end = matcher.end();
-            KLog.d("tag","start " + start + " end " + end);
-            KLog.d("tag"," matcher.group() " +  matcher.group());
+//            KLog.d("tag","start " + start + " end " + end);
+//            KLog.d("tag"," matcher.group() " +  matcher.group());
         }
 
     }

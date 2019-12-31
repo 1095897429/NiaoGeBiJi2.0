@@ -6,19 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.Process;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
-//import com.huawei.android.hms.agent.HMSAgent;
+import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.common.base.ActivityManager;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.utils.ChannelUtil;
-import com.qmkj.niaogebiji.common.utils.MiitHelper;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -26,6 +25,8 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
+
+import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import cn.udesk.UdeskSDKManager;
@@ -55,13 +56,13 @@ public class BaseApp extends Application {
     }
 
 
-    private MiitHelper.AppIdsUpdater appIdsUpdater = new MiitHelper.AppIdsUpdater() {
-        @Override
-        public void OnIdsAvalid(@NonNull String ids) {
-            Log.e("tag", "++++++ids" +  ids);
-            oaid = ids;
-        }
-    };
+//    private MiitHelper.AppIdsUpdater appIdsUpdater = new MiitHelper.AppIdsUpdater() {
+//        @Override
+//        public void OnIdsAvalid(@NonNull String ids) {
+//            Log.e("tag", "++++++ids" +  ids);
+//            oaid = ids;
+//        }
+//    };
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -78,8 +79,11 @@ public class BaseApp extends Application {
         super.onCreate();
 
         //获取OAID等设备标识符
-        MiitHelper miitHelper = new MiitHelper(appIdsUpdater);
-        miitHelper.getDeviceIds(getApplicationContext());
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+//            MiitHelper miitHelper = new MiitHelper(appIdsUpdater);
+//            miitHelper.getDeviceIds(getApplicationContext());
+//        }
+
 
         KLog.d(TAG,"onCreate");
         initLogger();
@@ -87,54 +91,71 @@ public class BaseApp extends Application {
         initUMConfig();
         initWX();
         initUDesk();
-        initService();
-//        initJPush();
-//        initHWPush();
+//        initService();
+        initJPush();
     }
 
-    private void initHWPush() {
-//        HMSAgent.init(this);
+    private boolean shouldInit() {
+        android.app.ActivityManager am = ((android.app.ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+        List<android.app.ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = getPackageName();
+        int myPid = Process.myPid();
+        for (android.app.ActivityManager.RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                return true;
+            }
+        }
+        return false;
     }
+
+
+
 
     private void initJPush() {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         String id = JPushInterface.getRegistrationID(this);
         KLog.d("tag","极光推送的di " + id + "");
+
+//        String regId = MiPushClient.getRegId(getApplicationContext());
+//        KLog.d("tag","小米推送的di " + regId + "");
+
+        HMSAgent.init(this);
+
+
     }
 
 
 
     //“绑定”服务的intent
-    Intent MediaServiceIntent;
-    public static MediaService.MyBinder mMyBinder;
+//    Intent MediaServiceIntent;
+//    public static MediaService.MyBinder mMyBinder;
+//
+//    public static MediaService mMediaService;
 
-    public static MediaService mMediaService;
 
 
-
-    private void initService() {
-
-        MediaServiceIntent = new Intent(this, MediaService.class);
-        //绑定播放音乐的服务
-        bindService(MediaServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-    }
+//    private void initService() {
+//        MediaServiceIntent = new Intent(this, MediaService.class);
+//        //绑定播放音乐的服务
+//        bindService(MediaServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+//    }
 
 
     //TODO 2019.12.17 接入极光 ，华为sdk 时 就会报service连接不上
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mMyBinder = (MediaService.MyBinder) service;
-            Log.d("tag", "Service与Activity已连接");
-            mMediaService = ((MediaService.MyBinder) service).getInstance();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
+//    private ServiceConnection mServiceConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            mMyBinder = (MediaService.MyBinder) service;
+//            Log.d("tag", "Service与Activity已连接");
+//            mMediaService = ((MediaService.MyBinder) service).getInstance();
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//
+//        }
+//    };
 
 
     private void initUDesk() {
@@ -202,4 +223,9 @@ public class BaseApp extends Application {
         super.onTerminate();
         KLog.d(TAG,"onTerminate");
     }
+
+
+
+
+
 }

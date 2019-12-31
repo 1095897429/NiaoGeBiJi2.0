@@ -31,7 +31,7 @@
         android:gravity="center"
         android:text=""
         android:background="@drawable/bg_corners_8_60alpha"
-        android:visibility="visible"
+        android:visibility="gone"
         android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="109dp" />

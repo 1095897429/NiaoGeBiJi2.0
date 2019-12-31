@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,6 +56,11 @@ public class PicPreviewActivity extends BaseActivity {
     @BindView(R.id.icon_preview_download)
     ImageView icon_preview_download;
 
+    @BindView(R.id.head_part)
+    RelativeLayout head_part;
+
+
+
 
     private ImageBrowseAdapter mImageBrowseAdapter;
 
@@ -65,6 +71,7 @@ public class PicPreviewActivity extends BaseActivity {
     //是否是网络图片
     private boolean fromNet = false;
 
+    private boolean isShowDown;
 
     private ExecutorService mExecutorService;
 
@@ -96,10 +103,17 @@ public class PicPreviewActivity extends BaseActivity {
         if(intent != null){
             currentIndex = intent.getIntExtra("index", 0);
             fromNet = intent.getBooleanExtra("fromNet",false);
+            isShowDown = intent.getBooleanExtra("isShowDown",true);
             imageList =  intent.getStringArrayListExtra("imageList");
             mImageBrowseAdapter = new ImageBrowseAdapter (PicPreviewActivity.this,imageList);
             imageBrowseViewPager.setAdapter (mImageBrowseAdapter);
             imageBrowseViewPager.setCurrentItem (currentIndex);
+
+            if(!isShowDown){
+                head_part.setVisibility(View.GONE);
+            }else{
+                head_part.setVisibility(View.VISIBLE);
+            }
         }
     }
 

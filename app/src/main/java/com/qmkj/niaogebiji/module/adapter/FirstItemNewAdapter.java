@@ -205,6 +205,9 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 helper.getView(R.id.one_img_imgs).setOnClickListener(view -> {
                     MobclickAgentUtils.onEvent(UmengEvent.index_flow_activity_2_0_0);
 
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
 
                     String jump_link = t.getActivity().getJump_link();
                     String linkType = t.getActivity().getLink_type();

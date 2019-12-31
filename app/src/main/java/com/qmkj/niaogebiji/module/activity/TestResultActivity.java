@@ -200,8 +200,17 @@ public class TestResultActivity extends BaseActivity {
             bean.setBitmap(bitmap);
             bean.setImg(mSchoolTest.getIcon());
             bean.setLink(mSchoolTest.getShare_url());
-            bean.setTitle(hege + mSchoolTest.getTitle());
-            bean.setContent(test_grade.getText().toString() + "分" + "通过鸟哥笔记认证"  + mSchoolTest.getTitle() + "测试，你也来试试");
+//            bean.setTitle(hege + mSchoolTest.getTitle());
+//            bean.setContent(test_grade.getText().toString() + "分" + "通过鸟哥笔记认证"  + mSchoolTest.getTitle() + "测试，你也来试试");
+            String mygrade = test_grade.getText().toString();
+            if(!TextUtils.isEmpty(mygrade) && mygrade.equals("100")){
+                mygrade = "100";
+                bean.setTitle("我满分通过了" + mSchoolTest.getTitle());
+            }else{
+                bean.setTitle("我通过了" + mSchoolTest.getTitle());
+            }
+
+            bean.setContent(mygrade + "分" + "通过鸟哥笔记" + mSchoolTest.getTitle() + ",你也来试试");
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
             }else{

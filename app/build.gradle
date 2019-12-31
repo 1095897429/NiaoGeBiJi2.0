@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
+//apply plugin: 'com.huawei.agconnect'
 
 def releaseTime() {
     return new Date().format("MMddHHmm", TimeZone.getTimeZone("GMT+8"))
@@ -13,29 +14,51 @@ android {
         applicationId "com.qmkj.niaogebiji"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 2
+        versionCode 3
         versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //MultiDex分包方法
         multiDexEnabled true
 
+//        ndk {
+//            //选择要添加的对应cpu类型的.so库。
+//            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+//            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+//        }
+
 
         manifestPlaceholders = [
                 JPUSH_PKGNAME : applicationId,
-                JPUSH_APPKEY : "92ca0d87fdb787c25ea8d427", //JPush上注册的包名对应的appkey.
+                JPUSH_APPKEY : "dcd33c1b5035fb8ddd32474f", //JPush上注册的包名对应的appkey.
                 JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+
+                HUAWEI_APPID:"101234657",//华为平台注册的appid
+
+                XIAOMI_APPKEY:"MI-5681821096962",//小米平台注册的appkey
+                XIAOMI_APPID:"MI-2882303761518210962",//小米平台注册的appid
+
+                OPPO_APPKEY:"OP-beffa2d72b234fa184c45ce635663087", // OPPO平台注册的appkey
+                OPPO_APPID:"OP-30212012", // OPPO平台注册的appid
+                OPPO_APPSECRET:"OP-677ba2ef03d544aca6b1a4ea08aacca8",//OPPO平台注册的appsecret
         ]
 
 
-        ndk {
-            abiFilters 'armeabi-v7a','x86','arm64-v8a','x86_64','armeabi'
-        }
-        packagingOptions {
-            doNotStrip "*/armeabi-v7a/*.so"
-            doNotStrip "*/x86/*.so"
-            doNotStrip "*/arm64-v8a/*.so"
-            doNotStrip "*/x86_64/*.so"
-            doNotStrip "armeabi.so"
+//        ndk {
+//            abiFilters 'armeabi-v7a','x86','arm64-v8a','x86_64','armeabi'
+//        }
+//        packagingOptions {
+//            doNotStrip "*/armeabi-v7a/*.so"
+//            doNotStrip "*/x86/*.so"
+//            doNotStrip "*/arm64-v8a/*.so"
+//            doNotStrip "*/x86_64/*.so"
+//            doNotStrip "armeabi.so"
+//        }
+    }
+
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
         }
     }
 
@@ -62,8 +85,8 @@ android {
     buildTypes {
         debug{
             buildConfigField("boolean","LOG_DEBUG","true")
-            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
-//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
+//            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
+            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
             buildConfigField("String","SecretKey","\"TESTINGT82U8qPK5wSyjtoyseZcP2iXlsN2VdC5\"")
 //            signingConfig signingConfigs.config
             minifyEnabled false
@@ -75,8 +98,8 @@ android {
 
         release {
             buildConfigField("boolean", "LOG_DEBUG", "false")
-            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
-//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
+//            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
+            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
             buildConfigField("String", "SecretKey", "\"STAGINGT82U8qPK5wSyjtoyseZcP2iXlsN2VdC5\"")
             signingConfig signingConfigs.release
             minifyEnabled true  //代码混淆
@@ -118,6 +141,13 @@ greendao {
     daoPackage 'com.qmkj.niaogebiji'
     //设置DaoMaster DaoSeeeion Dao目录，默认是build/generated/source/greendao
     //targetGenDir 'src/main/greendao'
+}
+
+
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
 }
 
 
@@ -206,19 +236,25 @@ dependencies {
 
     implementation 'com.qiniu:qiniu-android-sdk:7.5.0'
 
-    implementation 'cn.jiguang.sdk:jpush:3.5.4'  // 此处以JPush 3.5.4 版本为例。
-    implementation 'cn.jiguang.sdk:jcore:2.2.4'  // 此处以JCore 2.2.4 版本为例。
 
-    //huawei
-    implementation 'com.huawei.android.hms:push:2.6.3.306'
 
     implementation 'com.alibaba:fastjson:1.2.9'
 
     implementation 'org.ligboy.retrofit2:converter-fastjson-android:2.1.0'
 
 
-    implementation files('libs/miit_mdid_1.0.10.aar')
+//    implementation files('libs/miit_mdid_1.0.10.aar')
+
+
+
+    implementation 'cn.jiguang.sdk:jpush:3.5.4'  // 此处以JPush 3.5.4 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:2.2.4'  // 此处以JCore 2.2.4 版本为例。
 
     //小米集成指南
-//    implementation 'cn.jiguang.sdk.plugin:xiaomi:3.1.8'
+//    implementation 'cn.jiguang.sdk.plugin:xiaomi:3.5.4'
+
+    //oppo 集成指南
+    implementation'cn.jiguang.sdk.plugin:oppo:3.5.4'
+
+//    implementation'cn.jiguang.sdk.plugin:huawei:3.0.6'//此版本插件仅支持JPushSDK3.1.8及以上版本
 }

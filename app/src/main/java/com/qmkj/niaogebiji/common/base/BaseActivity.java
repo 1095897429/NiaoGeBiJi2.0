@@ -58,6 +58,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.socks.library.KLog;
@@ -185,7 +186,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
-                    BaseApp.mMyBinder.pauseMusic();
+                    HomeActivity.mMyBinder.pauseMusic();
                     pause();
                 });
 
@@ -199,8 +200,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
-                    BaseApp.mMyBinder.playMusic();
-                    BaseApp.mMediaService.setOnProgressListener(progress -> {
+                    HomeActivity.mMyBinder.playMusic();
+                    HomeActivity.mMediaService.setOnProgressListener(progress -> {
                         if(seekbar != null){
                             runOnUiThread(() -> {
                                 timeParse(time,progress);
@@ -226,8 +227,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     if(seekbar != null){
                        seekbar.setProgress(0);
                     }
-                    if(BaseApp.mMyBinder != null){
-                        BaseApp.mMyBinder.closeMedia();
+                    if(HomeActivity.mMyBinder != null){
+                        HomeActivity.mMyBinder.closeMedia();
                     }
 
                 });
@@ -254,8 +255,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     seekBar.setProgress(currentProgress);
                     timeParse(time,dest);
                 });
-                if(BaseApp.mMyBinder != null){
-                    BaseApp.mMyBinder.seekToPositon(dest);
+                if(HomeActivity.mMyBinder != null){
+                    HomeActivity.mMyBinder.seekToPositon(dest);
                 }
             }
         });
@@ -300,16 +301,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
         //先暂停
-        BaseApp.mMyBinder.pauseMusic();
+        HomeActivity.mMyBinder.pauseMusic();
 
         //有资源时 先关闭之前资源
-        BaseApp.mMyBinder.closeMedia();
+        HomeActivity.mMyBinder.closeMedia();
 
         //有资源时 重新准备新资源
-        BaseApp.mMediaService.prepare(url);
+        HomeActivity.mMediaService.prepare(url);
 
 
-        BaseApp.mMediaService.setOnCloseListener(() -> {
+        HomeActivity.mMediaService.setOnCloseListener(() -> {
             if(play != null){
                 play.setVisibility(View.VISIBLE);
             }
@@ -325,7 +326,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         });
 
-        BaseApp.mMediaService.setOnEndListener(() -> {
+        HomeActivity.mMediaService.setOnEndListener(() -> {
 
             if(play != null){
                 play.setVisibility(View.VISIBLE);
@@ -341,7 +342,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
         //准备完成回调 重置默认值
-        BaseApp.mMediaService.setOnStartListener(totalLength -> {
+        HomeActivity.mMediaService.setOnStartListener(totalLength -> {
             currentProgress = 0;
             maxProgress = totalLength;
             audiotime = totalLength;
@@ -362,8 +363,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
             //👇是自动播放
             play();
-            BaseApp.mMyBinder.playMusic();
-            BaseApp.mMediaService.setOnProgressListener(progress -> {
+            HomeActivity.mMyBinder.playMusic();
+            HomeActivity.mMediaService.setOnProgressListener(progress -> {
                 if(seekbar != null){
 
                     runOnUiThread(() -> {
@@ -522,7 +523,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         MobclickAgent.onResume(this);
 
         //存在 + view显示
-        if(BaseApp.mMyBinder != null && isAudaioShow){
+        if(HomeActivity.mMyBinder != null && isAudaioShow){
             part_audio.setVisibility(View.VISIBLE);
 
             if(getClass().getSimpleName().equals("HomeActivity")
@@ -543,8 +544,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             //设置当时时间
             time.setText(timeParse(currenttime) + "");
             //视频正在播放
-            if( BaseApp.mMyBinder.isPlaying()){
-                BaseApp.mMyBinder.playMusic();
+            if( HomeActivity.mMyBinder.isPlaying()){
+                HomeActivity.mMyBinder.playMusic();
                 play.setVisibility(View.GONE);
                 close.setVisibility(View.GONE);
                 pause.setVisibility(View.VISIBLE);
@@ -554,7 +555,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 pause.setVisibility(View.GONE);
             }
 
-            BaseApp.mMediaService.setOnProgressListener(progress -> {
+            HomeActivity.mMediaService.setOnProgressListener(progress -> {
                 if(seekbar != null){
                     runOnUiThread(() -> {
                         timeParse(time,progress);
@@ -566,7 +567,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             });
 
 
-            BaseApp.mMediaService.setOnEndListener(() -> {
+            HomeActivity.mMediaService.setOnEndListener(() -> {
                 if(play != null){
                     play.setVisibility(View.VISIBLE);
                 }
@@ -639,45 +640,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void finishWithAnim(int inAnim,int outAnim){
         finish();
         overridePendingTransition(inAnim,outAnim);
-    }
-
-
-
-    /** --------------------------------- 评论点赞  ---------------------------------*/
-    //点赞
-    private void goodBulletin(String flash_id) {
-        Map<String,String> map = new HashMap<>();
-        map.put("type",1 +"");
-        map.put("id",flash_id);
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().goodBulletin(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        changePriaseStatus();
-                    }
-                });
-    }
-
-    //取赞
-    private void cancleGoodBulletin(String flash_id) {
-        Map<String,String> map = new HashMap<>();
-        map.put("type",1 +"");
-        map.put("id",flash_id);
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().cancleGoodBulletin(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        changePriaseStatus();
-                    }
-                });
     }
 
 

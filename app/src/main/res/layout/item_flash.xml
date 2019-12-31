@@ -111,78 +111,23 @@
 
             </LinearLayout>
 
-            <!-- 二图 -->
             <LinearLayout
-                android:id="@+id/ll_part2"
+                android:id="@+id/ll_pic_3"
                 android:layout_below="@+id/content_des"
                 android:layout_marginTop="8dp"
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="109dp"
                 android:orientation="horizontal">
 
-                <com.qmkj.niaogebiji.module.widget.RCImageView
-                    android:id="@+id/one_img_1"
-                    android:visibility="visible"
-                    android:background="@color/bg_color"
-                    android:layout_width="109dp"
-                    android:layout_height="109dp"
-                    android:scaleType="fitXY"
-                    app:round_as_circle="false"
-                    app:round_corner="8dp" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/pic_recyler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </androidx.recyclerview.widget.RecyclerView>
 
-                <com.qmkj.niaogebiji.module.widget.RCImageView
-                    android:id="@+id/one_img_2"
-                    android:visibility="visible"
-                    android:background="@color/bg_color"
-                    android:layout_width="109dp"
-                    android:layout_height="109dp"
-                    android:scaleType="fitXY"
-                    app:round_as_circle="false"
-                    app:round_corner="8dp" />
 
             </LinearLayout>
-
-            <!-- 三图 -->
-            <LinearLayout
-                android:id="@+id/ll_part3"
-                android:layout_below="@+id/content_des"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.qmkj.niaogebiji.module.widget.RCImageView
-                    android:id="@+id/three_img_1"
-                    android:visibility="visible"
-                    android:background="@color/bg_color"
-                    android:layout_width="109dp"
-                    android:layout_height="109dp"
-                    android:scaleType="fitXY"
-                    app:round_as_circle="false"
-                    app:round_corner="8dp" />
-
-                <com.qmkj.niaogebiji.module.widget.RCImageView
-                    android:id="@+id/three_img_2"
-                    android:visibility="visible"
-                    android:background="@color/bg_color"
-                    android:layout_width="109dp"
-                    android:layout_height="109dp"
-                    android:scaleType="fitXY"
-                    app:round_as_circle="false"
-                    app:round_corner="8dp" />
-
-                <com.qmkj.niaogebiji.module.widget.RCImageView
-                    android:id="@+id/three_img_3"
-                    android:visibility="visible"
-                    android:background="@color/bg_color"
-                    android:layout_width="109dp"
-                    android:layout_height="109dp"
-                    android:scaleType="fitXY"
-                    app:round_as_circle="false"
-                    app:round_corner="8dp" />
-
-            </LinearLayout>
-
 
             <LinearLayout
                 android:id="@+id/part2222"

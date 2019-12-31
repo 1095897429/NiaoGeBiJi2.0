@@ -4,41 +4,49 @@
     package="com.qmkj.niaogebiji">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <!-- 10.0读取权限 -->
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
 
-    <!--&lt;!&ndash; 华为权限 &ndash;&gt;-->
-    <!--&lt;!&ndash;如果是安卓8.0，应用编译配置的targetSdkVersion>=26，请务必添加以下权限 &ndash;&gt;-->
-    <!--<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />-->
 
-    <!--&lt;!&ndash; 接收PUSH TOKEN的广播以及PUSH消息需要定义该权限 ${PACKAGE_NAME} 要替换上您应用的包名 &ndash;&gt;-->
-    <!--<permission-->
-        <!--android:name="com.qmkj.niaogebiji.permission.PROCESS_PUSH_MSG"-->
-        <!--android:protectionLevel="signatureOrSystem"/>-->
-    <!--&lt;!&ndash;接收PUSH TOKEN的广播以及PUSH消息需要定义该权限 ${PACKAGE_NAME} 要替换上您应用的包名 &ndash;&gt;-->
-    <!--<uses-permission android:name="com.qmkj.niaogebiji.permission.PROCESS_PUSH_MSG" />-->
 
-    <!--&lt;!&ndash;PUSH Provider相关权限 &ndash;&gt;-->
-    <!--<permission-->
-        <!--android:name="com.qmkj.niaogebiji.permission.PUSH_PROVIDER"-->
-        <!--android:protectionLevel="signatureOrSystem" />-->
-    <!--<permission-->
-        <!--android:name="com.qmkj.niaogebiji.permission.PUSH_WRITE_PROVIDER"-->
-        <!--android:protectionLevel="signatureOrSystem" />-->
 
+    <!--HMS-SDK引导升级HMS功能，访问OTA服务器需要网络权限 | HMS-SDK upgrade HMS Feature, access to OTA server requires network privileges-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!--HMS-SDK引导升级HMS功能，保存下载的升级包需要SD卡写权限 | HMS-SDK upgrade HMS Feature, save downloaded upgrade pack requires SD card Write permission-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--检测网络状态 | Detecting Network status-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!--检测wifi状态 | Detecting WiFi status-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!--获取用户手机的IMEI，用来唯一的标识设备。 | Gets the IMEI of the user's phone, used to uniquely identify the device.-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!-- Android O版本调用安装需要使用该权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+    <!-- 接收PUSH TOKEN的广播以及PUSH消息需要定义该权限 com.qmkj.niaogebiji 要替换上您应用的包名 -->
+    <permission
+        android:name="com.qmkj.niaogebiji.permission.PROCESS_PUSH_MSG"
+        android:protectionLevel="signatureOrSystem"/>
+
+    <!--接收PUSH TOKEN的广播以及PUSH消息需要定义该权限 com.qmkj.niaogebiji 要替换上您应用的包名 -->
+    <uses-permission android:name="com.qmkj.niaogebiji.permission.PROCESS_PUSH_MSG" />
+
+
+    <!--<uses-permission android:name="android.permission.VIBRATE"/>-->
+    <!--<permission android:name="com.qmkj.niaogebiji.permission.MIPUSH_RECEIVE"-->
+        <!--android:protectionLevel="signature" /> &lt;!&ndash;这里com.qmkj.niaogebiji改成app的包名&ndash;&gt;-->
+    <!--<uses-permission android:name="com.qmkj.niaogebiji.permission.MIPUSH_RECEIVE" />&lt;!&ndash;这里com.qmkj.niaogebiji改成app的包名&ndash;&gt;-->
 
 
     <application
         android:name="com.qmkj.niaogebiji.common.BaseApp"
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/logo_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo_icon"
@@ -72,7 +80,9 @@
             android:value="5d64dd3e3fc1954178000034" />
 
         <activity
+            android:exported="true"
             android:name=".module.activity.HomeActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask">
 
 
@@ -100,7 +110,8 @@
         </activity>
 
 
-        <activity android:name=".module.activity.ModifyUserInfoActivity">
+        <activity android:name=".module.activity.ModifyUserInfoActivity"
+            android:launchMode="singleTop">
         </activity>
 
 
@@ -305,11 +316,26 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".common.helper.ExchangeDetailActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".module.activity.FeatherActivity"
             android:screenOrientation="portrait" />
 
 
+        <activity
+            android:name=".module.activity.WebViewAllActivity"
+            android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".module.activity.WebViewBadgeActivity"
+            android:screenOrientation="portrait" />
+
+
+        <activity
+            android:name=".module.activity.WebViewEditBadgeActivity"
+            android:screenOrientation="portrait" />
 
 
 
@@ -358,117 +384,203 @@
 
 
 
-        <!--  ==================================================== 极光推送 ==================================================== -->
+        <!--  ==================================================== 推送 ==================================================== -->
+
+        <!-- Since JCore2.0.0 Required SDK核心功能-->
+        <!-- 可配置android:process参数将Service放在其他进程中；android:enabled属性不能是false -->
+        <!-- 这个是自定义Service，要继承极光JCommonService，可以在更多手机平台上使得推送通道保持的更稳定 -->
+        <service android:name="com.qmkj.niaogebiji.common.push.PushService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":pushcore">
+            <intent-filter>
+                <action android:name="cn.jiguang.user.service.action" />
+            </intent-filter>
+        </service>
+
+        <!-- Required since 3.0.7 -->
+        <!-- 新的 tag/alias 接口结果返回需要开发者配置一个自定的广播 -->
+        <!-- 3.3.0开始所有事件将通过该类回调 -->
+        <!-- 该广播需要继承 JPush 提供的 JPushMessageReceiver 类, 并如下新增一个 Intent-Filter -->
+        <receiver
+            android:name="com.qmkj.niaogebiji.common.push.JPushReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="com.qmkj.niaogebiji" />
+            </intent-filter>
+        </receiver>
 
 
-        <!-- Rich push 核心功能 since 2.0.6-->
-        <!--<activity-->
-            <!--android:name="cn.jpush.android.ui.PopWinActivity"-->
-            <!--android:theme="@style/MyDialogStyle"-->
-            <!--android:exported="false"-->
-            <!--tools:replace="android:exported">-->
-        <!--</activity>-->
+        <receiver
+            android:name="com.qmkj.niaogebiji.common.push.MyReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!--Required  用户注册SDK的intent-->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!--Required  用户接收SDK消息的intent-->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> <!--Required  用户接收SDK通知栏信息的intent-->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!--Required  用户打开自定义通知栏的intent-->
+                <action android:name="cn.jpush.android.intent.CONNECTION" /><!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <category android:name="com.qmkj.niaogebiji" />
+            </intent-filter>
+        </receiver>
 
-        <!--&lt;!&ndash; Required SDK核心功能&ndash;&gt;-->
-        <!--<activity-->
-            <!--android:name="cn.jpush.android.ui.PushActivity"-->
-            <!--android:configChanges="orientation|keyboardHidden"-->
-            <!--android:theme="@android:style/Theme.NoTitleBar"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="cn.jpush.android.ui.PushActivity" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<category android:name="com.fulishe.browse" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
 
-        <!--&lt;!&ndash; Required SDK 核心功能&ndash;&gt;-->
-        <!--&lt;!&ndash; 可配置android:process参数将PushService放在其他进程中 &ndash;&gt;-->
-        <!--<service-->
-            <!--android:name="cn.jpush.android.service.PushService"-->
-            <!--android:process=":pushcore"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="cn.jpush.android.intent.REGISTER" />-->
-                <!--<action android:name="cn.jpush.android.intent.REPORT" />-->
-                <!--<action android:name="cn.jpush.android.intent.PushService" />-->
-                <!--<action android:name="cn.jpush.android.intent.PUSH_TIME" />-->
-            <!--</intent-filter>-->
-        <!--</service>-->
-        <!--&lt;!&ndash; since 3.0.9 Required SDK 核心功能&ndash;&gt;-->
-        <!--<provider-->
-            <!--android:authorities="com.qmkj.niaogebiji.DataProvider"-->
-            <!--android:name="cn.jpush.android.service.DataProvider"-->
-            <!--android:process=":pushcore"-->
-            <!--android:exported="false"-->
-            <!--tools:replace="android:authorities" />-->
 
-        <!--&lt;!&ndash; since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 &ndash;&gt;-->
-        <!--&lt;!&ndash; 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 &ndash;&gt;-->
-        <!--<service-->
-            <!--android:name="cn.jpush.android.service.DaemonService"-->
+        <!--  ==================================================== 推送 2==================================================== -->
+
+        <!--华为推送服务的配置 -->
+        <!-- value的值“xxx”用实际申请的应用ID替换，来源于开发者联盟网站应用的服务详情。-->
+        <meta-data
+            android:name="com.huawei.hms.client.appid"
+            android:value="appid=101234657">
+        </meta-data>
+        <provider
+            android:name="com.huawei.hms.update.provider.UpdateProvider"
+            android:authorities="com.fei.main.hms.update.provider"
+            android:exported="false"
+            android:process=":updateProvider"
+            android:grantUriPermissions="true"/>
+
+        <!-- 接入HMSSDK 需要注册的provider，authorities 一定不能与其他应用一样，所以这边 com.fei.main 要替换上您应用的包名
+            Access HMSSDK need to register provider,authorities must not be the same as other applications, so this side ${package_name} to replace the package name you applied-->
+        <provider
+            android:name="com.huawei.updatesdk.fileprovider.UpdateSdkFileProvider"
+            android:authorities="com.fei.main.updateSdk.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+        </provider>
+
+        <!--<activity android:name=".OpendeviceActivity"/>-->
+
+        <!-- 使用 HMSAgent 代码接入HMSSDK 需要注册的activity | Use hmsagent code to access HMSSDK activity that requires registration-->
+        <activity
+            android:name="com.huawei.android.hms.agent.common.HMSAgentActivity"
+            android:configChanges="orientation|locale|screenSize|layoutDirection|fontScale"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:theme="@android:style/Theme.Translucent" >
+            <meta-data
+                android:name="hwc-theme"
+                android:value="androidhwext:style/Theme.Emui.Translucent" />
+        </activity>
+
+
+
+
+        <!-- 接入HMSSDK 需要注册的activity | Access HMSSDK activity to be registered-->
+        <activity
+            android:name="com.huawei.hms.activity.BridgeActivity"
+            android:configChanges="orientation|locale|screenSize|layoutDirection|fontScale"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:theme="@android:style/Theme.Translucent" >
+            <meta-data
+                android:name="hwc-theme"
+                android:value="androidhwext:style/Theme.Emui.Translucent" />
+        </activity>
+
+        <!-- 接入HMSSDK 需要注册的activity | Access HMSSDK activity to be registered-->
+        <activity
+            android:name="com.huawei.updatesdk.service.otaupdate.AppUpdateActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" >
+            <meta-data
+                android:name="hwc-theme"
+                android:value="androidhwext:style/Theme.Emui.Translucent.NoTitleBar" />
+        </activity>
+
+        <!-- 接入HMSSDK 需要注册的activity | Access HMSSDK activity to be registered-->
+        <activity
+            android:name="com.huawei.updatesdk.support.pm.PackageInstallerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false" >
+            <meta-data
+                android:name="hwc-theme"
+                android:value="androidhwext:style/Theme.Emui.Translucent" />
+        </activity>
+
+        <!-- 接入HMSSDK PUSH模块需要注册，第三方相关 :接收Push消息（注册、Push消息、Push连接状态）广播，
+                此receiver类需要开发者自己创建并继承com.huawei.hms.support.api.push.PushReceiver类，
+                参考示例代码中的类：com.huawei.hmsagent.HuaweiPushRevicer
+            Access to the HMSSDK push module requires registration:
+	            Receive push message (registration, push message, push connection state) broadcast.
+	            This receiver class requires the developer to create and inherit the com.huawei.hms.support.api.push.PushReceiver class.
+	            Reference to class in sample code: Com.huawei.hmsagent.HuaweiPushRevicer-->
+        <receiver android:name="com.qmkj.niaogebiji.common.push.HUAWEIPushRevicer" >
+            <intent-filter>
+                <!-- 必须,用于接收token | Must， for receiving token -->
+                <action android:name="com.huawei.android.push.intent.REGISTRATION" />
+                <!-- 必须，用于接收消息 | Must， used to receive messages-->
+                <action android:name="com.huawei.android.push.intent.RECEIVE" />
+                <!-- 可选，用于点击通知栏或通知栏上的按钮后触发onEvent回调 | Optional, click the button on the notification bar or the notification bar to trigger the onevent callback -->
+                <action android:name="com.huawei.android.push.intent.CLICK" />
+                <!-- 可选，查看push通道是否连接，不查看则不需要 | Optional, query whether the push channel is connected or not -->
+                <action android:name="com.huawei.intent.action.PUSH_STATE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 接入HMSSDK PUSH模块需要注册 :接收通道发来的通知栏消息 | The access HMSSDK push module needs to be registered: the notification bar message sent from the receiving channel -->
+        <receiver android:name="com.qmkj.niaogebiji.common.push.HuaweiPushRevicerEx" >
+            <intent-filter>
+                <action android:name="com.huawei.intent.action.PUSH" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 接入HMSSDK 需要注册的应用下载服务 | Access HMSSDK need to register app download service-->
+        <service android:name="com.huawei.updatesdk.service.deamon.download.DownloadService"
+            android:exported="false"/>
+
+
+
+        <!--  ==================================================== 推送 3==================================================== -->
+
+
+        <!--<service android:name="com.xiaomi.push.service.XMJobService"-->
+            <!--android:enabled="true" android:exported="false"-->
+            <!--android:permission="android.permission.BIND_JOB_SERVICE"-->
+            <!--android:process=":pushservice" />-->
+        <!--<service android:name="com.xiaomi.push.service.XMPushService"-->
             <!--android:enabled="true"-->
+            <!--android:process=":pushservice" />-->
+        <!--<service android:name="com.xiaomi.mipush.sdk.PushMessageHandler"-->
+            <!--android:enabled="true" android:exported="true" />-->
+        <!--<service android:name="com.xiaomi.mipush.sdk.MessageHandleService"-->
+            <!--android:enabled="true" />-->
+
+        <!--<receiver android:name="com.sdc.cfm.DemoMessageReceiver"-->
             <!--android:exported="true">-->
             <!--<intent-filter>-->
-                <!--<action android:name="cn.jpush.android.intent.DaemonService" />-->
-                <!--<category android:name="com.qmkj.niaogebiji" />-->
-            <!--</intent-filter>-->
-
-        <!--</service>-->
-        <!--&lt;!&ndash; since 3.1.0 Required SDK 核心功能&ndash;&gt;-->
-        <!--<provider-->
-            <!--android:authorities="com.qmkj.niaogebiji.DownloadProvider"-->
-            <!--android:name="cn.jpush.android.service.DownloadProvider"-->
-            <!--android:exported="true"-->
-            <!--/>-->
-        <!--&lt;!&ndash; Required SDK核心功能&ndash;&gt;-->
-        <!--<receiver-->
-            <!--android:name="cn.jpush.android.service.PushReceiver"-->
-            <!--android:enabled="true"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter android:priority="1000">-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />   &lt;!&ndash;Required  显示通知栏 &ndash;&gt;-->
-                <!--<category android:name="com.qmkj.niaogebiji" />-->
+                <!--<action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />-->
             <!--</intent-filter>-->
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.USER_PRESENT" />-->
+                <!--<action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.ERROR" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+
+        <!--<receiver android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
                 <!--<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
-            <!--</intent-filter>-->
-            <!--&lt;!&ndash; Optional &ndash;&gt;-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.PACKAGE_ADDED" />-->
-                <!--<action android:name="android.intent.action.PACKAGE_REMOVED" />-->
-
-                <!--<data android:scheme="package" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
             <!--</intent-filter>-->
         <!--</receiver>-->
 
-        <!--&lt;!&ndash; Required SDK核心功能&ndash;&gt;-->
-        <!--<receiver android:name="cn.jpush.android.service.AlarmReceiver" android:exported="false"/>-->
-
-        <!-- User defined.  For test only  用户自定义的广播接收器-->
-        <!--<receiver-->
-            <!--android:name=".module.receiver.MyReceiver"-->
+        <!--<receiver android:name="com.xiaomi.push.service.receivers.PingReceiver"-->
             <!--android:exported="false"-->
-            <!--android:enabled="true">-->
+            <!--android:process=":pushservice">-->
             <!--<intent-filter>-->
-                <!--<action android:name="cn.jpush.android.intent.REGISTRATION" /> &lt;!&ndash;Required  用户注册SDK的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> &lt;!&ndash;Required  用户接收SDK消息的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> &lt;!&ndash;Required  用户接收SDK通知栏信息的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> &lt;!&ndash;Required  用户打开自定义通知栏的intent&ndash;&gt;-->
-                <!--<action android:name="cn.jpush.android.intent.CONNECTION" />&lt;!&ndash; 接收网络变化 连接/断开 since 1.6.3 &ndash;&gt;-->
-                <!--<category android:name="com.qmkj.niaogebiji" />-->
+                <!--<action android:name="com.xiaomi.push.PING_TIMER" />-->
             <!--</intent-filter>-->
         <!--</receiver>-->
 
-
-        <!-- Required  . Enable it you can get statistics data with channel -->
-        <!--<meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>-->
-        <!--<meta-data android:name="JPUSH_APPKEY" android:value="92ca0d87fdb787c25ea8d427" /> &lt;!&ndash;  </>值来自开发者平台取得的AppKey&ndash;&gt;-->
-
-
-
-        <!--  ==================================================== 华为推送 ==================================================== -->
 
 
     </application>

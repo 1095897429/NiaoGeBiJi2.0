@@ -49,6 +49,9 @@ import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityWithLayout;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityWithStep;
+import com.qmkj.niaogebiji.module.activity.WebViewAllActivity;
+import com.qmkj.niaogebiji.module.activity.WebViewBadgeActivity;
+import com.qmkj.niaogebiji.module.activity.WebViewEditBadgeActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
@@ -71,7 +74,6 @@ public class UIHelper {
     public static void toHomeActivity(Context ctx, int type) {
         Intent intent = new Intent(ctx, HomeActivity.class);
         Bundle bundle = new Bundle();
-        intent.putExtra("type",type);
         bundle.putInt("type",type);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
@@ -141,12 +143,13 @@ public class UIHelper {
 
 
     /** 打开图片预览界面 */
-    public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos,int position) {
+    public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos,int position,boolean isShowDown) {
         Intent intent = new Intent(ctx, PicPreviewActivity.class);
         Bundle bundle = new Bundle ();
         bundle.putStringArrayList ("imageList", photos);
         bundle.putBoolean("fromNet",true);
         bundle.putInt("index",position);
+        bundle.putBoolean("isShowDown",isShowDown);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
     }
@@ -212,6 +215,29 @@ public class UIHelper {
         intent.putExtra("link",link);
         ctx.startActivity(intent);
     }
+
+    public static void toWebViewBadgeActivity(Context ctx, String link,String fromWhere) {
+        Intent intent = new Intent(ctx, WebViewBadgeActivity.class);
+        intent.putExtra("link",link);
+        intent.putExtra("fromWhere",fromWhere);
+        ctx.startActivity(intent);
+    }
+
+
+    public static void toWebViewEditBadgeActivity(Context ctx, String link,String fromWhere) {
+        Intent intent = new Intent(ctx, WebViewEditBadgeActivity.class);
+        intent.putExtra("link",link);
+        intent.putExtra("fromWhere",fromWhere);
+        ctx.startActivity(intent);
+    }
+
+    public static void toWebViewAllActivity(Context ctx, String link,String fromWhere) {
+        Intent intent = new Intent(ctx, WebViewAllActivity.class);
+        intent.putExtra("link",link);
+        intent.putExtra("fromWhere",fromWhere);
+        ctx.startActivity(intent);
+    }
+
 
     public static void toWebViewActivityWithOnLayout(Context ctx, String link,String fromWhere) {
         Intent intent = new Intent(ctx, WebViewActivityWithLayout.class);

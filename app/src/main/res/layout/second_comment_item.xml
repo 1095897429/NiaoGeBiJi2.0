@@ -91,7 +91,7 @@
                         android:ellipsize="end"
                         android:lineSpacingExtra="2dp"
                         android:text="10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
 
@@ -112,7 +112,7 @@
 
 
                         <LinearLayout
-                            android:layout_alignParentRight="true"
+                            android:layout_toLeftOf="@+id/toSecondComment"
                             android:layout_centerVertical="true"
                             android:gravity="center"
                             android:visibility="visible"
@@ -145,7 +145,7 @@
 
                             <TextView
                                 android:id="@+id/zan_num"
-                                android:text="赞"
+                                android:text=""
                                 android:textSize="13sp"
                                 android:textColor="#555962"
                                 android:gravity="center"
@@ -154,6 +154,16 @@
 
 
                         </LinearLayout>
+
+                        <ImageView
+                            android:visibility="visible"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:id="@+id/toSecondComment"
+                            android:src="@mipmap/icon_comment_mes"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
 
 
                     </RelativeLayout>

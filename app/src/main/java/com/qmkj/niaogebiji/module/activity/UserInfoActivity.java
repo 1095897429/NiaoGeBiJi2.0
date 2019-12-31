@@ -51,6 +51,8 @@ import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.ProfessionEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -88,6 +90,9 @@ import io.reactivex.schedulers.Schedulers;
  * 2.别人：用户  + 显示 未认证 或者(公司 + 职位) +  徽章 + 个人简介
  */
 public class UserInfoActivity extends BaseActivity {
+
+    @BindView(R.id.smartRefreshLayout)
+    SmartRefreshLayout smartRefreshLayout;
 
     @BindView(R.id.iv_text)
     TextView iv_text;
@@ -156,9 +161,21 @@ public class UserInfoActivity extends BaseActivity {
         return R.layout.activity_userinfo;
     }
 
+
+    private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mAllList.clear();
+            page = 1;
+            getPersonInfo();
+        });
+    }
+
     @Override
     protected void initView() {
-
+        initSamrtLayout();
 
         myUid = StringUtil.getMyUid();
 
@@ -195,6 +212,9 @@ public class UserInfoActivity extends BaseActivity {
                 senderverticity.setText("立即职业认证，建立人脉");
                 senderverticity.setVisibility(View.VISIBLE);
                 senderverticity.setOnClickListener((v)->{
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
                     posCertInit();
                 });
             }
@@ -230,6 +250,10 @@ public class UserInfoActivity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
+
+                        if(smartRefreshLayout != null){
+                            smartRefreshLayout.finishRefresh();
+                        }
                         temp = response.getReturn_data();
                         if(temp != null){
                             setHeadData();
@@ -330,6 +354,12 @@ public class UserInfoActivity extends BaseActivity {
         sender_name = headView.findViewById(R.id.sender_name);
         user_des = headView.findViewById(R.id.user_des);
         head_icon = headView.findViewById(R.id.head_icon);
+        head_icon.setOnClickListener(v -> {
+            ArrayList<String> pics = new ArrayList<>();
+            pics.add(temp.getAvatar());
+            UIHelper.toPicPreViewActivity(mContext,  pics,0,false);
+
+        });
         ll_badge = headView.findViewById(R.id.ll_badge);
         sender_tag = headView.findViewById(R.id.sender_tag);
         senderverticity = headView.findViewById(R.id.sender_not_verticity);
@@ -340,6 +370,9 @@ public class UserInfoActivity extends BaseActivity {
 
         //去关注列表
         part2222_2.setOnClickListener((v)->{
+            if(StringUtil.isFastClick()){
+                return;
+            }
             if(myUid.equals(otherUid)){
                 UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("myconcern"),"");
             }else{
@@ -515,9 +548,12 @@ public class UserInfoActivity extends BaseActivity {
     @OnClick({R.id.iv_back,
             R.id.iv_text,R.id.iv_right,
             R.id.noFocus,
-            R.id.alreadFocus
+            R.id.alreadFocus,
     })
     public void clicks(View view){
+        if(StringUtil.isFastClick()){
+            return;
+        }
         switch (view.getId()){
             case R.id.alreadFocus:
                 showCancelFocusDialog();

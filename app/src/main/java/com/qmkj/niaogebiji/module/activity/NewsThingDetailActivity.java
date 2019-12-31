@@ -261,7 +261,13 @@ public class NewsThingDetailActivity extends BaseActivity {
 
     private void showDownOkDialog() {
         if(null !=mNewsDetailBean){
-            String link = mNewsDetailBean.getDl_link();
+
+            String link;
+            if(!TextUtils.isEmpty(mNewsDetailBean.getDl_link_code())){
+                link  = mNewsDetailBean.getDl_link() + "\n" + "提取码: " + mNewsDetailBean.getDl_link_code();
+            }else{
+                link  = mNewsDetailBean.getDl_link();
+            }
             String name = link;
             final ThingDownOkAlertDialog downOkAlertDialog = new ThingDownOkAlertDialog(this).builder();
             downOkAlertDialog.setNegativeButton("复制下载链接", v -> {

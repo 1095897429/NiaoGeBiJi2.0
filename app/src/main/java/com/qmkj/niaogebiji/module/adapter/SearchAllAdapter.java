@@ -118,7 +118,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
     FirstItemNewAdapter mFirstItemNewAdapter;
     ThingsAdapter mThingsAdapter;
     CircleSearchAdapterNew mCircleSearchAdapterNew;
-    AuthorAdapter mAuthorAdapter;
+    AuthorSearchAdapter mAuthorAdapter;
     PeopleItemAdapter mPeopleItemAdapter;
     SchoolBookAdapter mSchoolBookAdapter;
     BaiduItemAdapter mBaiduItemAdapter;
@@ -249,7 +249,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 }else {
                     helper.setVisible(R.id.toMoreList,false);
                 }
-                mAuthorAdapter = new AuthorAdapter(authors);
+                mAuthorAdapter = new AuthorSearchAdapter(authors);
 
                 ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mAuthorAdapter);

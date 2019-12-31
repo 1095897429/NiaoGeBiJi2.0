@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -381,7 +383,6 @@ public class NewsDetailActivity extends BaseActivity {
                 }else if("0".equals(is_dl)){
                     showDownDialog();
                 }
-
                 break;
             case R.id.iv_back:
                 finish();
@@ -414,7 +415,13 @@ public class NewsDetailActivity extends BaseActivity {
 
     private void showDownOkDialog() {
         if(null != mNewsDetailBean){
-            String link = mNewsDetailBean.getDl_link();
+            String link;
+            if(!TextUtils.isEmpty(mNewsDetailBean.getDl_link_code())){
+                link  = mNewsDetailBean.getDl_link() + "\n" + "提取码: " + mNewsDetailBean.getDl_link_code();
+            }else{
+                link  = mNewsDetailBean.getDl_link();
+            }
+
             String name = link;
             final ThingDownOkAlertDialog downOkAlertDialog = new ThingDownOkAlertDialog(this).builder();
             downOkAlertDialog.setNegativeButton("复制下载链接", v -> {
@@ -640,6 +647,7 @@ public class NewsDetailActivity extends BaseActivity {
                     hideWaitingDialog();
                 }
             }
+
         });
         mMyWebView.setWebViewClient(new WebViewClient(){
             @Override
@@ -648,6 +656,30 @@ public class NewsDetailActivity extends BaseActivity {
                 //待网页加载完全后设置图片点击的监听方法
                 addImageClickListener(view);
             }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                KLog.d("tag","---- " + url);
+                Uri uri = Uri.parse(url);
+                KLog.e("打印Scheme", uri.getScheme() + "==" + url);
+                if (url == null) {
+                    return false;
+                }
+                try{
+                    if(url.startsWith("ngbjlink")){
+                        int index = "ngbjlink".length();
+                        String resultUrl = url.substring(index);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(resultUrl));
+                        startActivity(intent);
+                        return true;
+                    }
+                }catch (Exception e){//防止crash (如果手机上没有安装处理某个scheme开头的url的APP, 会导致crash)
+                    KLog.e("tag", "ActivityNotFoundException: " + e.getLocalizedMessage());
+                    return true;//没有安装该app时，返回true，表示拦截自定义链接，但不跳转，避免弹出上面的错误页面
+                }
+                return false;
+            }
+
         });
 
 
@@ -1688,6 +1720,14 @@ public class NewsDetailActivity extends BaseActivity {
         more_comment_list.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCommentAdapter = new CommentActicleAdapter(mAllList);
+        mCommentAdapter.setToShowActicleDialogListener((item, position) -> {
+            isSecondComment = false;
+            oneComment = mCommentAdapter.getData().get(position);
+            KLog.d("tag","点击此评论的id 为  " + oneComment.getCid());
+            //🍅 记录帖子position
+            zanPosition  = position;
+            getCommentDetail(oneComment.getCid());
+        });
         more_comment_list.setAdapter(mCommentAdapter);
         ((SimpleItemAnimator)more_comment_list.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -1953,7 +1993,15 @@ public class NewsDetailActivity extends BaseActivity {
 
         //设值
         hint_text.setHint("回复 " + superiorComment.getUsername());
-        nickname_second.setText(superiorComment.getUsername() + superiorComment.getCompany_name() + superiorComment.getPosition());
+
+
+        if("1".equals(superiorComment.getAuth_status())){
+            nickname_second.setText(superiorComment.getUsername() + (TextUtils.isEmpty(superiorComment.getCompany_name())?"":superiorComment.getCompany_name()) +
+                    (TextUtils.isEmpty(superiorComment.getPosition())?"":superiorComment.getPosition()));
+        }else{
+            nickname_second.setText(superiorComment.getUsername() + " TA还未职业认证");
+        }
+
         comment_num_second.setText("评论详情");
         ImageUtil.loadByDefaultHead(this,superiorComment.getAvatar(),head_second_icon);
         //发布时间

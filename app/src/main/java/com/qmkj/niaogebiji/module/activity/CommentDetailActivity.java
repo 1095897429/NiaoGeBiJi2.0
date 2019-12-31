@@ -355,6 +355,7 @@ public class CommentDetailActivity extends BaseActivity {
     LinearLayout ll_second_empty;
     RelativeLayout totalk;
     ImageView second_close;
+    TextView hint_text;
     RecyclerView mSecondRV;
     ImageView head_second_icon;
     LinearLayout comment_priase;
@@ -375,6 +376,7 @@ public class CommentDetailActivity extends BaseActivity {
     private void showSecondDialog(CommentCircleBean superiorComment) {
         View view = View.inflate(this, R.layout.dialog_bottom_comment, null);
         mSecondRV = view.findViewById(R.id.recycler);
+        hint_text = view.findViewById(R.id.hint_text);
         zan_second_num_second = view.findViewById(R.id.zan_second_num_second);
         last_reply_ll = view.findViewById(R.id.last_reply_ll);
         nickname_second = view.findViewById(R.id.nickname_second);
@@ -415,7 +417,7 @@ public class CommentDetailActivity extends BaseActivity {
 
                 //手指移动布局的高度
                 if(newState == BottomSheetBehavior.STATE_SETTLING){
-                    KLog.d("tag","屏幕的高度减去状态栏高度是 : " +  (ScreenUtils.getScreenHeight() - SizeUtils.dp2px(25)) +  "   " + bottomSheet.getTop() + "");
+//                    KLog.d("tag","屏幕的高度减去状态栏高度是 : " +  (ScreenUtils.getScreenHeight() - SizeUtils.dp2px(25)) +  "   " + bottomSheet.getTop() + "");
                     if(bottomSheet.getTop() >= 200){
                         bottomSheetDialog.dismiss();
                         mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -430,6 +432,7 @@ public class CommentDetailActivity extends BaseActivity {
         bottomSheetDialog.show();
 
         //设值
+        hint_text.setHint("回复 " + superiorComment.getUser_info().getName());
         comment_num_second.setText(superiorComment.getComment_num() + "条回复");
         nickname_second.setText(superiorComment.getUser_info().getName());
         comment_text_second.setText(superiorComment.getComment());
@@ -644,6 +647,12 @@ public class CommentDetailActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
         mCommentAdapter = new CommentCircleAdapter(mAllList);
+        mCommentAdapter.setToShowDialogListener((item, position) -> {
+            zanPosition  = position;
+            //得到点击索引的item
+            oneTempComment = mCommentAdapter.getData().get(position);
+            blogCommentDetail(oneTempComment.getId());
+        });
         mCommentAdapter.setMyPotion(myPotion);
         mCommentAdapter.setCircleBean(mCircleBean);
         mRecyclerView.setAdapter(mCommentAdapter);
@@ -746,10 +755,6 @@ public class CommentDetailActivity extends BaseActivity {
 
 
 
-        mCommentAdapter.setToShowDialogListener(item -> {
-            showSecondDialog(item);
-        });
-
         mCommentAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()){
                 case R.id.toFirstComment:
@@ -758,6 +763,7 @@ public class CommentDetailActivity extends BaseActivity {
                     showTalkDialogFirstComment(position, oneTempComment);
                     break;
                 case R.id.ll_has_second_comment:
+                    KLog.d("tag","ll_has_second_comment");
                     //🍅 记录帖子position
                     zanPosition  = position;
                     //得到点击索引的item
@@ -917,8 +923,15 @@ public class CommentDetailActivity extends BaseActivity {
             //底部使用者头像
             ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),user_head_icon);
             //职位
-            sender_tag.setText( (TextUtils.isEmpty(mCircleBean.getUser_info().getCompany_name())?"":mCircleBean.getUser_info().getCompany_name()) +
-                    (TextUtils.isEmpty(mCircleBean.getUser_info().getPosition())?"":mCircleBean.getUser_info().getPosition()));
+
+            if("1".equals(mCircleBean.getUser_info().getAuth_email_status()) ||
+                    "1".equals(mCircleBean.getUser_info().getAuth_card_status())){
+                sender_tag.setText( (TextUtils.isEmpty(mCircleBean.getUser_info().getCompany_name())?"":mCircleBean.getUser_info().getCompany_name()) +
+                        (TextUtils.isEmpty(mCircleBean.getUser_info().getPosition())?"":mCircleBean.getUser_info().getPosition()));
+            }else{
+                sender_tag.setText("TA 还未职业认证");
+            }
+
 
             //是否认证
             if("1".equals(mCircleBean.getUser_info().getAuth_email_status())
@@ -988,7 +1001,7 @@ public class CommentDetailActivity extends BaseActivity {
             ImageUtil.load(this,mCircleBean.getArticle_image(),acticle_img);
 
         }else if(CircleRecommentAdapterNew.YC_TEXT == layoutType){
-            KLog.d("tag","纯文本");
+//            KLog.d("tag","纯文本");
         }else{
 
             if(mCircleBean.getP_blog() != null && mCircleBean.getP_blog().getP_user_info() != null){
@@ -1234,7 +1247,7 @@ public class CommentDetailActivity extends BaseActivity {
         //解决数据加载不完
         pic_recyler.setNestedScrollingEnabled(true);
         pic_recyler.setHasFixedSize(true);
-        mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toPicPreViewActivity(mContext,  mCircleBean.getImages(),position));
+        mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toPicPreViewActivity(mContext,  mCircleBean.getImages(),position,true));
     }
 
 

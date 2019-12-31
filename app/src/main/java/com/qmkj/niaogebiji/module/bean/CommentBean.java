@@ -32,6 +32,7 @@ public class CommentBean extends BaseBean {
         private String message;
         private String topcommentid;
         private String replyid;
+        private String replyed_uid;
         private String replyed_username;
         private String commented_username;
         private String dateline;
@@ -41,10 +42,28 @@ public class CommentBean extends BaseBean {
         private String avatar;
         private String company_name;
         private String position;
+        //职位认证状态：1-已通过，0-未通过
+        private String auth_status;
+
+        public String getAuth_status() {
+            return auth_status;
+        }
+
+        public void setAuth_status(String auth_status) {
+            this.auth_status = auth_status;
+        }
 
         private String relatedid;
         //二级评论
         private List<FirstComment> commentslist;
+
+        public String getReplyed_uid() {
+            return replyed_uid;
+        }
+
+        public void setReplyed_uid(String replyed_uid) {
+            this.replyed_uid = replyed_uid;
+        }
 
         public String getRelatedid() {
             return relatedid;

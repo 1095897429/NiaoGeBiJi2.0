@@ -106,6 +106,7 @@
     </RelativeLayout>
 
 
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_below="@+id/rl_common_title"

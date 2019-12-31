@@ -12,6 +12,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.PeopleBean;
@@ -43,66 +44,128 @@ public class Limit2ReplyAdapter extends BaseQuickAdapter<CommentBean.FirstCommen
 
     SpannableString spannableString ;
     StringBuilder sb = new StringBuilder();
-    ClickableSpan clickableSpan1;
-    ClickableSpan clickableSpan2;
 
     @Override
     protected void convert(BaseViewHolder helper, CommentBean.FirstComment item) {
 
+
+        helper.getView(R.id.textlimit).setOnClickListener(v -> {
+            KLog.d("tag","11111");
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            if(mOnActicleToSecondListener != null){
+                mOnActicleToSecondListener.toActicleSecond();
+            }
+        });
+
         sb.setLength(0);
 
-        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getUid().equals(fatherComment.getUid())){
-            sb.append(item.getUsername()).append(" 回复 ").append(fatherComment.getReplyed_username())
-                    .append(":").append(item.getMessage());
-        }else {
-            sb.append(item.getUsername()).append(":").append(item.getMessage());
+//        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getUid().equals(fatherComment.getUid())){
+//            sb.append(item.getUsername()).append(" 回复 ").append(fatherComment.getReplyed_username())
+//                    .append(":").append(item.getMessage());
+//        }else {
+//            sb.append(item.getUsername()).append(":").append(item.getMessage());
+//
+//        }
+//
+//
+//
+//        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(fatherComment.getUid())){
+//
+//            NoLineCllikcSpan clickableSpan1 = new NoLineCllikcSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    UIHelper.toUserInfoActivity(mContext,item.getUid());
+//                }
+//            };
+//
+//            NoLineCllikcSpan clickableSpan2 = new NoLineCllikcSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    KLog.d("tag","widget2");
+//                    UIHelper.toUserInfoActivity(mContext,item.getRelatedid());
+//                }
+//            };
+//
+//            int userNamelength = item.getUsername().length();
+//            int authorNamelength = item.getReplyed_username().length();
+//            spannableString = new SpannableString(sb.toString());
+//            spannableString.setSpan(clickableSpan1, 0, userNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//
+//            //中间有 回复 两个字 + 2个空格
+//            spannableString.setSpan(clickableSpan2, userNamelength + 4, userNamelength + 4 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//
+//
+//
+//        }else{
+//            NoLineCllikcSpan clickableSpan1 = new NoLineCllikcSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    UIHelper.toUserInfoActivity(mContext,item.getUid());
+//                }
+//            };
+//            int userNamelength = item.getUsername().length();
+//            spannableString = new SpannableString(sb.toString());
+//            spannableString.setSpan(clickableSpan1, 0, userNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }
+//
+//
+//        helper.setText(R.id.textlimit,spannableString);
+//        ((TextView)helper.getView(R.id.textlimit)).setMovementMethod(LinkMovementMethod.getInstance());
 
-        }
 
 
+        sb.append(item.getUsername()).append(" 回复 ").append(item.getReplyed_username())
+                .append(":").append(item.getMessage());
 
-        if(!TextUtils.isEmpty(item.getRelatedid()) &&  !item.getRelatedid().equals(fatherComment.getUid())){
 
-            NoLineCllikcSpan clickableSpan1 = new NoLineCllikcSpan() {
-                @Override
-                public void onClick(View widget) {
-                    UIHelper.toUserInfoActivity(mContext,item.getUid());
+        NoLineCllikcSpan clickableSpan1 = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                if(StringUtil.isFastClick()){
+                    return;
                 }
-            };
+                UIHelper.toUserInfoActivity(mContext,item.getUid());
+            }
+        };
 
-            NoLineCllikcSpan clickableSpan2 = new NoLineCllikcSpan() {
-                @Override
-                public void onClick(View widget) {
-                    KLog.d("tag","widget2");
-                    UIHelper.toUserInfoActivity(mContext,item.getRelatedid());
+        NoLineCllikcSpan clickableSpan2 = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","widget2");
+                if(StringUtil.isFastClick()){
+                    return;
                 }
-            };
+                UIHelper.toUserInfoActivity(mContext,item.getReplyed_uid());
+            }
+        };
 
-            int userNamelength = item.getUsername().length();
-            int authorNamelength = item.getReplyed_username().length();
-            spannableString = new SpannableString(sb.toString());
-            spannableString.setSpan(clickableSpan1, 0, userNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int userNamelength = item.getUsername().length();
+        int authorNamelength = item.getReplyed_username().length();
+        spannableString = new SpannableString(sb.toString());
+        spannableString.setSpan(clickableSpan1, 0, userNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            //中间有 回复 两个字 + 2个空格
-            spannableString.setSpan(clickableSpan2, userNamelength + 4, userNamelength + 4 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //中间有 回复 两个字 + 2个空格
+        spannableString.setSpan(clickableSpan2, userNamelength + 4, userNamelength + 4 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-
-
-        }else{
-            NoLineCllikcSpan clickableSpan1 = new NoLineCllikcSpan() {
-                @Override
-                public void onClick(View widget) {
-                    UIHelper.toUserInfoActivity(mContext,item.getUid());
-                }
-            };
-            int userNamelength = item.getUsername().length();
-            spannableString = new SpannableString(sb.toString());
-            spannableString.setSpan(clickableSpan1, 0, userNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
 
 
         helper.setText(R.id.textlimit,spannableString);
         ((TextView)helper.getView(R.id.textlimit)).setMovementMethod(LinkMovementMethod.getInstance());
 
+
+    }
+
+
+
+    public interface OnActicleToSecondListener{
+        void toActicleSecond();
+    }
+
+    public OnActicleToSecondListener mOnActicleToSecondListener;
+
+    public void setOnActicleToSecondListener(OnActicleToSecondListener onActicleToSecondListener) {
+        mOnActicleToSecondListener = onActicleToSecondListener;
     }
 }

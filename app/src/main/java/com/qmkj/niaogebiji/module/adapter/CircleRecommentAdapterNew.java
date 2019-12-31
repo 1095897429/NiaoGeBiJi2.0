@@ -117,7 +117,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
     private CirclePicAdapter mCirclePicAdapter;
     private List<String> mPics = new ArrayList<>();
-    private List<String> mPics_transger;
+    private List<String> mPics_transger = new ArrayList<>();
     private CircleTransferPicAdapter mCircleTransferPicAdapter;
 
     private  int i ;
@@ -125,6 +125,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     private int j;
     private  Rect firstAndLastRect;
     private  Rect firstAndLastRect1;
+    HorizontalSpacesDecoration spacesDecoration1;
 
     @Override
     protected void convert(BaseViewHolder helper, CircleBean item) {
@@ -140,8 +141,16 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             sender_name.setText(userInfo.getName());
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
-            sender_tag.setText( (TextUtils.isEmpty(userInfo.getCompany_name())?"":userInfo.getCompany_name()) +
-                    (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
+
+            if("1".equals(userInfo.getAuth_email_status()) ||
+                "1".equals(userInfo.getAuth_card_status())){
+                sender_tag.setText( (StringUtil.checkNull((userInfo.getCompany_name()))?userInfo.getCompany_name():"") +
+                        (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
+            }else{
+                sender_tag.setText("TA 还未职业认证");
+            }
+
+
 
             //是否认证
             if("1".equals(userInfo.getAuth_email_status()) || "1".equals(userInfo.getAuth_card_status())){
@@ -213,11 +222,19 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 trans_msg.setText(item.getP_blog().getBlog());
             }
 
+            //
             if(item.getP_blog() != null && item.getP_blog().getP_user_info() != null){
                 CircleBean.P_user_info temp =item.getP_blog().getP_user_info();
                 TextView  transfer_zf_author  = helper.getView(R.id.transfer_zf_author);
-                transfer_zf_author.setText(temp.getName() +(TextUtils.isEmpty(temp.getCompany_name())?"":item.getCompany_name()) +
-                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+
+                if("1".equals(temp.getAuth_email_status()) ||
+                        "1".equals(temp.getAuth_card_status())){
+                    transfer_zf_author.setText(temp.getName() +(TextUtils.isEmpty(temp.getCompany_name())?"":item.getCompany_name()) +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+                }else{
+                    transfer_zf_author.setText(temp.getName() + "  TA 还未职业认证");
+                }
+
             }
         }
 
@@ -229,6 +246,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 }else if("关注 ".equals(chainName)){
                     MobclickAgentUtils.onEvent("quanzi_follow_quanzi"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
                 }
+            }
+
+            if(StringUtil.isFastClick()){
+                return;
             }
 
             UIHelper.toCommentDetailActivity(mContext,item.getId());
@@ -245,21 +266,34 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
         //link点击
-        helper.getView(R.id.part_yc_link).setOnClickListener(view -> UIHelper.toWebViewActivity(mContext, item.getLink()));
+        helper.getView(R.id.part_yc_link).setOnClickListener(view -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            UIHelper.toWebViewActivity(mContext, item.getLink());
+        });
 
         //文章点击
-        helper.getView(R.id.part_yc_acticle).setOnClickListener(view -> UIHelper.toNewsDetailActivity(mContext, item.getArticle_id()));
+        helper.getView(R.id.part_yc_acticle).setOnClickListener(view -> {
+                if(StringUtil.isFastClick()){
+                    return;
+                }
+                 UIHelper.toNewsDetailActivity(mContext, item.getArticle_id());
+                });
+
+
 
         //点赞
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
             if(helper.getAdapterPosition() <= 9){
-
-
                 if("推荐".equals(chainName)){
                     MobclickAgentUtils.onEvent("quanzi_recommendlist_laud"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
                 }else if("关注 ".equals(chainName)){
                     MobclickAgentUtils.onEvent("quanzi_follow_laud"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
                 }
+            }
+            if(StringUtil.isFastClick()){
+                return;
             }
             likeBlog(item,helper.getAdapterPosition());
         });
@@ -274,6 +308,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     MobclickAgentUtils.onEvent("quanzi_follow_comment"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
                 }
             }
+            if(StringUtil.isFastClick()){
+                return;
+            }
             UIHelper.toCommentDetailActivity(mContext,item.getId());
         });
 
@@ -287,11 +324,17 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     MobclickAgentUtils.onEvent("quanzi_follow_share"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
                 }
             }
+            if(StringUtil.isFastClick()){
+                return;
+            }
             showShareDialog(item,helper.getAdapterPosition());
         });
 
         //转发帖子点击事件
         helper.getView(R.id.transfer_zf_ll).setOnClickListener(view -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
             UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId());
 
         });
@@ -305,6 +348,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         //帖子举报/删除 -- 为了增大触摸面积
         helper.getView(R.id.ll_report).setOnClickListener(view -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
             String uid = item.getUid();
             String myUid = StringUtil.getUserInfoBean().getUid();
             if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
@@ -317,7 +363,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         //去个人中心
         helper.getView(R.id.part1111).setOnClickListener(view -> {
-
+            if(StringUtil.isFastClick()){
+                return;
+            }
             if(helper.getAdapterPosition() <= 9){
                 if("推荐".equals(chainName)){
                     MobclickAgentUtils.onEvent("quanzi_recommendlist_"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
@@ -362,7 +410,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 //预览事件
                 mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
                     KLog.d("tag","点击预览");
-                    UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position);
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+                    UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position,true);
                 });
 
 
@@ -390,15 +441,17 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 RecyclerView recyclerView2 =  helper.getView(R.id.pic_recyler_transfer);
                 recyclerView2.setLayoutManager(layoutManager2);
 
-                if(firstAndLastRect1 == null){
-                    int i1 = SizeUtils.dp2px( 6);
-                    Rect rect1 = new Rect(0, 0, i1, 0);
-                    int j1 = SizeUtils.dp2px( 0);
-                    firstAndLastRect1  = new Rect(j1, 0, i1, 0);
-                    HorizontalSpacesDecoration spacesDecoration1 = new HorizontalSpacesDecoration(rect1, firstAndLastRect1);
-                    recyclerView2.addItemDecoration(spacesDecoration1);
 
-                }
+
+//                if(firstAndLastRect1 == null){
+//                    int i1 = SizeUtils.dp2px( 6);
+//                    Rect rect1 = new Rect(0, 0, i1, 0);
+//                    int j1 = SizeUtils.dp2px( 0);
+//                    firstAndLastRect1  = new Rect(j1, 0, i1, 0);
+//                    HorizontalSpacesDecoration spacesDecoration1= new HorizontalSpacesDecoration(rect1, firstAndLastRect1);
+//                    recyclerView2.addItemDecoration(spacesDecoration1);
+//                }
+
 
                 mCircleTransferPicAdapter = new CircleTransferPicAdapter(mPics_transger);
                 mCircleTransferPicAdapter.setTotalSize(item.getP_blog().getImages().size());
@@ -406,9 +459,14 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 ((SimpleItemAnimator)recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView2.setAdapter(mCircleTransferPicAdapter);
 
-                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) ->
-                        UIHelper.toPicPreViewActivity(mContext,  (ArrayList<String>) item.getP_blog().getImages(),position)
-                );
+                mCircleTransferPicAdapter.setOnItemClickListener((adapter, view, position) -> {
+                    if (StringUtil.isFastClick()) {
+                        return;
+                    }
+
+                    UIHelper.toPicPreViewActivity(mContext, (ArrayList<String>) item.getP_blog().getImages(), position, true);
+
+                });
 
                 break;
             case 22:
@@ -418,8 +476,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 helper.setText(R.id.transfer_link_http,tempLink2);
                 helper.setImageResource(R.id.transer_link_img,R.mipmap.icon_link_logo);
                 //转发link跳转
-                helper.getView(R.id.part_zf_article).setOnClickListener(v ->
-                       UIHelper.toWebViewActivity(mContext,item.getP_blog().getLink()));
+                helper.getView(R.id.part_zf_article).setOnClickListener(v ->{
+                            if (StringUtil.isFastClick()) {
+                                return;
+                            }
+                            UIHelper.toWebViewActivity(mContext,item.getP_blog().getLink());
+                        }
+                      );
 
                 break;
             case 33:
@@ -429,7 +492,12 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 helper.setText(R.id.transfer_article_title,item.getP_blog().getArticle_title());
 
                 //转发文章跳转
-                helper.getView(R.id.part_zf_article).setOnClickListener(v -> UIHelper.toNewsDetailActivity(mContext,item.getP_blog().getArticle_id()));
+                helper.getView(R.id.part_zf_article).setOnClickListener(v -> {
+                    if (StringUtil.isFastClick()) {
+                        return;
+                    }
+                    UIHelper.toNewsDetailActivity(mContext,item.getP_blog().getArticle_id());
+                });
 
                 break;
                 default:
@@ -582,7 +650,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                             circleBean.setIs_like(0);
                             circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) - 1) + "");
                         }
-                        notifyItemChanged(position);
+//                        notifyItemChanged(position);
+
+                        notifyDataSetChanged();
 
 
                     }
@@ -692,11 +762,17 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         });
 
         report.setOnClickListener(view1 -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
             reportBlog(circleBean);
             mPopupWindow.dismiss();
         });
 
         share.setOnClickListener(view1 -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
             mPopupWindow.dismiss();
         });
     }

@@ -13,6 +13,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.TestItemAdapter;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.event.TestListEvent;
@@ -152,7 +153,9 @@ public class TestListActivity extends BaseActivity {
         //点击事件
         mTestItemAdapter.setOnItemClickListener((adapter, view, position) -> {
             KLog.d("tag","点击的是 position " + position );
-
+            if(StringUtil.isFastClick()){
+                return;
+            }
             MobclickAgentUtils.onEvent("academy_testlist_testlist" + (position + 1) +"_2_0_0");
 
             SchoolBean.SchoolTest temp = mTestItemAdapter.getData().get(position);
@@ -160,6 +163,7 @@ public class TestListActivity extends BaseActivity {
             if("0".equals(tempRecord.getIs_tested() + "")){
                 UIHelper.toTestDetailActivity(this,temp);
             }else if("1".equals(tempRecord.getIs_tested() + "")){
+                temp.setMyScore(tempRecord.getScore());
                 if(Integer.parseInt(tempRecord.getScore()) < Integer.parseInt(temp.getPass_score())){
                     KLog.d("tag","不及格");
                     UIHelper.toTestResultFailActivity(this,temp);

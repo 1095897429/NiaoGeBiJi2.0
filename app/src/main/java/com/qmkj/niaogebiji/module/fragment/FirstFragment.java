@@ -167,7 +167,7 @@ public class FirstFragment extends BaseLazyFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(!TextUtils.isEmpty(mUserInfo.getVip_last_time()) && !"0".equals(mUserInfo.getVip_last_time())){
+        if(!TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
             toVip.setVisibility(View.GONE);
         }else{
             toVip.setVisibility(View.VISIBLE);
@@ -231,6 +231,11 @@ public class FirstFragment extends BaseLazyFragment {
 
         }else{
             //resume
+            if(!TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
+                toVip.setVisibility(View.GONE);
+            }else{
+                toVip.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -308,7 +313,17 @@ public class FirstFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<List<ToollndexBean>> response) {
                         mList = response.getReturn_data();
-                        setToolData();
+                        if(mList.isEmpty()){
+                            tool_part.setVisibility(View.GONE);
+                        }else{
+                            tool_part.setVisibility(View.VISIBLE);
+                            setToolData();
+                        }
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
                     }
                 });
     }
@@ -527,9 +542,6 @@ public class FirstFragment extends BaseLazyFragment {
     }
 
 
-
-
-
     /** --------------------------------- 热搜  ---------------------------------*/
     private SearchBean mSearchBean;
     private List<SearchBean.Hot_search> mHot_searches;
@@ -549,7 +561,6 @@ public class FirstFragment extends BaseLazyFragment {
                         mSearchBean = response.getReturn_data();
                         if(null != mSearchBean){
                             mHot_searches = mSearchBean.getHot_search();
-
                             if(null != mHot_searches && !mHot_searches.isEmpty()){
                                 String defaultHotKey = mHot_searches.get(0).getSearch_string();
                                 first_search.setHint(defaultHotKey);

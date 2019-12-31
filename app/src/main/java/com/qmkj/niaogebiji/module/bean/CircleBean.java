@@ -447,7 +447,27 @@ public class CircleBean extends BaseBean {
         private String company_name;
         private String position;
         private String auth_com_status;
-        public void setUid(String uid) {
+       private String auth_card_status;
+       private String auth_email_status;
+
+
+       public String getAuth_card_status() {
+           return auth_card_status;
+       }
+
+       public void setAuth_card_status(String auth_card_status) {
+           this.auth_card_status = auth_card_status;
+       }
+
+       public String getAuth_email_status() {
+           return auth_email_status;
+       }
+
+       public void setAuth_email_status(String auth_email_status) {
+           this.auth_email_status = auth_email_status;
+       }
+
+       public void setUid(String uid) {
             this.uid = uid;
         }
         public String getUid() {

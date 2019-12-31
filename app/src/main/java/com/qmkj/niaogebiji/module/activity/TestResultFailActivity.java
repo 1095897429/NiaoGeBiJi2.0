@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.blankj.utilcode.util.SizeUtils;
@@ -98,12 +99,8 @@ public class TestResultFailActivity extends BaseActivity {
         }
 
 
-        //如果已考过的有分数，就用以前的分数
-        if(mSchoolTest.getRecord()!= null && mSchoolTest.getRecord().getScore()!= null){
-            test_grade.setText(mSchoolTest.getRecord().getScore());
-        }else{
-            test_grade.setText(mSchoolTest.getMyScore());
-        }
+        test_grade.setText(mSchoolTest.getMyScore());
+
 
         iv_right.setVisibility(View.VISIBLE);
         iv_right.setImageResource(R.mipmap.icon_test_share_black);
@@ -124,6 +121,7 @@ public class TestResultFailActivity extends BaseActivity {
                 KLog.d("tag","判断是否预约");
                 MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_score_appointment_2_0_0);
                 showReTestSubmit();
+
                 break;
             case R.id.iv_back:
                 finish();
@@ -285,7 +283,6 @@ public class TestResultFailActivity extends BaseActivity {
     long endLongTime;
     public void showReTestCalendar(){
 
-
         endTime = TimeAppUtils.getOldDate(3);
 
         endLongTime = TimeUtils.string2Millis(getDDD222(),"yyyy/MM/dd HH:mm:ss");
@@ -332,9 +329,46 @@ public class TestResultFailActivity extends BaseActivity {
 
 
     private void toNext(){
+//        addCalendarEvent(this,mSchoolTest.getTitle(),endLongTime,endLongTime);
         addCalendarEvent(this,mSchoolTest.getTitle(),mSchoolTest.getDesc(),System.currentTimeMillis(),endLongTime);
     }
 
+
+    private static void addCalendarEvent(Context context, String meetingName, long startTime,
+                                         long endTime) {
+        //该方式需跳到系统日历事件界面由用户手动保存
+        Calendar beginC = Calendar.getInstance();
+        //提前15分钟提醒
+        beginC.setTimeInMillis(startTime - 15 * 60 * 1000);
+        Calendar endC = Calendar.getInstance();
+        endC.setTimeInMillis(endTime);
+        String desc = "您的会议：" + meetingName + " 将于15分钟后开始，请及时入会。";
+        //action为Intent.ACTION_INSERT
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                //事件的开始时间（从新纪年开始计算的毫秒数）。
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginC.getTimeInMillis())
+                //事件的结束时间（从新纪年开始计算的毫秒数）。
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endC.getTimeInMillis())
+                //指定此事件是否为全天事件。
+                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, false)
+                //事件地点。
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, "")
+                //事件标题。
+                .putExtra(CalendarContract.Events.TITLE, "会议提醒")
+                //事件说明
+                .putExtra(CalendarContract.Events.DESCRIPTION, desc);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
+        }
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     //检查是否已经添加了日历账户，如果没有添加先添加一个日历账户再查询
     private  int checkAndAddCalendarAccount(Context context){
@@ -460,7 +494,7 @@ public class TestResultFailActivity extends BaseActivity {
         }
         eventId = ContentUris.parseId(newEvent);
 
-        startCalendarForIntentToView(this,eventId);
+//        startCalendarForIntentToView(this,eventId);
 
         ToastUtils.showShort("添加到日历成功");
 

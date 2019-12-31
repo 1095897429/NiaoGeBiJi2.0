@@ -116,7 +116,15 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         }
 
         //头像点击
-        helper.getView(R.id.head_icon).setOnClickListener(v -> UIHelper.toUserInfoActivity(mContext,item.getUid()));
+        helper.getView(R.id.head_icon).setOnClickListener(v -> {
+
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+                    UIHelper.toUserInfoActivity(mContext,item.getUid());
+                });
+
+
 
 
         //点赞数
@@ -128,6 +136,10 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
 
 
         helper.getView(R.id.circle_priase).setOnClickListener(view -> {
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
             if("0".equals(item.getIs_like() + "")){
                 likeComment(item,helper.getAdapterPosition());
             }else if("1".equals(item.getIs_like() + "")){
@@ -147,10 +159,21 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         mLimit2ReplyCircleAdapter = new Limit2ReplyCircleAdapter(mLimitComments);
         mLimit2ReplyCircleAdapter.setFatherComment(item);
 
-        helper.itemView.setOnClickListener(v -> {
-            KLog.d("tag","11111");
+
+        mLimit2ReplyCircleAdapter.setToSecondListener(() -> {
             if(mToShowDialogListener != null){
-                mToShowDialogListener.func(item);
+                mToShowDialogListener.func(item,helper.getAdapterPosition());
+            }
+        });
+
+
+        helper.itemView.setOnClickListener(v -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            KLog.d("tag","点击的是啥 ");
+            if(mToShowDialogListener != null){
+                mToShowDialogListener.func(item,helper.getAdapterPosition());
             }
         });
 
@@ -179,7 +202,14 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         getIconType(helper,item);
 
         //删除评论
-        helper.getView(R.id.comment_delete).setOnClickListener(view -> showRemoveDialog(item,helper.getAdapterPosition()));
+        helper.getView(R.id.comment_delete).setOnClickListener(view -> {
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+            showRemoveDialog(item,helper.getAdapterPosition());
+                });
+
+
     }
 
     private void getIconType(BaseViewHolder helper, CommentCircleBean item) {
@@ -315,7 +345,7 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
 
     public toShowDialogListener mToShowDialogListener;
     public interface toShowDialogListener{
-        void func(CommentCircleBean item);
+        void func(CommentCircleBean item,int position);
     }
 
     public void setToShowDialogListener(toShowDialogListener toShowDialogListener) {

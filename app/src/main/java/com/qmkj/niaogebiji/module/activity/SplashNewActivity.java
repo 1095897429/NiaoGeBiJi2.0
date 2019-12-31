@@ -18,6 +18,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.huawei.android.hms.agent.HMSAgent;
+import com.huawei.android.hms.agent.common.handler.ConnectHandler;
+import com.huawei.android.hms.agent.push.handler.GetTokenHandler;
+import com.huawei.hms.support.api.push.TokenResult;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -25,9 +29,21 @@ import com.qmkj.niaogebiji.common.dialog.LaunchPermissDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidPhoneDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidStorageDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -70,7 +86,6 @@ public class SplashNewActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
         //帧动画
         animationIV.setImageResource(R.drawable.splash_animation1);
         animationDrawable = (AnimationDrawable) animationIV.getDrawable();
@@ -276,5 +291,49 @@ public class SplashNewActivity extends BaseActivity {
         if(null != animationDrawable){
             animationDrawable.stop();
         }
+    }
+
+
+    @Override
+    public void initData() {
+
+
+        if(isHuaWei()){
+            /**
+             * SDK连接HMS -- 打开后的首个界面
+             */
+            HMSAgent.connect(this, rst -> KLog.e("tag","HMS connect end:" + rst));
+
+            getToken();
+        }
+
+    }
+
+    public static boolean isMIUI() {
+        String manufacturer = Build.MANUFACTURER;
+        //这个字符串可以自己定义,例如判断华为就填写huawei,魅族就填写meizu
+        if ("xiaomi".equalsIgnoreCase(manufacturer)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isHuaWei() {
+        String manufacturer = Build.MANUFACTURER;
+        //这个字符串可以自己定义,例如判断华为就填写huawei,魅族就填写meizu
+        if ("huawei".equalsIgnoreCase(manufacturer)) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    /**
+     * 获取token
+     */
+    private void getToken() {
+        KLog.d("tag","get token: begin");
+        HMSAgent.Push.getToken(rtnCode -> KLog.d("tag","get token: end" + rtnCode));
     }
 }

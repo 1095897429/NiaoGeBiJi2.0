@@ -24,6 +24,7 @@ import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
+import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -89,7 +90,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     //组合集合
     List<CircleBean> mAllList = new ArrayList<>();
     //布局管理器
-    LinearLayoutManager mLinearLayoutManager;
+    RecyclerViewNoBugLinearLayoutManager mLinearLayoutManager;
 
     private String chainName;
 
@@ -137,6 +138,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<List<CircleBean>> response) {
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
 
@@ -178,6 +180,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                     @Override
                     public void onNetFail(String msg) {
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
                         hideWaitingDialog();
@@ -266,7 +269,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
 
     private void initLayout() {
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager = new RecyclerViewNoBugLinearLayoutManager(getActivity());
         //设置默认垂直布局
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         //设置布局管理器
@@ -283,15 +286,27 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     }
 
 
+    private boolean mIsRefreshing;
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
+            mIsRefreshing = true;
             page = 1;
             recommendBlogList();
         });
+
+        mRecyclerView.setOnTouchListener(
+                (v, event) -> {
+                    if (mIsRefreshing) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+        );
     }
 
 

@@ -26,6 +26,8 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.huawei.android.hms.agent.HMSAgent;
+import com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
@@ -193,6 +195,10 @@ public class SettingActivity extends BaseActivity {
 
                 break;
             case R.id.open_push:
+
+                //判断机型
+
+
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_push_2_0_0);
 
                 boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
@@ -523,5 +529,26 @@ public class SettingActivity extends BaseActivity {
                     }
                 });
     }
+
+
+
+
+
+
+    /**
+     * 华为
+     * 设置接收通知消息 | Set up receive notification messages
+     * @param enable 是否开启 | enabled or not
+     */
+    private void setReceiveNotifyMsg(boolean enable){
+        KLog.e("tag","enableReceiveNotifyMsg:begin");
+        HMSAgent.Push.enableReceiveNotifyMsg(enable, new EnableReceiveNotifyMsgHandler() {
+            @Override
+            public void onResult(int rst) {
+                KLog.e("tag","enableReceiveNotifyMsg:end code=" + rst);
+            }
+        });
+    }
+
 
 }

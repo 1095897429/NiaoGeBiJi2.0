@@ -88,7 +88,7 @@ public class ActionAdapter extends BaseQuickAdapter<ActionBean.Act_list, BaseVie
             @Override
             public void onClick(View v) {
                 MobclickAgentUtils.onEvent("index_flow_activity_resource"+ (helper.getAdapterPosition()  + 1) +"_2_0_0");
-                UIHelper.toWebViewActivity(mContext,item.getDocument_link());
+                UIHelper.toWebViewActivityWithOnLayout(mContext,item.getDocument_link(),"");
             }
         });
 

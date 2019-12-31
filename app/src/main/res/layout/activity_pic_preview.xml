@@ -42,6 +42,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/head_part"
         android:layout_marginTop="@dimen/status_bar_height"
         android:background="#B3000000"
         android:paddingLeft="16dp"

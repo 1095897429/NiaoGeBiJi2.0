@@ -148,6 +148,9 @@ public class TestDetailActivity extends BaseActivity {
 
     @OnClick({R.id.iv_back,R.id.toTest,R.id.iv_right})
     public void clicks(View view){
+        if(StringUtil.isFastClick()){
+            return;
+        }
         switch (view.getId()){
             case R.id.iv_right:
                 MobclickAgentUtils.onEvent(UmengEvent.academy_testdetail_starttest_share_2_0_0);
@@ -248,7 +251,7 @@ public class TestDetailActivity extends BaseActivity {
             bean.setImg(mSchoolTest.getIcon());
             bean.setLink(mSchoolTest.getShare_url());
             bean.setTitle("测一测：" + mSchoolTest.getTitle());
-            bean.setContent(mins + "看看你能否成为合格的" + mSchoolTest.getTitle());
+            bean.setContent(mins + "看看你能否通过" + mSchoolTest.getTitle());
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
             }else{

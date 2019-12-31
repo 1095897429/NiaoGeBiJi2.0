@@ -120,20 +120,17 @@ public class MoringNewsListActivity extends BaseActivity {
                     public void onSuccess(HttpResponse<MoringAllBean> response) {
                         KLog.d("tag","response " + response.getReturn_code());
                         MoringAllBean temp  = response.getReturn_data();
-                        mMoringList = temp.getList();
-                        setData();
+                        setData(temp);
                     }
                 });
     }
 
-    private void setData() {
+    private void setData(MoringAllBean temp) {
         if(page ==  1){
-            if(mMoringList != null && !mMoringList.isEmpty()){
-                setData2(mMoringList);
+            if(temp.getList() != null && !temp.getList().isEmpty()){
+                setData2(temp.getList());
                 mMoringNewsAdapter.setNewData(mMoringList);
-//                mMoringNewsAdapter.disableLoadMoreIfNotFullPage(mRecyclerView);
-                //如果第一次返回的数据不满10条，则显示无更多数据
-                if(mMoringList.size() < Constant.SEERVER_NUM){
+                if(temp.getList().size() < Constant.SEERVER_NUM){
                     mMoringNewsAdapter.loadMoreEnd();
                 }
                 ll_empty.setVisibility(View.GONE);
@@ -146,8 +143,8 @@ public class MoringNewsListActivity extends BaseActivity {
                 part111.setVisibility(View.GONE);
             }
         }else{
-            if(mMoringList != null && mMoringList.size() > 0){
-                setData2(mMoringList);
+            if(temp.getList() != null && temp.getList().size() > 0){
+                setData2(temp.getList());
                 mMoringNewsAdapter.loadMoreComplete();
                 mMoringNewsAdapter.addData(teList);
             }else{
@@ -163,7 +160,7 @@ public class MoringNewsListActivity extends BaseActivity {
         teList.clear();
         teList.addAll(moringList);
         if(page==1){
-            moringList.addAll(teList);
+            mMoringList.addAll(teList);
         }
     }
 

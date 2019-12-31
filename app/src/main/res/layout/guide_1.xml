@@ -26,7 +26,7 @@
             android:layout_height="8dp" />
 
         <TextView
-            android:text="营销人都在看"
+            android:text="营销增长圈內事"
             android:textSize="18sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:id="@+id/image1"
-                android:src="@mipmap/icon_fenxiang"
+                android:src="@mipmap/pic1"
                 android:layout_width="88dp"
                 android:layout_height="88dp"
                 tools:ignore="MissingConstraints" />
@@ -82,7 +82,8 @@
                 android:layout_marginBottom="5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/image1"
                 app:layout_constraintRight_toLeftOf="@+id/image1"
-                android:text="职业认证"
+                android:text="干货"
+                android:textStyle="bold"
                 android:textSize="19.8sp"
                 android:textColor="@color/text_first_color"
                 android:background="@drawable/bg_round"
@@ -96,7 +97,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:gravity="center"
-                android:text="王雨晨"
+                android:text="鉴锋"
                 android:textSize="15.84sp"
                 android:textColor="@color/text_first_color"
                 android:layout_width="wrap_content"
@@ -111,7 +112,7 @@
                 android:gravity="center"
                 android:lineSpacingExtra="2dp"
                 android:textSize="11.88sp"
-                android:text="上海青墨网络科技有限公司"
+                android:text="零一裂变CEO"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -167,7 +168,7 @@
                 app:layout_constraintLeft_toLeftOf="@id/text2"
                 app:layout_constraintTop_toBottomOf="@+id/text2"
                 android:id="@+id/image2"
-                android:src="@mipmap/icon_fenxiang"
+                android:src="@mipmap/pic2"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 tools:ignore="MissingConstraints" />
@@ -180,7 +181,7 @@
                 app:layout_constraintRight_toRightOf="@+id/image2"
                 android:gravity="center"
                 android:lineSpacingExtra="2dp"
-                android:text="张俊杰"
+                android:text="金璞"
                 android:textSize="11.52sp"
                 android:textColor="@color/text_first_color"
                 android:layout_width="wrap_content"
@@ -195,7 +196,7 @@
                 android:gravity="center"
                 android:lineSpacingExtra="2dp"
                 android:textSize="8.64sp"
-                android:text="产品经理"
+                android:text="腾讯等名企培训顾问"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -205,7 +206,7 @@
                 app:layout_constraintTop_toTopOf="@+id/text5"
                 android:layout_marginLeft="14dp"
                 android:id="@+id/image3"
-                android:src="@mipmap/icon_fenxiang"
+                android:src="@mipmap/pic3"
                 android:layout_width="71dp"
                 android:layout_height="71dp"
                 tools:ignore="MissingConstraints" />
@@ -217,7 +218,7 @@
                 android:layout_marginBottom="9dp"
                 app:layout_constraintBottom_toBottomOf="@+id/image3"
                 app:layout_constraintLeft_toRightOf="@+id/image3"
-                android:text="干货"
+                android:text="找合作"
                 android:textSize="14.4sp"
                 android:textColor="@color/text_first_color"
                 android:background="@drawable/bg_round"
@@ -233,7 +234,7 @@
                 app:layout_constraintRight_toRightOf="@+id/image3"
                 android:gravity="center"
                 android:lineSpacingExtra="2dp"
-                android:text="豆少华"
+                android:text="SKY#沙铉皓"
                 android:textSize="12.67sp"
                 android:textColor="@color/text_first_color"
                 android:layout_width="wrap_content"
@@ -248,7 +249,7 @@
                 android:gravity="center"
                 android:lineSpacingExtra="2dp"
                 android:textSize="9.5sp"
-                android:text="产品运营"
+                android:text="某大厂运营总监"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

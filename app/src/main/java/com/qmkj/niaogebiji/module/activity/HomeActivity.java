@@ -284,7 +284,7 @@ public class HomeActivity extends BaseActivity {
                 String result = "javascript:" +"localStorage.setItem('accessToken',\"" + token + "\")";
                 String re11 = "android";
                 String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";;
-                KLog.d("tag",result);
+//                KLog.d("tag",result);
                 if (mMyWebView != null){
                     mMyWebView.evaluateJavascript(result, value -> {});
                     mMyWebView.evaluateJavascript(sss, value -> {});

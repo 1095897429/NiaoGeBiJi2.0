@@ -451,6 +451,11 @@ public class FirstFragment extends BaseLazyFragment {
         R.id.ll_moring,R.id.toVip
     })
     public void clicks(View view){
+
+        if(StringUtil.isFastClick()){
+            return;
+        }
+
         switch (view.getId()){
             case R.id.toVip:
                 MobclickAgentUtils.onEvent(UmengEvent.index_tools_vip_2_0_0);

@@ -212,7 +212,7 @@ public class FlashFragment extends BaseLazyFragment  {
         },mRecyclerView);
 
         //监听RecyclerView滚动，实现粘性头部
-//        mRecyclerView.addOnScrollListener(new RvScrollListener());
+        mRecyclerView.addOnScrollListener(new RvScrollListener());
 
         mFlashItemAdapter.setOnItemChildClickListener((adapter, view, position) -> {
 
@@ -245,22 +245,16 @@ public class FlashFragment extends BaseLazyFragment  {
                     if(!TextUtils.isEmpty(pic)){
                         photos.add(pic);
                     }
-//                    photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg");
-//                    photos.add("https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWV1BA0uIJD2cACgyyOBAl4YAAMP0gOPNF0AKDLg887.jpg");
-//                    photos.add("https://article-fd.zol-img.com.cn/g2/M00/0E/00/ChMlWVyJwQeIRQrvAA_BjB8NhecAAIyDANWGdgAD8Gk692.jpg");
-//                    photos.add("https://b.zol-img.com.cn/desk/bizhi/image/8/4096x2160/1563934008198.png");
-//                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWV03v-eIOEWoAC0lpucbl_sAAMC8AFTL9QALSW-183.jpg");
-//                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03wq6IbWwqAA-IxrPijHEAAMDAwJ0cR8AD4je242.jpg");
-//                    //错误图片url
-//                    photos.add("https://desk-fd.zol-img.com.cn/t_s4096x2160c5/g2/M00/02/06/ChMlWl03v_aISd7vABOqKe2IAXEAAMC8QJgIh4AE6pB2971212.jpg");
-                    Bundle bundle = new Bundle ();
-                    bundle.putStringArrayList ("imageList", photos);
-                    bundle.putBoolean("fromNet",true);
-                    bundle.putInt("index",0);
-                    Intent intent = new Intent(getActivity(), PicPreviewActivity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
 
+                    if(!photos.isEmpty()){
+                        Bundle bundle = new Bundle ();
+                        bundle.putStringArrayList ("imageList", photos);
+                        bundle.putBoolean("fromNet",true);
+                        bundle.putInt("index",0);
+                        Intent intent = new Intent(getActivity(), PicPreviewActivity.class);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
                     break;
                 default:
             }

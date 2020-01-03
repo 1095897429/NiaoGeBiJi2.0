@@ -92,7 +92,7 @@ public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
         everyLength = screenWidth / pagerCount;
         dis = (everyLength - lineWidth) / 2;
         dis = 0;
-        KLog.d("tag","每个控件均分长度为  " + everyLength);
+//        KLog.d("tag","每个控件均分长度为  " + everyLength);
 
         //默认绘制
         dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (0)*everyLength );

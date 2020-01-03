@@ -83,12 +83,22 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
 //        String url = "https://m.weibo.cn/detail/4452636415281894?display=0&retcode=6102";
 //        mEditText.setText(url);
 
-        //判断系统剪贴板是否有数据 ，并检查是否前缀是http或者https
-        content = getContentFromClipBoard();
-        if(!TextUtils.isEmpty(content) && isUrlPrefix(content)){
-            part2222.setVisibility(View.VISIBLE);
-            link_content.setText(content);
-        }
+
+        //Android Q 上获取的方式用下面的
+        getWindow().getDecorView().post(new Runnable() {
+            @Override
+            public void run() {
+                //判断系统剪贴板是否有数据 ，并检查是否前缀是http或者https
+                content = getContentFromClipBoard();
+                KLog.d("tag","剪贴板的内容 " + content);
+                if(!TextUtils.isEmpty(content) && isUrlPrefix(content)){
+                    part2222.setVisibility(View.VISIBLE);
+                    link_content.setText(content);
+                }
+            }
+        });
+
+
 
         KeyboardUtils.showSoftInput(mEditText);
 
@@ -153,7 +163,7 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
     private String getContentFromClipBoard() {
         ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData data = cm.getPrimaryClip();
-        if(data != null){
+        if(data != null && data.getItemCount() > 0){
             ClipData.Item item = data.getItemAt(0);
             return item.getText().toString();
         }

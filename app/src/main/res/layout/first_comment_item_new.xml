@@ -23,7 +23,6 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/head_icon"
-                android:src="@mipmap/icon_fenxiang"
                 android:layout_width="32dp"
                 android:layout_height="32dp" />
 
@@ -49,7 +48,7 @@
 
                     <TextView
                         android:id="@+id/nickname"
-                        android:text="我是二大王"
+                        android:text=""
                         android:textSize="16sp"
                         android:textColor="@color/text_first_color"
                         android:layout_width="wrap_content"
@@ -74,7 +73,7 @@
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
-                    android:text="上海青墨网络科技有限公司产品经理"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -92,7 +91,6 @@
                     android:maxLines="6"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
-                    android:text="10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -105,7 +103,6 @@
                     <TextView
                         android:layout_centerVertical="true"
                         android:id="@+id/time"
-                        android:text="11分钟前"
                         android:textSize="11sp"
                         android:layout_marginTop="14dp"
                         android:textColor="@color/text_three_color"
@@ -150,7 +147,7 @@
 
                         <TextView
                             android:id="@+id/zan_num"
-                            android:text="99+"
+                            android:text=""
                             android:textSize="13sp"
                             android:textColor="@color/prise_no_select_color"
                             android:gravity="center"

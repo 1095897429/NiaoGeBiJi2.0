@@ -44,6 +44,7 @@ import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -427,14 +428,16 @@ public class FirstItemFragment extends BaseLazyFragment {
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
-            mAllList.clear();
-            mIsRefreshing = true;
-            page = 1;
-            recommendlist();
-            //更懂你
-            isPersonal();
+                //进行列表全部刷新 -- 闪一下别强退好
+                mFirstItemAdapter.notifyItemRangeChanged(0,mFirstItemAdapter.getData().size());
+                mIsRefreshing = true;
+                mAllList.clear();
+                page = 1;
+                recommendlist();
+                //更懂你
+                isPersonal();
 
-            EventBus.getDefault().post(new toRefreshMoringEvent());
+                EventBus.getDefault().post(new toRefreshMoringEvent());
         });
 
         mRecyclerView.setOnTouchListener(
@@ -576,10 +579,6 @@ public class FirstItemFragment extends BaseLazyFragment {
                 break;
             case R.id.toMoreLoveYou:
                 MobclickAgentUtils.onEvent(UmengEvent.index_flow_understand_2_0_0);
-
-                if(StringUtil.isFastClick()){
-                    return;
-                }
                 getProfession();
 
                 break;

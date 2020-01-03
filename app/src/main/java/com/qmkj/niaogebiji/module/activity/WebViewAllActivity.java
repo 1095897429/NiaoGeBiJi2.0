@@ -151,23 +151,23 @@ public class WebViewAllActivity extends BaseActivity {
         fromWhere = getIntent().getStringExtra("fromWhere");
         KLog.d("tag","link " + link);
 
-        if(fromWhere.equals("显示一键已读消息")){
+        if("显示一键已读消息".equals(fromWhere)){
             tv_right.setVisibility(View.VISIBLE);
         }else if(fromWhere.equals("mybadge")){
             allpart.setBackgroundColor(getResources().getColor(R.color.badge_color));
             iv_back.setImageResource(R.mipmap.icon_back_white);
             tv_title.setVisibility(View.GONE);
-        }else if(fromWhere.equals("editbadge")) {
+        }else if("editbadge".equals(fromWhere)) {
             allpart.setBackgroundColor(Color.parseColor("#2C2C2E"));
             iv_back.setVisibility(View.GONE);
             tv_title.setText("编辑展示徽章");
             tv_title.setTextColor(getResources().getColor(R.color.white));
             tv_done.setVisibility(View.VISIBLE);
             tv_cancle.setVisibility(View.VISIBLE);
-        }else if(fromWhere.equals("vipmember")){
+        }else if("vipmember".equals(fromWhere)){
             getUserInfo();
             getVipStatus();
-        }else if(fromWhere.equals("webview_badges")){
+        }else if("webview_badges".equals(fromWhere)){
             allpart.setBackgroundColor(Color.parseColor("#2C2C2E"));
             tv_title.setText("我的徽章");
             tv_title.setTextColor(getResources().getColor(R.color.white));

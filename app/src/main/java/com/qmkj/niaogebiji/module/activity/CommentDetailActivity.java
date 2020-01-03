@@ -1247,7 +1247,11 @@ public class CommentDetailActivity extends BaseActivity {
         //解决数据加载不完
         pic_recyler.setNestedScrollingEnabled(true);
         pic_recyler.setHasFixedSize(true);
-        mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> UIHelper.toPicPreViewActivity(mContext,  mCircleBean.getImages(),position,true));
+        mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
+            if(!mCircleBean.getImages().isEmpty()){
+                UIHelper.toPicPreViewActivity(mContext,  mCircleBean.getImages(),position,true);
+            }
+        });
     }
 
 

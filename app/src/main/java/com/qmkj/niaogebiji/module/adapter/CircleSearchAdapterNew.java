@@ -161,7 +161,9 @@ public class CircleSearchAdapterNew extends BaseQuickAdapter<CircleBean, BaseVie
                 //预览事件
                 mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
                     KLog.d("tag","点击预览");
-                    UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position,true);
+                    if(!item.getImages().isEmpty()){
+                        UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position,true);
+                    }
                 });
 
 

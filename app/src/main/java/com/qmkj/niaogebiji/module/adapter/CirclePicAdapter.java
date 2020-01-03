@@ -64,13 +64,14 @@ public class CirclePicAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
         layoutParams.width = (ScreenUtils.getScreenWidth() - SizeUtils.dp2px(16f  +  16f + 16f)) / 3;
         helper.getView(R.id.pic_ll).setLayoutParams(layoutParams);
 
+
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) helper.getView(R.id.count).getLayoutParams();
         lp.width = (ScreenUtils.getScreenWidth() - SizeUtils.dp2px(16f  +  16f + 16f)) / 3;
         lp.height = SizeUtils.dp2px(109f);
         helper.getView(R.id.count).setLayoutParams(lp);
 
 
-        ImageUtil.load(mContext,item + scaleSize,helper.getView(R.id.pic));
+        ImageUtil.loadByCache(mContext,item + scaleSize,helper.getView(R.id.pic));
 
         TextView textView  =  helper.getView(R.id.count);
         if(2 == helper.getAdapterPosition()){

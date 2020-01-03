@@ -57,7 +57,6 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         super(R.layout.first_comment_item_new,data);
     }
 
-
     private Limit2ReplyAdapter mLimit2ReplyAdapter;
     private List<CommentBean.FirstComment> mLimitComments;
 
@@ -86,12 +85,11 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         TextView sender_tag = helper.getView(R.id.name_tag);
 
         if("1".equals(item.getAuth_status())){
-            sender_tag.setText( (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
+            sender_tag.setText((TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
                     (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
         }else{
             sender_tag.setText("TA还未职业认证");
         }
-
 
 
         //评论者头像
@@ -99,7 +97,10 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
             ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
         }
         //评论正文
-        helper.setText(R.id.comment_text,item.getMessage());
+        if(!TextUtils.isEmpty(item.getMessage())){
+            helper.setText(R.id.comment_text,item.getMessage());
+        }
+
 
         //点赞数
         TextView zan_num = helper.getView(R.id.zan_num);
@@ -169,7 +170,9 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
 
         //去个人中心
         helper.getView(R.id.head_icon).setOnClickListener(view -> {
-            UIHelper.toUserInfoActivity(mContext,item.getUid());
+            if(!TextUtils.isEmpty(item.getUid())){
+                UIHelper.toUserInfoActivity(mContext,item.getUid());
+            }
         });
 
     }
@@ -204,7 +207,6 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         Map<String,String> map = new HashMap<>();
         map.put("type","4");
         map.put("id",bean.getCid());
-
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().goodArticle(result)
                 .subscribeOn(Schedulers.newThread())
@@ -227,7 +229,6 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         Map<String,String> map = new HashMap<>();
         map.put("type","4");
         map.put("id",bean.getCid());
-
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().cancelGoodArticle(result)
                 .subscribeOn(Schedulers.newThread())
@@ -250,13 +251,16 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
 
     //通过uid加载布局 -- 自己的可以删除，其他的不管
     private void getIconType(BaseViewHolder helper, CommentBean.FirstComment item) {
-        String uid = item.getUid();
-        String myUid = StringUtil.getUserInfoBean().getUid();
-        if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
-            helper.setVisible(R.id.comment_delete,true);
-        }else{
-            helper.setVisible(R.id.comment_delete,false);
+        if(null != StringUtil.getUserInfoBean() && null != item){
+            String uid = item.getUid();
+            String myUid = StringUtil.getUserInfoBean().getUid();
+            if(!TextUtils.isEmpty(uid) && uid.equals(myUid)){
+                helper.setVisible(R.id.comment_delete,true);
+            }else{
+                helper.setVisible(R.id.comment_delete,false);
+            }
         }
+
     }
 
 
@@ -273,7 +277,6 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         Map<String,String> map = new HashMap<>();
         map.put("target_type","1");
         map.put("target_id",itemBean.getCid());
-
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().deleteComment(result)
                 .subscribeOn(Schedulers.newThread())

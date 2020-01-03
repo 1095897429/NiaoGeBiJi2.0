@@ -31,6 +31,7 @@ import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
+import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -128,7 +129,7 @@ public class FocusFragment extends BaseLazyFragment {
     //组合集合
     List<MultiNewsBean> mAllList = new ArrayList<>();
     //布局管理器
-    LinearLayoutManager mLinearLayoutManager;
+    RecyclerViewNoBugLinearLayoutManager mLinearLayoutManager;
     private int page = 1;
     //单个作者
     private IndexFocusBean.Auther_list mAuthor;
@@ -138,7 +139,7 @@ public class FocusFragment extends BaseLazyFragment {
     private List<IndexFocusBean.Article_list> mArticle_lists;
 
     private void initLayout() {
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager = new RecyclerViewNoBugLinearLayoutManager(getActivity());
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
@@ -209,17 +210,30 @@ public class FocusFragment extends BaseLazyFragment {
 
     }
 
-
+    private boolean mIsRefreshing;
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            mFocusAdapter.notifyItemRangeChanged(0,mFocusAdapter.getData().size());
             mAllList.clear();
+            mIsRefreshing = true;
             page = 1;
             getIndexArticle();
             EventBus.getDefault().post(new toRefreshMoringEvent());
         });
+
+
+        mRecyclerView.setOnTouchListener(
+                (v, event) -> {
+                    if (mIsRefreshing) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+        );
 
     }
 
@@ -238,6 +252,7 @@ public class FocusFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
                         IndexFocusBean mIndexFocusBean = response.getReturn_data();
                         if(null != mIndexFocusBean){
+                            mIsRefreshing = false;
                             if(null != smartRefreshLayout){
                                 smartRefreshLayout.finishRefresh();
                                 smartRefreshLayout.finishLoadMore();
@@ -287,7 +302,9 @@ public class FocusFragment extends BaseLazyFragment {
                     @Override
                     public void onHintError(String return_code, String errorMes) {
                         super.onHintError(return_code, errorMes);
+
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
                     }
@@ -297,6 +314,7 @@ public class FocusFragment extends BaseLazyFragment {
                     public void onNetFail(String msg) {
                         super.onNetFail(msg);
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
                     }
@@ -401,6 +419,7 @@ public class FocusFragment extends BaseLazyFragment {
     public void onEventBus(UpdateHomeListEvent event){
         KLog.d("tag","更新啦更新啦");
         mAllList.clear();
+        mIsRefreshing = true;
         page = 1;
         getIndexArticle();
     }

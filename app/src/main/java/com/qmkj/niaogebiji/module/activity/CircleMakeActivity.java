@@ -657,13 +657,15 @@ public class CircleMakeActivity extends BaseActivity {
         }
 
 
-        Bundle bundle = new Bundle ();
-        bundle.putStringArrayList ("imageList", photos);
-        bundle.putBoolean("fromNet",true);
-        bundle.putInt("index",position);
-        Intent intent = new Intent(this, PicPreviewActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
+        if(!photos.isEmpty()){
+            Bundle bundle = new Bundle ();
+            bundle.putStringArrayList ("imageList", photos);
+            bundle.putBoolean("fromNet",true);
+            bundle.putInt("index",position);
+            Intent intent = new Intent(this, PicPreviewActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
     }
 
 

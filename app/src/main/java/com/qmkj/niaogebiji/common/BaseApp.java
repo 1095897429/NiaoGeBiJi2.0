@@ -25,7 +25,13 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
+import com.vivo.push.IPushActionListener;
+import com.vivo.push.PushClient;
+import com.xiaomi.channel.commonutils.logger.LoggerInterface;
+import com.xiaomi.mipush.sdk.Logger;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
@@ -91,7 +97,6 @@ public class BaseApp extends Application {
         initUMConfig();
         initWX();
         initUDesk();
-//        initService();
         initJPush();
     }
 
@@ -115,13 +120,68 @@ public class BaseApp extends Application {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         String id = JPushInterface.getRegistrationID(this);
-        KLog.d("tag","极光推送的di " + id + "");
+        KLog.d("tag","极光推送的id " + id + "");
 
-//        String regId = MiPushClient.getRegId(getApplicationContext());
-//        KLog.d("tag","小米推送的di " + regId + "");
 
-        HMSAgent.init(this);
+        // 注册push服务，注册成功后会向DemoMessageReceiver发送广播
+        // 可以从DemoMessageReceiver的onCommandResult方法中MiPushCommandMessage对象参数中获取注册信息
+        if (shouldInit()) {
+            MiPushClient.registerPush(this, Constant.XiaoMi_APP_ID, Constant.XiaoMi_APP_KEY);
+            //打开Log
+            LoggerInterface newLogger = new LoggerInterface() {
 
+                @Override
+                public void setTag(String tag) {
+                    // ignore
+                }
+
+                @Override
+                public void log(String content, Throwable t) {
+                    Log.d(TAG, content, t);
+                }
+
+                @Override
+                public void log(String content) {
+                    Log.d(TAG, content);
+                }
+            };
+            Logger.setLogger(this, newLogger);
+        }
+
+
+        if(canHuaWeiPush()){
+            HMSAgent.init(this);
+        }
+
+
+        PushClient.getInstance(getApplicationContext()).initialize();
+
+        PushClient.getInstance(getApplicationContext()).turnOnPush(state -> {
+            if (state != 0) {
+                KLog.d("tag","vivo 打开push异常[" + state + "]");
+            } else {
+                KLog.d("tag","vivo 打开push成功");
+            }
+        });
+    }
+
+
+    /**
+     * 判断是否可以使用华为推送
+     *
+     * @return
+     */
+    public static Boolean canHuaWeiPush() {
+        int emuiApiLevel = 0;
+        try {
+            Class cls = Class.forName("android.os.SystemProperties");
+            Method method = cls.getDeclaredMethod("get", new Class[]{String.class});
+            emuiApiLevel = Integer.parseInt((String) method.invoke(cls, new Object[]{"ro.build.hw_emui_api_level"}));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return emuiApiLevel > 5.0;
 
     }
 

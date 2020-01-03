@@ -285,7 +285,6 @@ public class NewsDetailActivity extends BaseActivity {
     protected void initView() {
         showWaitingDialog();
         newsId = getIntent().getStringExtra("newsId");
-        KLog.d("tag","文章的id "  + newsId);
         initTestLayout();
         initCommentListLayout();
         getCommentData();
@@ -1421,12 +1420,9 @@ public class NewsDetailActivity extends BaseActivity {
 
     private void initTestEvent() {
         mTestLaunchItemAdapter.setOnItemClickListener((adapter, view, position) -> {
-
             myTestPosition = position;
-
             //我选择的答案
             myAnswer = (position + 1) + "";
-
             List<TestBean> mDatas = adapter.getData();
             //① 将所有的selected设置false，当前点击的设为true
             for (TestBean data : mDatas) {

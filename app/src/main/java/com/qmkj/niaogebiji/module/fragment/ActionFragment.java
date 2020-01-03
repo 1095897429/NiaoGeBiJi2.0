@@ -19,6 +19,7 @@ import com.qmkj.niaogebiji.module.adapter.ActionAdapter;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
+import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -102,6 +103,7 @@ public class ActionFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<ActionBean> response) {
 
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
 
@@ -126,6 +128,7 @@ public class ActionFragment extends BaseLazyFragment {
                     public void onNetFail(String msg) {
                         super.onNetFail(msg);
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
                     }
@@ -134,6 +137,7 @@ public class ActionFragment extends BaseLazyFragment {
                     public void onHintError(String return_code, String errorMes) {
                         super.onHintError(return_code, errorMes);
                         if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
                         }
                     }
@@ -152,24 +156,41 @@ public class ActionFragment extends BaseLazyFragment {
     //适配器
     ActionAdapter mActionAdapter;
     //布局管理器
-    LinearLayoutManager mLinearLayoutManager;
+    RecyclerViewNoBugLinearLayoutManager mLinearLayoutManager;
 
+
+    private boolean mIsRefreshing;
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+
+            mActionAdapter.notifyItemRangeChanged(0,mActionAdapter.getData().size());
             mAct_lists.clear();
+            mIsRefreshing = true;
             page = 1;
             activitiesList();
             EventBus.getDefault().post(new toRefreshMoringEvent());
         });
+
+        mRecyclerView.setOnTouchListener(
+                (v, event) -> {
+                    if (mIsRefreshing) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+        );
     }
+
+
 
 
     //初始化布局管理器
     private void initLayout() {
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager = new RecyclerViewNoBugLinearLayoutManager(getActivity());
         //设置默认垂直布局
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         //设置布局管理器

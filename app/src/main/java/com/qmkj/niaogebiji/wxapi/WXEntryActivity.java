@@ -88,7 +88,7 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                 if (type == RETURN_MSG_TYPE_LOGIN) {
                     //用户换取access_token的code，仅在ErrCode为0时有效
                     String tempCode = ((SendAuth.Resp) baseResp).code;
-                    KLog.d("tag", "code:------>" + tempCode);
+//                    KLog.d("tag", "code:------>" + tempCode);
 
                     SendAuth.Resp sendResp = (SendAuth.Resp) baseResp;
                     if (sendResp != null) {

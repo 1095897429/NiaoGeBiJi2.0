@@ -149,7 +149,9 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             //预览事件
             mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
                 KLog.d("tag", "点击预览");
-                UIHelper.toPicPreViewActivity(mContext, mPics, position,true);
+                if(mPics != null && !mPics.isEmpty()){
+                    UIHelper.toPicPreViewActivity(mContext, mPics, position,true);
+                }
             });
 
         }

@@ -287,11 +287,14 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
 
     private boolean mIsRefreshing;
+    @SuppressLint("ClickableViewAccessibility")
     private void initSamrtLayout() {
         XnClassicsHeader header =  new XnClassicsHeader(getActivity());
         smartRefreshLayout.setRefreshHeader(header);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+
+            mCircleRecommentAdapterNew.notifyItemRangeChanged(0,mCircleRecommentAdapterNew.getData().size());
             mAllList.clear();
             mIsRefreshing = true;
             page = 1;
@@ -325,6 +328,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     public void onSendCircleEvent(SendOkCircleEvent event) {
         mAllList.clear();
         page = 1;
+        mIsRefreshing = true;
         recommendBlogList();
     }
 
@@ -403,6 +407,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 //            mCircleRecommentAdapterNew.notifyItemChanged(event.getPosition());
 
             page = 1;
+            mIsRefreshing = true;
             mAllList.clear();
             recommendBlogList();
 

@@ -413,7 +413,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     if(StringUtil.isFastClick()){
                         return;
                     }
-                    UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position,true);
+                    if(!item.getImages().isEmpty()){
+                        UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position,true);
+                    }
                 });
 
 
@@ -464,8 +466,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                         return;
                     }
 
-                    UIHelper.toPicPreViewActivity(mContext, (ArrayList<String>) item.getP_blog().getImages(), position, true);
+                    if(!item.getP_blog().getImages().isEmpty()){
+                        UIHelper.toPicPreViewActivity(mContext, (ArrayList<String>) item.getP_blog().getImages(), position, true);
 
+                    }
                 });
 
                 break;

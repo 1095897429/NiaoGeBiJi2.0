@@ -8,6 +8,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.qmkj.niaogebiji.R;
 
@@ -58,6 +59,22 @@ public class ImageUtil {
         Glide.with(context).load(url).into(imageView);
 
 
+    }
+
+
+    public static void loadByCache(Context context, String url, ImageView imageView) {
+        if (context == null){
+            return;
+        }
+
+        if (context instanceof Activity) {
+            if (((Activity) context).isFinishing()) {
+                return;
+            }
+        }
+
+        //0.1f显示原图大小的10%
+        Glide.with(context).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).thumbnail(0.1f).into(imageView);
     }
 
 

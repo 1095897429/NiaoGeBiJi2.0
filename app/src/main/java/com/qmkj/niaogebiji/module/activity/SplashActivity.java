@@ -4,11 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Size;
@@ -16,9 +18,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.LaunchPermissDialog;
+import com.qmkj.niaogebiji.common.dialog.PermissForbidPhoneDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidStorageDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.socks.library.KLog;
@@ -26,16 +31,23 @@ import com.socks.library.KLog;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+
 /**
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-08
- * 描述:权限管理 -- 弹框，然后弹出所有权限 -- 不采用了！！
+ * 描述:权限管理 -- 弹框，然后弹出所有权限 --
  */
 public class SplashActivity extends BaseActivity {
 
+
+    @BindView(R.id.image)
+    ImageView animationIV;
+
     private LaunchPermissDialog mLaunchPermissDialog;
     private PermissForbidStorageDialog mPermissForbidStorageDialog;
+    private PermissForbidPhoneDialog mPermissForbidPhoneDialog;
     private static final int INIT_PERMISSIONS = 100;
     //第二个弹框出现，就不需要onResume时检查权限
     boolean continuerequest = true;
@@ -45,25 +57,72 @@ public class SplashActivity extends BaseActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE};
 
+    String permissions1[] = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    String permissions2[] = new String[]{
+            Manifest.permission.READ_PHONE_STATE};
+
+    private boolean isSdcardOk;
+    private boolean isPhoneok;
+
+    private AnimationDrawable animationDrawable;
+
+
     @Override
     protected int getLayoutId() {
-
         return R.layout.activity_splash;
     }
 
     @Override
     protected void initView() {
+        //帧动画
+        animationIV.setImageResource(R.drawable.splash_animation1);
+        animationDrawable = (AnimationDrawable) animationIV.getDrawable();
+        animationDrawable.start();
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
         }
     }
 
+
+    @Override
+    public void initData() {
+        if(isHuaWei()){
+            /** SDK连接HMS -- 打开后的首个界面 */
+            HMSAgent.connect(this, rst -> KLog.e("tag","HMS connect end:" + rst));
+            getToken();
+        }
+    }
+
+
+    //0867229032433051300004997800CN01 -- 测试机器1
+    //AAXKNSLVvqqvtmuIxbiAI2-syr7aRanHEFA9XO0qtA_WDJQGGPQM6yM6srOB6NLQPkf_yFc6skaTqkkMKD7aOJzXDj1Zjuv7asdTGDtqvo2rHHciRvaiZBqnAx5aj5d2WQ -- 测试机器2
+    public static boolean isHuaWei() {
+        String manufacturer = Build.MANUFACTURER;
+        //这个字符串可以自己定义,例如判断华为就填写huawei,魅族就填写meizu
+        if ("huawei".equalsIgnoreCase(manufacturer)) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    /**
+     * 获取token
+     */
+    private void getToken() {
+        KLog.d("tag","get token: begin");
+        HMSAgent.Push.getToken(rtnCode -> KLog.d("tag","get token: end" + rtnCode));
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         if(isJumpSet || continuerequest){
-            KLog.d("tag","检查权限");
             isJumpSet = false;
             continuerequest = true;
             checkAppPermission();
@@ -75,6 +134,7 @@ public class SplashActivity extends BaseActivity {
         if (hasPermissions(this, permissions)) {
             toNext();
         }else{
+
             showPermissDialog();
         }
     }
@@ -91,9 +151,25 @@ public class SplashActivity extends BaseActivity {
         }
 
         mLaunchPermissDialog = new LaunchPermissDialog(this).builder();
+
+        //如果有权限了，设置对勾状态
+        if(hasPermissions(this,permissions1)){
+            isSdcardOk = true;
+            if(null != mLaunchPermissDialog){
+                mLaunchPermissDialog.setSdcardOK();
+            }
+        }
+
+        if(hasPermissions(this,permissions2)){
+            isPhoneok = true;
+            if(null != mLaunchPermissDialog){
+                mLaunchPermissDialog.setPhoneOK();
+            }
+        }
+
         mLaunchPermissDialog.setPositionButton("立即开启", v -> {
 
-            // 声明一个集合，在后面的代码中用来存储用户拒绝授权的权
+            // 声明一个集合，在后面的代码中用来存储用户拒绝授权的权限
             List<String> mPermissionList = new ArrayList<>();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 //没有同意的话，加入到临时集合中
@@ -150,6 +226,37 @@ public class SplashActivity extends BaseActivity {
     }
 
 
+    private void showPermissForbidPhoneDialog() {
+        if (isFinishing()) {
+            return;
+        }
+        if (mPermissForbidPhoneDialog != null && mPermissForbidPhoneDialog.isShowing()) {
+            mPermissForbidPhoneDialog.dismiss();
+        }
+        mPermissForbidPhoneDialog = new PermissForbidPhoneDialog(this).builder();
+        mPermissForbidPhoneDialog.setCallBack(new PermissForbidPhoneDialog.CallBack() {
+            @Override
+            public void forward() {
+                //引导用户至设置页手动授权
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                isJumpSet = true;
+                mPermissForbidPhoneDialog.dismiss();
+            }
+
+
+            @Override
+            public void exit() {
+                finish();
+
+            }
+        });
+        mPermissForbidPhoneDialog.show();
+    }
+
+
 
 
     @Override
@@ -162,12 +269,33 @@ public class SplashActivity extends BaseActivity {
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     //解释原因，并且引导用户至设置页手动授权
                     continuerequest = false;
-                    showPermissForbidDialog();
+
+                    if(permissions[0].equals("android.permission.WRITE_EXTERNAL_STORAGE")){
+                        showPermissForbidDialog();
+                    }else if(permissions[0].equals("android.permission.READ_PHONE_STATE")){
+                        showPermissForbidPhoneDialog();
+                    }
                     return;
                 }
 
             }
         }
+
+        //根据选择结果显示对勾
+        if(hasPermissions(this,permissions1)){
+            isSdcardOk = true;
+            if(null != mLaunchPermissDialog){
+                mLaunchPermissDialog.setSdcardOK();
+            }
+        }
+
+        if(hasPermissions(this,permissions2)){
+            isPhoneok = true;
+            if(null != mLaunchPermissDialog){
+                mLaunchPermissDialog.setPhoneOK();
+            }
+        }
+
     }
 
 
@@ -200,18 +328,35 @@ public class SplashActivity extends BaseActivity {
     }
 
 
+
     public void toNext(){
         new Handler().postDelayed(() -> {
-
-            boolean firstCome = SPUtils.getInstance().getBoolean("isFirstCome",true);
+            boolean firstCome = SPUtils.getInstance().getBoolean("isFirstCome",false);
+            boolean isLogin  = SPUtils.getInstance().getBoolean(Constant.IS_LOGIN,false);
             if(firstCome){
-                UIHelper.toHomeActivity(SplashActivity.this,0);
+                if(isLogin){
+                    UIHelper.toHomeActivity(SplashActivity.this,0);
+                }else{
+                    UIHelper.toLoginActivity(SplashActivity.this);
+                }
                 finish();
             }else{
-                UIHelper.toLoginActivity(SplashActivity.this);
+                UIHelper.toWelcomeActivity(SplashActivity.this);
                 finish();
             }
 
-        },1200);
+        },1800);
     }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(null != animationDrawable){
+            animationDrawable.stop();
+        }
+    }
+
+
 }

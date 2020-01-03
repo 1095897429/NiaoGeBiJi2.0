@@ -255,7 +255,7 @@ public class WebViewActivityWithStep extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.iv_back:
-                if(mMyWebView.canGoBack()){
+                if(mMyWebView != null && mMyWebView.canGoBack()){
                     mMyWebView.goBack();
                     return;
                 }

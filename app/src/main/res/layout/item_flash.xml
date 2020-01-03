@@ -104,9 +104,10 @@
                     android:background="@color/bg_color"
                     android:layout_width="match_parent"
                     android:layout_height="215dp"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     app:round_as_circle="false"
                     app:round_corner="8dp" />
+
 
 
             </LinearLayout>

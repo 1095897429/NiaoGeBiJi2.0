@@ -49,6 +49,7 @@ import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
@@ -140,6 +141,15 @@ public class CircleFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();;
+        if(userInfo != null){
+            if("1".equals(userInfo.getIs_red())){
+                red_point.setVisibility(View.VISIBLE);
+            }else if("0".equals(userInfo.getIs_red())){
+                red_point.setVisibility(View.GONE);
+            }
+        }
+
         String [] titile = new String[]{"关注","推荐"};
         pager_title.initData(titile,mViewPager,1);
         mExecutorService = Executors.newFixedThreadPool(2);
@@ -253,10 +263,6 @@ public class CircleFragment extends BaseLazyFragment {
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
                 break;
             case R.id.icon_send_msg:
-                if(StringUtil.isFastClick()){
-                    return;
-                }
-
 
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_2_0_0);
 

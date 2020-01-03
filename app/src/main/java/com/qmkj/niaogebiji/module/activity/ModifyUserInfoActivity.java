@@ -98,14 +98,15 @@ public class ModifyUserInfoActivity extends BaseActivity {
 
         RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
 
-        mNickname = userInfo.getNickname();
-        mName = userInfo.getName();
-        mGender = userInfo.getGender();
-        mPosition = userInfo.getPosition();
-        mAvatar_ext = "png";
-        mPro_summary = userInfo.getPro_summary() ;
-        mBirthday =  userInfo.getBirthday();
-
+        if(userInfo != null){
+            mNickname = userInfo.getNickname();
+            mName = userInfo.getName();
+            mGender = userInfo.getGender();
+            mPosition = userInfo.getPosition();
+            mAvatar_ext = "png";
+            mPro_summary = userInfo.getPro_summary() ;
+            mBirthday =  userInfo.getBirthday();
+        }
 
         et_input.addTextChangedListener(new TextWatcher() {
             @Override

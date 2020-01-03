@@ -476,8 +476,8 @@ public static java.lang.String TABLENAME;
 -keep class com.bun.miitmdid.core.** {*;}
 
 #小米推送
-#-dontwarncom.xiaomi.push.**
-#-keepclasscom.xiaomi.push.**{*;}
+-dontwarncom.xiaomi.push.**
+-keepclasscom.xiaomi.push.**{*;}
 
 #oppo推送
 -dontwarn com.coloros.mcsdk.**
@@ -493,3 +493,14 @@ public static java.lang.String TABLENAME;
 
 -dontwarn cn.jiguang.**
 -keep class cn.jiguang.** { *; }
+
+#jsoup
+-dontwarn org.jsoup.**
+-keep class org.jsoup.**{*;}
+
+#vivo推送
+-dontwarn com.vivo.push.**
+-keep class com.vivo.push.**{*; }
+-keep class com.vivo.vms.**{*; }
+-keep class   xxx.xxx.xxx.VivoMessageReceiver{*;}
+

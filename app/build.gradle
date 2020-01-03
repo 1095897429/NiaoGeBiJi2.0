@@ -14,8 +14,8 @@ android {
         applicationId "com.qmkj.niaogebiji"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 3
-        versionName "2.0.0"
+        versionCode 4
+        versionName "2.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //MultiDex分包方法
         multiDexEnabled true
@@ -136,7 +136,7 @@ android {
 //数据库版本以及Dao的相关设置
 greendao {
     //数据库schema版本
-    schemaVersion 1
+    schemaVersion 3
     //设置DaoMaster DaoSession Dao包名，默认的是bean所在的包名
     daoPackage 'com.qmkj.niaogebiji'
     //设置DaoMaster DaoSeeeion Dao目录，默认是build/generated/source/greendao
@@ -257,4 +257,7 @@ dependencies {
     implementation'cn.jiguang.sdk.plugin:oppo:3.5.4'
 
 //    implementation'cn.jiguang.sdk.plugin:huawei:3.0.6'//此版本插件仅支持JPushSDK3.1.8及以上版本
+
+    // 添加aar依赖到工程
+    implementation   files("libs/vivo_pushsdk-v2.9.0.0.aar")
 }

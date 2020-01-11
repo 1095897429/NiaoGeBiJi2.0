@@ -121,12 +121,20 @@ public class PhoneInputActivity extends BaseActivity {
                 break;
             case R.id.toGetVertifyCode:
                 mMobile = phone_et.getText().toString().trim();
-                if(!RegexUtils.isMobileExact(mMobile)){
+//                if(!RegexUtils.isMobileExact(mMobile)){
+//                    ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+//                    ToastUtils.showShort("你输入的好像不是手机号");
+//                    return;
+//                }
+
+                if(!TextUtils.isEmpty(mMobile) && mMobile.length() == 11){
+                    envelop(mMobile);
+                }else{
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("你输入的好像不是手机号");
-                    return;
                 }
-                envelop(mMobile);
+
+
                 break;
             default:
         }

@@ -37,15 +37,12 @@ public class ToolItemAdapter extends BaseQuickAdapter<ToollndexBean, BaseViewHol
     @Override
     protected void convert(BaseViewHolder helper, ToollndexBean item) {
 
-
-
-
         if(!TextUtils.isEmpty(item.getIcon())){
-            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.tool_pic));
+            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.baidu_icon));
         }
 
         if(item.getResid() != 0){
-            ImageView imageView = helper.getView(R.id.tool_pic);
+            ImageView imageView = helper.getView(R.id.baidu_icon);
             imageView.setImageResource(R.mipmap.icon_tool_more);
         }
 

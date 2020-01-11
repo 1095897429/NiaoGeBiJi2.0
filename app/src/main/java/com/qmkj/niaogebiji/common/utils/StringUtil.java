@@ -181,7 +181,8 @@ public class StringUtil {
 
 
     public static String getLink(String parma) {
-        String link = BuildConfig.DEBUG ? Constant.TEST_URL + parma : Constant.RELEASE_URL + parma;
+//        String link = BuildConfig.DEBUG ? Constant.TEST_URL + parma : Constant.RELEASE_URL + parma;
+        String link = BuildConfig.H5URL + parma;
         KLog.d("tag", "跳转的link是 " + link);
         return link;
     }

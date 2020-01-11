@@ -56,8 +56,12 @@
 
                         <TextView
                             android:id="@+id/nickname"
-                            android:text="张俊介  上海青墨网络科技有限公司产品经理"
+                            android:text=""
                             android:textSize="13sp"
+                            android:layout_toLeftOf="@+id/comment_delete"
+                            android:layout_marginRight="4dp"
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:textColor="@color/text_second_color"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />

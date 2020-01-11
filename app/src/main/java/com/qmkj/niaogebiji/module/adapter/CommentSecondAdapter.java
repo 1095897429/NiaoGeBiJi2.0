@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -99,12 +100,35 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 TextView nickname = helper.getView(R.id.nickname);
 
                 //名称 + 认证
-                if("1".equals(item.getAuth_status())){
-                    nickname.setText(item.getUsername() + (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
-                            (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+//                if("1".equals(item.getAuth_status())){
+//                    nickname.setText(item.getUsername() + (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) + " "+
+//                            (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+//                }else{
+//                    nickname.setText(item.getUsername() + " TA还未职业认证");
+//                }
+
+
+
+
+                //TODO 2020.1.7
+                if(!StringUtil.checkNull((item.getCompany_name()))
+                        && !StringUtil.checkNull((item.getPosition()))){
+                    nickname.setText(item.getUsername() + " TA 还未职业认证");
                 }else{
-                    nickname.setText(item.getUsername() + " TA还未职业认证");
+                    nickname.setText(item.getUsername() +  " " + (StringUtil.checkNull((item.getCompany_name()))?item.getCompany_name() + " ":"") +
+                            (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
                 }
+
+                //是否认证
+                if("1".equals(item.getAuth_status())){
+                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                    nickname.setCompoundDrawables(null,null,drawable,null);
+                }else{
+                    nickname.setCompoundDrawables(null,null,null,null);
+                }
+
+
 
 
                 ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
@@ -160,6 +184,36 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 CommentCircleBean comment = bean.getCircleComment();
                 helper.setText(R.id.comment_text,comment.getComment());
                 helper.setText(R.id.nickname,comment.getUser_info().getName());
+
+                TextView nick = helper.getView(R.id.nickname);
+
+                //TODO 2020.1.7
+                User_info temp = comment.getUser_info();
+                if(null != temp){
+                        if(!StringUtil.checkNull((temp.getCompany_name()))
+                                && !StringUtil.checkNull((temp.getPosition()))){
+                            nick.setText(temp.getName() + " TA 还未职业认证");
+                        }else{
+                            nick.setText(temp.getName() +  " " + (StringUtil.checkNull((temp.getCompany_name()))?temp.getCompany_name()+" ":"")+
+                                    (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+                        }
+
+                    //是否认证
+                    if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                        Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                        drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                        nick.setCompoundDrawables(null,null,drawable,null);
+                    }else{
+                        nick.setCompoundDrawables(null,null,null,null);
+                    }
+                }
+
+
+
+
+
+
+
                 ImageUtil.loadByDefaultHead(mContext,comment.getUser_info().getAvatar(),helper.getView(R.id.head_icon));
 
                 getCircleReply(helper,comment);

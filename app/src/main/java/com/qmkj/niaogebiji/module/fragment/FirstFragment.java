@@ -60,6 +60,9 @@ import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
 import com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3;
 import com.socks.library.KLog;
+import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
@@ -136,7 +139,6 @@ public class FirstFragment extends BaseLazyFragment {
     private int pageSize = 10;
     private MoringIndexBean.MoringBean mMoringBean;
 
-
     //适配器
     ToolItemAdapter mToolItemAdapter;
     //组合集合
@@ -167,6 +169,7 @@ public class FirstFragment extends BaseLazyFragment {
     @Override
     public void onResume() {
         super.onResume();
+//        KLog.d("tag","是否是vip [0 不是  1 是] " + mUserInfo.getIs_vip());
         if(!TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
             toVip.setVisibility(View.GONE);
         }else{
@@ -178,8 +181,6 @@ public class FirstFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
         String [] titile = new String[]{"关注","干货","活动"};
-
-
 
         mUserInfo = StringUtil.getUserInfoBean();
 
@@ -231,6 +232,7 @@ public class FirstFragment extends BaseLazyFragment {
 
         }else{
             //resume
+//            KLog.d("tag","是否是vip [0 不是  1 是] " + mUserInfo.getIs_vip());
             if(!TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
                 toVip.setVisibility(View.GONE);
             }else{
@@ -291,15 +293,36 @@ public class FirstFragment extends BaseLazyFragment {
 
             MobclickAgentUtils.onEvent("index_tools_tools" + (position + 1) + "_2_0_0");
 
+            // TODO 2020.1.6 这个竟然没弄
             ToollndexBean temp =  mToolItemAdapter.getData().get(position);
             if("0".equals(temp.getType())){
+                //外链
+                String link = temp.getUrl();
+                if(!TextUtils.isEmpty(link)){
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),link,"");
+                }
             }else if("1".equals(temp.getType())){
+                //小程序
+                String appid = temp.getUrl();
+                if(!TextUtils.isEmpty(appid)){
+                    toJumpWX(appid);
+                }
             }else{
                 UIHelper.toToolEditActivity(getActivity());
             }
         });
     }
 
+    private void toJumpWX(String appId) {
+        //小程序跳转
+        IWXAPI api = WXAPIFactory.createWXAPI(getActivity(), Constant.WXAPPKEY);
+        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
+        req.userName = appId; // 填小程序原始id -- 后台传递的
+        req.path = ""; //拉起小程序页面的可带参路径，不填默认拉起小程序首页 /pages/media是固定的
+        req.miniprogramType = Integer.valueOf("0");// 可选打开 开发版，体验版 和 正式版0
+        api.sendReq(req);
+
+    }
 
 
     private void toolindex() {

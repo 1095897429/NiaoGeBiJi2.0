@@ -157,7 +157,6 @@ public class ToolFragment extends BaseLazyFragment {
             }else{
                 UIHelper.toToolEditActivity(getActivity());
             }
-
         });
     }
 

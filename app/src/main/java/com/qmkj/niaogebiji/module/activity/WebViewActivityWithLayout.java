@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -261,12 +262,13 @@ public class WebViewActivityWithLayout extends WebViewAllActivity {
     }
 
 
+
     @OnClick({R.id.iv_back,
             R.id.tv_right,
-//            R.id.tv_done,
             R.id.tv_zengsong,
             R.id.tv_canccle
     })
+    @Override
     public void clicks(View view){
         switch (view.getId()){
             case R.id.tv_canccle:
@@ -1154,10 +1156,14 @@ public class WebViewActivityWithLayout extends WebViewAllActivity {
 
 
 
-
-    /** --------------------------------- 文章 二级评论列表 及 点击事件 结束---------------------------------*/
-
-
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webview.canGoBack()) {
+            webview.goBack();// 返回前一个页面
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 
 

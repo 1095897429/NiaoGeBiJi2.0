@@ -186,8 +186,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
-                    HomeActivity.mMyBinder.pauseMusic();
-                    pause();
+                    if(HomeActivity.mMyBinder != null){
+                        HomeActivity.mMyBinder.pauseMusic();
+                        pause();
+                    }
                 });
 
 

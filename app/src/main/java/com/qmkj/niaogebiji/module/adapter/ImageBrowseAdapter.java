@@ -79,13 +79,13 @@ public class ImageBrowseAdapter extends PagerAdapter {
         //设置最大缩放倍数
         photoView.setMaxScale(2.5f);
         //参数设置
-        RequestOptions requestOptions = new RequestOptions()
-                .placeholder(R.mipmap.img_loading)
-                .error(R.mipmap.image_error);
+//        RequestOptions requestOptions = new RequestOptions()
+//                .placeholder(R.mipmap.img_loading)
+//                .error(R.mipmap.image_error);
         //加载图片
         Glide.with(activity)
                 .load(imageList.get(position))
-                .apply(requestOptions)
+                .placeholder(R.mipmap.img_loading)
                 .into(photoView);
         //点击事件，返回
         photoView.setOnClickListener(v -> {

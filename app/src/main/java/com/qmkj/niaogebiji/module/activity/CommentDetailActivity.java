@@ -53,6 +53,7 @@ import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.RefreshCircleDetailCommentEvent;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
@@ -434,7 +435,29 @@ public class CommentDetailActivity extends BaseActivity {
         //设值
         hint_text.setHint("回复 " + superiorComment.getUser_info().getName());
         comment_num_second.setText(superiorComment.getComment_num() + "条回复");
-        nickname_second.setText(superiorComment.getUser_info().getName());
+
+        User_info temp = superiorComment.getUser_info();
+        if(null != temp){
+            if(!StringUtil.checkNull((temp.getCompany_name()))
+                    && !StringUtil.checkNull((temp.getPosition()))){
+                nickname_second.setText(temp.getName() + " TA 还未职业认证");
+            }else{
+                nickname_second.setText(temp.getName() +  " " + (StringUtil.checkNull((temp.getCompany_name()))?temp.getCompany_name() + " ":"") +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+            }
+
+
+            //是否认证
+            if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                nickname_second.setCompoundDrawables(null,null,drawable,null);
+            }else{
+                nickname_second.setCompoundDrawables(null,null,null,null);
+            }
+        }
+
+
         comment_text_second.setText(superiorComment.getComment());
         ImageUtil.load(this,superiorComment.getUser_info().getAvatar(),head_second_icon);
         //发布时间
@@ -442,7 +465,6 @@ public class CommentDetailActivity extends BaseActivity {
             String s =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(superiorComment.getCreated_at()) * 1000L);
             time_publish_second.setText(s);
         }
-        nickname_second.setText(superiorComment.getUser_info().getName());
         comment_text_second.setText(superiorComment.getComment());
         ImageUtil.loadByDefaultHead(this,superiorComment.getUser_info().getAvatar(),head_second_icon);
         zanChange(zan_second_num_second,zan_second_img_second,superiorComment.getLike_num(),superiorComment.getIs_like());
@@ -654,7 +676,8 @@ public class CommentDetailActivity extends BaseActivity {
             blogCommentDetail(oneTempComment.getId());
         });
         mCommentAdapter.setMyPotion(myPotion);
-        mCommentAdapter.setCircleBean(mCircleBean);
+        //TODO 2020.1.8 不能再这里写啊，写了后面删除的话会有null强退
+//        mCommentAdapter.setCircleBean(mCircleBean);
         mRecyclerView.setAdapter(mCommentAdapter);
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -880,6 +903,9 @@ public class CommentDetailActivity extends BaseActivity {
                         if(mCommentAdapter == null){
                             initLayout();
                         }
+                        //需重新设置
+                        mCommentAdapter.setCircleBean(mCircleBean);
+
                         getBlogCommentList(mCircleBean.getId());
                     }
 
@@ -924,13 +950,23 @@ public class CommentDetailActivity extends BaseActivity {
             ImageUtil.load(mContext,StringUtil.getUserInfoBean().getAvatar(),user_head_icon);
             //职位
 
-            if("1".equals(mCircleBean.getUser_info().getAuth_email_status()) ||
-                    "1".equals(mCircleBean.getUser_info().getAuth_card_status())){
-                sender_tag.setText( (TextUtils.isEmpty(mCircleBean.getUser_info().getCompany_name())?"":mCircleBean.getUser_info().getCompany_name()) +
-                        (TextUtils.isEmpty(mCircleBean.getUser_info().getPosition())?"":mCircleBean.getUser_info().getPosition()));
-            }else{
+//            if("1".equals(mCircleBean.getUser_info().getAuth_email_status()) ||
+//                    "1".equals(mCircleBean.getUser_info().getAuth_card_status())){
+//                sender_tag.setText( (TextUtils.isEmpty(mCircleBean.getUser_info().getCompany_name())?"":mCircleBean.getUser_info().getCompany_name()) +
+//                        (TextUtils.isEmpty(mCircleBean.getUser_info().getPosition())?"":mCircleBean.getUser_info().getPosition()));
+//            }else{
+//                sender_tag.setText("TA 还未职业认证");
+//            }
+
+            //TODO 2020.1.7 根据返回的内容
+            if(!StringUtil.checkNull((mCircleBean.getUser_info().getCompany_name()))
+                    && !StringUtil.checkNull((mCircleBean.getUser_info().getPosition()))){
                 sender_tag.setText("TA 还未职业认证");
+            }else{
+                sender_tag.setText( (StringUtil.checkNull((mCircleBean.getUser_info().getCompany_name()))?mCircleBean.getUser_info().getCompany_name() + " ":"") +
+                        (TextUtils.isEmpty(mCircleBean.getUser_info().getPosition())?"":mCircleBean.getUser_info().getPosition()));
             }
+
 
 
             //是否认证
@@ -957,6 +993,7 @@ public class CommentDetailActivity extends BaseActivity {
             //评论数
             if(!TextUtils.isEmpty(mCircleBean.getComment_num()) && !"0".equals(mCircleBean.getComment_num())){
                 first_comment_num.setText("全部" + mCircleBean.getComment_num() + "条评论");
+                first_comment_num.setVisibility(View.VISIBLE);
             }
 
             //点赞事件

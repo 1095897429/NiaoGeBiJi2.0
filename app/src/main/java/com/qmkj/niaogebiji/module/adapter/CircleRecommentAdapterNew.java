@@ -142,12 +142,22 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
 
-            if("1".equals(userInfo.getAuth_email_status()) ||
-                "1".equals(userInfo.getAuth_card_status())){
-                sender_tag.setText( (StringUtil.checkNull((userInfo.getCompany_name()))?userInfo.getCompany_name():"") +
-                        (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
-            }else{
+            //之前的逻辑
+//            if("1".equals(userInfo.getAuth_email_status()) ||
+//                "1".equals(userInfo.getAuth_card_status())){
+//                sender_tag.setText( (StringUtil.checkNull((userInfo.getCompany_name()))?userInfo.getCompany_name():"") +
+//                        (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
+//            }else{
+//                sender_tag.setText("TA 还未职业认证");
+//            }
+
+            //TODO 2020.1.7 根据返回的内容
+            if(!StringUtil.checkNull((userInfo.getCompany_name()))
+                && !StringUtil.checkNull((userInfo.getPosition()))){
                 sender_tag.setText("TA 还未职业认证");
+            }else{
+                sender_tag.setText( (StringUtil.checkNull((userInfo.getCompany_name()))?userInfo.getCompany_name() + " ":"") +
+                        (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
             }
 
 
@@ -222,18 +232,37 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 trans_msg.setText(item.getP_blog().getBlog());
             }
 
-            //
+
             if(item.getP_blog() != null && item.getP_blog().getP_user_info() != null){
                 CircleBean.P_user_info temp =item.getP_blog().getP_user_info();
                 TextView  transfer_zf_author  = helper.getView(R.id.transfer_zf_author);
 
-                if("1".equals(temp.getAuth_email_status()) ||
-                        "1".equals(temp.getAuth_card_status())){
-                    transfer_zf_author.setText(temp.getName() +(TextUtils.isEmpty(temp.getCompany_name())?"":item.getCompany_name()) +
-                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+//                if("1".equals(temp.getAuth_email_status()) ||
+//                        "1".equals(temp.getAuth_card_status())){
+//                    transfer_zf_author.setText(temp.getName() +(TextUtils.isEmpty(temp.getCompany_name())?"":item.getCompany_name() + " ") +
+//                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+//                }else{
+//                    transfer_zf_author.setText(temp.getName() + "  TA 还未职业认证");
+//                }
+
+                //TODO 2020.1.8 这处没改
+                if(!StringUtil.checkNull((temp.getCompany_name()))
+                        && !StringUtil.checkNull((temp.getPosition()))){
+                    transfer_zf_author.setText(temp.getName() + " TA 还未职业认证");
                 }else{
-                    transfer_zf_author.setText(temp.getName() + "  TA 还未职业认证");
+                    transfer_zf_author.setText(temp.getName() + " " + (StringUtil.checkNull((temp.getCompany_name()))?temp.getCompany_name() + " ":"") +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
                 }
+
+                //是否认证
+                if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                    transfer_zf_author.setCompoundDrawables(null,null,drawable,null);
+                }else{
+                    transfer_zf_author.setCompoundDrawables(null,null,null,null);
+                }
+
 
             }
         }

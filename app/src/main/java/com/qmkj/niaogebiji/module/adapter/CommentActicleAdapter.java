@@ -84,11 +84,31 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         //职位
         TextView sender_tag = helper.getView(R.id.name_tag);
 
-        if("1".equals(item.getAuth_status())){
-            sender_tag.setText((TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
-                    (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+//        if("1".equals(item.getAuth_status())){
+//            sender_tag.setText((TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
+//                    (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+//        }else{
+//            sender_tag.setText("TA还未职业认证");
+//        }
+
+
+
+        if(!StringUtil.checkNull((item.getCompany_name()))
+                && !StringUtil.checkNull((item.getPosition()))){
+            sender_tag.setText("TA 还未职业认证");
         }else{
-            sender_tag.setText("TA还未职业认证");
+            sender_tag.setText( (StringUtil.checkNull((item.getCompany_name()))?item.getCompany_name()+" ":"")+
+                    (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+        }
+
+
+        //是否认证
+        if("1".equals(item.getAuth_status())){
+            Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+            drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+            sender_tag.setCompoundDrawables(null,null,drawable,null);
+        }else{
+            sender_tag.setCompoundDrawables(null,null,null,null);
         }
 
 

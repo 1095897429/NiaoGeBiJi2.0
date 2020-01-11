@@ -101,12 +101,21 @@ public class CircleSearchAdapterNew extends BaseQuickAdapter<CircleBean, BaseVie
 
             //名字
             TextView sender_name = helper.getView(R.id.sender_name);
-            sender_name.setText(item.getName());
+            sender_name.setText(item.getName() + " ");
             //职位
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
-            sender_tag.setText( (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) +
-                (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+
+        //TODO 2020.1.7 根据返回的内容
+            if(!StringUtil.checkNull((item.getCompany_name()))
+                    && !StringUtil.checkNull((item.getPosition()))){
+                sender_tag.setText("TA 还未职业认证");
+            }else{
+                sender_tag.setText( (StringUtil.checkNull((item.getCompany_name()))?item.getCompany_name() + " ":"") +
+                        (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
+            }
+
+
             //是否认证
             if("1".equals(item.getIs_auth())){
                 Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
@@ -86,6 +88,33 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected int getLayoutId() {
         return R.layout.activity_login;
+    }
+
+
+    @Override
+    public void initData() {
+        // click logo button 10 times continuously to open com.android.launcher3
+        findViewById(R.id.part1111).setOnClickListener(v -> {
+            long currentClickTime = SystemClock.uptimeMillis();
+            long elapsedTime = currentClickTime - mLastClickTime;
+            mLastClickTime = currentClickTime;
+
+            if (elapsedTime < MIN_CLICK_INTERVAL) {
+                ++mSecretNumber;
+                if (9 == mSecretNumber) {
+                    try {
+                        // to do 在这处理你想做的事件
+                        phoneLogin.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        Log.i("tag", e.toString());
+                    }
+                }
+            } else {
+                mSecretNumber = 0;
+            }
+
+        });
+
     }
 
     @SuppressLint("CheckResult")
@@ -305,6 +334,14 @@ public class LoginActivity extends BaseActivity {
         iosAlertDialog.show();
 
     }
+
+
+
+
+    private int mSecretNumber = 0;
+    private static final long MIN_CLICK_INTERVAL = 600;
+    private long mLastClickTime;
+
 
 
 }

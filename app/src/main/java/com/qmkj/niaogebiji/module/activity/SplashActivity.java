@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -18,14 +19,20 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.huawei.android.hms.agent.HMSAgent;
+import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.LaunchPermissDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidPhoneDialog;
 import com.qmkj.niaogebiji.common.dialog.PermissForbidStorageDialog;
+import com.qmkj.niaogebiji.common.dialog.SecretAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.ChannelUtil;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.socks.library.KLog;
 
 import java.util.ArrayList;
@@ -85,6 +92,15 @@ public class SplashActivity extends BaseActivity {
             finish();
             return;
         }
+
+
+        //TODO 2020.1.10 应用宝渠道首个界面显示隐私弹框
+        boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
+        if (!isAgree) {
+            showSecretDialog(this);
+        }
+
+
     }
 
 
@@ -122,11 +138,15 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(isJumpSet || continuerequest){
-            isJumpSet = false;
-            continuerequest = true;
-            checkAppPermission();
+        boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
+        if (isAgree) {
+            if(isJumpSet || continuerequest){
+                isJumpSet = false;
+                continuerequest = true;
+                checkAppPermission();
+            }
         }
+
     }
 
     private void checkAppPermission() {
@@ -356,6 +376,31 @@ public class SplashActivity extends BaseActivity {
         if(null != animationDrawable){
             animationDrawable.stop();
         }
+    }
+
+
+
+    private void showSecretDialog(Context ctx) {
+        final SecretAlertDialog iosAlertDialog = new SecretAlertDialog(ctx).builder();
+        iosAlertDialog.setMsg(ctx.getResources().getString(R.string.secret_hint))
+                .setPositiveButton("同意", v -> {
+                    SPUtils.getInstance().put("isAgree", true);
+                    KLog.d("tag", "同意");
+                    MobclickAgentUtils.onEvent(UmengEvent.agreement_agree_2_0_0);
+                    //同意  检查权限
+                    if(isJumpSet || continuerequest){
+                        isJumpSet = false;
+                        continuerequest = true;
+                        checkAppPermission();
+                    }
+                })
+                .setNegativeButton("不同意", v -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.agreement_disagree_2_0_0);
+                    KLog.d("tag","弹框内部做了二次弹框的操作");
+                }).setCanceledOnTouchOutside(false);
+        iosAlertDialog.setCancelable(false);
+        iosAlertDialog.show();
+
     }
 
 

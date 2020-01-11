@@ -89,17 +89,26 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         //是否认证
         if("1".equals(item.getUser_info().getAuth_email_status())||
             "1".equals(item.getUser_info().getAuth_card_status())){
-            User_info temp = item.getUser_info();
             Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
             drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
             sender_tag.setCompoundDrawables(null,null,drawable,null);
-            sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
-                    (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+
         }else{
             sender_tag.setCompoundDrawables(null,null,null,null);
             sender_tag.setText("");
         }
 
+
+        User_info temp = item.getUser_info();
+        if(null != temp){
+            if(!StringUtil.checkNull((temp.getCompany_name()))
+                    && !StringUtil.checkNull((temp.getPosition()))){
+                sender_tag.setText("TA 还未职业认证");
+            }else{
+                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name() + " ") +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+            }
+        }
 
 
         ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
@@ -244,6 +253,9 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
+
+                        //竟然mCircleBean会出现""的情况
+
                         //手动添加 评论数1
                         mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) - 1) + "");
                         EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),

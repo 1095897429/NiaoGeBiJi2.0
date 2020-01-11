@@ -33,11 +33,11 @@ public class Constant {
     //测试环境
 //    public static final String TEST_URL = "http://apph5.xy860.com/";
     //测试正式
-    public static final String TEST_URL = "http://apph5.niaogebiji.com/";
+//    public static final String TEST_URL = "http://apph5.niaogebiji.com/";
 
 
     //正式环境
-    public static final String RELEASE_URL = "http://apph5.niaogebiji.com/";
+//    public static final String RELEASE_URL = "http://apph5.niaogebiji.com/";
 
     //文章分享
     public static boolean isActicleShare = false;

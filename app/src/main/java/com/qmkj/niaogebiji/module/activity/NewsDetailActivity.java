@@ -76,6 +76,7 @@ import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
@@ -1991,12 +1992,32 @@ public class NewsDetailActivity extends BaseActivity {
         hint_text.setHint("回复 " + superiorComment.getUsername());
 
 
+//        if("1".equals(superiorComment.getAuth_status())){
+//            nickname_second.setText(superiorComment.getUsername() + (TextUtils.isEmpty(superiorComment.getCompany_name())?"":superiorComment.getCompany_name()) + " "+
+//                    (TextUtils.isEmpty(superiorComment.getPosition())?"":superiorComment.getPosition()));
+//        }else{
+//            nickname_second.setText(superiorComment.getUsername() + " TA还未职业认证");
+//        }
+
+        //TODO 2020.1.7 有一个则显示
+        if(!StringUtil.checkNull((superiorComment.getCompany_name()))
+                    && !StringUtil.checkNull((superiorComment.getPosition()))){
+                nickname_second.setText(superiorComment.getUsername() + " TA 还未职业认证");
+            }else{
+                nickname_second.setText(superiorComment.getUsername() +  " " + (StringUtil.checkNull((superiorComment.getCompany_name()))?superiorComment.getCompany_name()+" ":"") +
+                        (TextUtils.isEmpty(superiorComment.getPosition())?"":superiorComment.getPosition()));
+            }
+
+
+        //是否认证
         if("1".equals(superiorComment.getAuth_status())){
-            nickname_second.setText(superiorComment.getUsername() + (TextUtils.isEmpty(superiorComment.getCompany_name())?"":superiorComment.getCompany_name()) +
-                    (TextUtils.isEmpty(superiorComment.getPosition())?"":superiorComment.getPosition()));
+            Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+            drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+            nickname_second.setCompoundDrawables(null,null,drawable,null);
         }else{
-            nickname_second.setText(superiorComment.getUsername() + " TA还未职业认证");
+            nickname_second.setCompoundDrawables(null,null,null,null);
         }
+
 
         comment_num_second.setText("评论详情");
         ImageUtil.loadByDefaultHead(this,superiorComment.getAvatar(),head_second_icon);

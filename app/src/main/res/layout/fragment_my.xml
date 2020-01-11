@@ -362,7 +362,7 @@
                         android:layout_centerVertical="true"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="常见问题"
+                        android:text="常见问题 与 用户协议"
                         android:drawablePadding="8dp"
                         android:gravity="center|left"
                         android:drawableLeft="@mipmap/icon_my_que"

@@ -46,6 +46,7 @@ import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.ProfessionEvent;
@@ -205,7 +206,7 @@ public class UserInfoActivity extends BaseActivity {
                 sender_tag.setCompoundDrawables(null,null,drawable,null);
                 sender_tag.setVisibility(View.VISIBLE);
                 senderverticity.setVisibility(View.GONE);
-                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
+                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()+" ") +
                         (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
             }else{
                 sender_tag.setVisibility(View.GONE);
@@ -219,16 +220,41 @@ public class UserInfoActivity extends BaseActivity {
                 });
             }
         }else{
-            if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
-                sender_tag.setVisibility(View.VISIBLE);
-                senderverticity.setVisibility(View.GONE);
-                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
-                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
-            }else{
-                sender_tag.setVisibility(View.GONE);
-                senderverticity.setText("未认证");
-                senderverticity.setVisibility(View.VISIBLE);
+
+            if(null != temp){
+                if(!StringUtil.checkNull((temp.getCompany_name()))
+                        && !StringUtil.checkNull((temp.getPosition()))){
+                    senderverticity.setText("未认证");
+                    sender_tag.setVisibility(View.GONE);
+                    senderverticity.setVisibility(View.VISIBLE);
+                }else{
+                    sender_tag.setVisibility(View.VISIBLE);
+                    senderverticity.setVisibility(View.GONE);
+                    sender_tag.setText((StringUtil.checkNull((temp.getCompany_name()))?temp.getCompany_name() + " ":"") +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+                }
+
+
+                //是否认证
+                if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                    sender_tag.setCompoundDrawables(null,null,drawable,null);
+                }else{
+                    sender_tag.setCompoundDrawables(null,null,null,null);
+                }
             }
+
+//            if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+//                sender_tag.setVisibility(View.VISIBLE);
+//                senderverticity.setVisibility(View.GONE);
+//                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) +
+//                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+//            }else{
+//                sender_tag.setVisibility(View.GONE);
+//                senderverticity.setText("未认证");
+//                senderverticity.setVisibility(View.VISIBLE);
+//            }
             //别人
             showStateByFollow(temp.getFollow_status());
             iv_right.setVisibility(View.VISIBLE);

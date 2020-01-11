@@ -86,8 +86,10 @@
 
                         <TextView
                             android:id="@+id/nickname_second"
-                            android:text="张俊介  上海青墨网络科技有限公司产品经理"
+                            android:text="张俊介  上海青墨网络科技有限公司产品经理上海青墨网络科技有限公司产品经理"
                             android:textSize="13sp"
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:textColor="@color/text_second_color"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />

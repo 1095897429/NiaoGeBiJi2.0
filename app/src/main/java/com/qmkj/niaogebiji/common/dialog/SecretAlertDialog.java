@@ -202,10 +202,11 @@ public class SecretAlertDialog {
         iosAlertDialog2.setTitle("您需要同意本注册协议\n和隐私政策才能使用").setMsg2(mContext.getResources().getString(R.string.secret_hint2))
                 .setPositiveButton("同意并继续", v -> {
                     iosAlertDialog2.dismiss();
-                }).setNegativeButton("不同意并退出", v -> {
-            iosAlertDialog2.dismiss();
-            mDialog.dismiss();
 
+                }).setNegativeButton("不同意并退出", v -> {
+                    iosAlertDialog2.dismiss();
+                    mDialog.dismiss();
+                    ((Activity)mContext).finish();
         }).setCanceledOnTouchOutside(false);
         iosAlertDialog2.setCancelable(false);
         iosAlertDialog2.show();

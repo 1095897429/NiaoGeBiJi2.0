@@ -254,6 +254,7 @@
                     android:layout_height="match_parent" />
 
                 <TextView
+                    android:id="@+id/send_num"
                     android:textSize="13sp"
                     android:layout_centerVertical="true"
                     android:layout_centerInParent="true"

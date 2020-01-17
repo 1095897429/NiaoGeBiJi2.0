@@ -123,9 +123,13 @@ public class CategoryActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.toDown:
+
                 finish();
+
                 //参数一：Activity1进入动画，参数二：Activity2退出动画
                 overridePendingTransition(R.anim.activity_alpha_enter, R.anim.activity_exit_bottom);
+
+
                 break;
             default:
         }

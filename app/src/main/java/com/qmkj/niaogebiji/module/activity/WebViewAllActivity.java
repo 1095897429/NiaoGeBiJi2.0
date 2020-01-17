@@ -311,8 +311,8 @@ public class WebViewAllActivity extends BaseActivity {
                     }else{
                         name1 = mUserInfo.getNickname();
                     }
-                    bean1.setTitle("你的好友" + name1 + "分享给你VIP资格，价值88元！");
-                    bean1.setContent("23:59分内可领取，过时作废！6大权益免费领取，还不快来");
+                    bean1.setTitle("你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！");
+                    bean1.setContent("1小时内领取，过时作废！六大权益免费领取，还不快来");
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -329,13 +329,21 @@ public class WebViewAllActivity extends BaseActivity {
                     }else{
                         name1 = mUserInfo2.getNickname();
                     }
-                    bean.setTitle("你的好友" + name1 + "分享给你VIP资格，价值88元！");
-                    bean.setContent("23:59分内可领取，过时作废！6大权益免费领取，还不快来");
+                    bean.setTitle("你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！");
+                    bean.setContent("1小时内领取，过时作废！六大权益免费领取，还不快来");
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 2:
                     RegisterLoginBean.UserInfo mUserInf= StringUtil.getUserInfoBean();
-                    StringUtil.copyLink(mUserInf.getInvite_url());
+
+                    if(!TextUtils.isEmpty(mUserInf.getName())){
+                        name1 = mUserInf.getName();
+                    }else{
+                        name1 = mUserInf.getNickname();
+                    }
+
+                    String result = "你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！";
+                    StringUtil.copyLink(result + "\n" + mUserInf.getInvite_url());
                     break;
                 default:
             }

@@ -124,7 +124,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
-                KLog.d("tag","小米的RegID "  + mRegId);
+//                KLog.d("tag","小米的RegID "  + mRegId);
                 log = context.getString(R.string.register_success);
             } else {
                 log = context.getString(R.string.register_fail);

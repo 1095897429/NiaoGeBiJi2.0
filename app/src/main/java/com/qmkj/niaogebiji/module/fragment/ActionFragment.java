@@ -3,6 +3,9 @@ package com.qmkj.niaogebiji.module.fragment;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +49,15 @@ import io.reactivex.schedulers.Schedulers;
  * 描述:活动fragment
  */
 public class ActionFragment extends BaseLazyFragment {
+
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+    @BindView(R.id.iv_empty)
+    ImageView iv_empty;
+
+    @BindView(R.id.tv_empty)
+    TextView tv_empty;
 
     private int page = 1;
     //活动类型：0-全部，1-线上，2-线下
@@ -111,7 +123,18 @@ public class ActionFragment extends BaseLazyFragment {
                         if(null != mActionBean){
                             mAct_lists = mActionBean.getAct_list();
                             if(page == 1){
-                                mActionAdapter.setNewData(mAct_lists);
+
+                                if(mAct_lists.isEmpty()){
+                                    ll_empty.setVisibility(View.VISIBLE);
+                                    iv_empty.setImageResource(R.mipmap.icon_empty_article);
+                                    tv_empty.setText("暂无活动");
+                                    mRecyclerView.setVisibility(View.GONE);
+                                }else{
+                                    mRecyclerView.setVisibility(View.VISIBLE);
+                                    ll_empty.setVisibility(View.GONE);
+                                    mActionAdapter.setNewData(mAct_lists);
+                                }
+
                             }else{
                                 if(mAct_lists != null && !mAct_lists.isEmpty()){
                                     mActionAdapter.addData(mAct_lists);

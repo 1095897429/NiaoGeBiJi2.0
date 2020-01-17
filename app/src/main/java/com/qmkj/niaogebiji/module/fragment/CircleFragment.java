@@ -70,6 +70,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -114,6 +115,10 @@ public class CircleFragment extends BaseLazyFragment {
 
     @BindView(R.id.search_first)
     TextView search_first;
+
+    @BindView(R.id.send_num)
+    TextView send_num;
+
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -317,10 +322,11 @@ public class CircleFragment extends BaseLazyFragment {
             }
         }
 
-
+        //有图则 赋值 resultPic
         if(!TextUtils.isEmpty(picbycomma.toString())){
+            KLog.d("tag","picbycomma 值 是：" + picbycomma.toString());
             resultPic =  picbycomma.substring(0,picbycomma.length()  - 1);
-            KLog.d("tag","以逗号分隔：" + resultPic);
+            KLog.d("tag","去掉最后一个,显示的值：" + resultPic);
         }else{
             resultPic = "";
         }
@@ -497,6 +503,7 @@ public class CircleFragment extends BaseLazyFragment {
                 Message message = Message.obtain();
                 message.what = QI_NIU_UPLOAD_OK;
                 handler.sendMessage(message);
+                //上传成功一个，就添加到qiniuPic中去
                 qiniuPic.append(key).append(",");
                 tempProgress += 100;
             }
@@ -531,7 +538,7 @@ public class CircleFragment extends BaseLazyFragment {
 
                         if(!TextUtils.isEmpty(qiniuPic.toString())){
                             lashPic =  qiniuPic.substring(0,qiniuPic.length()  - 1);
-                            KLog.d("tag","以逗号分隔：" + lashPic);
+                            KLog.d("tag","构建七牛的图片路径是：" + lashPic);
                         }
 
                         createBlog();
@@ -547,7 +554,7 @@ public class CircleFragment extends BaseLazyFragment {
                     //网络正常，显示进度
                     ll_circle_send.setVisibility(View.VISIBLE);
                     part11.setVisibility(View.VISIBLE);
-                    //如果没有图片，则直接上传，不需要获取tonken
+                    //① 如果没有图片，显示属性动画
                     if(TextUtils.isEmpty(resultPic)){
                         setAnimation(progressBar);
                         createBlog();
@@ -566,11 +573,11 @@ public class CircleFragment extends BaseLazyFragment {
 
     boolean isAnimPause;
     ValueAnimator animator;
+
     private void setAnimation(ProgressBar view) {
         animator = ValueAnimator.ofInt(0, 100).setDuration(1000);
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(valueAnimator -> {
-//            KLog.d("tag",valueAnimator.getAnimatedValue() + "");
             view.setProgress((Integer) valueAnimator.getAnimatedValue());
         });
         animator.addListener(new AnimatorListenerAdapter() {
@@ -588,9 +595,13 @@ public class CircleFragment extends BaseLazyFragment {
                     part11.setVisibility(View.GONE);
                     part22.setVisibility(View.GONE);
                     part33.setVisibility(View.VISIBLE);
+                    Random rand = new Random();
+                    int temp = rand.nextInt(5000) + 5000;
+                    send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
                     //发送事件去更新
                     EventBus.getDefault().post(new SendOkCircleEvent());
                     removeTempMsg();
+                    cleanData();
                     new Handler().postDelayed(() -> {
                         hideState();
                     },2000);
@@ -661,20 +672,22 @@ public class CircleFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse response) {
                         KLog.d("tag","response " + response.getReturn_code());
 
-
-                        if(TextUtils.isEmpty(resultPic)){
+                        //针对有图片特殊处理
+                        if(!TextUtils.isEmpty(resultPic)){
                             ll_circle_send.setVisibility(View.VISIBLE);
                             part33.setVisibility(View.VISIBLE);
-                        }else{
-                            //发送事件去更新
-                            EventBus.getDefault().post(new SendOkCircleEvent());
-                            removeTempMsg();
-
-                            new Handler().postDelayed(() -> {
+                            Random rand = new Random();
+                            int temp = rand.nextInt(5000) + 5000;
+                            send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
+                             new Handler().postDelayed(() -> {
                                 hideState();
                             },2000);
+                            //发送事件去更新
+                            EventBus.getDefault().post(new SendOkCircleEvent());
                         }
 
+
+                        removeTempMsg();
                         cleanData();
 
 

@@ -126,6 +126,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+
         initSamrtLayout();
         initLayout();
     }
@@ -154,7 +155,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<FristActionBean> response) {
-
+                        KLog.d("tag","到了这里222");
                         if(null != smartRefreshLayout){
                             mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
@@ -169,6 +170,10 @@ public class FirstItemFragment extends BaseLazyFragment {
                         if(null != smartRefreshLayout){
                             mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
+                        }
+
+                        if(mFristActionBean != null && mFristActionBean.getActivity() != null){
+                            mFristActionBean.setActivity(null);
                         }
 
                         setActivityData();
@@ -248,11 +253,10 @@ public class FirstItemFragment extends BaseLazyFragment {
         RetrofitHelper.getApiService().recommendlist(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(new BaseObserver<HttpResponse<RecommendBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<RecommendBean> response) {
-
+                        KLog.d("tag","到了这里111");
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                             mIsRefreshing = false;
@@ -264,6 +268,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
                     @Override
                     public void onNetFail(String msg) {
+                        KLog.d("tag","到了这里000");
                         if(null != smartRefreshLayout){
                             mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
@@ -328,7 +333,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
 
             if(article_lists.size() > 2){
-                for (int i = 0 + 1; i < article_lists.size(); i++) {
+                for (int i = 0 + 2; i < article_lists.size() ; i++) {
                     itemBean = article_lists.get(i);
                     bean1 = new MultiNewsBean();
                     pic_type = article_lists.get(i).getPic_type();
@@ -352,7 +357,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                 bean1 = new MultiNewsBean();
                 bean1.setItemType(FirstItemNewAdapter.ACTIVITY_TYPE);
                 bean1.setFristActionBean(fristActionBean);
-                mAllList.add(5,bean1);
+                mAllList.add(3,bean1);
             }
 
             mFirstItemAdapter.setNewData(mAllList);

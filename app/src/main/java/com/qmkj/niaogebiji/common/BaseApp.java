@@ -155,7 +155,6 @@ public class BaseApp extends Application {
 
 
         PushClient.getInstance(getApplicationContext()).initialize();
-
         PushClient.getInstance(getApplicationContext()).turnOnPush(state -> {
             if (state != 0) {
                 KLog.d("tag","vivo 打开push异常[" + state + "]");

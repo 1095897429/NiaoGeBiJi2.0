@@ -69,6 +69,8 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
     ArrayList<MessageBean> list = new ArrayList<>();
     private Typeface typeface;
 
+    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
         switch (helper.getItemViewType()){
@@ -97,7 +99,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
 
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic(),helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
                 }
 
                 break;
@@ -127,9 +129,9 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
 
                 if(!TextUtils.isEmpty(bean3.getPic())){
-                    ImageUtil.load(mContext,bean3.getPic(),helper.getView(R.id.one_img_imgs));
-                    ImageUtil.load(mContext,bean3.getPic2(),helper.getView(R.id.two_img_imgs));
-                    ImageUtil.load(mContext,bean3.getPic3(),helper.getView(R.id.three_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic2() + scaleSize,helper.getView(R.id.two_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic3() + scaleSize,helper.getView(R.id.three_img_imgs));
                 }
 
                 break;
@@ -145,7 +147,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 }
 
                 if(!TextUtils.isEmpty(beanLong.getPic())){
-                    ImageUtil.load(mContext,beanLong.getPic(),helper.getView(R.id.long_img_imgs));
+                    ImageUtil.load(mContext,beanLong.getPic() + scaleSize,helper.getView(R.id.long_img_imgs));
                 }
 
                 int act_state3= beanLong.getAct_state();
@@ -198,7 +200,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 FristActionBean t = item.getFristActionBean();
 
                 if(t.getActivity() != null && !TextUtils.isEmpty(t.getActivity().getPic())){
-                    ImageUtil.load(mContext,t.getActivity().getPic(),helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,t.getActivity().getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
 
                 }
 
@@ -216,7 +218,9 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                         if("1".equals(linkType)){
                             UIHelper.toWebViewActivity(mContext,jump_link);
                         }else if("2".equals(linkType)){
-                            UIHelper.toNewsDetailActivity(mContext,jump_link);
+                            if(!TextUtils.isEmpty(jump_link)){
+                                UIHelper.toNewsDetailActivity(mContext,jump_link);
+                            }
                         }
                     }
 

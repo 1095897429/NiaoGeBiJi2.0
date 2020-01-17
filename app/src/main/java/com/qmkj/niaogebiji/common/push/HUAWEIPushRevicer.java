@@ -18,10 +18,9 @@ public class HUAWEIPushRevicer extends PushReceiver {
 
     @Override
     public void onToken(Context context, String token, Bundle extras) {
-        //开发者自行实现Token保存逻辑。
-        KLog.e("tag","token "+ token);
-        String value =  extras.getString("");
-
+        //开发者自行实现Token保存逻辑。 测试时 可放出来
+//        KLog.e("tag","华为注册的token "+ token);
+//        String value =  extras.getString("");
     }
 
 

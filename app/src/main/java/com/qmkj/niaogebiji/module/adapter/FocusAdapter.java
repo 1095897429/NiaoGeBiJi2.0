@@ -54,7 +54,7 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
 
     FirstAuthorAdapter mFirstAuthorAdapter;
 
-
+    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
         switch (helper.getItemViewType()){
@@ -70,7 +70,7 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
                 }
 
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic(),helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
                 }
 
                 break;

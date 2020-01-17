@@ -246,7 +246,7 @@ public class SchoolFragment extends BaseLazyFragment {
                     return;
                 }
                 String link = StringUtil.getLink("wikilist/" + temp.getCate_id());
-                UIHelper.toWebViewActivityWithOnStep(getActivity(),link);
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),link,"");
             }
         });
 

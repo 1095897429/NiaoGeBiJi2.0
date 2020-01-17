@@ -38,6 +38,7 @@ import cn.jpush.android.service.JPushMessageReceiver;
  * 版本 1.0
  * 创建时间 2019-12-30
  * 描述:极光接收器
+ * 1.如果通过极光接入厂商，那么都会走这里； -- 统一了
  */
 public class JPushReceiver extends JPushMessageReceiver {
     private static final String TAG = "PushMessageReceiver";
@@ -105,6 +106,9 @@ public class JPushReceiver extends JPushMessageReceiver {
                 i = new Intent(context, WebViewActivityWithLayout.class);
                 i.putExtra("link",link);
                 i.putExtra("fromWhere","");
+            }else{
+                //没有额外数据的情况，跳转首页
+                i = new Intent(context,HomeActivity.class);
             }
 
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );

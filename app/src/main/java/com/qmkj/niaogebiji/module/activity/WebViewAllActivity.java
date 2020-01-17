@@ -54,6 +54,7 @@ import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
+import com.qmkj.niaogebiji.module.bean.MessageLinkBean;
 import com.qmkj.niaogebiji.module.bean.MessageUserBean;
 import com.qmkj.niaogebiji.module.bean.MessageVipBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
@@ -90,13 +91,11 @@ import io.reactivex.schedulers.Schedulers;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-20
- * 描述:在布局中添加了webview
- * 1.父类
- *
+ * 描述:
+ * 1.总的父类
+ * 2.在布局中添加了webview
  */
 public class WebViewAllActivity extends BaseActivity {
-
-
 
     @BindView(R.id.tv_title)
     TextView tv_title;
@@ -142,8 +141,6 @@ public class WebViewAllActivity extends BaseActivity {
     }
 
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void initView() {
@@ -176,16 +173,13 @@ public class WebViewAllActivity extends BaseActivity {
             tv_done.setVisibility(View.GONE);
         }
 
-
         if(TextUtils.isEmpty(link)){
             return;
         }
 
         initSetting();
 
-
         mMyWebChromeClient = new MyWebChromeClientJieTu(this,mProgressBar,tv_title);
-
 
         //js交互 -- 给js调用app的方法，xnNative是协调的对象
         webview.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
@@ -207,10 +201,6 @@ public class WebViewAllActivity extends BaseActivity {
                     }
                 }catch (Exception e){//防止crash (如果手机上没有安装处理某个scheme开头的url的APP, 会导致crash)
                     KLog.e("tag", "ActivityNotFoundException: " + e.getLocalizedMessage());
-                    //自行处理
-//                    if(!TextUtils.isEmpty(url) && url.startsWith("bdnetdisk")){
-//                        ToastUtils.showShort("您未安装相应的百度网盘app");
-//                    }
                     return true;//没有安装该app时，返回true，表示拦截自定义链接，但不跳转，避免弹出上面的错误页面
                 }
 
@@ -272,11 +262,9 @@ public class WebViewAllActivity extends BaseActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
-
         if(Constant.isReLoad){
             webview.reload();
             getUserInfo();
@@ -294,14 +282,12 @@ public class WebViewAllActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
                     @Override
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
-
                         RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
                         if(null != mUserInfo){
                             StringUtil.setUserInfoBean(mUserInfo);
                         }
                     }
                 });
-
     }
 
 
@@ -325,8 +311,8 @@ public class WebViewAllActivity extends BaseActivity {
                     }else{
                         name1 = mUserInfo.getNickname();
                     }
-                    bean1.setTitle("你的好友" + name1 + "分享给你VIP资格，价值99元！");
-                    bean1.setContent("23:59分内可领取，过时作废！8大权益免费领取，还不快来");
+                    bean1.setTitle("你的好友" + name1 + "分享给你VIP资格，价值88元！");
+                    bean1.setContent("23:59分内可领取，过时作废！6大权益免费领取，还不快来");
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -343,8 +329,8 @@ public class WebViewAllActivity extends BaseActivity {
                     }else{
                         name1 = mUserInfo2.getNickname();
                     }
-                    bean.setTitle("你的好友" + name1 + "分享给你VIP资格，价值99元！");
-                    bean.setContent("23:59分内可领取，过时作废！8大权益免费领取，还不快来");
+                    bean.setTitle("你的好友" + name1 + "分享给你VIP资格，价值88元！");
+                    bean.setContent("23:59分内可领取，过时作废！6大权益免费领取，还不快来");
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 2:
@@ -356,7 +342,6 @@ public class WebViewAllActivity extends BaseActivity {
         });
         alertDialog.show();
     }
-
 
     @OnClick({R.id.iv_back,
             R.id.tv_right,
@@ -439,9 +424,7 @@ public class WebViewAllActivity extends BaseActivity {
             mMyWebChromeClient.onActivityResult(requestCode, resultCode, data);
         }
         super.onActivityResult(requestCode, resultCode, data);
-
     }
-
 
 
     private ArrayList<ProBean> temp1;
@@ -575,7 +558,9 @@ public class WebViewAllActivity extends BaseActivity {
                         showShareVipDialog(userInfo);
                     }else if("toVipMember".equals(result)){
                         String link = StringUtil.getLink("vipmember");
-                        UIHelper.toWebViewActivityWithOnLayout(WebViewAllActivity.this,link,"vipmember");
+//                        UIHelper.toWebViewActivityWithOnLayout(WebViewAllActivity.this,link,"vipmember");
+                        UIHelper.toWebViewAllActivity(WebViewAllActivity.this,StringUtil.getLink("vipmember"),"vipmember");
+
                     }else if("toUserDetail".equals(result)){
                         //关注列表去跳转
                         MessageUserBean javaBean = JSON.parseObject(param, MessageUserBean.class);
@@ -588,7 +573,12 @@ public class WebViewAllActivity extends BaseActivity {
                         MessageVipBean.VipBean bean = javaBean.getParams();
                         String active =  bean.getActive();
                         UIHelper.toWebViewActivityWithOnLayout(WebViewAllActivity.this,StringUtil.getLink("questions/" + active),"questions");
-
+                    }else if("tolink".equals(result)){
+                        //工具中的跳转
+                        MessageLinkBean javaBean = JSON.parseObject(param, MessageLinkBean.class);
+                        MessageLinkBean.MessageLink bean = javaBean.getParams();
+                        String link =  bean.getLink();
+                        UIHelper.toWebViewActivityWithOnStep(WebViewAllActivity.this,link);
                     }
 
                 } catch (JSONException e) {
@@ -803,11 +793,7 @@ public class WebViewAllActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse<CommentCircleBean> response) {
                         oneTempComment = response.getReturn_data();
-
-
                         showCircleSheetDialog(oneTempComment);
-
-
                     }
                 });
 
@@ -879,8 +865,6 @@ public class WebViewAllActivity extends BaseActivity {
     private void zanChange(TextView zan_num,ImageView imageView, String good_num, int is_good) {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
         zan_num.setTypeface(typeface);
-
-
         if(StringUtil.checkNull(good_num)){
             if("0".equals(good_num)){
                 zan_num.setText("赞");
@@ -943,11 +927,6 @@ public class WebViewAllActivity extends BaseActivity {
     /** --------------------------------- 圈子处    二级评论列表 及 点击事件  结束---------------------------------*/
 
 
-
-
-
-
-
     /** --------------------------------- 文章 二级评论列表 及 点击事件 开始 ---------------------------------*/
 
     /** --------------------------------- 二级评论列表 及 点击事件---------------------------------*/
@@ -958,9 +937,7 @@ public class WebViewAllActivity extends BaseActivity {
     //二级评论 2
     CommentBean.FirstComment secondComment;
 
-
     private String newsId;
-
 
     private void getCommentDetail(String relatedid) {
         Map<String,String> map = new HashMap<>();
@@ -1266,13 +1243,6 @@ public class WebViewAllActivity extends BaseActivity {
 
 
     /** --------------------------------- 文章 二级评论列表 及 点击事件 结束---------------------------------*/
-
-
-
-
-
-
-
 
 
 

@@ -298,7 +298,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        getUserInfo();
+//        getUserInfo();
 
         mMyWebView = new MyWebView(getApplicationContext());
         mMyWebView.loadUrl(StringUtil.getLink("myactivity"));

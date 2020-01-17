@@ -26,13 +26,16 @@ public class FirstAuthorAdapter extends BaseQuickAdapter<IndexFocusBean.Auther_l
         super(R.layout.frist_focus_author_item,data);
     }
 
+
+    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+
     @Override
     protected void convert(BaseViewHolder helper, IndexFocusBean.Auther_list item) {
 
         //设置子View点击事件
         helper.addOnClickListener(R.id.focus).addOnClickListener(R.id.focus_aleady);
 
-        ImageUtil.load(mContext,item.getImg(),helper.getView(R.id.head_icon));
+        ImageUtil.load(mContext,item.getImg() + scaleSize,helper.getView(R.id.head_icon));
 
         helper.setText(R.id.name,item.getName());
 

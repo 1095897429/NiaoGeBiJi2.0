@@ -32,8 +32,8 @@ public class VivoMessageReceiver extends OpenClientPushMessageReceiver {
 
     @Override
     public void onReceiveRegId(Context context, String regId) {
-        String responseString = "onReceiveRegId regId = " + regId;
-        Log.d(TAG, responseString);
+        String responseString = "" + regId;
+        Log.d("tag", "vivo的id " + responseString);
         updateContent(responseString);
     }
 

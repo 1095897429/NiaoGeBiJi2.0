@@ -120,7 +120,7 @@ public class SettingActivity extends BaseActivity {
         userInfo = StringUtil.getUserInfoBean();
         //头像
         if(userInfo != null){
-            ImageUtil.load(mContext,userInfo.getAvatar(),head_icon);
+            ImageUtil.loadByDefaultHead(mContext,userInfo.getAvatar(),head_icon);
         }
 
         //昵称
@@ -365,6 +365,7 @@ public class SettingActivity extends BaseActivity {
         intent.putExtra("outputY", 200);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true);
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(FileHelper.getOutputEditImageFile(this)));
         //设置为不返回数据
         intent.putExtra("return-data", true);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.AboutUsActivity;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
@@ -89,6 +90,7 @@ public class UIHelper {
     /** 打开登录界面 */
     public static void toLoginActivity(Context ctx) {
         Intent intent = new Intent(ctx, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.startActivity(intent);
     }
 
@@ -465,5 +467,13 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+
+    //TODO 2020.1.16 统一的vip界面 -- 这样做的好处是改一处即可
+    public static void toVipActivity(Context ctx) {
+        Intent intent = new Intent(ctx, WebViewAllActivity.class);
+        intent.putExtra("link", StringUtil.getLink("vipmember"));
+        intent.putExtra("fromWhere","vipmember");
+        ctx.startActivity(intent);
+    }
 
 }

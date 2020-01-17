@@ -476,12 +476,18 @@ public static java.lang.String TABLENAME;
 -keep class com.bun.miitmdid.core.** {*;}
 
 #小米推送
-#-dontwarncom.xiaomi.push.**
-#-keepclasscom.xiaomi.push.**{*;}
+-dontwarncom.xiaomi.push.**
+-keepclasscom.xiaomi.push.**{*;}
 
 #oppo推送
 -dontwarn com.coloros.mcsdk.**
 -keep class com.coloros.mcsdk.** { *; }
+
+-dontwarn com.heytap.**
+-keep class com.heytap.** { *; }
+
+-dontwarn com.mcs.**
+-keep class com.mcs.** { *; }
 
 #极光推送
 -dontoptimize

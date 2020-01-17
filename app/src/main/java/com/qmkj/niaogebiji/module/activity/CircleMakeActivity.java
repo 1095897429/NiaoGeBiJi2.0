@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,14 +13,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -80,8 +84,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +105,12 @@ import butterknife.OnClick;
  * 描述:圈子帖发布界面
  * 1.发布帖子成功,删除草稿 (没有的原因是销毁了 )  -- eventbus失效了
  * 2.采用全局变量
+ *
+ * 1.文本没输入 -- 不可用
+ * 2.url 有问题 -- 不可用
+ *
+ * 思路：获取url是否可用，不可用的话isUrlOk = false;同时设置send不可点击
+ *      保存数据刚进入界面时，逻辑同上
  */
 public class CircleMakeActivity extends BaseActivity {
 
@@ -201,8 +215,13 @@ public class CircleMakeActivity extends BaseActivity {
                     //trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
-                        send.setEnabled(true);
-                        send.setTextColor(getResources().getColor(R.color.text_first_color));
+
+                        //如果是网址  并且url无效，同样的不给点击
+                        if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
+                            return;
+                        }
+
+                        setSendStatus(true);
 
                         if(mString.length() > num){
                             listentext.setTextColor(Color.parseColor("#FFFF5040"));
@@ -211,8 +230,7 @@ public class CircleMakeActivity extends BaseActivity {
                         }
 
                     }else{
-                        send.setEnabled(false);
-                        send.setTextColor(Color.parseColor("#CC818386"));
+                        setSendStatus(false);
                     }
 
                     listentext.setText(mString.length() + "");
@@ -221,38 +239,58 @@ public class CircleMakeActivity extends BaseActivity {
         initLayout();
     }
 
-    @OnClick({R.id.cancel,R.id.send,R.id.link,
+
+    private void setSendStatus(boolean sendStatus){
+        if(sendStatus
+                &&  !TextUtils.isEmpty(mEditText.getText().toString().trim())
+                && mEditText.getText().toString().trim().length() > 0){
+            send.setEnabled(true);
+            send.setTextColor(getResources().getColor(R.color.text_first_color));
+        }else{
+            send.setEnabled(false);
+            send.setTextColor(Color.parseColor("#CC818386"));
+        }
+    }
+
+    @OnClick({R.id.cancel,R.id.send,
+                R.id.link_ll,
                 R.id.to_delete_link,
-                R.id.make,
+                R.id.make_ll,
                 R.id.part2222})
     public void clicks(View view){
         KeyboardUtils.hideSoftInput(mEditText);
+
         switch (view.getId()){
             case R.id.part2222:
+                if(StringUtil.isFastClick()){
+                    return;
+                }
                 KLog.d("tag","跳转到外链");
                 UIHelper.toWebViewActivity(this,linkurl);
                 break;
-            case R.id.make:
+            case R.id.make_ll:
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_pictbtn_2_0_0);
-
                 showHeadDialog();
                 break;
             case R.id.to_delete_link:
                 part2222.setVisibility(View.GONE);
                 linkurl = "";
                 linkTitle = "";
+                isUrlOk = true;
                 setStatus(true);
+                setSendStatus(true);
                 break;
-            case R.id.link:
+            case R.id.link_ll:
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_linkbtn_2_0_0);
 
                 UIHelper.toCircleMakeAddLinkActivity(this,REQCODE);
                 overridePendingTransition(R.anim.activity_enter_right,R.anim.activity_alpha_exit);
                 break;
             case R.id.send:
-
+                if(StringUtil.isFastClick()){
+                    return;
+                }
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_message_onekeybtn_2_0_0);
-
 
                 if(mString.length() > num){
                     ToastUtils.showShort("内容最多输入140字");
@@ -261,6 +299,9 @@ public class CircleMakeActivity extends BaseActivity {
                 sendPicToQiuNiu();
                 break;
             case R.id.cancel:
+                if(StringUtil.isFastClick()){
+                    return;
+                }
                 //如果有正文 有外链 有图片
                 if(!TextUtils.isEmpty(mString) || !TextUtils.isEmpty(linkTitle)
                     || !mediaFiles.isEmpty() || !pathList.isEmpty()){
@@ -325,13 +366,64 @@ public class CircleMakeActivity extends BaseActivity {
         startActivityForResult(intent, TAKE_PHOTO);
     }
 
-
-
     @Override
     public void onBackPressed() {
         clicks(cancel);
     }
 
+
+    public  int testWsdlConnection(String address) {
+        int status = 404;
+        try {
+            URL urlObj = new URL(address);
+            HttpURLConnection oc = (HttpURLConnection) urlObj.openConnection();
+            oc.setUseCaches(false);
+            // 设置超时时间
+            oc.setConnectTimeout(3000);
+            // 请求状态
+            status = oc.getResponseCode();
+            if (200 == status) {
+                // 200是请求地址顺利连通
+                // 404是服务器的资源丢失或者连接失败
+                return status;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLog.d("tag",e.getMessage());
+        }
+        return status;
+    }
+
+
+    public static String getWebTitle(String url){
+        try {
+            //还是一样先从一个URL加载一个Document对象。
+            Document doc = Jsoup.connect(url).get();
+            String title = doc.title();
+            return title;
+        }catch(Exception e) {
+            return "";
+        }
+    }
+
+
+    @SuppressLint("HandlerLeak")
+    public  Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if(this != null){
+                link_url.setText(tempLink);
+                link_title.setText(TextUtils.isEmpty(linkTitle) ? "无标题网址" : linkTitle);
+                setStatus(false);
+            }
+        }
+    };
+
+    String title;
+    String tempLink;
+    //判断此url是否可用
+    boolean isUrlOk;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -340,15 +432,38 @@ public class CircleMakeActivity extends BaseActivity {
             Bundle bundle = data.getExtras();
             linkurl = bundle.getString("add_link");
             linkTitle = bundle.getString("link_title");
-            //获取到是 https://m.weibo.cn/detail/4452636415281894?display=0&retcode=6102，需显示域名
 
-            String tempLink   = StringUtil.getDomain(linkurl);
+            //先回复默认值
+            link_url.setText("");
+            link_title.setText("");
 
+            //检查link 并且是否符合规范
             if(!TextUtils.isEmpty(linkurl)){
+                //① 获取到是 https://m.weibo.cn/detail/4452636415281894?display=0&retcode=6102，需显示域名
+                tempLink   = StringUtil.getDomain(linkurl);
+                //② 显示布局
                 part2222.setVisibility(View.VISIBLE);
-                link_url.setText(tempLink);
-                link_title.setText(linkTitle);
-                setStatus(false);
+
+                new Thread(() -> {
+
+                    //③ 获取网页标题
+                    linkTitle = getWebTitle(linkurl);
+                    //④ 判断链接是否可用
+                    int status = testWsdlConnection(linkurl);
+                    KLog.d("tag",status + "");
+                    if(200 != status){
+                        isUrlOk = false;
+                        ToastUtils.showShort("解析失败，请重新添加");
+                        linkTitle = "解析失败，请重新添加";
+                        setSendStatus(false);
+                    }else{
+                        isUrlOk = true;
+                    }
+
+                    Message message = Message.obtain();
+                    mHandler.sendMessage(message);
+                }).start();
+
             }
         }
         //添加图片返回图片路径
@@ -470,8 +585,32 @@ public class CircleMakeActivity extends BaseActivity {
                 part2222.setVisibility(View.VISIBLE);
                 linkTitle = mTempMsgBean.getLinkTitle();
                 linkurl = mTempMsgBean.getLinkurl();
-                link_url.setText(mTempMsgBean.getLinkurl());
                 link_title.setText(mTempMsgBean.getLinkTitle());
+                if(!TextUtils.isEmpty(mTempMsgBean.getLinkurl())){
+                    //① 显示域名
+                    tempLink   = StringUtil.getDomain(mTempMsgBean.getLinkurl());
+                    link_url.setText(tempLink);
+
+                    new Thread(() -> {
+                        //③ 获取网页标题
+                        linkTitle = mTempMsgBean.getLinkTitle();
+                        //④ 判断链接是否可用
+                        int status = testWsdlConnection(linkurl);
+                        KLog.d("tag",status + "");
+                        if(200 != status){
+                            isUrlOk = false;
+                            ToastUtils.showShort("解析失败，请重新添加");
+                            linkTitle = "解析失败，请重新添加";
+                            setSendStatus(false);
+                        }else{
+                            isUrlOk = true;
+                        }
+
+                        Message message = Message.obtain();
+                        mHandler.sendMessage(message);
+                    }).start();
+
+                }
                 setStatus(false);
             }
 

@@ -328,7 +328,7 @@ public class FirstItemFragment extends BaseLazyFragment {
 
 
             if(article_lists.size() > 2){
-                for (int i = 0 + 2; i < article_lists.size(); i++) {
+                for (int i = 0 + 1; i < article_lists.size(); i++) {
                     itemBean = article_lists.get(i);
                     bean1 = new MultiNewsBean();
                     pic_type = article_lists.get(i).getPic_type();
@@ -346,8 +346,8 @@ public class FirstItemFragment extends BaseLazyFragment {
                 }
             }
 
-
-            if(null != mFristActionBean){
+            //显示在第4条
+            if(null != mFristActionBean && mFristActionBean.getActivity() != null){
                 fristActionBean = mFristActionBean;
                 bean1 = new MultiNewsBean();
                 bean1.setItemType(FirstItemNewAdapter.ACTIVITY_TYPE);

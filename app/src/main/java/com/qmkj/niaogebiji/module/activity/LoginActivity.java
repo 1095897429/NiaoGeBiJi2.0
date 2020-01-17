@@ -36,6 +36,7 @@ import com.qmkj.niaogebiji.common.dialog.SecretAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.socks.library.KLog;
@@ -84,6 +85,10 @@ public class LoginActivity extends BaseActivity {
     //登录方式
     private String loginType;
 
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -198,7 +203,9 @@ public class LoginActivity extends BaseActivity {
                 break;
             case R.id.weixinLogin:
 
-
+                if(StringUtil.isFastClick()){
+                    return;
+                }
 
                 if (isWeixinAvilible(this)) {
                     loginType = "weixin";

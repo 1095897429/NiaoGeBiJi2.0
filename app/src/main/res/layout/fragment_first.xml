@@ -68,8 +68,8 @@
 
             <RelativeLayout
                 android:id="@+id/rl_sign"
-                android:layout_width="28dp"
-                android:layout_height="28dp">
+                android:layout_width="34dp"
+                android:layout_height="30dp">
 
                 <ImageView
                     android:id="@+id/icon_sign"
@@ -77,20 +77,28 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp" />
 
-
-                <TextView
+                <FrameLayout
                     android:id="@+id/red_point"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
                     android:layout_marginTop="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:background="@drawable/bg_red_point"
-                    android:padding="0dp"
-                    android:textSize="12dp"
-                    android:visibility="visible" />
+                    android:layout_marginLeft="18dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/bg_white_point"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_gravity="center"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_red_point"
+                        android:padding="0dp"
+                        android:textSize="12dp"
+                        android:visibility="visible" />
+                </FrameLayout>
+
+
 
             </RelativeLayout>
 
@@ -193,6 +201,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/tool_recycler"
+                android:layout_centerVertical="true"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -202,11 +211,21 @@
 
             <LinearLayout
                 android:id="@+id/toVip"
+                android:background="@drawable/bg_corners_14_40_transparent"
                 android:visibility="gone"
-                android:background="@mipmap/icon_no_vip"
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="76dp"
                 android:orientation="vertical">
+
+                <TextView
+                    android:background="@drawable/bg_corners_8_orange_gradient"
+                    android:text="免费领取VIP 实用工具任你用"
+                    android:gravity="center"
+                    android:textColor="#6A3227"
+                    android:textSize="13sp"
+                    android:layout_width="205dp"
+                    android:layout_height="34dp" />
 
             </LinearLayout>
 

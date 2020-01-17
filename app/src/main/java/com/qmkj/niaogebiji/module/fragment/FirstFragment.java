@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -125,7 +126,7 @@ public class FirstFragment extends BaseLazyFragment {
     LinearLayout toVip;
 
     @BindView(R.id.red_point)
-    TextView red_point;
+    FrameLayout red_point;
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -169,12 +170,57 @@ public class FirstFragment extends BaseLazyFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        KLog.d("tag","是否是vip [0 不是  1 是] " + mUserInfo.getIs_vip());
-        if(!TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
+
+        setVipHidden();
+
+    }
+
+    private void setVipHidden(){
+        mUserInfo = StringUtil.getUserInfoBean();
+        if(null != mUserInfo && !TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
+//            KLog.d("tag","是否是vip [0 不是  1 是] " + mUserInfo.getIs_vip());
             toVip.setVisibility(View.GONE);
         }else{
             toVip.setVisibility(View.VISIBLE);
         }
+    }
+
+
+    private void getUserInfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+
+                        StringUtil.setUserInfoBean(response.getReturn_data());
+
+                        //今天是否签到了：1-已签到，0-未签到
+                        //TODO 这个调用在HomeActivity之前，导致还没有请求就获取了值，
+                        if("1".equals(mUserInfo.getSigned_today())){
+                            red_point.setVisibility(View.GONE);
+                        }else{
+                            red_point.setVisibility(View.VISIBLE);
+                        }
+
+                        setVipHidden();
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+
+                    }
+                });
+
     }
 
     @SuppressLint("CheckResult")
@@ -182,15 +228,8 @@ public class FirstFragment extends BaseLazyFragment {
     protected void initView() {
         String [] titile = new String[]{"关注","干货","活动"};
 
-        mUserInfo = StringUtil.getUserInfoBean();
+        getUserInfo();
 
-
-        //今天是否签到了：1-已签到，0-未签到
-        if("1".equals(mUserInfo.getSigned_today())){
-            red_point.setVisibility(View.GONE);
-        }else{
-            red_point.setVisibility(View.VISIBLE);
-        }
 
         pager_title.initData(titile,mViewPager,1);
 
@@ -232,12 +271,7 @@ public class FirstFragment extends BaseLazyFragment {
 
         }else{
             //resume
-//            KLog.d("tag","是否是vip [0 不是  1 是] " + mUserInfo.getIs_vip());
-            if(!TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
-                toVip.setVisibility(View.GONE);
-            }else{
-                toVip.setVisibility(View.VISIBLE);
-            }
+            setVipHidden();
         }
     }
 
@@ -483,7 +517,7 @@ public class FirstFragment extends BaseLazyFragment {
             case R.id.toVip:
                 MobclickAgentUtils.onEvent(UmengEvent.index_tools_vip_2_0_0);
 
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
+                UIHelper.toWebViewAllActivity(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
                 break;
             case R.id.moring_content:
             case R.id.ll_moring:

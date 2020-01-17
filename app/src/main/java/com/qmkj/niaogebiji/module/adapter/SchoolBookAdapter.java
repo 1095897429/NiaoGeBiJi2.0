@@ -27,11 +27,13 @@ public class SchoolBookAdapter extends BaseQuickAdapter<SchoolBean.SchoolBook, B
         super(R.layout.school_book_item_1,data);
     }
 
+    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+
     @Override
     protected void convert(BaseViewHolder helper,SchoolBean.SchoolBook item) {
         //Argument must not be null -- 控件不对
         if(!TextUtils.isEmpty(item.getImage_url())){
-            ImageUtil.load(mContext,item.getImage_url(),helper.getView(R.id.img_1));
+            ImageUtil.load(mContext,item.getImage_url() + scaleSize,helper.getView(R.id.img_1));
         }
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");

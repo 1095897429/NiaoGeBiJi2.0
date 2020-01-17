@@ -154,6 +154,7 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                             //wechat_token（不为空) 是 新用户
                             if(!TextUtils.isEmpty(mWxResultBean.getWechat_token())){
                                 UIHelper.toPhoneInputActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
+                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
                             }else{
                                 RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
                                 StringUtil.setUserInfoBean(mUserInfo);

@@ -15,4 +15,11 @@
         name="Download"
         path="/"></external-files-path>
 
+
+    <external-path name="download" path="."/>
+
+    <external-path
+        name="beta_external_files_path"
+        path="Android/data/" />
+
 </paths>

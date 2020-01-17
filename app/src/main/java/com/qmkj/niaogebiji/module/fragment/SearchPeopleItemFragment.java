@@ -109,7 +109,10 @@ public class SearchPeopleItemFragment extends BaseLazyFragment {
         initSamrtLayout();
         initLayout();
 
-        no_vip_auther.setOnClickListener(v -> UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember"));
+        no_vip_auther.setOnClickListener(v ->
+                UIHelper.toWebViewAllActivity(getActivity(),StringUtil.getLink("vipmember"),"vipmember"));
+
+//        UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember"));
     }
 
     private void initSamrtLayout() {

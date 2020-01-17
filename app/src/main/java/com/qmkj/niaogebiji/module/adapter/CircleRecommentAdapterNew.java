@@ -795,17 +795,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         });
 
         report.setOnClickListener(view1 -> {
-            if(StringUtil.isFastClick()){
-                return;
-            }
             reportBlog(circleBean);
             mPopupWindow.dismiss();
         });
 
         share.setOnClickListener(view1 -> {
-            if(StringUtil.isFastClick()){
-                return;
-            }
             mPopupWindow.dismiss();
         });
     }

@@ -29,8 +29,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -102,6 +104,7 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
 
         KeyboardUtils.showSoftInput(mEditText);
 
+
         RxTextView
                 .textChanges(mEditText)
                 .subscribe(charSequence -> {
@@ -113,8 +116,7 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0 && isValidUrl(mString)){
                         addLink.setEnabled(true);
                         addLink.setTextColor(getResources().getColor(R.color.text_first_color));
-                        //设置光标在最后
-                        mEditText.setSelection(charSequence.toString().length());
+
                     }else{
                         addLink.setEnabled(false);
                         addLink.setTextColor(Color.parseColor("#CC818386"));
@@ -132,23 +134,39 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
             case R.id.to_paste:
                 mEditText.setText(content);
                 part2222.setVisibility(View.GONE);
+                //设置光标在最后
+                mEditText.setSelection(content.length());
                 break;
             case R.id.addLink:
-                KLog.d("tag","添加链接");
 
                 //这里还需检查一下链接
 //                if(!isValidUrl(mString)){
-//                    ToastUtils.showShort("输入了非法链接");
-//                    return;
-//                }
+////                    ToastUtils.showShort("输入了非法链接");
+////                    return;
+////                }
+
+//                new Thread(() -> {
+//                    int status = testWsdlConnection(mString);
+//                    KLog.d("tag",status + "");
+//
+//                    if(200 != status){
+//                        ToastUtils.showShort("解析失败，请重新添加");
+//                        return;
+//                    }
+//                    title = getWebTitle(mString);
+//                    Message message = Message.obtain();
+//                    message.obj = status;
+//                    mHandler.sendMessage(message);
+//                }).start();
 
 
-                new Thread(() -> {
-                    title = getWebTitle(mString);
-                    Message message = Message.obtain();
-                    mHandler.sendMessage(message);
-                }).start();
-
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("add_link",mString);
+                bundle.putString("link_title",title);
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
+                finishWithAnim(R.anim.activity_alpha_enter,R.anim.activity_exit_right);
 
                 break;
             case R.id.cancel:
@@ -210,15 +228,40 @@ public class CircleMakeAddLinkActivity extends BaseActivity {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if(this != null){
-                Intent intent = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putString("add_link",mString);
-                bundle.putString("link_title",title);
-                intent.putExtras(bundle);
-                setResult(RESULT_OK,intent);
-                finishWithAnim(R.anim.activity_alpha_enter,R.anim.activity_exit_right);
+            int temp = (int) msg.obj;
+            if(200 == temp){
+                if(this != null){
+                    Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("add_link",mString);
+                    bundle.putString("link_title",title);
+                    intent.putExtras(bundle);
+                    setResult(RESULT_OK,intent);
+                    finishWithAnim(R.anim.activity_alpha_enter,R.anim.activity_exit_right);
+                }
             }
+
         }
     };
+
+
+    public  int testWsdlConnection(String address) {
+        int status = 404;
+        try {
+            URL urlObj = new URL(address);
+            HttpURLConnection oc = (HttpURLConnection) urlObj.openConnection();
+            oc.setUseCaches(false);
+            oc.setConnectTimeout(3000); // 设置超时时间
+            status = oc.getResponseCode();// 请求状态
+            if (200 == status) {
+            // 200是请求地址顺利连通
+            // 404是服务器的资源丢失或者连接失败
+                return status;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLog.d("tag",e.getMessage());
+        }
+        return status;
+    }
 }

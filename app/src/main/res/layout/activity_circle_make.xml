@@ -125,7 +125,7 @@
 
                             <TextView
                                 android:id="@+id/link_title"
-                                android:text="来自系统剪切板"
+                                android:text=""
                                 android:singleLine="true"
                                 android:ellipsize="end"
                                 android:textSize="14sp"
@@ -239,21 +239,42 @@
                     android:layout_height="50dp"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/make"
-                        android:src="@mipmap/icon_pic_make"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp" />
+
+                    <LinearLayout
+                        android:id="@+id/make_ll"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/make"
+                            android:src="@mipmap/icon_pic_make"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
+
+                    </LinearLayout>
 
                     <Space
-                        android:layout_width="32dp"
+                        android:layout_width="12dp"
                         android:layout_height="match_parent" />
 
-                    <ImageView
-                        android:id="@+id/link"
-                        android:src="@mipmap/icon_link"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp" />
+                    <LinearLayout
+                        android:id="@+id/link_ll"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/link"
+                            android:src="@mipmap/icon_link"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
+                    </LinearLayout>
+
 
 
                 </LinearLayout>

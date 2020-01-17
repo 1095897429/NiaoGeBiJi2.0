@@ -11,7 +11,7 @@ import com.socks.library.KLog;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-12-30
- * 描述:实现接收通知栏或通知栏上按钮点击事件的onEvent回调。
+ * 描述:实现接收通知栏或通知栏上按钮点击事件的onEvent回调。 --- 备注：如果接入了极光的第三方，此receiver不走
  *
  * public static enum Event
  * {

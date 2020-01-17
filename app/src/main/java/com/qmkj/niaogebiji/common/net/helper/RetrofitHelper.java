@@ -33,6 +33,7 @@ import com.socks.library.KLog;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import cn.jpush.android.api.JPushInterface;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.FastJsonConverterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -148,11 +149,13 @@ public class RetrofitHelper {
         if(null != userInfo){
             token = userInfo.getAccess_token();
         }else{
-            token = "LX23ahEplKM3S934JzuOKtTkpx6WxZDj";
+            token = "";
         }
         map.put("access_token",token);
 
 
+        //TODO 2020.1.16号新增
+        map.put("jpush_id", JPushInterface.getRegistrationID(BaseApp.getApplication()));
 
         //渠道号
         map.put("app_channel", ChannelUtil.getChannel(BaseApp.getApplication()));

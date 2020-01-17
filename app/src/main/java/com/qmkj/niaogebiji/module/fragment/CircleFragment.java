@@ -13,6 +13,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -108,7 +109,7 @@ public class CircleFragment extends BaseLazyFragment {
 
 
     @BindView(R.id.red_point)
-    TextView red_point;
+    FrameLayout red_point;
 
 
     @BindView(R.id.search_first)
@@ -472,7 +473,7 @@ public class CircleFragment extends BaseLazyFragment {
                             //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
                         }
                     }
-                },new UploadOptions(null,"mime_type",true,upProgressHandler,upCancellationSignal));
+                },new UploadOptions(null,"image/jpeg",true,upProgressHandler,upCancellationSignal));
             });
         }
 

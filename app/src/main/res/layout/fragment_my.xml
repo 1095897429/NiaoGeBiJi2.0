@@ -36,29 +36,36 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:id="@+id/rl_newmsg"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp">
+                        android:layout_width="34dp"
+                        android:layout_height="30dp">
 
                         <ImageView
                             android:id="@+id/icon_sign"
                             android:src="@mipmap/icon_circle_msg"
-                            android:layout_width="24dp"
-                            android:layout_height="25dp" />
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
 
 
-                        <TextView
+                        <FrameLayout
                             android:id="@+id/red_point"
+                            android:visibility="gone"
+                            android:layout_marginLeft="18dp"
                             android:layout_centerVertical="true"
-                            android:layout_alignParentRight="true"
                             android:layout_alignParentTop="true"
-                            android:layout_marginTop="2dp"
-                            android:layout_marginRight="2dp"
-                            android:layout_width="8dp"
-                            android:layout_height="8dp"
-                            android:background="@drawable/bg_red_point"
-                            android:padding="0dp"
-                            android:textSize="12dp"
-                            android:visibility="visible" />
+                            android:background="@drawable/bg_white_point"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_gravity="center"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/bg_red_point"
+                                android:padding="0dp"
+                                android:textSize="12dp"
+                                android:visibility="visible" />
+                        </FrameLayout>
 
                     </RelativeLayout>
 
@@ -309,7 +316,7 @@
                        <TextView
                            android:id="@+id/vip_time"
                            android:paddingLeft="40dp"
-                           android:text="鸟哥笔记VIP剩余6天"
+                           android:text=""
                            android:gravity="center"
                            android:textSize="13sp"
                            android:textColor="#F5DCAE"

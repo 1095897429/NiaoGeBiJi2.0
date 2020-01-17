@@ -19,7 +19,7 @@
             android:layout_centerVertical="true"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@mipmap/icon_fenxiang"/>
+            android:src="@mipmap/icon_head_default"/>
 
 
         <LinearLayout

@@ -314,7 +314,9 @@ public class WebViewBadgeActivity  extends BaseActivity {
                         UIHelper.toWebViewAllActivity(WebViewBadgeActivity.this,link,"editbadge");
                     }else if("toVipMember".equals(result)){
                         String link = StringUtil.getLink("vipmember");
-                        UIHelper.toWebViewActivityWithOnLayout(WebViewBadgeActivity.this,link,"vipmember");
+                        UIHelper.toWebViewAllActivity(WebViewBadgeActivity.this,StringUtil.getLink("vipmember"),"vipmember");
+
+//                        UIHelper.toWebViewActivityWithOnLayout(WebViewBadgeActivity.this,link,"vipmember");
                     }else if("toTestList".equals(result)){
                         // - ok
                         Constant.isReLoad = true;

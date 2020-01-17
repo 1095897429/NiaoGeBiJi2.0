@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -69,7 +70,8 @@ public class MyFragment extends BaseLazyFragment {
     TextView name;
 
     @BindView(R.id.red_point)
-    TextView red_point;
+    FrameLayout red_point;
+
 
     @BindView(R.id.read_time)
     TextView read_time;
@@ -247,6 +249,8 @@ public class MyFragment extends BaseLazyFragment {
 
     }
 
+    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+
     private void setUserInfo() {
         if(null != mUserInfo){
 
@@ -273,7 +277,7 @@ public class MyFragment extends BaseLazyFragment {
                 name.setText(mUserInfo.getName());
             }
 
-            //认证
+            //认证 -- 这里不用改(不用显示用户名在认证的情况下)
             if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
                 name_author_tag.setVisibility(View.VISIBLE);
                 name_vertify.setVisibility(View.GONE);
@@ -288,8 +292,7 @@ public class MyFragment extends BaseLazyFragment {
                 name_vertify.setVisibility(View.VISIBLE);
                 name_author_tag.setVisibility(View.GONE);
                 name_vertify.setText("立即职业认证，建立人脉");
-                name_vertify.setTextColor(Color.parseColor("#5675A7"));
-                KLog.d("tag","h5 职业认证");
+                name_vertify.setTextColor(Color.parseColor("#AAAEB3"));
                 name_vertify.setOnClickListener(v -> {
                     MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
                     if(StringUtil.isFastClick()){
@@ -307,7 +310,7 @@ public class MyFragment extends BaseLazyFragment {
                 toVip.setVisibility(View.VISIBLE);
             }
 
-            ImageUtil.load(mContext,mUserInfo.getAvatar(),head_icon);
+            ImageUtil.loadByDefaultHead(mContext,mUserInfo.getAvatar() + scaleSize,head_icon);
 
             //个人中心消息通知：1-有新消息，0-无新消息
             if("1".equals(mUserInfo.getIs_red())){
@@ -474,14 +477,15 @@ public class MyFragment extends BaseLazyFragment {
                 break;
             case R.id.toVip:
                 MobclickAgentUtils.onEvent(UmengEvent.i_vip_ad_2_0_0);
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
+                //TODO 2020.1.14 领取vip返回不了
+                UIHelper.toWebViewAllActivity(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
 
                 break;
             case R.id.rl_vip_time:
                 MobclickAgentUtils.onEvent(UmengEvent.i_vip_2_0_0);
                 MobclickAgentUtils.onEvent(UmengEvent.i_renewal_2_0_0);
 
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
+                UIHelper.toWebViewAllActivity(getActivity(),StringUtil.getLink("vipmember"),"vipmember");
 
                 break;
             case R.id.toExchange:

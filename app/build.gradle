@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'org.greenrobot.greendao'
-//apply plugin: 'com.huawei.agconnect'
+apply plugin: 'com.huawei.agconnect'
 
 def releaseTime() {
     return new Date().format("MMddHHmm", TimeZone.getTimeZone("GMT+8"))
@@ -14,8 +14,8 @@ android {
         applicationId "com.qmkj.niaogebiji"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 5
-        versionName "2.0.2"
+        versionCode 7
+        versionName "2.0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //MultiDex分包方法
         multiDexEnabled true
@@ -36,6 +36,10 @@ android {
 
                 XIAOMI_APPKEY:"MI-5681821096962",//小米平台注册的appkey
                 XIAOMI_APPID:"MI-2882303761518210962",//小米平台注册的appid
+
+
+                VIVO_APPKEY : "3c4a8483-9533-403b-b1c4-4614eb2b8018", // VIVO平台注册的appkey
+                VIVO_APPID : "16704", // VIVO平台注册的appid
 
                 OPPO_APPKEY:"OP-beffa2d72b234fa184c45ce635663087", // OPPO平台注册的appkey
                 OPPO_APPID:"OP-30212012", // OPPO平台注册的appid
@@ -85,9 +89,11 @@ android {
         debug{
             buildConfigField("boolean","LOG_DEBUG","true")
             buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
-//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
-
             buildConfigField("String","H5URL","\"http://apph5.xy860.com/\"")
+
+//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
+//            buildConfigField("String","H5URL","\"http://apph5.niaogebiji.com/\"")
+
             buildConfigField("String","SecretKey","\"TESTINGT82U8qPK5wSyjtoyseZcP2iXlsN2VdC5\"")
 //            signingConfig signingConfigs.config
             minifyEnabled false
@@ -249,17 +255,17 @@ dependencies {
 
 
 
-    implementation 'cn.jiguang.sdk:jpush:3.5.4'  // 此处以JPush 3.5.4 版本为例。
+    implementation 'cn.jiguang.sdk:jpush:3.5.0'  // 此处以JPush 3.5.4 版本为例。
     implementation 'cn.jiguang.sdk:jcore:2.2.4'  // 此处以JCore 2.2.4 版本为例。
 
+    implementation'cn.jiguang.sdk.plugin:huawei:3.5.0'
+
     //小米集成指南
-//    implementation 'cn.jiguang.sdk.plugin:xiaomi:3.5.4'
+    implementation 'cn.jiguang.sdk.plugin:xiaomi:3.5.0'
+
+    implementation'cn.jiguang.sdk.plugin:vivo:3.5.0'
 
     //oppo 集成指南
-    implementation'cn.jiguang.sdk.plugin:oppo:3.5.4'
+    implementation'cn.jiguang.sdk.plugin:oppo:3.5.0'
 
-//    implementation'cn.jiguang.sdk.plugin:huawei:3.0.6'//此版本插件仅支持JPushSDK3.1.8及以上版本
-
-    // 添加aar依赖到工程
-    implementation   files("libs/vivo_pushsdk-v2.9.0.0.aar")
 }

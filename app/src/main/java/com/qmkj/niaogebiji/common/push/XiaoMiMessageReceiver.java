@@ -182,7 +182,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
         } else {
             log = message.getReason();
         }
-        KLog.d("tag",getSimpleDate() + "    " + log);
+//        KLog.d("tag",getSimpleDate() + "    " + log);
 
         Message msg = Message.obtain();
         msg.obj = log;

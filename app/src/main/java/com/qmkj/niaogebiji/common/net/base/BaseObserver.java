@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.common.net.base;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.JsonParseException;
+import com.qmkj.niaogebiji.common.BaseApp;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.socks.library.KLog;
 
@@ -33,6 +35,12 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
         if("200".equals(response.getReturn_code())){
             onSuccess(response);
         }else{
+            //TODO 2020.1.13 账号登录问题，去登录界面
+            //您当前未登录，先去登录吧！
+            if("2003".equals(response.getReturn_code())){
+                UIHelper.toLoginActivity(BaseApp.getApplication());
+            }
+
             onHintError(response.getReturn_code(),response.getReturn_msg());
         }
 
@@ -84,14 +92,14 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
                 break;
 
             case PARSE_ERROR:
-                KLog.d("解析错误");
+                KLog.d("解析错误 不给予 toast 提示");
                 onNetFail("解析错误");
                 //TODO 如果解析错误，那么就给空值
 
                 break;
 
             case UNKNOWN_ERROR:
-                KLog.d("未知错误");
+                KLog.d("未知错误 不给予 toast 提示");
                 onNetFail("未知错误");
 
             default:
@@ -132,7 +140,11 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
 
     //网络请求过程错误 toast提示
     public void onNetFail(String msg){
-        ToastUtils.showShort(msg);
+        if(!"未知错误".equals(msg) &&
+            !"解析错误".equals(msg)){
+             ToastUtils.showShort(msg);
+        }
+
     }
 
 

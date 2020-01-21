@@ -77,7 +77,6 @@ public class FeatherItemAdapter extends BaseQuickAdapter<FeatherBean, BaseViewHo
 
             case 7:
             case 8:
-            case 9:
                 helper.setText(R.id.dotask_text,"+1000");
                 break;
             case 5:

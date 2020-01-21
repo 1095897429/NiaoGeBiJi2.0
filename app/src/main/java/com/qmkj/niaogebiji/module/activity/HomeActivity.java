@@ -51,6 +51,7 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
+import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
@@ -65,6 +66,8 @@ import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +84,7 @@ public class HomeActivity extends BaseActivity {
     public static final int FLASH = 1;
     public static final int H5_TO_ACTICLE = 5;
     public static final int JPUSH_TO_FLASH = 10;
+    public static final int JPUSH_TO_My = 11;
 
     @BindView(R.id.index_first_icon)
     ImageView index_first_icon;
@@ -174,20 +178,18 @@ public class HomeActivity extends BaseActivity {
 
     private JPushBean mJPushBean;
 
+
+    //下面是app从关闭杀死到启动首页 - 走这里）
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         KLog.e("tag","HomeActivity  onCreate");
         super.onCreate(savedInstanceState);
         if(null != getIntent().getExtras()){
-//            mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
-//            if(mJPushBean !=  null){
-//                toDiffer(mJPushBean,this);
-//            }
+            mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
 
             //应用关闭，点击会进入这里 -- 然后在 initData中做操作
-            fromType =  getIntent().getExtras().getInt("type");
-
-
+//            fromType =  getIntent().getExtras().getInt("type");
+//            KLog.e("tag","HomeActivity  onCreate fromType " + fromType);
         }
 
 
@@ -224,37 +226,33 @@ public class HomeActivity extends BaseActivity {
     };
 
 
-    private void toDiffer(JPushBean javaBean, Context context) {
+    private void toDiffer(JPushBean javaBean) {
         String jump_type = javaBean.getJump_type();
         String jump_info = javaBean.getJump_info();
-        KLog.d("tag","主界面跳转 ");
-        Intent i  = null;
         try{
             if("1".equals(jump_type)){
-                i =  new Intent(context, UserInfoActivity.class);
+                bottomClick(findViewById(R.id.index_my));
             }else if("20".equals(jump_type)){
-                i =  new Intent(context, NewsDetailActivity.class);
-                i.putExtra("newsId",jump_info);
+                KLog.d("tag","文章");
+                UIHelper.toNewsDetailActivity(this,jump_info);
             }else if("31".equals(jump_type)){
-                i = new Intent(context,HomeActivity.class);
+                bottomClick(findViewById(R.id.index_flash));
             }else if("50".equals(jump_type)){
-                i = new Intent(context, CommentDetailActivity.class);
-                Bundle  bundle = new Bundle();
-                bundle.putString("blog_id",jump_info);
-                i.putExtras(bundle);
+                UIHelper.toCommentDetailActivity(this,jump_info);
             }else if("60".equals(jump_type)){
                 //wiki
+                String link = StringUtil.getLink("wikidetail/" + jump_info);
+                UIHelper.toWebViewActivityWithOnStep(this,link);
             }else if("70".equals(jump_type)){
+                String link = jump_info;
+                UIHelper.toWebViewActivityWithOnLayout(this,link,"");
+            }else{
 
             }
 
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            context.startActivity(i);
         }catch (Throwable throwable){
 
         }
-
-
     }
 
 
@@ -359,8 +357,17 @@ public class HomeActivity extends BaseActivity {
 
         checkupd();
 
-        if(JPUSH_TO_FLASH == fromType){
-            bottomClick(findViewById(R.id.index_flash));
+//        if(JPUSH_TO_FLASH == fromType){
+//            bottomClick(findViewById(R.id.index_flash));
+//        }else if(JPUSH_TO_My == fromType){
+//            bottomClick(findViewById(R.id.index_my));
+//        }
+
+
+        if(mJPushBean !=  null){
+            KLog.e("tag","mJPushBean 类型是 " + mJPushBean.getJump_type()
+                    + "  参数 " + mJPushBean.getJump_info());
+            toDiffer(mJPushBean);
         }
     }
 
@@ -546,19 +553,34 @@ public class HomeActivity extends BaseActivity {
 
 
 
+    //下面是app在前台（已在首页）
     private int fromType;
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        KLog.e("tag","HomeActivity  onNewIntent");
+
+        mJPushBean = (JPushBean)intent.getExtras().getSerializable("jpushbean");
+        if(mJPushBean !=  null){
+            KLog.e("tag","mJPushBean 类型是 " + mJPushBean.getJump_type()
+                    + "  参数 " + mJPushBean.getJump_info());
+            toDiffer(mJPushBean);
+        }
+
         if(intent.getExtras() != null){
             fromType =  intent.getExtras().getInt("type");
+            KLog.e("tag","HomeActivity  fromType " + fromType);
+
+
             if(H5_TO_ACTICLE == fromType){
                 bottomClick(findViewById(R.id.index_first));
                 EventBus.getDefault().post(new toActicleEvent("去干货"));
-            }else if(JPUSH_TO_FLASH == fromType){
-                bottomClick(findViewById(R.id.index_flash));
             }
+
+//            else if(JPUSH_TO_FLASH == fromType){
+//                bottomClick(findViewById(R.id.index_flash));
+//            }else if(JPUSH_TO_My == fromType){
+//                bottomClick(findViewById(R.id.index_my));
+//            }
         }
     }
 
@@ -671,6 +693,15 @@ public class HomeActivity extends BaseActivity {
         AppUpdateUtilNew updateUtil = new AppUpdateUtilNew(HomeActivity.this,apkUrl);
         updateUtil.showUpdateDialog(note,isForce);
 
+    }
+
+
+    //用户token失效会再次给与token
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginGoodEvent(LoginGoodEvent event) {
+        if (this != null) {
+            toGiveToken();
+        }
     }
 
 }

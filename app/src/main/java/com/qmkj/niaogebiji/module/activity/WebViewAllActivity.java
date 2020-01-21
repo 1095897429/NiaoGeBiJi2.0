@@ -306,10 +306,16 @@ public class WebViewAllActivity extends BaseActivity {
                     bean1.setLink(mUserInfo.getInvite_url());
                     bean1.setResId(R.mipmap.icon_fenxiang);
 
-                    if(!TextUtils.isEmpty(mUserInfo.getName())){
-                        name1 = mUserInfo.getName();
-                    }else{
+//                    if(!TextUtils.isEmpty(mUserInfo.getName())){
+//                        name1 = mUserInfo.getName();
+//                    }else{
+//                        name1 = mUserInfo.getNickname();
+//                    }
+                    //TODO 2020.1.19 换成nickname
+                    if(!TextUtils.isEmpty(mUserInfo.getNickname())){
                         name1 = mUserInfo.getNickname();
+                    }else{
+                        name1 = mUserInfo.getName();
                     }
                     bean1.setTitle("你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！");
                     bean1.setContent("1小时内领取，过时作废！六大权益免费领取，还不快来");
@@ -324,10 +330,17 @@ public class WebViewAllActivity extends BaseActivity {
                     bean.setShareType("weixin_link");
                     bean.setLink(mUserInfo2.getInvite_url());
 
-                    if(!TextUtils.isEmpty(mUserInfo2.getName())){
-                        name1 = mUserInfo2.getName();
-                    }else{
+//                    if(!TextUtils.isEmpty(mUserInfo2.getName())){
+//                        name1 = mUserInfo2.getName();
+//                    }else{
+//                        name1 = mUserInfo2.getNickname();
+//                    }
+
+                    //TODO 2020.1.19 换成nickname
+                    if(!TextUtils.isEmpty(mUserInfo2.getNickname())){
                         name1 = mUserInfo2.getNickname();
+                    }else{
+                        name1 = mUserInfo2.getName();
                     }
                     bean.setTitle("你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！");
                     bean.setContent("1小时内领取，过时作废！六大权益免费领取，还不快来");

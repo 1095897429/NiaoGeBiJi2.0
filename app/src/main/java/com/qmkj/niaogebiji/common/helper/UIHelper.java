@@ -90,7 +90,7 @@ public class UIHelper {
     /** 打开登录界面 */
     public static void toLoginActivity(Context ctx) {
         Intent intent = new Intent(ctx, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         ctx.startActivity(intent);
     }
 

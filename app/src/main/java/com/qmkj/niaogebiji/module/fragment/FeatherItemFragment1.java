@@ -93,12 +93,14 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
     List<NewUserTaskBean.NewTaskBean> mList2 = new ArrayList<>();
 
 
+    //TODO 2020.1.19 去掉羽毛任务中的快讯评论  R.mipmap.icon_feather_8
     private int[] imgRes = new int[]{R.mipmap.icon_feather_1,R.mipmap.icon_feather_2,R.mipmap.icon_feather_3,
-            R.mipmap.icon_feather_4,R.mipmap.icon_feather_5,R.mipmap.icon_feather_6,R.mipmap.icon_feather_7,
-            R.mipmap.icon_feather_8,R.mipmap.icon_feather_9,R.mipmap.icon_feather_10};
-    private String[] titleRes = new String[]{"学习打卡","邀请好友","阅读文章","文章评分","测一测","文章评论","分享文章","评论快讯","分享快讯","干货投递"};
+            R.mipmap.icon_feather_4,R.mipmap.icon_feather_5,R.mipmap.icon_feather_6,R.mipmap.icon_feather_7,R.mipmap.icon_feather_9,R.mipmap.icon_feather_10};
+    //评论快讯
+    private String[] titleRes = new String[]{"学习打卡","邀请好友","阅读文章","文章评分","测一测","文章评论","分享文章","分享快讯","干货投递"};
+    //"浏览行业快讯，留下你的看法"
     private String[] tagRes = new String[]{"每日打次卡，总是良好的开始","好友下载-注册-登录APP即可领取","认真阅读干货文章，日积月累总有收获","阅读文章后留下你的评论",
-            "掌握文章要点进行自我测试","想说就说，不吐不快","好货不独享，推荐给更多需要的人","浏览行业快讯，留下你的看法","成为好友圈的消息通","立即投稿，写出影响力，采纳奖励1000羽毛"};
+            "掌握文章要点进行自我测试","想说就说，不吐不快","好货不独享，推荐给更多需要的人","成为好友圈的消息通","立即投稿，写出影响力，采纳奖励1000羽毛"};
 
 
     private RegisterLoginBean.UserInfo mUserInfo;
@@ -128,12 +130,12 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
         scrollView.setNestedScrollingEnabled(true);
 
         FeatherBean bean;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < titleRes.length; i++) {
             bean = new FeatherBean();
             if(0 == i ){
                 //显示已签到
                 bean.setStatus(1);
-            }else if(i== 1 || i == 9 ){
+            }else if(i== 1 || i == 8 ){
                 //其他不显示背景
                 bean.setStatus(3);
             }else{
@@ -147,13 +149,15 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
         }
 
         initDayRecyler();
+
+        getUserInfo();
+        newUserTasklist();
     }
 
 
     @Override
     protected void lazyLoadData() {
-        getUserInfo();
-        newUserTasklist();
+
     }
 
     //初始化布局管理器

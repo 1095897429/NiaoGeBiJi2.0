@@ -158,6 +158,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         //设置事件
         initAudioEvent();
+
+
     }
 
 
@@ -420,6 +422,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /** 当view被附着在窗体window时触发 */
     @Override
     public void onAttachedToWindow() {
+//        KLog.d("tag","onAttachedToWindow");
         super.onAttachedToWindow();
         initView();
         initData();

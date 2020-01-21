@@ -155,7 +155,6 @@ public class FirstItemFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<FristActionBean> response) {
-                        KLog.d("tag","到了这里222");
                         if(null != smartRefreshLayout){
                             mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
@@ -256,7 +255,6 @@ public class FirstItemFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<RecommendBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<RecommendBean> response) {
-                        KLog.d("tag","到了这里111");
                         if(null != smartRefreshLayout){
                             smartRefreshLayout.finishRefresh();
                             mIsRefreshing = false;

@@ -48,6 +48,7 @@ import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.event.ShowSignRedPointEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
@@ -178,7 +179,6 @@ public class FirstFragment extends BaseLazyFragment {
     private void setVipHidden(){
         mUserInfo = StringUtil.getUserInfoBean();
         if(null != mUserInfo && !TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
-//            KLog.d("tag","是否是vip [0 不是  1 是] " + mUserInfo.getIs_vip());
             toVip.setVisibility(View.GONE);
         }else{
             toVip.setVisibility(View.VISIBLE);
@@ -633,6 +633,14 @@ public class FirstFragment extends BaseLazyFragment {
                 });
     }
 
+
+    //用户token失效会再次给与token
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginGoodEvent(LoginGoodEvent event) {
+        if (this != null) {
+            getUserInfo();
+        }
+    }
 
 
 }

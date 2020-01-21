@@ -99,7 +99,7 @@ public class WebViewActivity extends BaseActivity {
     protected void initView() {
         link = getIntent().getStringExtra("link");
         mTitle = getIntent().getStringExtra("title");
-        KLog.d("tag","link " +link);
+//        KLog.d("tag","link " +link);
         if(TextUtils.isEmpty(link)){
             return;
         }

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,6 +36,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -808,15 +810,39 @@ public class StringUtil {
                 = activityManager.getRunningAppProcesses();
         for(int i = 0; i < processInfos.size(); i++){
             if(processInfos.get(i).processName.equals(packageName)){
-                Log.i("NotificationLaunch",
+                Log.e("NotificationLaunch",
                         String.format("the %s is running, isAppAlive return true", packageName));
                 return true;
             }
         }
-        Log.i("NotificationLaunch",
+        Log.e("NotificationLaunch",
                 String.format("the %s is not running, isAppAlive return false", packageName));
         return false;
     }
 
+
+/**
+     * 判断某一个类是否存在任务栈里面
+     *
+     * @return
+     */
+    public static boolean isExsitMianActivity(Context context, Class<?> cls) {
+        Intent intent = new Intent(context, cls);
+        ComponentName cmpName = intent.resolveActivity(context
+                .getPackageManager());
+        boolean flag = false;
+        if (cmpName != null) { // 说明系统中存在这个activity
+            ActivityManager am = (ActivityManager) context
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningTaskInfo> taskInfoList = am.getRunningTasks(10);
+            for (ActivityManager.RunningTaskInfo taskInfo : taskInfoList) {
+                if (taskInfo.baseActivity.equals(cmpName)) { // 说明它已经启动了
+                    flag = true;
+                    break; // 跳出循环，优化效率
+                }
+            }
+        }
+        return flag;
+    }
 
 }

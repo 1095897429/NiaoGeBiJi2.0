@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.blankj.utilcode.util.PermissionUtils;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.socks.library.KLog;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
@@ -51,6 +52,9 @@ import java.util.List;
  * 8、以上这些方法运行在非 UI 线程中。
  *
  * @author mayixiang
+ *
+ *
+ * 1.小米
  */
 public class XiaoMiMessageReceiver extends PushMessageReceiver {
 
@@ -63,7 +67,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
 
     @Override
     public void onReceivePassThroughMessage(Context context, MiPushMessage message) {
-        Log.v("tag",
+        Log.e("XiaoMiMessageReceiver",
                 "onReceivePassThroughMessage is called. " + message.toString());
         String log = context.getString(R.string.recv_passthrough_message, message.getContent());
 
@@ -79,7 +83,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
 
     @Override
     public void onNotificationMessageClicked(Context context, MiPushMessage message) {
-        Log.v("tag",
+        Log.e("XiaoMiMessageReceiver",
                 "onNotificationMessageClicked is called. " + message.toString());
         String log = context.getString(R.string.click_notification_message, message.getContent());
 
@@ -97,7 +101,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
 
     @Override
     public void onNotificationMessageArrived(Context context, MiPushMessage message) {
-        Log.v("tag",
+        Log.e("XiaoMiMessageReceiver",
                 "onNotificationMessageArrived is called. " + message.toString());
         String log = context.getString(R.string.arrive_notification_message, message.getContent());
 
@@ -114,7 +118,10 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
     // Qw1YY2376E5yWLL7gu8pUAhdHAtUXeLbqD0/LsKAMmhFU8G3YZvao79LVXVfz7pF
     @Override
     public void onCommandResult(Context context, MiPushCommandMessage message) {
-        Log.v("tag",
+
+        String string = MiPushClient.getRegId(BaseApp.getApplication());
+        KLog.d("XiaoMiMessageReceiver","string = " + string);
+        Log.e("XiaoMiMessageReceiver",
                 "onCommandResult is called. " + message.toString());
         String command = message.getCommand();
         List<String> arguments = message.getCommandArguments();
@@ -124,7 +131,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
-//                KLog.d("tag","小米的RegID "  + mRegId);
+                KLog.d("tag","小米的RegID "  + mRegId);
                 log = context.getString(R.string.register_success);
             } else {
                 log = context.getString(R.string.register_fail);
@@ -190,7 +197,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
 
     @Override
     public void onReceiveRegisterResult(Context context, MiPushCommandMessage message) {
-        Log.v("tag",
+        Log.e("XiaoMiMessageReceiver",
                 "onReceiveRegisterResult is called. " + message.toString());
         String command = message.getCommand();
         List<String> arguments = message.getCommandArguments();
@@ -214,7 +221,7 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
     @Override
     public void onRequirePermissions(Context context, String[] permissions) {
         super.onRequirePermissions(context, permissions);
-        Log.e("tag",
+        Log.e("XiaoMiMessageReceiver",
                 "onRequirePermissions is called. need permission" + arrayToString(permissions));
 
         if (Build.VERSION.SDK_INT >= 23 && context.getApplicationInfo().targetSdkVersion >= 23) {

@@ -14,17 +14,17 @@ android {
         applicationId "com.qmkj.niaogebiji"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 7
-        versionName "2.0.4"
+        versionCode 8
+        versionName "2.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //MultiDex分包方法
         multiDexEnabled true
 
-//        ndk {
-//            //选择要添加的对应cpu类型的.so库。
-//            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-//            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
-//        }
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
 
 
         manifestPlaceholders = [
@@ -88,11 +88,11 @@ android {
     buildTypes {
         debug{
             buildConfigField("boolean","LOG_DEBUG","true")
-            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
-            buildConfigField("String","H5URL","\"http://apph5.xy860.com/\"")
+//            buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
+//            buildConfigField("String","H5URL","\"http://apph5.xy860.com/\"")
 
-//            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
-//            buildConfigField("String","H5URL","\"http://apph5.niaogebiji.com/\"")
+            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
+            buildConfigField("String","H5URL","\"http://apph5.niaogebiji.com/\"")
 
             buildConfigField("String","SecretKey","\"TESTINGT82U8qPK5wSyjtoyseZcP2iXlsN2VdC5\"")
 //            signingConfig signingConfigs.config

@@ -120,6 +120,7 @@ public class BaseApp extends Application {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         String id = JPushInterface.getRegistrationID(this);
+        //注册成功后，可能有的时候不会显示id -- 在此处
         KLog.d("tag","极光推送的id " + id + "");
 
 
@@ -137,12 +138,12 @@ public class BaseApp extends Application {
 
                 @Override
                 public void log(String content, Throwable t) {
-                    Log.d(TAG, content, t);
+                    KLog.d("tag", content, t);
                 }
 
                 @Override
                 public void log(String content) {
-                    Log.d(TAG, content);
+                    KLog.d("tag", content);
                 }
             };
             Logger.setLogger(this, newLogger);

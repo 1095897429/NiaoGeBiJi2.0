@@ -476,8 +476,8 @@ public static java.lang.String TABLENAME;
 -keep class com.bun.miitmdid.core.** {*;}
 
 #小米推送
--dontwarncom.xiaomi.push.**
--keepclasscom.xiaomi.push.**{*;}
+-dontwarn com.xiaomi.push.**
+-keep class com.xiaomi.push.**{*;}
 
 #oppo推送
 -dontwarn com.coloros.mcsdk.**

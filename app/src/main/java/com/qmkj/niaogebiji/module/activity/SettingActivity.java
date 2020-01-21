@@ -2,6 +2,8 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.LifecycleOwner;
@@ -28,6 +31,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler;
+import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
@@ -42,6 +46,7 @@ import com.qmkj.niaogebiji.common.utils.Base64;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.common.utils.NotificationUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -62,6 +67,7 @@ import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.jpush.android.api.JPushInterface;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -108,6 +114,7 @@ public class SettingActivity extends BaseActivity {
     private RegisterLoginBean.UserInfo userInfo;
 
 
+    private boolean isOk;
 
     @Override
     protected int getLayoutId() {
@@ -141,20 +148,65 @@ public class SettingActivity extends BaseActivity {
 
         tv_title.setText("设置");
 
-        boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
-        if(isOpen){
-            open_push.setImageResource(R.mipmap.icon_push_open);
-            push_tx.setText("已开启");
-        }else{
-            open_push.setImageResource(R.mipmap.icon_push_close);
-            push_tx.setText("已关闭");
-        }
+//        boolean isOpen = SPUtils.getInstance().getBoolean("push_open",true);
+//        if(isOpen){
+//            open_push.setImageResource(R.mipmap.icon_push_open);
+//            push_tx.setText("已开启");
+//            if(BuildConfig.DEBUG){
+//                requestPermission(this);
+//            }
+//            JPushInterface.resumePush(getApplicationContext());
+//        }else{
+//            open_push.setImageResource(R.mipmap.icon_push_close);
+//            push_tx.setText("已关闭");
+//            JPushInterface.stopPush(getApplicationContext());
+//
+//        }
 
         Random rand = new Random();
         int i = rand.nextInt(15) + 1;
         clean_text.setText("当前缓存" + i + "M");
+
+
+        //应用程序接收通知开关是否打开
+//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+//        boolean areNotificationsEnabled = notificationManagerCompat.areNotificationsEnabled();
+//        if(areNotificationsEnabled){
+//            KLog.d("tag","应用程序接收通知开关已打开");
+//        }else{
+//            KLog.d("tag","应用程序接收通知开关未打开");
+//        }
+
+
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //判断是否需要开启通知栏功能
+            NotificationUtil.OpenNotificationSetting(mContext, new NotificationUtil.OnSettingLitener() {
+                @Override
+                public void onSetting() {
+                    KLog.d("tag","应用程序接收通知开关未打开");
+                    open_push.setImageResource(R.mipmap.icon_push_close);
+                    push_tx.setText("已关闭");
+                    isOk = false;
+
+                }
+            },new NotificationUtil.OnNextLitener() {
+                @Override
+                public void onNext() {
+                    isOk = true;
+                    KLog.d("tag","应用程序接收通知开关已打开");
+                    open_push.setImageResource(R.mipmap.icon_push_open);
+                    push_tx.setText("已开启");
+                }
+            });
+        }
+
+    }
 
     @OnClick({R.id.iv_back,R.id.change_head,
             R.id.exit_ll,
@@ -201,16 +253,25 @@ public class SettingActivity extends BaseActivity {
 
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_push_2_0_0);
 
-                boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
-                if(isOpen){
-                    open_push.setImageResource(R.mipmap.icon_push_close);
-                    push_tx.setText("已关闭");
-                    SPUtils.getInstance().put("push_open",false);
-                }else{
-                    open_push.setImageResource(R.mipmap.icon_push_open);
-                    push_tx.setText("已开启");
-                    SPUtils.getInstance().put("push_open",true);
-                }
+                NotificationUtil.gotoSet(BaseApp.getApplication());
+
+//                if(!isOk){
+//                    NotificationUtil.gotoSet(BaseApp.getApplication());
+//                }else{
+//                    boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
+//                    if(isOpen){
+//                        open_push.setImageResource(R.mipmap.icon_push_close);
+//                        push_tx.setText("已关闭");
+//                        SPUtils.getInstance().put("push_open",false);
+//                    }else{
+//                        open_push.setImageResource(R.mipmap.icon_push_open);
+//                        push_tx.setText("已开启");
+//                        SPUtils.getInstance().put("push_open",true);
+//                    }
+//                }
+
+
+
 
                 break;
             case R.id.change_cache:
@@ -445,6 +506,7 @@ public class SettingActivity extends BaseActivity {
         try {
             fis = new FileInputStream(FileHelper.getOutputEditImageFile(this).getPath());
         } catch (FileNotFoundException e) {
+            KLog.d("tag",e.getMessage());
             e.printStackTrace();
         }
         Bitmap bitmap = BitmapFactory.decodeStream(fis);

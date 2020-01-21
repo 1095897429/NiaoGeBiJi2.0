@@ -78,6 +78,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
 
+
     //页数
     private int page = 1;
     //适配器
@@ -167,6 +168,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
                                 KLog.d("tag","设置空布局");
                                 //第一次加载无数据
                                 ll_empty.setVisibility(View.VISIBLE);
+                                ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_author);
                                 ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("您还没有关注的圈子用户哦，快去推荐看看吧！");
                                 mRecyclerView.setVisibility(View.GONE);
 

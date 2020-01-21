@@ -284,6 +284,8 @@ public class NewsDetailActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+
+        KLog.e("tag","NewsDetailActivity ----  initData");
         showWaitingDialog();
         newsId = getIntent().getStringExtra("newsId");
         initTestLayout();

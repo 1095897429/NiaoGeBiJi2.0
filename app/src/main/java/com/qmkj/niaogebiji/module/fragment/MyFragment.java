@@ -238,7 +238,7 @@ public class MyFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
 
                         mUserInfo = response.getReturn_data();
-                        KLog.d("tag","邀请链接是 " + mUserInfo.getInvite_url());
+//                        KLog.d("tag","邀请链接是 " + mUserInfo.getInvite_url());
                         if(null != mUserInfo){
                             StringUtil.setUserInfoBean(mUserInfo);
                             setUserInfo();
@@ -253,7 +253,6 @@ public class MyFragment extends BaseLazyFragment {
 
     private void setUserInfo() {
         if(null != mUserInfo){
-
             //是否显示红点  个人中心消息通知：1-有新消息，0-无新消息
            if(!TextUtils.isEmpty( mUserInfo.getIs_red())){
                if("1".equals( mUserInfo.getIs_red())){
@@ -453,6 +452,7 @@ public class MyFragment extends BaseLazyFragment {
                 MobclickAgentUtils.onEvent(UmengEvent.i_message_2_0_0);
 
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
+
                 break;
             case R.id.head_icon:
                 MobclickAgentUtils.onEvent(UmengEvent.i_icon_2_0_0);

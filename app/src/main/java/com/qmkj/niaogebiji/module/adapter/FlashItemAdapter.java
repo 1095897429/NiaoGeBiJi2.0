@@ -85,7 +85,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
 
 
         //图片
-        String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//        String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
 
 
 
@@ -109,19 +109,19 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
 
 
         if("1".equals(pic_type)){
-            ImageUtil.load(mContext,mBean.getPic() + scaleSize ,helper.getView(R.id.one_img));
+            ImageUtil.load(mContext,mBean.getPic()  ,helper.getView(R.id.one_img));
             ArrayList<String> onePics = new ArrayList<>();
             onePics.add(mBean.getPic());
             helper.getView(R.id.one_img).setOnClickListener(v -> UIHelper.toPicPreViewActivity(mContext, onePics, 0,true));
         }else if("2".equals(pic_type) || "3".equals(pic_type)) {
             ArrayList<String> mPics = new ArrayList<>();
             if (!TextUtils.isEmpty(mBean.getPic3())) {
-                mPics.add(mBean.getPic() + scaleSize);
-                mPics.add(mBean.getPic2() + scaleSize);
-                mPics.add(mBean.getPic3() + scaleSize);
+                mPics.add(mBean.getPic() );
+                mPics.add(mBean.getPic2() );
+                mPics.add(mBean.getPic3() );
             } else {
-                mPics.add(mBean.getPic() + scaleSize);
-                mPics.add(mBean.getPic2() + scaleSize);
+                mPics.add(mBean.getPic() );
+                mPics.add(mBean.getPic2() );
             }
             //二级评论布局
             GridLayoutManager layoutManager = new GridLayoutManager(mContext, 3);

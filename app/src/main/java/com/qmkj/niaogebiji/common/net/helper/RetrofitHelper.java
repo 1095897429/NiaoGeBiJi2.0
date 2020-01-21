@@ -153,8 +153,8 @@ public class RetrofitHelper {
         }
         map.put("access_token",token);
 
-
         //TODO 2020.1.16号新增
+//        KLog.e("tag","jpush_id " + JPushInterface.getRegistrationID(BaseApp.getApplication()));
         map.put("jpush_id", JPushInterface.getRegistrationID(BaseApp.getApplication()));
 
         //渠道号

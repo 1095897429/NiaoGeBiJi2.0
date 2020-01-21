@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -33,6 +35,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.ChannelUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.socks.library.KLog;
 
 import java.util.ArrayList;
@@ -76,6 +79,23 @@ public class SplashActivity extends BaseActivity {
     private AnimationDrawable animationDrawable;
 
 
+    private JPushBean mJPushBean;
+
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //当前Activity是否为根Activity，即应用启动的第一个Activity
+        if (!this.isTaskRoot() && getIntent() != null) {
+            String action = getIntent().getAction();
+            if (getIntent().hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(action)) {
+                finish();
+                return;
+            }
+        }
+
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_splash;
@@ -88,10 +108,10 @@ public class SplashActivity extends BaseActivity {
         animationDrawable = (AnimationDrawable) animationIV.getDrawable();
         animationDrawable.start();
 
-        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-            finish();
-            return;
-        }
+//        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+//            finish();
+//            return;
+//        }
 
 
         //TODO 2020.1.10 应用宝渠道首个界面显示隐私弹框
@@ -101,11 +121,18 @@ public class SplashActivity extends BaseActivity {
         }
 
 
+        if(getIntent().getExtras() != null){
+            mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
+        }
     }
 
 
     @Override
     public void initData() {
+
+        KLog.e("tag","SplashActivity ----  initData");
+
+
         if(isHuaWei()){
             /** SDK连接HMS -- 打开后的首个界面 */
             HMSAgent.connect(this, rst -> KLog.e("tag","HMS connect end:" + rst));
@@ -113,6 +140,15 @@ public class SplashActivity extends BaseActivity {
         }
     }
 
+    //推送走这里了
+    @Override
+    protected void onNewIntent(Intent intent) {
+        KLog.e("tag","SplashActivity ----  onNewIntent");
+        super.onNewIntent(intent);
+        if(intent.getExtras() != null){
+            mJPushBean = (JPushBean) intent.getExtras().getSerializable("jpushbean");
+        }
+    }
 
     //0867229032433051300004997800CN01 -- 测试机器1
     //AAXKNSLVvqqvtmuIxbiAI2-syr7aRanHEFA9XO0qtA_WDJQGGPQM6yM6srOB6NLQPkf_yFc6skaTqkkMKD7aOJzXDj1Zjuv7asdTGDtqvo2rHHciRvaiZBqnAx5aj5d2WQ -- 测试机器2
@@ -355,7 +391,14 @@ public class SplashActivity extends BaseActivity {
             boolean isLogin  = SPUtils.getInstance().getBoolean(Constant.IS_LOGIN,false);
             if(firstCome){
                 if(isLogin){
-                    UIHelper.toHomeActivity(SplashActivity.this,0);
+                    KLog.e("tag"," 闪屏去主界面 ");
+
+                    Intent intent = new Intent(this, HomeActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("type",0);
+                    bundle.putSerializable("jpushbean",mJPushBean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }else{
                     UIHelper.toLoginActivity(SplashActivity.this);
                 }

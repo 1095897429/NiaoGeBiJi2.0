@@ -114,7 +114,8 @@
 
 
 
-        <activity android:name=".module.activity.SplashActivity">
+        <activity android:name=".module.activity.SplashActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -443,14 +444,6 @@
         </receiver>
 
 
-        <!--<service-->
-            <!--android:name="cn.jpush.android.service.PluginHuaweiPlatformsService"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.huawei.push.action.MESSAGING_EVENT" />-->
-            <!--</intent-filter>-->
-        <!--</service>-->
-
         <!--  ==================================================== 推送 2==================================================== -->
 
         <!--华为推送服务的配置 -->
@@ -582,19 +575,23 @@
             <!--android:name="com.xiaomi.mipush.sdk.MessageHandleService"-->
             <!--android:enabled="true" />-->
 
-        <receiver
-            android:name="com.qmkj.niaogebiji.common.push.XiaoMiMessageReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.xiaomi.mipush.ERROR" />
-            </intent-filter>
-        </receiver>
+        <!-- TODO -->
+        <!--<receiver-->
+            <!--android:name="com.qmkj.niaogebiji.common.push.XiaoMiMessageReceiver"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.ERROR" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!---->
+
+
         <!--<receiver-->
             <!--android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"-->
             <!--android:exported="true">-->
@@ -625,13 +622,13 @@
             <!--android:screenOrientation="portrait"-->
             <!--android:theme="@android:style/Theme.Translucent.NoTitleBar" />-->
 
-        <!-- push应用定义消息receiver声明 -->
-        <receiver android:name="com.qmkj.niaogebiji.common.push.VivoMessageReceiver">
-            <intent-filter>
-                <!-- 接收push消息 -->
-                <action android:name="com.vivo.pushclient.action.RECEIVE" />
-            </intent-filter>
-        </receiver>
+        <!-- TODO push应用定义消息receiver声明 -->
+        <!--<receiver android:name="com.qmkj.niaogebiji.common.push.VivoMessageReceiver">-->
+            <!--<intent-filter>-->
+                <!--&lt;!&ndash; 接收push消息 &ndash;&gt;-->
+                <!--<action android:name="com.vivo.pushclient.action.RECEIVE" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <!--请替换aaaa为应用在开放平台申请的app_key-->
         <!--<meta-data-->

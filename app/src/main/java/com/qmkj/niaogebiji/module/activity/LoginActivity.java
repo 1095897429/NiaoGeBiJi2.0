@@ -349,6 +349,12 @@ public class LoginActivity extends BaseActivity {
     private static final long MIN_CLICK_INTERVAL = 600;
     private long mLastClickTime;
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();//注释掉这行,back键不退出activity
+
+        KLog.d("tag","按下了back键   onBackPressed()");
+    }
 
 
 }

@@ -88,6 +88,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -192,6 +193,8 @@ public class CircleMakeActivity extends BaseActivity {
     @Override
     public void initData() {
 
+//        mHandler = new MyHandler(this);
+
         mTempMsgBean = getTempMsg();
         //上次是保存草稿的
         if(null != mTempMsgBean){
@@ -217,6 +220,7 @@ public class CircleMakeActivity extends BaseActivity {
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
 
                         //如果是网址  并且url无效，同样的不给点击
+                        KLog.d("tag","长度是 " + link_title.getText().toString());
                         if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
                             return;
                         }
@@ -253,9 +257,9 @@ public class CircleMakeActivity extends BaseActivity {
     }
 
     @OnClick({R.id.cancel,R.id.send,
-                R.id.link_ll,
+                R.id.link,
                 R.id.to_delete_link,
-                R.id.make_ll,
+                R.id.make,
                 R.id.part2222})
     public void clicks(View view){
         KeyboardUtils.hideSoftInput(mEditText);
@@ -268,7 +272,7 @@ public class CircleMakeActivity extends BaseActivity {
                 KLog.d("tag","跳转到外链");
                 UIHelper.toWebViewActivity(this,linkurl);
                 break;
-            case R.id.make_ll:
+            case R.id.make:
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_pictbtn_2_0_0);
                 showHeadDialog();
                 break;
@@ -280,7 +284,7 @@ public class CircleMakeActivity extends BaseActivity {
                 setStatus(true);
                 setSendStatus(true);
                 break;
-            case R.id.link_ll:
+            case R.id.link:
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_linkbtn_2_0_0);
 
                 UIHelper.toCircleMakeAddLinkActivity(this,REQCODE);
@@ -379,7 +383,9 @@ public class CircleMakeActivity extends BaseActivity {
             HttpURLConnection oc = (HttpURLConnection) urlObj.openConnection();
             oc.setUseCaches(false);
             // 设置超时时间
-            oc.setConnectTimeout(3000);
+            oc.setConnectTimeout(10 * 1000);
+
+            oc.setReadTimeout(10 * 1000);
             // 请求状态
             status = oc.getResponseCode();
             if (200 == status) {
@@ -406,6 +412,28 @@ public class CircleMakeActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 创建静态内部类
+     */
+//    private static class MyHandler extends Handler{
+//        //持有弱引用HandlerActivity,GC回收时会被回收掉.
+//        private final WeakReference<Activity> mActivty;
+//        public MyHandler(Activity activity){
+//            mActivty =new WeakReference<Activity>(activity);
+//        }
+//        @Override
+//        public void handleMessage(Message msg) {
+//            Activity activity = mActivty.get();
+//            super.handleMessage(msg);
+//            if(activity != null){
+//                //执行业务逻辑
+//                link_url.setText(tempLink);
+//                link_title.setText(TextUtils.isEmpty(linkTitle) ? "无标题网址" : linkTitle);
+//                setStatus(false);
+//            }
+//        }
+//    }
+
 
     @SuppressLint("HandlerLeak")
     public  Handler mHandler = new Handler(){
@@ -413,6 +441,12 @@ public class CircleMakeActivity extends BaseActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if(this != null){
+                int code = (int) msg.obj;
+                if(200 != code){
+                    setSendStatus(false);
+                }else{
+                    setSendStatus(true);
+                }
                 link_url.setText(tempLink);
                 link_title.setText(TextUtils.isEmpty(linkTitle) ? "无标题网址" : linkTitle);
                 setStatus(false);
@@ -431,11 +465,16 @@ public class CircleMakeActivity extends BaseActivity {
         if(REQCODE == requestCode && resultCode == RESULT_OK){
             Bundle bundle = data.getExtras();
             linkurl = bundle.getString("add_link");
+            //这里是没有值的
             linkTitle = bundle.getString("link_title");
 
             //先回复默认值
             link_url.setText("");
-            link_title.setText("");
+            link_title.setText("链接解析中...");
+
+            //解析的时候不能点击
+            setStatus(false);
+            setSendStatus(false);
 
             //检查link 并且是否符合规范
             if(!TextUtils.isEmpty(linkurl)){
@@ -450,18 +489,20 @@ public class CircleMakeActivity extends BaseActivity {
                     linkTitle = getWebTitle(linkurl);
                     //④ 判断链接是否可用
                     int status = testWsdlConnection(linkurl);
-                    KLog.d("tag",status + "");
-                    if(200 != status){
-                        isUrlOk = false;
-                        ToastUtils.showShort("解析失败，请重新添加");
-                        linkTitle = "解析失败，请重新添加";
-                        setSendStatus(false);
-                    }else{
-                        isUrlOk = true;
-                    }
+                    KLog.e("tag",status + "");
+                    if(this != null && !this.isFinishing()){
+                        if(200 != status){
+                            isUrlOk = false;
+                            ToastUtils.showShort("解析失败，请重新添加");
+                            linkTitle = "解析失败，请重新添加";
+                        }else{
+                            isUrlOk = true;
 
-                    Message message = Message.obtain();
-                    mHandler.sendMessage(message);
+                        }
+                        Message message = Message.obtain();
+                        message.obj = status;
+                        mHandler.sendMessage(message);
+                    }
                 }).start();
 
             }
@@ -546,7 +587,7 @@ public class CircleMakeActivity extends BaseActivity {
 
         mTempMsgBean.setContent(mEditText.getText().toString().trim());
         //12.26 link 在点击删除按钮时清空了
-        mTempMsgBean.setLinkTitle(linkTitle);
+        mTempMsgBean.setLinkTitle(link_title.getText().toString().trim());
         mTempMsgBean.setLinkurl(linkurl);
         //
         if(!mediaFiles.isEmpty()){
@@ -564,10 +605,6 @@ public class CircleMakeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!TextUtils.isEmpty(mEditText.getEditableText().toString())){
-
-        }
-
     }
 
     private void getData() {
@@ -597,19 +634,21 @@ public class CircleMakeActivity extends BaseActivity {
                         //④ 判断链接是否可用
                         int status = testWsdlConnection(linkurl);
                         KLog.d("tag",status + "");
-                        if(200 != status){
-                            isUrlOk = false;
-                            ToastUtils.showShort("解析失败，请重新添加");
-                            linkTitle = "解析失败，请重新添加";
-                            setSendStatus(false);
-                        }else{
-                            isUrlOk = true;
+                        if(this != null && !this.isFinishing()){
+                            if(200 != status){
+                                isUrlOk = false;
+                                ToastUtils.showShort("解析失败，请重新添加");
+                                linkTitle = "解析失败，请重新添加";
+                                setSendStatus(false);
+                            }else{
+                                setSendStatus(true);
+                                isUrlOk = true;
+                            }
+                            Message message = Message.obtain();
+                            mHandler.sendMessage(message);
                         }
 
-                        Message message = Message.obtain();
-                        mHandler.sendMessage(message);
                     }).start();
-
                 }
                 setStatus(false);
             }
@@ -808,6 +847,13 @@ public class CircleMakeActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-
+        if(mHandler != null){
+            // 移除所有消息
+            mHandler.removeCallbacksAndMessages(null);
+        }
+    }
 }

@@ -36,8 +36,8 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
             onSuccess(response);
         }else{
             //TODO 2020.1.13 账号登录问题，去登录界面
-            //您当前未登录，先去登录吧！
-            if("2003".equals(response.getReturn_code())){
+            //您当前未登录，先去登录吧！    1008 账号不存在
+            if("2003".equals(response.getReturn_code()) || "1008".equals(response.getReturn_code())){
                 UIHelper.toLoginActivity(BaseApp.getApplication());
             }
 

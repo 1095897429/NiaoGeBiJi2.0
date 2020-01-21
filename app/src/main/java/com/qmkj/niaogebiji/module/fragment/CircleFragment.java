@@ -465,7 +465,7 @@ public class CircleFragment extends BaseLazyFragment {
             data = linkedList.poll();
 
             mExecutorService.submit(() -> {
-                KLog.d("tag","data "  + data);
+                KLog.d("tag","本地存储的路径是 "  + data);
                 uploadManager.put(data, System.currentTimeMillis() + key , qiniuToken, new UpCompletionHandler() {
                     @Override
                     public void complete(String key, ResponseInfo info, JSONObject response) {

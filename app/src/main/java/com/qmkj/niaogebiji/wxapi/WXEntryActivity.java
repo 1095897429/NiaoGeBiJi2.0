@@ -45,6 +45,8 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-11-8
  * 描述: code been used -- 什么原因导致用过了，Activity 可以，换成 WXCallbackActivity 就不行
  *       WXCallbackActivity 是友盟的，他已经消耗过了
+ *
+ * 版本2：微信登录成功之后，判断是否能拿到手机号，拿不到就跳转到让他自己输入手机号的页面
  */
 public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
 
@@ -155,6 +157,9 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                             if(!TextUtils.isEmpty(mWxResultBean.getWechat_token())){
                                 UIHelper.toPhoneInputActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
                                 EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
+                                //TODO 新逻辑，进入闪验界面
+//                                UIHelper.toPhoneShanYanActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
+//                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
                             }else{
                                 RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
                                 StringUtil.setUserInfoBean(mUserInfo);

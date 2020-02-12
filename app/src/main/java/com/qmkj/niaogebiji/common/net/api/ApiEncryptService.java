@@ -58,6 +58,7 @@ import com.qmkj.niaogebiji.module.bean.VipBean;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
@@ -712,6 +713,14 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/init/getInitData")
     Observable<HttpResponse<InitDataBean>> getInitData(@Field("params") String param);
+
+
+
+
+//    /* TODO 2019.1.21 推荐动态 换种方式返回 */
+//    @FormUrlEncoded
+//    @POST("app/blog/recommendBlogList")
+//    Observable<ResponseBody> recommendBlogListNew(@Field("params") String param);
 
 
 

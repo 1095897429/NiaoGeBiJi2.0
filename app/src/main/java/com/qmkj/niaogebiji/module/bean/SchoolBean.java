@@ -223,6 +223,7 @@ public class SchoolBean extends BaseBean {
 
 
     public class Record extends BaseBean{
+        // 是否已参加过测试 1是 0否
         private int is_tested;
         private String score;
 

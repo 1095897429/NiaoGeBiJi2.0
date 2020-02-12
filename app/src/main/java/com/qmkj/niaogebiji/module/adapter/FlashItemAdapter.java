@@ -51,7 +51,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
 
 
     public FlashItemAdapter(@Nullable List<FlashBulltinBean.BuilltinBean> data) {
-        super(R.layout.item_flash,data);
+        super(R.layout.item_flash_v2,data);
     }
 
 
@@ -63,8 +63,10 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
 
         helper.addOnClickListener(R.id.part2222).addOnClickListener(R.id.part3333);
 
+
+        //旧的隐藏
         if(helper.getAdapterPosition() == 0){
-            helper.setVisible(R.id.sticky_header,false);
+            helper.setVisible(R.id.sticky_header,true);
         }else{
             //比较当前和之前一个item的展示时间 一样则不显示
             if(mData.get(helper.getAdapterPosition() - 1).getShow_time().equals(mBean.getShow_time())){
@@ -74,8 +76,12 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             }
         }
 
-        //showTime
-        helper.setText(R.id.header_textview,mBean.getShow_time());
+
+
+        //showTime --几月几号 目前后台返回的是 12/25 的形式
+//        helper.setText(R.id.header_textview,mBean.getShow_time());
+        //星期几
+//        helper.setText(R.id.header_textview_weekend,mBean.getShow_time());
 
         helper.setText(R.id.content_des,mBean.getContent());
 
@@ -180,15 +186,34 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         }
 
 
+        //头条 || 顶置
+        if("1".equals(mBean.getTop())){
+            helper.setVisible(R.id.dingzhi,true);
+        }else{
+            helper.setVisible(R.id.dingzhi,false);
+        }
 
 
         //时间
         Typeface typeface2= Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
         ((TextView)helper.getView(R.id.zan_num)).setTypeface(typeface2);
 
-        if(!TextUtils.isEmpty(mBean.getPub_time())){
-            helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
+//        if(!TextUtils.isEmpty(mBean.getPub_time())){
+//            helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
+//        }
+
+        //拿到它的createTime -- 显示日期 -- 再显示星期
+        if(!TextUtils.isEmpty(mBean.getCreated_at())){
+            String temp = TimeUtils.millis2String(Long.parseLong(mBean.getCreated_at())* 1000L,"yyyy-MM-dd HH:mm:ss");
+            helper.setText(R.id.header_textview, TimeUtils.millis2String(Long.parseLong(mBean.getCreated_at())* 1000L,"MM月dd日"));
+            KLog.e("tag","创建时间 " +  temp);
+
+            String string = TimeUtils.getChineseWeek(temp);
+            helper.setText(R.id.header_textview_weekend, string);
+            KLog.e("tag","星期： " +  string);
         }
+
+
 
         if(1 == mBean.getIs_good()){
             helper.setTextColor(R.id.zan_num,mContext.getResources().getColor(R.color.zan_select));

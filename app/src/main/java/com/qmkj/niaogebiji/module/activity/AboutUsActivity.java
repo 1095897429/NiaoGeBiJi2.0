@@ -6,7 +6,9 @@ import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,6 +40,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.jpush.android.api.JPushInterface;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -68,6 +71,11 @@ public class AboutUsActivity extends BaseActivity {
         return R.layout.activity_aboutus;
     }
 
+
+    private int mSecretNumber = 0;
+    private static final long MIN_CLICK_INTERVAL = 600;
+    private long mLastClickTime;
+
     @Override
     protected void initView() {
         tv_title.setText("关于我们");
@@ -84,6 +92,36 @@ public class AboutUsActivity extends BaseActivity {
         });
 
         getInitData();
+
+
+        findViewById(R.id.icon).setOnClickListener(v -> {
+            long currentClickTime = SystemClock.uptimeMillis();
+            long elapsedTime = currentClickTime - mLastClickTime;
+            mLastClickTime = currentClickTime;
+
+            if (elapsedTime < MIN_CLICK_INTERVAL) {
+                ++mSecretNumber;
+                if (9 == mSecretNumber) {
+                    try {
+                        // to do 在这处理你想做的事件
+                        String id = JPushInterface.getRegistrationID(this);
+                        //注册成功后，可能有的时候不会显示id -- 在此处
+                        KLog.d("tag","极光推送的id " + id + "");
+                        //同时复制到剪贴板上
+                        StringUtil.copyLink(id);
+                    } catch (Exception e) {
+                        Log.i("tag", e.toString());
+                    }
+                }
+            } else {
+                mSecretNumber = 0;
+                String channel = ChannelUtil.getChannel(AboutUsActivity.this);
+                if(!TextUtils.isEmpty(channel)){
+                    ToastUtils.showShort(channel + "\n" + (BuildConfig.DEBUG ? "测试服":"正式服"));
+                }
+            }
+
+        });
 
     }
 
@@ -108,7 +146,7 @@ public class AboutUsActivity extends BaseActivity {
                 });
     }
 
-    @OnClick({R.id.iv_back,R.id.icon,R.id.rl_weixin,
+    @OnClick({R.id.iv_back,R.id.rl_weixin,
             R.id.rl_version_code,
             R.id.rl_hezuo})
     public void clicks(View view){
@@ -132,12 +170,6 @@ public class AboutUsActivity extends BaseActivity {
             case R.id.rl_version_code:
                 checkupd();
                 MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
-                break;
-            case R.id.icon:
-                String channel = ChannelUtil.getChannel(AboutUsActivity.this);
-                if(!TextUtils.isEmpty(channel)){
-                    ToastUtils.showShort(channel + "\n" + (BuildConfig.DEBUG ? "测试服":"正式服"));
-                }
                 break;
             case R.id.iv_back:
                 finish();

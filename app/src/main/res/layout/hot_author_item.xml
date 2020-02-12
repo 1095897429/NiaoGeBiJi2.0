@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:layout_height="98.5dp">
+
+
+    <LinearLayout
+        android:id="@+id/part2222"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/rank"
+        android:layout_alignTop="@+id/rank"
+        android:layout_alignBottom="@+id/rank"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:gravity="center|left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/one_img_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lineSpacingExtra="1dp"
+                android:maxLines="3"
+                android:text="小羽毛"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="17sp" />
+
+            <Space
+                android:layout_width="6dp"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/author_type"
+                android:src="@mipmap/hot_author_professor"
+                android:layout_width="60dp"
+                android:layout_height="18dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:paddingTop="5.5dp"
+            android:paddingBottom="6.5dp"
+            android:id="@+id/author_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="新媒体运营方向优秀作者"
+            android:textColor="#818386"
+            android:textSize="13sp" />
+
+
+        <TextView
+            android:id="@+id/effect_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="影响力 20.1w"
+            android:textColor="@color/text_news_tag_color"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_centerVertical="true"
+        android:id="@+id/rank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/head_icon"
+            android:src="@mipmap/icon_head_default"
+            android:layout_centerInParent="true"
+            android:layout_width="70dp"
+            android:layout_height="70dp" />
+
+        <TextView
+            android:layout_alignLeft="@+id/head_icon"
+            android:layout_alignTop="@+id/head_icon"
+            android:id="@+id/author_rank"
+            android:text="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:background="@mipmap/hot_author1"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp" />
+
+
+    </RelativeLayout>
+
+
+    <View
+        android:layout_marginLeft="34dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/divider_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+
+</RelativeLayout>

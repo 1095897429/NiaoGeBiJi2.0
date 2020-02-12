@@ -76,6 +76,7 @@ import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
@@ -370,8 +371,29 @@ public class StringUtil {
             web.setThumb(thumb);
             //描述
             web.setDescription(summary);
-
+            //新增一个listener，toast提示
             new ShareAction(activity)
+                    .setCallback(new UMShareListener() {
+                        @Override
+                        public void onStart(SHARE_MEDIA share_media) {
+
+                        }
+
+                        @Override
+                        public void onResult(SHARE_MEDIA share_media) {
+                            KLog.d("tag","分享成功");
+                        }
+
+                        @Override
+                        public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+
+                        }
+
+                        @Override
+                        public void onCancel(SHARE_MEDIA share_media) {
+
+                        }
+                    })
                     .setPlatform(platform)
                     .withMedia(web)
                     .share();
@@ -821,11 +843,12 @@ public class StringUtil {
     }
 
 
-/**
+    /**
      * 判断某一个类是否存在任务栈里面
      *
      * @return
      */
+    @SuppressLint("NewApi")
     public static boolean isExsitMianActivity(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
         ComponentName cmpName = intent.resolveActivity(context

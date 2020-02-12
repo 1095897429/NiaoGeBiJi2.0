@@ -56,4 +56,8 @@ public class Constant {
     public static final String VIVO_APP_KEY = "3c4a8483-9533-403b-b1c4-4614eb2b8018";
     public static final String VIVO_APP_SECREAT = "f7678f7d-219b-4f4a-af82-19672eb67b05";
 
+
+    public static final String SY_APP_ID = "7caeaSJH";
+    public static final String SY_APP_KEY = "jQAaFcWm";
+
 }

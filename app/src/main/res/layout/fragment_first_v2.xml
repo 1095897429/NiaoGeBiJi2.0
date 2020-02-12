@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/coordinator"
+    android:paddingTop="@dimen/status_bar_height"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- AppBarLayout控件便具备顶部固定的功能 -->
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbarlayout"
+                android:background="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="15dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/search_part"
+                            android:layout_height="40dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_corners_8_gray"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_marginLeft="9dp"
+                                android:src="@mipmap/icon_sousou"
+                                android:layout_gravity="center|left"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp" />
+
+                            <Space
+                                android:layout_width="10dp"
+                                android:layout_height="match_parent" />
+
+                            <TextView
+                                android:id="@+id/first_search"
+                                android:layout_width="wrap_content"
+                                android:text=""
+                                android:textSize="13sp"
+                                android:textColor="#AAAEB3"
+                                android:layout_gravity="center|left"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+
+                        <Space
+                            android:layout_width="16dp"
+                            android:layout_height="match_parent" />
+
+                        <RelativeLayout
+                            android:id="@+id/rl_sign"
+                            android:layout_width="34dp"
+                            android:layout_height="30dp">
+
+                            <ImageView
+                                android:id="@+id/icon_sign"
+                                android:src="@mipmap/icon_is_sign"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp" />
+
+                            <FrameLayout
+                                android:id="@+id/red_point"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginLeft="18dp"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentTop="true"
+                                android:background="@drawable/bg_white_point"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_gravity="center"
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_red_point"
+                                    android:padding="0dp"
+                                    android:textSize="12dp"
+                                    android:visibility="visible" />
+                            </FrameLayout>
+
+
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_moring"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:background="@drawable/bg_corners_14_gradient"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="16dp"
+                            android:paddingLeft="14dp"
+                            android:paddingRight="14dp"
+                            android:paddingBottom="5dp"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/moring1"
+                                    android:src="@mipmap/icon_moring_1"
+                                    android:layout_width="86dp"
+                                    android:layout_height="32dp" />
+
+                                <TextView
+                                    android:layout_marginLeft="9dp"
+                                    android:layout_toRightOf="@+id/moring1"
+                                    android:id="@+id/moring_time"
+                                    android:text=""
+                                    android:textSize="11sp"
+                                    android:layout_centerVertical="true"
+                                    android:textColor="#AAAEB3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+
+                                <TextView
+                                    android:id="@+id/toMoreMoring"
+                                    android:text="查看更多"
+                                    android:layout_marginRight="14dp"
+                                    android:textSize="11sp"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:textColor="@color/text_three_color"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_toLeftOf="@+id/listenMoring"
+                                    android:layout_centerVertical="true"
+                                    android:id="@+id/moring_content"
+                                    android:layout_marginTop="8dp"
+                                    android:textSize="14sp"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"
+                                    android:textColor="@color/text_first_color"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+
+                                <ImageView
+                                    android:id="@+id/listenMoring"
+                                    android:src="@mipmap/icon_moring_play"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="72dp"
+                                    android:layout_height="64dp" />
+
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_marginTop="9dp"
+                        android:id="@+id/tool_part"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="76dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:orientation="vertical">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/tool_recycler"
+                            android:layout_centerVertical="true"
+                            android:overScrollMode="never"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        </androidx.recyclerview.widget.RecyclerView>
+
+
+                        <LinearLayout
+                            android:id="@+id/toVip"
+                            android:background="@drawable/bg_corners_14_40_transparent"
+                            android:visibility="gone"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="76dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:background="@drawable/bg_corners_8_orange_gradient"
+                                android:text="免费领取VIP 实用工具任你用"
+                                android:gravity="center"
+                                android:textColor="#6A3227"
+                                android:textSize="13sp"
+                                android:layout_width="205dp"
+                                android:layout_height="34dp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal">
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:id="@+id/llll"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3
+                                android:id="@+id/pager_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="44dp">
+
+                            </com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3>
+
+
+
+                        </RelativeLayout>
+
+
+
+                    </LinearLayout>
+
+                    <ImageView
+
+                        android:id="@+id/icon_search"
+                        android:src="@mipmap/hot_search_icon"
+                        android:layout_marginRight="18dp"
+                        android:visibility="gone"
+                        android:layout_gravity="center"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp" />
+
+
+                    <ImageView
+                        android:id="@+id/icon_catogory"
+                        android:src="@mipmap/icon_category_1"
+                        android:visibility="visible"
+                        android:layout_gravity="center"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp" />
+
+                </LinearLayout>
+
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <!--  app:layout_behavior="@string/appbar_scrolling_view_behavior" -->
+            <com.qmkj.niaogebiji.module.widget.CustomViewPager
+                app:layout_behavior="com.qmkj.niaogebiji.module.widget.BottomBarBehavior"
+                android:id="@+id/viewpager"
+                android:overScrollMode="never"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </com.qmkj.niaogebiji.module.widget.CustomViewPager>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+
+
+</LinearLayout>
+

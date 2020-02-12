@@ -46,7 +46,7 @@ public class TestItemAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, Bas
             helper.setVisible(R.id.test_time,true);
         }
 
-        //是否已参加过测试 1是 0否
+        //是否已参加过测试 1是 0否 不及格不显示已完成
         if("0".equals(item.getRecord().getIs_tested() + "")){
             helper.setVisible(R.id.is_test_ok,false);
         }else if("1".equals(item.getRecord().getIs_tested() + "")){

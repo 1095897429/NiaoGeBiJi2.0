@@ -81,7 +81,13 @@
                       android:paddingBottom="16dp"
                       android:orientation="vertical">
 
+                      <ImageView
+                          android:src="@mipmap/school_head_img"
+                          android:layout_width="match_parent"
+                          android:layout_height="14dp" />
+
                       <TextView
+                          android:visibility="gone"
                           android:text="——  鸟哥百科·系统化学习营销  —— "
                           android:background="@color/white"
                           android:paddingLeft="10dp"

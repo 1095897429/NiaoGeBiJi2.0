@@ -150,7 +150,7 @@ public class WebViewAllActivity extends BaseActivity {
 
         if("显示一键已读消息".equals(fromWhere)){
             tv_right.setVisibility(View.VISIBLE);
-        }else if(fromWhere.equals("mybadge")){
+        }else if("mybadge".equals(fromWhere)){
             allpart.setBackgroundColor(getResources().getColor(R.color.badge_color));
             iv_back.setImageResource(R.mipmap.icon_back_white);
             tv_title.setVisibility(View.GONE);

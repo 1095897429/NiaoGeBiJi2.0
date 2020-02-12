@@ -32,6 +32,7 @@ import com.qmkj.niaogebiji.module.activity.MyCollectionListActivity;
 import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.NewsThingDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
+import com.qmkj.niaogebiji.module.activity.PhoneInputV2Activity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.SecretActivity;
@@ -97,6 +98,14 @@ public class UIHelper {
     /** 打开输入手机界面 */
     public static void toPhoneInputActivity(Context ctx,String wechat_token,String loginType) {
         Intent intent = new Intent(ctx, PhoneInputActivity.class);
+        intent.putExtra("loginType",loginType);
+        intent.putExtra("wechat_token",wechat_token);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开输入手机闪验界面 */
+    public static void toPhoneShanYanActivity(Context ctx,String wechat_token,String loginType) {
+        Intent intent = new Intent(ctx, PhoneInputV2Activity.class);
         intent.putExtra("loginType",loginType);
         intent.putExtra("wechat_token",wechat_token);
         ctx.startActivity(intent);

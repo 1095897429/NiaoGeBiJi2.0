@@ -97,11 +97,11 @@
             android:layout_height="match_parent" />
 
         <TextView
-            android:id="@+id/one_img_time"
+            android:id="@+id/reading_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="2019.9.23"
+            android:text="阅读 20.1w"
             android:textColor="@color/text_news_tag_color"
             android:textSize="11sp" />
     </LinearLayout>

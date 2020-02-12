@@ -161,6 +161,7 @@ public class TestResultActivity extends BaseActivity {
     Bitmap bitmap =  null;
     private ExecutorService mExecutorService;
 
+    //此部分分享数据来自于后台
     private void showShareDialog() {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(this).builder();
         alertDialog.setSharelinkView();

@@ -44,6 +44,7 @@ import udesk.core.UdeskConst;
  * 版本 1.0
  * 创建时间 2019-11-08
  * 描述:输入手机号
+ * 版本1 : 输入手机号登陆
  */
 public class PhoneInputActivity extends BaseActivity {
 

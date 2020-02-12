@@ -57,6 +57,7 @@ import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
+import com.qmkj.niaogebiji.module.fragment.FlashFragmentV2;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
 import com.qmkj.niaogebiji.module.fragment.SchoolFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolFragment;
@@ -153,7 +154,7 @@ public class HomeActivity extends BaseActivity {
     int count = 1;
 
     FirstFragment mFirstFragment;
-    FlashFragment mFlashFragment;
+    FlashFragmentV2 mFlashFragment;
     SchoolFragment mSchoolFragment;
     CircleFragment mCircleFragment;
     MyFragment mMyFragment;
@@ -462,7 +463,7 @@ public class HomeActivity extends BaseActivity {
                 MobclickAgentUtils.onEvent(UmengEvent.news_tab_2_0_0);
                 hideImageStatus();
                 if(null == mFlashFragment){
-                    mFlashFragment = FlashFragment.getInstance();
+                    mFlashFragment = FlashFragmentV2.getInstance();
                 }
                 index_flash_icon.setImageResource(R.mipmap.icon_index_01);
                 index_flash_text.setTextColor(Color.parseColor("#333333"));

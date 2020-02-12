@@ -12,6 +12,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
+import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
+import com.chuanglan.shanyan_sdk.listener.InitListener;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.common.base.ActivityManager;
@@ -98,7 +100,27 @@ public class BaseApp extends Application {
         initWX();
         initUDesk();
         initJPush();
+
+        initSY();
     }
+
+    //闪验配置 使用一键登录功能前，必须先进行初始化操作
+    private void initSY() {
+        //闪验SDK配置debug开关 （必须放在初始化之前，开启后可打印闪验SDK更加详细日志信息）
+        OneKeyLoginManager.getInstance().setDebug(true);
+        //闪验SDK初始化（建议放在Application的onCreate方法中执行）
+        initShanyanSDK(getApplicationContext());
+    }
+
+
+
+    private void initShanyanSDK(Context context) {
+        OneKeyLoginManager.getInstance().init(context, Constant.SY_APP_ID, (code, result) -> {
+            //闪验SDK初始化结果回调 code为1022:成功；其他：失败
+            KLog.e("tag", "初始化： code ==" + code + "   result==" + result);
+        });
+    }
+
 
     private boolean shouldInit() {
         android.app.ActivityManager am = ((android.app.ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));

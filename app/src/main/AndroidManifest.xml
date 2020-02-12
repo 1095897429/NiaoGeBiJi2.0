@@ -3,10 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qmkj.niaogebiji">
 
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <!-- 10.0读取权限 -->
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
@@ -53,6 +58,9 @@
     <!--<uses-permission android:name="com.qmkj.niaogebiji.permission.MIPUSH_RECEIVE" />&lt;!&ndash;这里com.qmkj.niaogebiji改成app的包名&ndash;&gt;-->
 
 
+
+
+    <!-- 配置Android 9.0 对 http协议的支持 android:usesCleartextTraffic="true" -->
     <application
         android:name="com.qmkj.niaogebiji.common.BaseApp"
         android:allowBackup="true"
@@ -145,6 +153,12 @@
         </activity>
 
         <activity android:name=".module.activity.PhoneInputActivity"
+            android:screenOrientation="portrait">
+
+
+        </activity>
+
+        <activity android:name=".module.activity.PhoneInputV2Activity"
             android:screenOrientation="portrait">
 
 

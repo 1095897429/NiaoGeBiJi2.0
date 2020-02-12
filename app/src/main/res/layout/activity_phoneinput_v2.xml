@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="19dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@mipmap/icon_common_left"
+        android:visibility="visible" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24dp" />
+
+
+    <TextView
+        android:layout_marginLeft="24dp"
+        android:text="输入手机号"
+        android:textSize="22sp"
+        android:textColor="@color/text_news_title_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <TextView
+        android:layout_marginLeft="24dp"
+        android:text="绑定手机同步鸟哥笔记羽毛资产和收藏信息"
+        android:textSize="13sp"
+        android:textColor="#818386"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="62dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <com.qmkj.niaogebiji.module.widget.ClearableEditText
+            android:padding="10dp"
+            android:visibility="gone"
+            android:id="@+id/phone_et"
+            android:layout_centerVertical="true"
+            android:inputType="number"
+            android:hint="请输入手机号"
+            android:textSize="16sp"
+            android:maxLength="11"
+            android:cursorVisible="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@null"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+        <TextView
+            android:padding="10dp"
+            android:id="@+id/phone_tv"
+            android:layout_centerVertical="true"
+            android:inputType="number"
+            android:text="+86 18616541823"
+            android:textSize="28sp"
+            android:cursorVisible="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@null"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_marginRight="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_below="@+id/phone_et"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_line"/>
+
+
+
+    <TextView
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:id="@+id/toBindOnePhone"
+        android:layout_marginTop="32dp"
+        android:text="本机号码一键绑定"
+        android:textSize="17sp"
+        android:background="@drawable/bg_corners_12_yellow"
+        android:textColor="@color/text_first_color"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/changePhone"
+        android:layout_marginTop="12dp"
+        android:text="切换手机号"
+        android:textSize="14sp"
+        android:textColor="#818386"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+
+    <TextView
+        android:visibility="gone"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:id="@+id/toGetVertifyCode"
+        android:layout_marginTop="32dp"
+        android:text="获取验证码"
+        android:textSize="17sp"
+        android:background="@drawable/bg_corners_12_light_yellow"
+        android:textColor="@color/text_first_color"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:visibility="gone"
+        android:layout_marginTop="12dp"
+        android:text="未注册用户验证后自动登录"
+        android:textSize="11sp"
+        android:textColor="#818386"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

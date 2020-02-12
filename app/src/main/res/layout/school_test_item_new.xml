@@ -39,12 +39,29 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_alignLeft="@+id/test_title"
+            android:layout_alignParentBottom="true"
+            android:layout_width="37dp"
+            android:layout_height="37dp">
+
+
+            <ImageView
+                android:id="@+id/test_done_img"
+                android:src="@mipmap/school_done"
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
+
+        </RelativeLayout>
+
 
 
         <TextView
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/test_time"
             android:id="@+id/test_title"
             android:text="ASO初级优化师认证"
-            android:layout_centerInParent="true"
             android:textColor="@color/text_first_color"
             android:textSize="13sp"
             android:layout_width="88dp"

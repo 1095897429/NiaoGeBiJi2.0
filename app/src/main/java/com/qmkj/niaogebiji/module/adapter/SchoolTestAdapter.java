@@ -36,6 +36,17 @@ public class SchoolTestAdapter extends BaseQuickAdapter<SchoolBean.SchoolTest, B
             helper.setVisible(R.id.test_time,true);
         }
 
+        //TODO 不及格不显示已完成 2020.2.11?????
+        //是否已完成 是否已参加过测试 1是 0否
+        if(item.getRecord() != null ){
+            if(1 == item.getRecord().getIs_tested()){
+                helper.setVisible(R.id.test_done_img,true);
+            }else{
+                helper.setVisible(R.id.test_done_img,false);
+            }
+        }
+
+
         if(!TextUtils.isEmpty(item.getIcon())){
             ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.test_img));
             ImageView imageView= helper.getView(R.id.test_img);

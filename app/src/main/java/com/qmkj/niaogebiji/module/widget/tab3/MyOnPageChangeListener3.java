@@ -6,6 +6,7 @@ import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
@@ -66,15 +67,26 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageSelected(int position) {
-//        KLog.d("tag","onPageSelected");
         lastPosition = pager.getCurrentItem();
         viewPagerTitle.setCurrentItem(position);
 
 
         if(textViews.get(position) instanceof ImageView){
             dynamicLine.updateView(0,0);
+            ImageView imageView = (ImageView) textViews.get(position);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+            lp.width = SizeUtils.dp2px(60);
+            lp.height = SizeUtils.dp2px(20);
+            imageView.setLayoutParams(lp);
+            imageView.setImageResource(R.mipmap.icon_first_hot);
         }else{
             dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (position )*everyLength);
+
+            ImageView imageView = (ImageView) textViews.get(textViews.size() - 1);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+            lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            imageView.setImageResource(R.mipmap.icon_first_hot_default);
+            imageView.setLayoutParams(lp);
         }
 
 
@@ -91,8 +103,6 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
 //        }
 
     }
-
-
 
 
 

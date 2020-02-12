@@ -2,17 +2,16 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -43,6 +42,8 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 /**
  * @author zhouliang
@@ -197,6 +198,8 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
                 });
     }
+
+
 
 
     List<CircleBean> teList = new ArrayList<>();

@@ -22,6 +22,8 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
+import com.chuanglan.shanyan_sdk.listener.GetPhoneInfoListener;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
@@ -400,7 +402,14 @@ public class SplashActivity extends BaseActivity {
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }else{
-                    UIHelper.toLoginActivity(SplashActivity.this);
+
+                    //TODO 2020.2.7 闪验的接入，闪验SDK预取号（可缩短拉起授权页时间）
+                    OneKeyLoginManager.getInstance().getPhoneInfo((code, result) -> {
+                        //预取号回调
+                        KLog.e("tag", "预取号： code ==" + code + "   result==" + result);
+                        UIHelper.toLoginActivity(SplashActivity.this);
+                        finish();
+                    });
                 }
                 finish();
             }else{

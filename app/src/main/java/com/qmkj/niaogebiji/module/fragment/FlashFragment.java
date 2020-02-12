@@ -30,17 +30,20 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.ShareFlashDialog;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.ZXingUtils;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.adapter.FlashItemAdapter;
 import com.qmkj.niaogebiji.module.bean.FlashOkBean;
+import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.event.FlashSpecificEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
@@ -352,19 +355,25 @@ public class FlashFragment extends BaseLazyFragment  {
     private void showShareDialog() {
         ShareFlashDialog alertDialog = new ShareFlashDialog(getActivity()).builder();
         alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setTitle("分享快讯");
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
                     sharePositon = 0;
                     flash_ll.removeAllViews();
-                    initShareLayout();
-                    bulletinShare();
+//                    initShareLayout();
+//                    bulletinShare();
+
+                    //TODO 2020.2.11 现在是分享链接了
+                    bulletinShareByLink();
                     break;
                 case 1:
                     sharePositon = 1;
                     flash_ll.removeAllViews();
-                    initShareLayout();
-                    bulletinShare();
+//                    initShareLayout();
+//                    bulletinShare();
+
+                    bulletinShareByLink();
                     KLog.d("tag","vx朋友");
                     break;
                 default:
@@ -425,7 +434,50 @@ public class FlashFragment extends BaseLazyFragment  {
                 });
     }
 
+    private void bulletinShareByLink() {
+        Map<String,String> map = new HashMap<>();
+        map.put("id",mTempBuilltinBean.getId() + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().bulletinShare(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<FlashBulltinBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<FlashBulltinBean> response) {
+                        mFlashBulltinBeanShare = response.getReturn_data();
+                        if(null != mFlashBulltinBeanShare){
+                            mBuilltinBean = mFlashBulltinBeanShare.getList().get(0);
 
+                            if(null != mBuilltinBean){
+                                if(0 == sharePositon){
+                                    shareWxCircleByLink(mBuilltinBean);
+                                }else if(1 == sharePositon){
+                                    shareWxByLink(mBuilltinBean);
+                                }
+                            }
+                        }
+
+                    }
+                    @Override
+                    public void onNetFail(String msg) {
+                        super.onNetFail(msg);
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                            smartRefreshLayout.finishLoadMore();
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        super.onHintError(return_code, errorMes);
+                        if(null != smartRefreshLayout){
+                            smartRefreshLayout.finishRefresh();
+                            smartRefreshLayout.finishLoadMore();
+                        }
+                    }
+                });
+    }
 
 
     /** --------------------------------- 微信分享  ---------------------------------*/
@@ -519,6 +571,45 @@ public class FlashFragment extends BaseLazyFragment  {
             }
 
         }, 0);
+    }
+
+
+    // 分享微信（link)
+    public void shareWxByLink(FlashBulltinBean.BuilltinBean builltinBean) {
+        if (this == null){
+            return;
+        }
+
+        ShareBean bean1 = new ShareBean();
+        bean1.setShareType("weixin_link");
+        bean1.setImg(builltinBean.getPic());
+        bean1.setLink(builltinBean.getUrl());
+        bean1.setTitle(builltinBean.getTitle());
+        bean1.setContent(builltinBean.getContent());
+        StringUtil.shareWxByWeb(getActivity(), bean1);
+
+        isFlashShare = true;
+    }
+
+
+    // 分享微信圈（link)
+    public void shareWxCircleByLink(FlashBulltinBean.BuilltinBean builltinBean) {
+
+        if (this == null){
+            return;
+        }
+
+
+        ShareBean bean1 = new ShareBean();
+        bean1.setShareType("circle_link");
+        bean1.setImg(builltinBean.getPic());
+        bean1.setLink(builltinBean.getUrl());
+        bean1.setTitle(builltinBean.getTitle());
+        bean1.setContent(builltinBean.getContent());
+        StringUtil.shareWxByWeb(getActivity(), bean1);
+
+        isFlashShare = true;
+
     }
 
 

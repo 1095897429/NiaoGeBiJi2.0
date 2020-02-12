@@ -29,6 +29,7 @@ public class ShareFlashDialog {
     private LinearLayout share_circle;
     private LinearLayout share_friend;
     private TextView cancel;
+    private TextView title;
 
 
     /** 回调接口 开始 */
@@ -58,6 +59,7 @@ public class ShareFlashDialog {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share,null);
         share_circle = view.findViewById(R.id.share_circle);
         share_friend = view.findViewById(R.id.share_friend);
+        title = view.findViewById(R.id.title);
         cancel = view.findViewById(R.id.cancel);
         // 获取自定义Dialog布局中的控件
         dialog = new Dialog(mContext, R.style.MyDialog);
@@ -79,6 +81,12 @@ public class ShareFlashDialog {
 
 
     public ShareFlashDialog setHeadBeanList(List<String> list){
+        return this;
+    }
+
+
+    public ShareFlashDialog setTitle(String title1) {
+        title.setText(title1);
         return this;
     }
 

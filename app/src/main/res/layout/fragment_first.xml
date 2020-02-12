@@ -12,6 +12,7 @@
 
 <!-- AppBarLayout控件便具备顶部固定的功能 -->
 <com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/appbarlayout"
     android:background="@color/white"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -257,7 +258,9 @@
                 <com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3
                     android:id="@+id/pager_title"
                     android:layout_width="match_parent"
-                    android:layout_height="44dp">
+                    android:layout_height="44dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="0dp">
 
                 </com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3>
 
@@ -268,6 +271,16 @@
 
 
         </LinearLayout>
+
+        <ImageView
+
+            android:id="@+id/icon_search"
+            android:src="@mipmap/hot_search_icon"
+            android:layout_marginRight="18dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_width="28dp"
+            android:layout_height="28dp" />
 
 
         <ImageView
@@ -284,9 +297,9 @@
 </com.google.android.material.appbar.AppBarLayout>
 
 
-
+<!--  app:layout_behavior="@string/appbar_scrolling_view_behavior" -->
 <com.qmkj.niaogebiji.module.widget.CustomViewPager
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_behavior="com.qmkj.niaogebiji.module.widget.BottomBarBehavior"
     android:id="@+id/viewpager"
     android:overScrollMode="never"
     android:background="@color/white"

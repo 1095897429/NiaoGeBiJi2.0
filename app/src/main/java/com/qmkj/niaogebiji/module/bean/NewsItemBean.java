@@ -14,8 +14,6 @@ import java.util.List;
  * 描述:新闻Item 数据
  */
 public  class NewsItemBean extends BaseBean implements Parcelable {
-
-
     private String h5url;
     private String nid;
     private String signs;

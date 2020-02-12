@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -40,6 +42,23 @@ public class HotNewsAdapter extends BaseQuickAdapter<MultiNewsBean, BaseViewHold
         }else{
             helper.setTextColor(R.id.rank, Color.parseColor("#818386"));
         }
+
+        //影响数 x>=100000，展示10w+
+//        if(!TextUtils.isEmpty(item.getHit_count())){
+//            long count = Long.parseLong(item.getHit_count());
+//            if(count < 10000 ){
+//                helper.setText(R.id.tag,"影响力 " + item.getHit_count());
+//            }else{
+//                double temp = count  ;
+//                //1.将数字转换成以万为单位的数字
+//                double num = temp / 10000;
+//                BigDecimal b = new BigDecimal(num);
+//                //2.转换后的数字四舍五入保留小数点后一位;
+//                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+//                helper.setText(R.id.tag,"影响力 " + f1 + " w");
+//            }
+//        }
+
 
     }
 }

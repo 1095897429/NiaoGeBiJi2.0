@@ -14,6 +14,7 @@ import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 
@@ -48,7 +49,6 @@ public class HotNewsFragment extends BaseLazyFragment {
     LinearLayoutManager mLinearLayoutManager;
 
 
-
     public static HotNewsFragment getInstance(String chainId, String chainName) {
         HotNewsFragment newsItemFragment = new HotNewsFragment();
         Bundle args = new Bundle();
@@ -67,6 +67,7 @@ public class HotNewsFragment extends BaseLazyFragment {
     protected void initView() {
         initSamrtLayout();
         initLayout();
+        getData();
     }
 
 
@@ -77,7 +78,7 @@ public class HotNewsFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        getData();
+
     }
 
     private void getData() {
@@ -96,6 +97,9 @@ public class HotNewsFragment extends BaseLazyFragment {
 
 
     private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(getActivity());
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();

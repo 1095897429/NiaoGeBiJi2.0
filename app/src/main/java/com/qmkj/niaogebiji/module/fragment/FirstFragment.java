@@ -10,11 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -49,6 +51,7 @@ import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
+import com.qmkj.niaogebiji.module.event.ShowSearchEvent;
 import com.qmkj.niaogebiji.module.event.ShowSignRedPointEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
@@ -116,6 +119,9 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.search_part)
     LinearLayout search_part;
 
+    @BindView(R.id.icon_search)
+    ImageView icon_search;
+
     @BindView(R.id.tool_recycler)
     RecyclerView tool_recycler;
 
@@ -128,6 +134,10 @@ public class FirstFragment extends BaseLazyFragment {
 
     @BindView(R.id.red_point)
     FrameLayout red_point;
+
+    @BindView(R.id.appbarlayout)
+    AppBarLayout appbarlayout;
+
 
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
@@ -223,10 +233,19 @@ public class FirstFragment extends BaseLazyFragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
-        String [] titile = new String[]{"关注","干货","活动"};
+
+        coordinator.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                KLog.d("tag","scrollY " + scrollY);
+            }
+        });
+
+        String [] titile = new String[]{"关注","干货","活动","热榜"};
 
         getUserInfo();
 
@@ -244,6 +263,9 @@ public class FirstFragment extends BaseLazyFragment {
         searchIndex();
 
     }
+
+
+
 
     DynamicLine dynamicLine;
     private void createDynamicLine() {
@@ -288,8 +310,8 @@ public class FirstFragment extends BaseLazyFragment {
         mChannelBeanList.add(bean);
 //        bean = new ChannelBean("3","快讯");
 //        mChannelBeanList.add(bean);
-//        bean = new ChannelBean("4","热榜");
-//        mChannelBeanList.add(bean);
+        bean = new ChannelBean("3","热榜");
+        mChannelBeanList.add(bean);
 
 
         if(null != mChannelBeanList){
@@ -454,13 +476,11 @@ public class FirstFragment extends BaseLazyFragment {
                 ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
+            } else if(i == 3){
+                HotFragment hotNewsFragment = HotFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                        mChannelBeanList.get(i).getChaname());
+                mFragmentList.add(hotNewsFragment);
             }
-
-//            else if(i == 4){
-//                HotNewsFragment hotNewsFragment = HotNewsFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-//                        mChannelBeanList.get(i).getChaname());
-//                mFragmentList.add(hotNewsFragment);
-//            }
 
             mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
         }
@@ -505,7 +525,8 @@ public class FirstFragment extends BaseLazyFragment {
 
 
     @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content,R.id.rl_sign,
-        R.id.ll_moring,R.id.toVip
+        R.id.ll_moring,R.id.toVip,
+            R.id.icon_search
     })
     public void clicks(View view){
 
@@ -529,9 +550,12 @@ public class FirstFragment extends BaseLazyFragment {
             case R.id.rl_sign:
                 MobclickAgentUtils.onEvent(UmengEvent.index_sign_2_0_0);
 
-                UIHelper.toFeatherctivity(getActivity());
+//                UIHelper.toFeatherctivity(getActivity());
+
+                UIHelper.toToolEditActivity(getActivity());
                 break;
             case R.id.search_part:
+            case R.id.icon_search:
                 MobclickAgentUtils.onEvent(UmengEvent.index_searchbar_2_0_0);
 
                 UIHelper.toSearchActivity(getActivity());
@@ -642,5 +666,18 @@ public class FirstFragment extends BaseLazyFragment {
         }
     }
 
+
+    //滑动显示搜索
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowSearch(ShowSearchEvent event) {
+        if (this != null) {
+           String statu = event.getData();
+           if("1".equals(statu)){
+               icon_search.setVisibility(View.VISIBLE);
+           }else{
+               icon_search.setVisibility(View.GONE);
+           }
+        }
+    }
 
 }

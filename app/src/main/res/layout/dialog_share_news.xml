@@ -38,6 +38,7 @@
                 android:layout_height="50dp" />
 
             <TextView
+                android:id="@+id/share_dynamic_text"
                 android:text="转发到动态"
                 android:textSize="13sp"
                 android:gravity="center"

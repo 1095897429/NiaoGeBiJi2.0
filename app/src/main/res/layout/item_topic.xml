@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="72.5dp">
+
+
+
+    <com.qmkj.niaogebiji.module.widget.RCImageView
+        android:layout_centerVertical="true"
+        android:id="@+id/one_img_imgs"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        android:background="@color/bg_color"
+        app:round_as_circle="false"
+        app:round_corner="12dp" />
+
+
+    <LinearLayout
+        android:id="@+id/part2"
+        android:layout_toRightOf="@+id/one_img_imgs"
+        android:layout_toLeftOf="@+id/focus_aleady"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/top_title"
+            android:text="#找资源"
+            android:textSize="16sp"
+            android:textColor="@color/text_first_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:id="@+id/top_focus_num"
+            android:text="1.1w人 关注"
+            android:textSize="13sp"
+            android:textColor="@color/text_second_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/focus"
+        android:textColor="@color/text_news_title_color"
+        android:layout_marginRight="16dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:text="关注"
+        android:paddingLeft="21dp"
+        android:paddingRight="21dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/bg_corners_8_yellow"
+        android:layout_width="70dp"
+        android:layout_height="34dp" />
+
+
+
+    <TextView
+        android:layout_marginRight="16dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:id="@+id/focus_aleady"
+        android:textColor="#818386"
+        android:visibility="gone"
+        android:textSize="14sp"
+        android:text="取消关注"
+        android:background="@drawable/bg_corners_8_gray"
+        android:layout_width="70dp"
+        android:layout_height="34dp" />
+
+
+    <TextView
+        android:id="@+id/select"
+        android:textColor="@color/text_news_title_color"
+        android:layout_marginRight="16dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:textSize="14sp"
+        android:visibility="visible"
+        android:text="选择"
+        android:paddingLeft="21dp"
+        android:paddingRight="21dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/bg_corners_8_yellow"
+        android:layout_width="70dp"
+        android:layout_height="34dp" />
+    
+
+    <View
+        android:layout_alignLeft="@+id/part2"
+        android:layout_alignParentBottom="true"
+        android:background="@color/divider_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+
+</RelativeLayout>

@@ -81,6 +81,8 @@ import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -233,13 +235,17 @@ public class StringUtil {
     }
 
 
-    /**  朋友圈 朋友 复制链接*/
+    /**  转发到圈子 朋友圈 朋友 复制链接*/
     public static void showShareDialog(Activity activity, NewsDetailBean mNewsDetailBean) {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(activity).builder();
         alertDialog.setSharelinkView();
+        alertDialog.setShareDynamicView();
+        alertDialog.setShareDynamicViewText("转发到圈子");
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position) {
+                case 4:
+                    break;
                 case 0:
                     MobclickAgentUtils.onEvent(UmengEvent.index_detail_share_moments_2_0_0);
 
@@ -623,7 +629,9 @@ public class StringUtil {
 
     public static void getIconLinkShow(CircleBean item, Activity activity,TextView msg) {
         SpannableString spanString2;
-        String content = item.getBlog() + "";
+//        String content = item.getBlog() + "";
+        String content = StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u"));
+
         String icon = "[icon]";
         //获取链接
         int size  =  item.getPcLinks().size();

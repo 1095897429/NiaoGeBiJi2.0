@@ -24,17 +24,38 @@
             android:layout_height="60dp" />
 
 
-        <TextView
-            android:id="@+id/author_name"
-            android:textSize="16sp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="2dp"
-            android:text="三木群"
+        <LinearLayout
+            android:gravity="center|left"
+            android:id="@+id/ll_author"
             app:layout_constraintTop_toTopOf="@id/head_icon"
             app:layout_constraintLeft_toRightOf="@+id/head_icon"
-            android:textColor="@color/text_news_title_color"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="2dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/author_name"
+                android:textSize="16sp"
+                android:text="三木群"
+                android:textColor="@color/text_news_title_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="6dp"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/author_type"
+                android:src="@mipmap/hot_author_professor"
+                android:layout_width="60dp"
+                android:layout_height="18dp" />
+
+        </LinearLayout>
+
+
 
         <TextView
             android:id="@+id/author_tag"
@@ -43,7 +64,7 @@
             android:layout_marginTop="4dp"
             android:text=""
             app:layout_constraintLeft_toRightOf="@+id/head_icon"
-            app:layout_constraintTop_toBottomOf="@+id/author_name"
+            app:layout_constraintTop_toBottomOf="@+id/ll_author"
             android:maxLines="2"
             android:ellipsize="end"
             android:textColor="#818386"

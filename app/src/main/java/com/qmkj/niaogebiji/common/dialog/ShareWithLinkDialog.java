@@ -28,6 +28,7 @@ public class ShareWithLinkDialog {
 
     private TextView title;
     private TextView cancel;
+    private TextView share_dynamic_text;
     private LinearLayout share_dynamic;
     private LinearLayout share_circle;
     private LinearLayout share_friend;
@@ -63,6 +64,7 @@ public class ShareWithLinkDialog {
         share_circle = view.findViewById(R.id.share_circle);
         share_friend = view.findViewById(R.id.share_friend);
         share_copy_link = view.findViewById(R.id.share_copy_link);
+        share_dynamic_text = view.findViewById(R.id.share_dynamic_text);
         title = view.findViewById(R.id.title);
         cancel = view.findViewById(R.id.cancel);
         // 获取自定义Dialog布局中的控件
@@ -99,7 +101,17 @@ public class ShareWithLinkDialog {
         return this;
     }
 
+    public ShareWithLinkDialog setShareDynamicViewText(String text) {
+        share_dynamic_text.setText("转发到圈子");
+        return this;
+    }
+
     public ShareWithLinkDialog setSharelinkView() {
+        share_copy_link.setVisibility(View.VISIBLE);
+        return this;
+    }
+
+    public ShareWithLinkDialog setTranferView() {
         share_copy_link.setVisibility(View.VISIBLE);
         return this;
     }

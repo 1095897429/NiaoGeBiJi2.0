@@ -37,6 +37,7 @@ public class TalkCircleAlertDialog {
 
     private LinearLayout comment_succuss_transfer;
 
+
     //默认是评论文章
     private int myPosition = -1;
 

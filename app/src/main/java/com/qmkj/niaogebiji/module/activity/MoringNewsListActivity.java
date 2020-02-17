@@ -18,7 +18,6 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.MoringNewsAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;

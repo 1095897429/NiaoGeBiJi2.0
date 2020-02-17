@@ -133,9 +133,15 @@
         </activity>
 
 
+        <activity android:name=".module.activity.TopSelectActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".module.activity.ModifyUserInfoActivity"
             android:launchMode="singleTop">
         </activity>
+
+
 
 
         <activity android:name=".module.activity.WelcomeActivity"
@@ -285,6 +291,17 @@
         </activity>
 
         <activity android:name=".module.activity.UserInfoActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+
+        <activity android:name=".module.activity.UserInfoModifyActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".module.activity.UserInfoV2Activity"
             android:screenOrientation="portrait">
 
         </activity>

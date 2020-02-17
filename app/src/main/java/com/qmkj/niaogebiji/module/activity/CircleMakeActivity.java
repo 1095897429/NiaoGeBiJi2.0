@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -148,6 +149,20 @@ public class CircleMakeActivity extends BaseActivity {
     @BindView(R.id.part3333)
     LinearLayout part3333;
 
+    @BindView(R.id.ll_topic)
+    LinearLayout ll_topic;
+
+    @BindView(R.id.select_topic_text)
+    TextView select_topic_text;
+
+
+
+    @BindView(R.id.topic_first)
+    ImageView topic_first;
+
+    @BindView(R.id.topic_delete)
+    ImageView topic_delete;
+
 
     //适配器
     CirclePicItemAdapter mCirclePicItemAdapter;
@@ -180,6 +195,8 @@ public class CircleMakeActivity extends BaseActivity {
 
     private int REQUEST_SELECT_IMAGES_CODE = 0x01;
 
+    public static final int REQUEST_SELECT_TOPIC_CODE = 4;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_circle_make;
@@ -209,6 +226,12 @@ public class CircleMakeActivity extends BaseActivity {
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
+
+        boolean isTopicIconClick = SPUtils.getInstance().getBoolean("isTopicIconClick",false);
+        if(!isTopicIconClick){
+            topic_first.setVisibility(View.VISIBLE);
+        }
+
         RxTextView
                 .textChanges(mEditText)
                 .subscribe(charSequence -> {
@@ -256,7 +279,12 @@ public class CircleMakeActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.cancel,R.id.send,
+    @OnClick({
+                R.id.topic_first,
+                R.id.topic_delete,
+                R.id.topic,
+                R.id.cancel,
+                R.id.send,
                 R.id.link,
                 R.id.to_delete_link,
                 R.id.make,
@@ -265,6 +293,19 @@ public class CircleMakeActivity extends BaseActivity {
         KeyboardUtils.hideSoftInput(mEditText);
 
         switch (view.getId()){
+            case R.id.topic_first:
+                SPUtils.getInstance().put("isTopicIconClick",true);
+                topic_first.setVisibility(View.GONE);
+                break;
+            case R.id.topic_delete:
+
+                ll_topic.setVisibility(View.GONE);
+
+                break;
+            case R.id.topic:
+                UIHelper.toTopictivity(this);
+                break;
+
             case R.id.part2222:
                 if(StringUtil.isFastClick()){
                     return;
@@ -527,6 +568,13 @@ public class CircleMakeActivity extends BaseActivity {
                 setPicData(mediaFiles,pathList);
                 setStatus(false);
             }
+        }
+
+
+        //添加话题
+        if (requestCode == REQUEST_SELECT_TOPIC_CODE && resultCode == RESULT_OK) {
+            ll_topic.setVisibility(View.VISIBLE);
+            select_topic_text.setText("#" + data.getExtras().getString("topicName"));
         }
     }
 
@@ -856,4 +904,7 @@ public class CircleMakeActivity extends BaseActivity {
             mHandler.removeCallbacksAndMessages(null);
         }
     }
+
+
+
 }

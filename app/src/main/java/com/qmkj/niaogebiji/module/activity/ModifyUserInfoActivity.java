@@ -21,8 +21,11 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,15 +75,18 @@ public class ModifyUserInfoActivity extends BaseActivity {
             tv_title.setText("昵称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
+                setStatus(true);
             }else{
                 et_input.setHint("请输入昵称");
             }
 
         }else if("profession".equals(type)){
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("职业");
 
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
+                setStatus(true);
             }else{
                 et_input.setHint("请输入职业");
             }
@@ -89,8 +95,19 @@ public class ModifyUserInfoActivity extends BaseActivity {
 
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
+                setStatus(true);
             }else{
                 et_input.setHint("请输入简介");
+            }
+        }else if("company".equals(type)){
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
+            tv_title.setText("公司");
+
+            if(!TextUtils.isEmpty(content)){
+                et_input.setText(content);
+                setStatus(true);
+            }else{
+                et_input.setHint("请输入公司名称");
             }
         }
 
@@ -148,6 +165,20 @@ public class ModifyUserInfoActivity extends BaseActivity {
         });
     }
 
+    //TODO 2.17 为了编辑文本中有文字时，发布可用
+    private void setStatus(boolean isEnable) {
+        if(!isEnable){
+            submit.setEnabled(false);
+            submit.setSelected(false);
+            //文字透明度
+            submit.setTextColor(0xCC818386);
+        }else{
+            submit.setEnabled(true);
+            submit.setSelected(true);
+            submit.setTextColor(Color.parseColor("#242629"));
+        }
+    }
+
 
     @OnClick({R.id.iv_back,R.id.submit})
     public void clicks(View view){
@@ -163,6 +194,8 @@ public class ModifyUserInfoActivity extends BaseActivity {
                     mPosition = et_input.getText().toString().trim();
                 }else if("profile".equals(type)){
                     mPro_summary = et_input.getText().toString().trim();
+                }else if("company".equals(type)){
+                    mComany = et_input.getText().toString().trim();
                 }
                 alterinfo();
                 break;
@@ -172,7 +205,7 @@ public class ModifyUserInfoActivity extends BaseActivity {
 
 
     /** --------------------------------- 修改用户信息  ---------------------------------*/
-
+    String mComany = "";
     String mNickname = "";
     String mName = "";
     String mGender = "";
@@ -186,7 +219,12 @@ public class ModifyUserInfoActivity extends BaseActivity {
     private void alterinfo() {
         Map<String,String> map = new HashMap<>();
         if(!TextUtils.isEmpty(mNickname)){
-            map.put("nickname",mNickname);
+//            map.put("nickname",mNickname);
+
+            //判断是否有表情
+           String lokggg = StringEscapeUtils.escapeJava(mNickname);
+           KLog.d("tag","加密的内容是 " + lokggg);
+            map.put("nickname",lokggg);
         }
 
         if(!TextUtils.isEmpty(mName)){

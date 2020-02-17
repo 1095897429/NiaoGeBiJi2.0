@@ -231,6 +231,10 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 teList.add(temp);
             }
             if(page == 1){
+                //TODO 新增话题,原本10条数据，现在11条了
+                CircleBean tempBean = new CircleBean();
+                tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
+                teList.add(1,tempBean);
                 mAllList.addAll(teList);
             }
         }

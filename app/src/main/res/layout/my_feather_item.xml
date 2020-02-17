@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="114dp"
+    android:layout_height="146dp">
+
+    <com.qmkj.niaogebiji.module.widget.RCImageView
+        android:id="@+id/one_img_imgs"
+        android:layout_width="59dp"
+        android:layout_height="59dp"
+        android:scaleType="centerCrop"
+        android:background="@color/bg_color"
+        app:round_as_circle="false"
+        app:round_corner="8dp" />
+
+
+    <TextView
+        android:id="@+id/name"
+        android:text="鸟哥笔记T袖"
+        android:textSize="11sp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/text_first_color"
+        android:layout_marginTop="7dp"
+        android:ellipsize="end"
+        android:maxLength="7"
+        android:singleLine="true"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/money"
+            android:textSize="11sp"
+            android:textColor="#ED5D51"
+            android:text="300"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tag"
+            android:textSize="11sp"
+            android:layout_marginLeft="2dp"
+            android:textColor="#ED5D51"
+            android:text="羽毛"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

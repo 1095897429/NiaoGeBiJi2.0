@@ -258,6 +258,19 @@ public class NewsDetailActivity extends BaseActivity {
     @BindView(R.id.comment)
     ImageView comment;
 
+    @BindView(R.id.rl_msg)
+    RelativeLayout rl_msg;
+
+    @BindView(R.id.comment_num)
+    TextView comment_num;
+
+    @BindView(R.id.comment_num_all)
+    TextView comment_num_all;
+
+    @BindView(R.id.author_type)
+    TextView author_type;
+
+
 
     //一级评论 1
     CommentBean.FirstComment oneComment;
@@ -312,6 +325,7 @@ public class NewsDetailActivity extends BaseActivity {
             R.id.iv_right,R.id.share,
             R.id.head_icon1111,R.id.head_data,
             R.id.comment,
+            R.id.rl_msg,
             R.id.toLlTalk,
             R.id.rl_audio,
     })
@@ -336,6 +350,7 @@ public class NewsDetailActivity extends BaseActivity {
                 showTalkDialog(-1,"aimToActicle","");
                 break;
             case R.id.comment:
+            case R.id.rl_msg:
                 MobclickAgentUtils.onEvent(UmengEvent.index_detail_commentbtn_2_0_0);
 
                 scrollView.post(() -> {
@@ -470,6 +485,29 @@ public class NewsDetailActivity extends BaseActivity {
     String dl_link_code;
     private void commonLogic() {
 
+        //新增作者等级
+//        if(专栏作者){
+//            显示：author_type 1
+//        }else (新手作者){
+//            显示：author_type 2
+//        }
+
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
+
+        //点评数
+        if(!TextUtils.isEmpty(mNewsDetailBean.getCommentnum())){
+            int size = Integer.parseInt(mNewsDetailBean.getCommentnum());
+            if(size > 99){
+                comment_num.setText(99 + "+");
+            }else{
+                comment_num.setText(size + "");
+            }
+            comment_num.setTypeface(typeface);
+
+            //总的评论数
+            comment_num_all.setText("评论 " + mNewsDetailBean.getCommentnum());
+        }
+
         StringUtil.setPublishTime(tv_tag1111,mNewsDetailBean.getPublished_at());
 
         //相关资料
@@ -526,7 +564,6 @@ public class NewsDetailActivity extends BaseActivity {
 
         if(null != mNewsDetailBean){
             //设置样式
-            Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
             acticle_point.setTypeface(typeface);
             if(!TextUtils.isEmpty(mNewsDetailBean.getArticle_point()) &&
                 !"0".equals(mNewsDetailBean.getArticle_point())){
@@ -1257,12 +1294,17 @@ public class NewsDetailActivity extends BaseActivity {
                                         mCommentAdapter.loadMoreEnd();
                                     }
                                     ll_empty.setVisibility(View.GONE);
-                                    comment.setImageResource(R.mipmap.icon_news_talk);
+
+                                    comment.setVisibility(View.GONE);
+                                    rl_msg.setVisibility(View.VISIBLE);
+
                                 }else{
                                     ll_empty.setVisibility(View.VISIBLE);
                                     iv_empty.setImageResource(R.mipmap.icon_empty_comment);
                                     tv_empty.setText("期待你的精彩评论，让更多人看到");
                                     comment.setImageResource(R.mipmap.icon_empty_comment_seat);
+                                    comment.setVisibility(View.VISIBLE);
+                                    rl_msg.setVisibility(View.GONE);
                                 }
 
                             }else{

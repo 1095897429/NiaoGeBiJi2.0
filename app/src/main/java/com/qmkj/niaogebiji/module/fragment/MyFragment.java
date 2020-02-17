@@ -14,10 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
@@ -28,10 +31,12 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
+import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterMy;
+import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.BadegsAllBean;
+import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
 import com.qmkj.niaogebiji.module.bean.MyBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -41,6 +46,7 @@ import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -90,6 +96,11 @@ public class MyFragment extends BaseLazyFragment {
     @BindView(R.id.name_author_tag)
     TextView name_author_tag;
 
+    @BindView(R.id.name_vertify_no)
+    TextView name_vertify_no;
+
+    @BindView(R.id.part_ll_acticle)
+    LinearLayout part_ll_acticle;
 
 
     @BindView(R.id.toVip)
@@ -109,7 +120,15 @@ public class MyFragment extends BaseLazyFragment {
     @BindView(R.id.ll_badge)
     LinearLayout ll_badge;
 
+    @BindView(R.id.recycler1111)
+    RecyclerView recycler1111;
 
+
+    //商品适配器
+    LinearLayoutManager mLinearLayoutManager;
+    FeatherItemAdapterMy mProductItemNewAdapter;
+    //集合1
+    List<FeatherProductBean.Productean.ProductItemBean> temps = new ArrayList<>();
 
 
     //适配器
@@ -122,13 +141,49 @@ public class MyFragment extends BaseLazyFragment {
     private RegisterLoginBean.UserInfo mUserInfo;
 
 
-    private int [] images = new int[]{R.mipmap.icon_my_feather,R.mipmap.icon_my_invite,R.mipmap.icon_my_medal,
-            R.mipmap.icon_my_dynamic,R.mipmap.icon_my_focus,R.mipmap.icon_my_circle};
+    private int [] images = new int[]{ R.mipmap.icon_my_dynamic,R.mipmap.icon_my_medal,
+            R.mipmap.icon_my_focus,R.mipmap.icon_my_circle,
+            R.mipmap.icon_my_feather,R.mipmap.icon_my_vertify,R.mipmap.icon_my_invite
+           };
 
-    private String [] names = new String[]{"羽毛任务","邀请好友","徽章中心","我的动态","干货收藏","圈子关注"};
+    private String [] names = new String[]{"我的发布","我的勋章","我的收藏","我的关注","我的羽毛","认证中心","邀请好友"};
 
     public static MyFragment getInstance() {
         return new MyFragment();
+    }
+
+
+    //初始化布局管理器
+    private void initVertical() {
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        //设置默认垂直布局
+        mLinearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        //设置布局管理器
+        recycler1111.setLayoutManager(mLinearLayoutManager);
+        //禁用change动画
+        ((SimpleItemAnimator)recycler1111.getItemAnimator()).setSupportsChangeAnimations(false);
+        //设置适配器
+        mProductItemNewAdapter = new FeatherItemAdapterMy(temps);
+        recycler1111.setAdapter(mProductItemNewAdapter);
+        //解决数据加载不完
+        recycler1111.setNestedScrollingEnabled(false);
+        recycler1111.setHasFixedSize(true);
+
+        //点击事件
+        mProductItemNewAdapter.setOnItemClickListener((adapter, view, position) -> {
+
+        });
+
+        //全部
+        mProductItemNewAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                KLog.d("tag","tag");
+                UIHelper.toFeatherCatListActivity(mContext,temps.get(position).getId(),temps.get(position).getTitle());
+            }
+        });
+
+
     }
 
 
@@ -141,6 +196,12 @@ public class MyFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
 
+
+
+        initVertical();
+
+        getProducts();
+
         getUserInfo();
 
         initLayout();
@@ -150,6 +211,13 @@ public class MyFragment extends BaseLazyFragment {
         read_time.setTypeface(typeface);
         medal_count.setTypeface(typeface);
         feather_count.setTypeface(typeface);
+    }
+
+    private void getProducts() {
+        for (int i = 0; i < 4; i++) {
+            temps.add(new FeatherProductBean.Productean.ProductItemBean());
+        }
+        mProductItemNewAdapter.setNewData(temps);
     }
 
     List<BadegsAllBean.BadegBean> listall = new ArrayList<>();
@@ -190,8 +258,8 @@ public class MyFragment extends BaseLazyFragment {
                 }
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
-                lp.width = SizeUtils.dp2px(22);
-                lp.height = SizeUtils.dp2px(22);
+                lp.width = SizeUtils.dp2px(18);
+                lp.height = SizeUtils.dp2px(18);
                 lp.gravity = Gravity.CENTER;
                 lp.setMargins(0,0,SizeUtils.dp2px(8),0);
                 imageView.setLayoutParams(lp);
@@ -271,11 +339,39 @@ public class MyFragment extends BaseLazyFragment {
             paint.setFakeBoldText(true);
 
             if(!TextUtils.isEmpty(mUserInfo.getNickname())){
-                name.setText(mUserInfo.getNickname());
+//                name.setText(mUserInfo.getNickname());
+
+                // 解密
+                name.setText(StringEscapeUtils.unescapeJava(mUserInfo.getNickname().replace("\\\\u","\\u")));
+
+
             }else{
                 name.setText(mUserInfo.getName());
             }
 
+
+//            if(没有认证显示去认证){
+//                显示：立即完善信息，建立人脉
+//                点击：编辑名片信息
+//            }else{
+//                if( 认证没通过){
+//                    显示：公司 + 职位 + 立即职业认证
+//                    点击：认证中心
+//                }else{
+//                    显示：公司 + 职位 + 认证图标
+//                }
+//            }
+
+//            if(关联作者){
+//                显示：发布文章数
+//            }else{
+//                显示：隐藏布局
+//            }
+
+
+            //①  认证了显示公司 + 职位
+            //②  没认证去h5 显示：去认证
+            //③  填写了信息没有认证通过 显示：公司 + 职位 + 立即认证
             //认证 -- 这里不用改(不用显示用户名在认证的情况下)
             if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
                 name_author_tag.setVisibility(View.VISIBLE);
@@ -283,14 +379,14 @@ public class MyFragment extends BaseLazyFragment {
                 name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
                         (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
-                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company1);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
                 name_author_tag.setCompoundDrawables(null,null,drawable,null);
 
             }else{
                 name_vertify.setVisibility(View.VISIBLE);
                 name_author_tag.setVisibility(View.GONE);
-                name_vertify.setText("立即职业认证，建立人脉");
+                name_vertify.setText("立即完善信息，建立人脉");
                 name_vertify.setTextColor(Color.parseColor("#AAAEB3"));
                 name_vertify.setOnClickListener(v -> {
                     MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
@@ -346,7 +442,7 @@ public class MyFragment extends BaseLazyFragment {
     private void getData() {
 
         MyBean bean1 ;
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < names.length; i++) {
             bean1 = new MyBean();
             bean1.setResId(images[i]);
             bean1.setName(names[i]);
@@ -380,38 +476,43 @@ public class MyFragment extends BaseLazyFragment {
             }
             switch (position){
                 case 0:
-                    MobclickAgentUtils.onEvent(UmengEvent.i_task_2_0_0);
 
-                    UIHelper.toFeatherctivity(getActivity());
+                    MobclickAgentUtils.onEvent(UmengEvent.i_dynamic_2_0_0);
+
+                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
                     break;
                 case 1:
-                    MobclickAgentUtils.onEvent(UmengEvent.i_invite_2_0_0);
 
-                    UIHelper.toInviteActivity(getActivity());
-                    break;
-                case 2:
                     MobclickAgentUtils.onEvent(UmengEvent.i_badge_2_0_0);
 
                     UIHelper.toWebViewBadgeActivity(getActivity(),StringUtil.getLink("mybadge"),"webview_badges");
 
-                    break;
-                case 3:
-                    MobclickAgentUtils.onEvent(UmengEvent.i_dynamic_2_0_0);
-
-                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
 
                     break;
-                case 4:
+                case 2:
                     MobclickAgentUtils.onEvent(UmengEvent.i_indexcollect_2_0_0);
 
                     UIHelper.toMyCollectionListActivity(getActivity());
+
                     break;
-                case 5:
+                case 3:
                     MobclickAgentUtils.onEvent(UmengEvent.i_quanzifollow_2_0_0);
 
                     UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myconcern"),"");
                     break;
+                case 4:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_task_2_0_0);
 
+                    UIHelper.toFeatherctivity(getActivity());
+                    break;
+                case 5:
+                    ToastUtils.showShort("去认证界面");
+                    break;
+                case 6:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_invite_2_0_0);
+
+                    UIHelper.toInviteActivity(getActivity());
+                    break;
 
                     default:
             }
@@ -424,7 +525,9 @@ public class MyFragment extends BaseLazyFragment {
     }
 
 
-    @OnClick({R.id.toSet,
+    @OnClick({
+                R.id.all_part1111,
+                R.id.toSet,
                 R.id.about_ll,
                 R.id.ll_badge,
                 R.id.part3333_3,
@@ -457,7 +560,7 @@ public class MyFragment extends BaseLazyFragment {
             case R.id.head_icon:
                 MobclickAgentUtils.onEvent(UmengEvent.i_icon_2_0_0);
 
-                UIHelper.toUserInfoActivity(getActivity(),mUserInfo.getUid());
+                UIHelper.toUserInfoV2Activity(getActivity(),mUserInfo.getUid());
 
                 break;
             case R.id.advice_ll:
@@ -489,6 +592,7 @@ public class MyFragment extends BaseLazyFragment {
 
                 break;
             case R.id.toExchange:
+            case R.id.all_part1111:
                 MobclickAgentUtils.onEvent(UmengEvent.i_exchange_2_0_0);
                 KLog.d("tag","去羽毛商城");
                 UIHelper.toFeatherProductListActivity(getActivity());

@@ -60,6 +60,7 @@ import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.xzh.imagepicker.bean.MediaFile;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -652,7 +653,8 @@ public class CircleFragment extends BaseLazyFragment {
 
     private void createBlog(){
         Map<String,String> map = new HashMap<>();
-        map.put("blog",blog + "");
+//        map.put("blog",blog + "");
+        map.put("blog",StringEscapeUtils.escapeJava(blog) + "");
         map.put("images",lashPic + "");
         map.put("link",blog_link + "");
         map.put("link_title",blog_link_title + "");

@@ -54,6 +54,8 @@ import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +93,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     public  static final int ZF_ACTICLE = 33;
 
     public  static final int ZF_TEXT = 44;
+
+    public  static final int FOCUS_TOPIC = 55;
 
     //用户在个人信息界面删除的时候，position多1(头布局)
     private boolean  isFromUserInfo ;
@@ -134,11 +138,23 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         getIconType(helper,item);
 
+
+        if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
+
+            return;
+        }
+
+
         if(item.getUser_info() != null){
             User_info userInfo = item.getUser_info();
             //名字
             TextView sender_name = helper.getView(R.id.sender_name);
-            sender_name.setText(userInfo.getName());
+
+//            sender_name.setText(userInfo.getName());
+
+            sender_name.setText(StringEscapeUtils.unescapeJava(userInfo.getName().replace("\\\\u","\\u")));
+
+
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
 
@@ -216,7 +232,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 //对有links的原创文本进行富文本
                 StringUtil.getIconLinkShow(item, (Activity) mContext,msg);
             }else{
-                msg.setText(item.getBlog());
+//                msg.setText(item.getBlog());
+
+                msg.setText(StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u")));
+
             }
 
         }
@@ -402,7 +421,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     MobclickAgentUtils.onEvent("quanzi_follow_"+ (helper.getAdapterPosition() + 1) +"_2_0_0");
                 }
             }
-            UIHelper.toUserInfoActivity(mContext,item.getUid());
+            UIHelper.toUserInfoV2Activity(mContext,item.getUid());
         });
 
 
@@ -555,58 +574,69 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     //通过type加载布局 并且 设置转发帖子的type
     private void getCircleType(BaseViewHolder helper, CircleBean item) {
 
-        helper.setVisible(R.id.transfer_zf_ll,false);
-        helper.setVisible(R.id.transfer_yc_ll,true);
+        if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
+            helper.setVisible(R.id.rl_circle,false);
+            helper.setVisible(R.id.ll_topic,true);
 
-        if(CircleRecommentAdapterNew.YC_PIC == item.getCircleType()){
-            helper.setVisible(R.id.part_yc_pic,true);
-            helper.setVisible(R.id.part_yc_link,false);
-            helper.setVisible(R.id.part_yc_acticle,false);
-            helper.setVisible(R.id.transfer_zf_ll,false);
-        }else if(CircleRecommentAdapterNew.YC_LINK == item.getCircleType()){
-            helper.setVisible(R.id.part_yc_pic,false);
-            helper.setVisible(R.id.part_yc_link,true);
-            helper.setVisible(R.id.part_yc_acticle,false);
-            helper.setVisible(R.id.transfer_zf_ll,false);
-        }else if(CircleRecommentAdapterNew.YC_ACTICLE == item.getCircleType()){
-            helper.setVisible(R.id.part_yc_pic,false);
-            helper.setVisible(R.id.part_yc_link,false);
-            helper.setVisible(R.id.part_yc_acticle,true);
-            helper.setVisible(R.id.transfer_zf_ll,false);
-        }else if(CircleRecommentAdapterNew.YC_TEXT == item.getCircleType()){
-            helper.setVisible(R.id.part_yc_pic,false);
-            helper.setVisible(R.id.part_yc_link,false);
-            helper.setVisible(R.id.part_yc_acticle,false);
-            helper.setVisible(R.id.transfer_zf_ll,false);
-        }else {
-            helper.setVisible(R.id.transfer_zf_ll,true);
-            helper.setVisible(R.id.transfer_yc_ll,false);
+        }else{
+            helper.setVisible(R.id.ll_topic,false);
+            helper.setVisible(R.id.rl_circle,true);
 
 
+            helper.setVisible(R.id.transfer_zf_ll,false);
+            helper.setVisible(R.id.transfer_yc_ll,true);
 
-            if(CircleRecommentAdapterNew.ZF_PIC == item.getCircleType()){
-                helper.setVisible(R.id.part_zf_pic,true);
-                helper.setVisible(R.id.part_zf_link,false);
-                helper.setVisible(R.id.part_zf_article,false);
-                item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_PIC);
-            }else if(CircleRecommentAdapterNew.ZF_LINK == item.getCircleType()){
-                helper.setVisible(R.id.part_zf_link,true);
-                helper.setVisible(R.id.part_zf_pic,false);
-                helper.setVisible(R.id.part_zf_article,false);
-                item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_LINK);
-            }else if(CircleRecommentAdapterNew.ZF_ACTICLE == item.getCircleType()){
-                helper.setVisible(R.id.part_zf_article,true);
-                helper.setVisible(R.id.part_zf_link,false);
-                helper.setVisible(R.id.part_zf_pic,false);
-                item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_ACTICLE);
-            }else if(CircleRecommentAdapterNew.ZF_TEXT == item.getCircleType()){
-                helper.setVisible(R.id.part_zf_pic,false);
-                helper.setVisible(R.id.part_zf_link,false);
-                helper.setVisible(R.id.part_zf_article,false);
-                item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_TEXT);
+            if(CircleRecommentAdapterNew.YC_PIC == item.getCircleType()){
+                helper.setVisible(R.id.part_yc_pic,true);
+                helper.setVisible(R.id.part_yc_link,false);
+                helper.setVisible(R.id.part_yc_acticle,false);
+                helper.setVisible(R.id.transfer_zf_ll,false);
+            }else if(CircleRecommentAdapterNew.YC_LINK == item.getCircleType()){
+                helper.setVisible(R.id.part_yc_pic,false);
+                helper.setVisible(R.id.part_yc_link,true);
+                helper.setVisible(R.id.part_yc_acticle,false);
+                helper.setVisible(R.id.transfer_zf_ll,false);
+            }else if(CircleRecommentAdapterNew.YC_ACTICLE == item.getCircleType()){
+                helper.setVisible(R.id.part_yc_pic,false);
+                helper.setVisible(R.id.part_yc_link,false);
+                helper.setVisible(R.id.part_yc_acticle,true);
+                helper.setVisible(R.id.transfer_zf_ll,false);
+            }else if(CircleRecommentAdapterNew.YC_TEXT == item.getCircleType()){
+                helper.setVisible(R.id.part_yc_pic,false);
+                helper.setVisible(R.id.part_yc_link,false);
+                helper.setVisible(R.id.part_yc_acticle,false);
+                helper.setVisible(R.id.transfer_zf_ll,false);
+            }else {
+                helper.setVisible(R.id.transfer_zf_ll,true);
+                helper.setVisible(R.id.transfer_yc_ll,false);
+
+
+
+                if(CircleRecommentAdapterNew.ZF_PIC == item.getCircleType()){
+                    helper.setVisible(R.id.part_zf_pic,true);
+                    helper.setVisible(R.id.part_zf_link,false);
+                    helper.setVisible(R.id.part_zf_article,false);
+                    item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_PIC);
+                }else if(CircleRecommentAdapterNew.ZF_LINK == item.getCircleType()){
+                    helper.setVisible(R.id.part_zf_link,true);
+                    helper.setVisible(R.id.part_zf_pic,false);
+                    helper.setVisible(R.id.part_zf_article,false);
+                    item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_LINK);
+                }else if(CircleRecommentAdapterNew.ZF_ACTICLE == item.getCircleType()){
+                    helper.setVisible(R.id.part_zf_article,true);
+                    helper.setVisible(R.id.part_zf_link,false);
+                    helper.setVisible(R.id.part_zf_pic,false);
+                    item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_ACTICLE);
+                }else if(CircleRecommentAdapterNew.ZF_TEXT == item.getCircleType()){
+                    helper.setVisible(R.id.part_zf_pic,false);
+                    helper.setVisible(R.id.part_zf_link,false);
+                    helper.setVisible(R.id.part_zf_article,false);
+                    item.getP_blog().setCircleType(CircleRecommentAdapterNew.YC_TEXT);
+                }
+
             }
-
         }
+
     }
 
 

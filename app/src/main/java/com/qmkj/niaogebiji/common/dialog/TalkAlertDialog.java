@@ -19,18 +19,21 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
+import com.socks.library.KLog;
 
 /**
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-21
- * 描述:
+ * 描述:文章的框
  */
 public class TalkAlertDialog {
     private Context mContext;
     private Dialog dialog;
     private Display display;
 
+    private TextView listentext;
+    private TextView listentext2;
     private TextView et_input;
     private TextView cancel;
     private TextView send;
@@ -40,10 +43,13 @@ public class TalkAlertDialog {
 
     //默认是评论文章
     private int myPosition = -1;
+    private boolean isneedtotrans;
 
     public void setIsneedtotrans(boolean isneedtotrans) {
+        this.isneedtotrans = isneedtotrans;
         if(isneedtotrans){
             comment_succuss_transfer.setVisibility(View.VISIBLE);
+//            mCheckBox.setVisibility(View.VISIBLE);
         }
     }
 
@@ -80,7 +86,15 @@ public class TalkAlertDialog {
     //设置草稿
     public TalkAlertDialog setCaoGao(String content) {
         et_input.setText(content);
-        setStatus(true);
+        if(isneedtotrans){
+            setTextStatus(content);
+        }
+
+        if(content.trim().length() > num){
+            setStatus(false);
+        }else{
+            setStatus(true);
+        }
         return this;
     }
 
@@ -94,6 +108,8 @@ public class TalkAlertDialog {
         send = view.findViewById(R.id.send);
         cancel = view.findViewById(R.id.cancel);
         comment_succuss_transfer = view.findViewById(R.id.comment_succuss_transfer);
+        listentext = view.findViewById(R.id.listentext);
+        listentext2 = view.findViewById(R.id.listentext2);
         // 获取自定义Dialog布局中的控件
         dialog = new Dialog(mContext, R.style.MyDialog);
 
@@ -134,6 +150,11 @@ public class TalkAlertDialog {
         setEvent();
     }
 
+
+    private String mString;
+    //编辑字数限制
+    private int num = 4;
+
     private void setEvent() {
 
         cancel.setOnClickListener(view ->{
@@ -150,11 +171,12 @@ public class TalkAlertDialog {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().length() > 140){
-                    Log.d("tag","输入的字数过多");
-                    return;
+
+                if(isneedtotrans){
+                  setTextStatus(s.toString());
                 }
-                if(s.toString().length() == 0){
+
+                if(s.toString().trim().length() == 0 || s.toString().trim().length() > num){
                     setStatus(false);
                 }else{
                     setStatus(true);
@@ -167,7 +189,16 @@ public class TalkAlertDialog {
 
             @Override
             public void afterTextChanged(Editable s) {
+                KLog.d("tag","afterTextChanged");
+                if(isneedtotrans){
+                    setTextStatus(s.toString());
+                }
 
+                if(s.toString().trim().length() == 0 || s.toString().trim().length() > num){
+                    setStatus(false);
+                }else{
+                    setStatus(true);
+                }
             }
         });
 
@@ -186,6 +217,25 @@ public class TalkAlertDialog {
 
 
         });
+
+    }
+
+
+    private void setTextStatus(String s){
+        //trim()是去掉首尾空格
+        mString = s.toString().trim();
+        if(!TextUtils.isEmpty(mString) && mString.length() != 0){
+
+            if(mString.length() > num){
+                listentext.setTextColor(Color.parseColor("#FFFF5040"));
+                listentext2.setTextColor(Color.parseColor("#FFFF5040"));
+            }else{
+                listentext.setTextColor(Color.parseColor("#818386"));
+                listentext2.setTextColor(Color.parseColor("#818386"));
+            }
+
+        }
+        listentext.setText(mString.length() + "");
 
     }
 

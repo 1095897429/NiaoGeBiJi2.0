@@ -69,6 +69,14 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
             sumary.setText("");
         }
 
+        //展示作者等级
+//        if("1".equals(item.getNewsItemBean().getRank()) ||
+//                "2".equals(item.getNewsItemBean().getRank()) ||
+//                "3".equals(item.getNewsItemBean().getRank()) ){
+//            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_professor);
+//        }else{
+//            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_new);
+//        }
 
         //图片
         if(!TextUtils.isEmpty(item.getImg())){

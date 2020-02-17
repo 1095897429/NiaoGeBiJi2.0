@@ -63,7 +63,7 @@ public class BottomBarBehavior extends AppBarLayout.ScrollingViewBehavior {
         super.onStopNestedScroll(coordinatorLayout, child, target, type);
 
         //TODO 11.14 在搜索栏不见的情况下，点击可刷新界面
-        LinearLayout part =  coordinatorLayout.findViewById(R.id.search_part);
+        LinearLayout part =  coordinatorLayout.findViewById(R.id.first_part1);
         Rect localRect = new Rect();
         boolean isVisible = part.getLocalVisibleRect(localRect);
         KLog.d("tag","搜索栏的状态 " + isVisible );

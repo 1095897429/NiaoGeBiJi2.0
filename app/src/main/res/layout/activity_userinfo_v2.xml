@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="44dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_back"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/part_small_head"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/small_head_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="4dp"
+                android:src="@mipmap/icon_fenxiang"/>
+
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="公关之家"
+                android:maxLength="10"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="13sp"
+                android:textColor="@color/text_news_title_color"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+
+            <TextView
+                android:id="@+id/focus"
+                android:visibility="gone"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:text="关注"
+                android:background="@drawable/bg_corners_4_yellow"
+                android:layout_width="42dp"
+                android:layout_height="20dp" />
+
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/already_focus"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:text="已关注"
+                android:background="@drawable/bg_corners_4_gray"
+                android:layout_width="42dp"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/iv_right_1"
+            android:layout_toLeftOf="@+id/iv_right"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/icon_test_detail_share"
+            android:tint="@color/black"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:visibility="gone" />
+
+
+        <ImageView
+            android:id="@+id/iv_right"
+            android:src="@mipmap/icon_userinfo_other_1"
+            android:layout_alignParentRight="true"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:visibility="gone" />
+
+
+        <TextView
+            android:id="@+id/iv_text"
+            android:text="编辑"
+            android:textSize="16sp"
+            android:textColor="@color/text_first_color"
+            android:src="@mipmap/icon_test_detail_share"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:orientation="vertical"
+        android:layout_below="@+id/rl_title"
+        android:id="@+id/coordinator"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+    <!-- AppBarLayout控件便具备顶部固定的功能 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarlayout"
+        android:background="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+     <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_tool_bar_test_ctl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/transparent"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+
+            <LinearLayout
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/person_head_view"/>
+
+
+            </LinearLayout>
+
+     </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+
+
+        <com.qmkj.niaogebiji.common.tab.TabLayout
+            android:background="@color/white"
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="44dp">
+        </com.qmkj.niaogebiji.common.tab.TabLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            app:layout_behavior="com.qmkj.niaogebiji.module.widget.TopBarBehavior"
+            android:id="@+id/viewpager"
+            android:overScrollMode="never"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </androidx.viewpager.widget.ViewPager>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/part3333"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 未关注 -->
+        <TextView
+            android:layout_margin="16dp"
+            android:id="@+id/noFocus"
+            android:text="关注"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:background="@drawable/bg_corners_12_yellow"
+            android:textColor="@color/text_first_color"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+        <!-- 已关注 -->
+        <TextView
+            android:layout_margin="16dp"
+            android:id="@+id/alreadFocus"
+            android:text="已关注"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:background="@drawable/bg_corners_12_gray"
+            android:textColor="@color/text_first_color"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+        <!-- 他屏蔽你 -->
+        <TextView
+            android:layout_margin="16dp"
+            android:id="@+id/himcloseme"
+            android:text="TA屏蔽了你，不能关注"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:enabled="false"
+            android:background="@drawable/bg_corners_12_selector_yellow"
+            android:textColor="@color/text_first_color"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

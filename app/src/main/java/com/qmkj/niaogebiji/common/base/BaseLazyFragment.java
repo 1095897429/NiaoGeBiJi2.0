@@ -141,7 +141,8 @@ public abstract class BaseLazyFragment extends Fragment {
 
         //TODO 2019.12.18 晚 -- 通过debug，发现问题：第一个中的lazyload请求方法会加载 -- 没有注释下面的方法
         //TODO 2019.12.18 晚 -- 分析：当将第二个作为首展示页，那么第一个大概率的会走 懒加载方法
-//        lazyLoad();
+        //TODO 2019.2.13 又放开了，让第一个走流程，，，
+        lazyLoad();
     }
 
     protected void onInvisible() {

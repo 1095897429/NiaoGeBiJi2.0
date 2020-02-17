@@ -71,7 +71,7 @@ public class CircleBean extends BaseBean {
         this.avatar = avatar;
     }
 
-    //圈子类型 12.21
+       //圈子类型 12.21  2.14新增关注话题类型
         private int circleType;
         //记住自己的位置
         private int mSlefPosition;

@@ -44,9 +44,12 @@ import com.qmkj.niaogebiji.module.activity.TestResultActivity;
 import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
 import com.qmkj.niaogebiji.module.activity.ToolEditActivity;
 import com.qmkj.niaogebiji.module.activity.ToolSearchActivity;
+import com.qmkj.niaogebiji.module.activity.TopSelectActivity;
 import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
+import com.qmkj.niaogebiji.module.activity.UserInfoModifyActivity;
+import com.qmkj.niaogebiji.module.activity.UserInfoV2Activity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityWithLayout;
@@ -340,6 +343,13 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+    /** 打开个人信息界面 新版本 */
+    public static void toUserInfoV2Activity(Context ctx,String uid) {
+        Intent intent = new Intent(ctx, UserInfoV2Activity.class);
+        intent.putExtra("uid",uid);
+        ctx.startActivity(intent);
+    }
+
     /** 打开打招呼界面 */
     public static void toHelloMakeActivity(Activity ctx) {
         Intent intent = new Intent(ctx, HelloMakeActivity.class);
@@ -485,4 +495,18 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+
+
+    /** 打开话题界面*/
+    public static void toTopictivity(Activity ctx) {
+        Intent intent = new Intent(ctx, TopSelectActivity.class);
+        ctx.startActivityForResult(intent,CircleMakeActivity.REQUEST_SELECT_TOPIC_CODE);
+    }
+
+
+    /** 打开用户编辑界面*/
+    public static void toUserInfoModifyActivity(Activity ctx) {
+        Intent intent = new Intent(ctx, UserInfoModifyActivity.class);
+        ctx.startActivity(intent);
+    }
 }

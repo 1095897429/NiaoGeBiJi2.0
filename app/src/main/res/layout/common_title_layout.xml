@@ -39,6 +39,18 @@
 
 
     <ImageView
+        android:id="@+id/iv_right_1"
+        android:layout_toLeftOf="@+id/iv_right"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/icon_test_detail_share"
+        android:tint="@color/black"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
+
+    <ImageView
         android:id="@+id/iv_right"
         android:src="@mipmap/icon_test_detail_share"
         android:layout_alignParentRight="true"

@@ -86,7 +86,7 @@ import io.reactivex.schedulers.Schedulers;
  *
  *
  * 1.空布局是  activity_empty
- *
+ *zXD
  * 1.我 ：用户 + 立即认证(公司 + 职位) + 徽章 + 个人简介
  * 2.别人：用户  + 显示 未认证 或者(公司 + 职位) +  徽章 + 个人简介
  */

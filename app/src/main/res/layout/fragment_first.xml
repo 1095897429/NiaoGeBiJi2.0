@@ -18,7 +18,8 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+        android:id="@+id/first_part1"
+        app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

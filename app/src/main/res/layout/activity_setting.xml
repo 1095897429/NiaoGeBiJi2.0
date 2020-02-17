@@ -21,6 +21,7 @@
 
         <LinearLayout
             android:id="@+id/part1"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
@@ -144,6 +145,7 @@
 
 
         <View
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="8dp"
             android:background="@color/bg_color"/>

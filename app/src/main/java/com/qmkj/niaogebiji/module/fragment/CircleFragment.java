@@ -59,6 +59,7 @@ import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.bean.TopicAllBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.event.ShowCircleTopTitleEvent;
@@ -169,6 +170,11 @@ public class CircleFragment extends BaseLazyFragment {
     List<TopicBean> mAllList = new ArrayList<>();
 
 
+    @BindView(R.id.ll_topic)
+    LinearLayout ll_topic;
+
+
+
 
 
 
@@ -213,33 +219,72 @@ public class CircleFragment extends BaseLazyFragment {
         //我关注的话题
         initTopicLayout();
 
-        //数据
-        TopicBean topicBean;
-        int totalSize = 18;
-        for (int i = 0; i < totalSize; i++) {
-            topicBean = new TopicBean();
-            topicBean.setType("2");
-            topicBean.setCurrentTime(1582007933867L);
-            topicBean.setName("话题" + i);
-            mAllList.add(topicBean);
-        }
 
-        int lastSize = 0;
+        getMyFocusTopicData();
+
+
+    }
+
+
+    private TopicAllBean mTopicAllBean;
+    private void getMyFocusTopicData() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getFollowTopic(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<TopicAllBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<TopicAllBean> response) {
+
+                        mTopicAllBean = response.getReturn_data();
+                        if(null != mTopicAllBean){
+                            //集合不为空
+                            if(mTopicAllBean.getList() != null && !mTopicAllBean.getList().isEmpty()){
+                                ll_topic.setVisibility(View.VISIBLE);
+                                setMyFocusTopicData(mTopicAllBean.getList());
+                            }
+                        }
+                    }
+
+                });
+    }
+
+    private void setMyFocusTopicData(List<TopicBean> list) {
+
+
+
+        //测试数据
+//        TopicBean topicBean;
+//        int totalSize = 18;
+//        for (int i = 0; i < totalSize; i++) {
+//            topicBean = new TopicBean();
+//            topicBean.setType("2");
+//            topicBean.setCurrentTime(1582007933867L);
+//            topicBean.setName("话题" + i);
+//            mAllList.add(topicBean);
+//        }
+//
+        TopicBean topicBean;
+        int lastSize ;
+        int totalSize = list.size();
         //横向最多展示10条，没有超过显示 8条 + 发现话题
         //超过 10条 +  (+几) + 发现话题
         if(mAllList != null && mAllList.size() > 10){
             mAllList = mAllList.subList(0,10);
+
             lastSize = totalSize - mAllList.size();
 
             topicBean = new TopicBean();
+            topicBean.setTitle(lastSize + "");
             topicBean.setType("3");
-            topicBean.setName(lastSize + "");
             mAllList.add(topicBean);
         }
 
         topicBean = new TopicBean();
         topicBean.setType("1");
-        topicBean.setName("发现话题");
+        topicBean.setTitle("发现话题");
 
         mAllList.add(topicBean);
 

@@ -21,6 +21,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
+import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
@@ -125,8 +126,32 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        recommendBlogList();
+        getRecommendTopic();
+
     }
+
+    private List<TopicBean> mTopicBeanList;
+    private void getRecommendTopic() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getRecommendTopic(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<TopicBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<TopicBean>> response) {
+                        mTopicBeanList = response.getReturn_data();
+                        recommendBlogList();
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        recommendBlogList();
+                    }
+                });
+    }
+
 
     private void recommendBlogList() {
         Map<String,String> map = new HashMap<>();
@@ -153,8 +178,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                                     mCircleRecommentAdapterNew.setNewData(mAllList);
 
 
-                                    //TODO 2.18 在第一次设置的时候，把关注话题set进去
-                                    mCircleRecommentAdapterNew.setList(getTopicFocusData());
+
 
                                     //如果第一次返回的数据不满10条，则显示无更多数据
                                     if(serverData.size() < Constant.SEERVER_NUM){
@@ -246,9 +270,15 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             }
             if(page == 1){
                 //TODO 新增话题,原本10条数据，现在11条了
-                CircleBean tempBean = new CircleBean();
-                tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
-                teList.add(1,tempBean);
+                if(mTopicBeanList != null && !mTopicBeanList.isEmpty()){
+                    CircleBean tempBean = new CircleBean();
+                    tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
+                    teList.add(1,tempBean);
+
+                    //TODO 2.18 在第一次设置的时候，把关注话题set进去
+                    mCircleRecommentAdapterNew.setList(mTopicBeanList);
+                }
+
                 mAllList.addAll(teList);
             }
         }

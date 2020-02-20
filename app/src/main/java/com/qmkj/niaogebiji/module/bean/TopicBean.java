@@ -27,15 +27,82 @@ public class TopicBean extends BaseBean {
 
     private int is_select;
 
+    //后台返回
+    private String title;
+    private String icon;
+    private String follow_num;
+    //后台返回的时间，
+    private String updated_at;
 
-    @Generated(hash = 2124835529)
+    //后台定义的
+    private boolean is_follow;
+
+    public boolean isIs_follow() {
+        return is_follow;
+    }
+
+    public void setIs_follow(boolean is_follow) {
+        this.is_follow = is_follow;
+    }
+
+    //是否关注 -- 我定义的(主要用于在圈子中点击关注)
+    private int is_focus;
+
+    public int getIs_focus() {
+        return is_focus;
+    }
+
+    public void setIs_focus(int is_focus) {
+        this.is_focus = is_focus;
+    }
+
+    public String getFollow_num() {
+        return follow_num;
+    }
+
+    public void setFollow_num(String follow_num) {
+        this.follow_num = follow_num;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    @Generated(hash = 804890643)
     public TopicBean(long id, String name, String type, long currentTime,
-            int is_select) {
+            int is_select, String title, String icon, String follow_num,
+            String updated_at, boolean is_follow, int is_focus) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.currentTime = currentTime;
         this.is_select = is_select;
+        this.title = title;
+        this.icon = icon;
+        this.follow_num = follow_num;
+        this.updated_at = updated_at;
+        this.is_follow = is_follow;
+        this.is_focus = is_focus;
     }
 
     @Generated(hash = 1961217991)
@@ -81,5 +148,9 @@ public class TopicBean extends BaseBean {
 
     public void setIs_select(int is_select) {
         this.is_select = is_select;
+    }
+
+    public boolean getIs_follow() {
+        return this.is_follow;
     }
 }

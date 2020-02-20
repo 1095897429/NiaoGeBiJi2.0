@@ -1,19 +1,27 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.app.Activity;
 import android.text.TextPaint;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,30 +43,45 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
         TextView chineseTv = helper.getView(R.id.top_title);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
-
+        chineseTv.setText(item.getTitle());
 
         //头像
-//        ImageUtil.load(mContext,item.getPic(),helper.getView(R.id.one_img_imgs));
+        if(!TextUtils.isEmpty(item.getIcon())){
+            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.one_img_imgs));
+        }
+
+
+        helper.itemView.setOnClickListener(v -> {
+
+            KeyboardUtils.hideSoftInput((Activity) mContext);
+            if(StringUtil.isFastClick()){
+                return;
+            }
+
+            UIHelper.toTopicDetailActivity(mContext,item.getId() + "");
+
+        });
+
 
 
         //关注数 x>=10000，展示1w+
-//        if(!TextUtils.isEmpty(item.getHit_count())){
-//            long count = Long.parseLong(item.getHit_count());
-//            if(count < 10000 ){
-//                helper.setText(R.id.tag,"影响力 " + item.getHit_count());
-//            }else{
-//                double temp = count  ;
-//                //1.将数字转换成以万为单位的数字
-//                double num = temp / 10000;
-//                BigDecimal b = new BigDecimal(num);
-//                //2.转换后的数字四舍五入保留小数点后一位;
-//                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-//                helper.setText(R.id.tag,"影响力 " + f1 + " w");
-//            }
-//        }
+        if(!TextUtils.isEmpty(item.getFollow_num())){
+            long count = Long.parseLong(item.getFollow_num());
+            if(count < 10000 ){
+                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人 关注");
+            }else{
+                double temp = count  ;
+                //1.将数字转换成以万为单位的数字
+                double num = temp / 10000;
+                BigDecimal b = new BigDecimal(num);
+                //2.转换后的数字四舍五入保留小数点后一位;
+                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+                helper.setText(R.id.top_focus_num,f1 + " w" + "人 关注");
+            }
+        }
 
         //是否关注 注：1-关注，0-取消关注
-        if(0 == item.getIs_select()){
+        if(item.isIs_follow()){
             helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_yellow);
             helper.setVisible(R.id.focus,true);
             helper.setVisible(R.id.focus_aleady,false);

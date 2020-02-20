@@ -108,7 +108,6 @@
                                android:layout_marginLeft="16dp"
                                android:layout_toRightOf="@+id/head_icon"
                                android:layout_alignTop="@+id/head_icon"
-                               android:layout_alignBottom="@+id/head_icon"
                                android:layout_centerVertical="true"
                                android:layout_width="match_parent"
                                android:layout_height="wrap_content"

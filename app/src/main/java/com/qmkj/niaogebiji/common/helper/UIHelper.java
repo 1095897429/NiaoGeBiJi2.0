@@ -522,8 +522,9 @@ public class UIHelper {
 
 
     /** 打开话题明细界面*/
-    public static void toTopicDetailActivity(Context ctx) {
+    public static void toTopicDetailActivity(Context ctx,String topicId) {
         Intent intent = new Intent(ctx, TopicDetailActivity.class);
+        intent.putExtra("topicId",topicId);
         ctx.startActivity(intent);
     }
 

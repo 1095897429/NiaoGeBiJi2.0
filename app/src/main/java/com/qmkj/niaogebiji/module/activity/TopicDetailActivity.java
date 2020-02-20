@@ -61,6 +61,9 @@ public class TopicDetailActivity extends BaseActivity {
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
+
+    private String topicId;
+
     //页数
     private int page = 1;
     //适配器
@@ -78,6 +81,8 @@ public class TopicDetailActivity extends BaseActivity {
 
     @Override
     public void initFirstData() {
+
+        topicId = getIntent().getStringExtra("topicId");
 
         String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
         Glide.with(this).load(url)

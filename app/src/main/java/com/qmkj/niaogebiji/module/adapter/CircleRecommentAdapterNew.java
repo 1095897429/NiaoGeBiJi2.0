@@ -38,6 +38,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
+import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
@@ -129,8 +130,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
         if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
             //设置数据
-            initFocusLayout(helper);
-            return;
+            if(list != null && !list.isEmpty()){
+                initFocusLayout(helper);
+                return;
+            }
         }
 
 
@@ -381,7 +384,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             if(StringUtil.isFastClick()){
                 return;
             }
-            UIHelper.toTopicDetailActivity(mContext);
+            UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
         });
 
         //转发图片点击预览
@@ -557,9 +560,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
     TopicRecommendFocusAdapter mTopicRecommendFocusAdapter;
-    List<TopicFocusBean> list;
+    List<TopicBean> list;
 
-    public void setList(List<TopicFocusBean> list) {
+    public void setList(List<TopicBean> list) {
         this.list = list;
     }
 
@@ -577,12 +580,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         recyclerView.setAdapter(mTopicRecommendFocusAdapter);
 
-        helper.getView(R.id.more_topic).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                UIHelper.toTopListActivity(mContext);
+        helper.getView(R.id.more_topic).setOnClickListener(v -> {
+            if(StringUtil.isFastClick()){
+                return;
             }
+            UIHelper.toTopListActivity(mContext);
         });
 
 

@@ -41,36 +41,41 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
     @Override
     protected void convert(BaseViewHolder helper, TopicBean item) {
 
-        String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
-        ImageUtil.load(mContext,url,helper.getView(R.id.flash_img1));
+
+        if(!TextUtils.isEmpty(item.getIcon())){
+            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.flash_img1));
+        }else{
+            String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
+            ImageUtil.load(mContext,url,helper.getView(R.id.flash_img1));
+        }
 
 
-
-        if("1".equals(item.getType())){
-            //发现话题
-            helper.setVisible(R.id.rl_specific_topic,false);
-            helper.setVisible(R.id.rl_last_topic,false);
-            helper.setVisible(R.id.rl_find_topic,true);
-        }else if("2".equals(item.getType())){
+        //默认为空，不设置
+        if(TextUtils.isEmpty(item.getType())){
             //显示话题
             helper.setVisible(R.id.rl_specific_topic,true);
             helper.setVisible(R.id.rl_find_topic,false);
             helper.setVisible(R.id.rl_last_topic,false);
+        } else if("1".equals(item.getType())){
+            //发现话题
+            helper.setVisible(R.id.rl_specific_topic,false);
+            helper.setVisible(R.id.rl_last_topic,false);
+            helper.setVisible(R.id.rl_find_topic,true);
         }else if("3".equals(item.getType())){
            //显示剩余数
             helper.setVisible(R.id.rl_specific_topic,false);
             helper.setVisible(R.id.rl_find_topic,false);
             helper.setVisible(R.id.rl_last_topic,true);
 
-            helper.setText(R.id.last_topic_text," +"  + item.getName());
+            helper.setText(R.id.last_topic_text," +"  + item.getTitle());
 
         }
 
         //显示红点
-        TopicBean history = DBManager.getInstance().queryTopic(item.getName());
+        TopicBean history = DBManager.getInstance().queryTopic(item.getTitle());
         if(null != history){
           long localTime =  history.getCurrentTime();
-          long serverTime = item.getCurrentTime();
+          long serverTime = Long.parseLong(item.getUpdated_at());
           if(localTime < serverTime){
               helper.setVisible(R.id.red_point,true);
           }else{
@@ -86,8 +91,8 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
             }
             //记录点击时间，保存在本地
             if("2".equals(item.getType())){
-                insertToDb(item.getName());
-                UIHelper.toTopicDetailActivity(mContext);
+                insertToDb(item.getTitle());
+                UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
             }else if("1".equals(item.getType())){
                 UIHelper.toTopListActivity(mContext);
             }else if("3".equals(item.getType())){

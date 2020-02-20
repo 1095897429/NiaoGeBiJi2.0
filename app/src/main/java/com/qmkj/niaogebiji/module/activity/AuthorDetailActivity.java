@@ -46,6 +46,8 @@ import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
+import com.qmkj.niaogebiji.module.event.ShowTopAuthorEvent;
+import com.qmkj.niaogebiji.module.event.ShowTopTitleEvent;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -57,6 +59,8 @@ import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -86,6 +90,7 @@ public class AuthorDetailActivity extends BaseActivity {
     private String focus_type = "1";
     private String authorId;
     private AuthorBean.Author mAuthor;
+
     @BindView(R.id.focus)
     TextView focus;
 
@@ -98,19 +103,12 @@ public class AuthorDetailActivity extends BaseActivity {
     @BindView(R.id.part_small_already_focus)
     TextView part_small_already_focus;
 
-
-
     @BindView(R.id.id_auhtor_img)
     ImageView id_auhtor_img;
 
     @BindView(R.id.bg_img)
     ImageView bg_img;
 
-    @BindView(R.id.nestedScrollView)
-    NestedScrollView nestedScrollView;
-
-    @BindView(R.id.rl_title)
-    RelativeLayout rl_title;
 
     @BindView(R.id.part_small_head)
     LinearLayout part_small_head;
@@ -118,10 +116,6 @@ public class AuthorDetailActivity extends BaseActivity {
 
 
     //列表数据
-
-    @BindView(R.id.smartRefreshLayout)
-    SmartRefreshLayout smartRefreshLayout;
-
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
@@ -165,44 +159,43 @@ public class AuthorDetailActivity extends BaseActivity {
         Glide.with(this).load(url)
                 .apply(bitmapTransform(new BlurTransformation(25)))
                 .into(bg_img);
+//
+//        ImageUtil.loadByDefaultHead(this,url,id_auhtor_img);
 
-        ImageUtil.loadByDefaultHead(this,url,id_auhtor_img);
 
-
-        initSamrtLayout();
 
         initLayout();
 
         initFdddData();
 
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-              @Override
-              public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                  super.onScrollStateChanged(recyclerView, newState);
-              }
-
-              @Override
-              public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                  super.onScrolled(recyclerView, dx, dy);
-
-                  scrollY += dy;
-
-                  if(scrollY > SizeUtils.dp2px(211f)){
-                      setStatusBarColor(AuthorDetailActivity.this,getResources().getColor(R.color.white));
-                      rl_title.setBackgroundColor(getResources().getColor(R.color.white));
-                      part_small_head.setVisibility(View.VISIBLE);
-                  }else{
-                      setStatusBarColor(AuthorDetailActivity.this,Color.TRANSPARENT);
-                      rl_title.setBackgroundColor(Color.TRANSPARENT);
-                      part_small_head.setVisibility(View.GONE);
-
-                  }
-
-
-              }
-
-          });
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//              @Override
+//              public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                  super.onScrollStateChanged(recyclerView, newState);
+//              }
+//
+//              @Override
+//              public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                  super.onScrolled(recyclerView, dx, dy);
+//
+//                  scrollY += dy;
+//
+//                  if(scrollY > SizeUtils.dp2px(211f)){
+//                      setStatusBarColor(AuthorDetailActivity.this,getResources().getColor(R.color.white));
+//                      rl_title.setBackgroundColor(getResources().getColor(R.color.white));
+//                      part_small_head.setVisibility(View.VISIBLE);
+//                  }else{
+//                      setStatusBarColor(AuthorDetailActivity.this,Color.TRANSPARENT);
+//                      rl_title.setBackgroundColor(Color.TRANSPARENT);
+//                      part_small_head.setVisibility(View.GONE);
+//
+//                  }
+//
+//
+//              }
+//
+//          });
     }
 
 
@@ -256,14 +249,6 @@ public class AuthorDetailActivity extends BaseActivity {
 
     }
 
-    private void initSamrtLayout() {
-        XnClassicsHeader header =  new XnClassicsHeader(this);
-        smartRefreshLayout.setRefreshHeader(header);
-        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
-
-        });
-    }
-
 
     View headView;
     //初始化布局管理器
@@ -277,7 +262,7 @@ public class AuthorDetailActivity extends BaseActivity {
         mFirstItemAdapter = new FirstItemNewAdapter(mAllList);
         mRecyclerView.setAdapter(mFirstItemAdapter);
         //false 这个方法主要是设置RecyclerView不处理滚动事件(主要用于嵌套中)
-        mRecyclerView.setNestedScrollingEnabled(false);
+        mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
 
         mFirstItemAdapter.setOnLoadMoreListener(() -> {
@@ -286,9 +271,9 @@ public class AuthorDetailActivity extends BaseActivity {
         },mRecyclerView);
 
 
-        headView = LayoutInflater.from(this).inflate(R.layout.item_head_author_detail,null);
-
-        mFirstItemAdapter.setHeaderView(headView);
+//        headView = LayoutInflater.from(this).inflate(R.layout.item_head_author_detail,null);
+//
+//        mFirstItemAdapter.setHeaderView(headView);
     }
 
 
@@ -446,6 +431,19 @@ public class AuthorDetailActivity extends BaseActivity {
                 });
     }
 
+
+    //滑动显示搜索
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowTopAuthorEvent(ShowTopAuthorEvent event) {
+        if (this != null) {
+            String statu = event.getData();
+            if("1".equals(statu)){
+                part_small_head.setVisibility(View.VISIBLE);
+            }else{
+                part_small_head.setVisibility(View.GONE);
+            }
+        }
+    }
 
 
 

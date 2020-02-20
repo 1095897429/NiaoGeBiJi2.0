@@ -51,6 +51,8 @@ import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
+import com.qmkj.niaogebiji.module.bean.TopicAllBean;
+import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.UserRankBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.qmkj.niaogebiji.module.bean.VipBean;
@@ -721,6 +723,41 @@ public interface ApiEncryptService{
 //    @FormUrlEncoded
 //    @POST("app/blog/recommendBlogList")
 //    Observable<ResponseBody> recommendBlogListNew(@Field("params") String param);
+
+
+
+    /* 2020.2.20  圈子首页上面我关注话题列表*/
+    @FormUrlEncoded
+    @POST("app/blog/getFollowTopic")
+    Observable<HttpResponse<TopicAllBean>> getFollowTopic(@Field("params") String param);
+
+
+    /* 2020.2.20  圈子首页中推荐话题列表*/
+    @FormUrlEncoded
+    @POST("app/blog/getRecommendTopic")
+    Observable<HttpResponse<List<TopicBean>>> getRecommendTopic(@Field("params") String param);
+
+    /* 2020.2.20  圈子首页中推荐关注话题*/
+    @FormUrlEncoded
+    @POST("app/blog/followTopic")
+    Observable<HttpResponse<String>> followTopic(@Field("params") String param);
+
+
+    /* 2020.2.20  话题列表首页*/
+    @FormUrlEncoded
+    @POST("app/blog/getTopicCate")
+    Observable<HttpResponse<List<TopicBean>>> getTopicCate(@Field("params") String param);
+
+    /* 2020.2.20  分类下话题列表*/
+    @FormUrlEncoded
+    @POST("app/blog/getTopicListByCate")
+    Observable<HttpResponse<List<TopicBean>>> getTopicListByCate(@Field("params") String param);
+
+    /* 2020.2.20  分类下搜索话题列表*/
+    @FormUrlEncoded
+    @POST("app/blog/searchTopic")
+    Observable<HttpResponse<List<TopicBean>>> searchTopic(@Field("params") String param);
+
 
 
 

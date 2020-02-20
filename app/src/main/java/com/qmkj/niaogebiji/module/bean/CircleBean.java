@@ -55,6 +55,18 @@ public class CircleBean extends BaseBean {
 
         private String avatar;
 
+
+        //话题集 -- 用set方式了
+//    private List<TopicBean> topicList;
+//
+//    public List<TopicBean> getTopicList() {
+//        return topicList;
+//    }
+
+//    public void setTopicList(List<TopicBean> topicList) {
+//        this.topicList = topicList;
+//    }
+
     public String getComment_class() {
         return comment_class;
     }

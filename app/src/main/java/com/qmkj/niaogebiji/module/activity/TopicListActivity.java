@@ -20,26 +20,37 @@ import androidx.viewpager.widget.ViewPager;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
+import com.qmkj.niaogebiji.module.bean.TopicAllBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
 import com.qmkj.niaogebiji.module.fragment.TopicFocusFragment;
 import com.qmkj.niaogebiji.module.fragment.TopicSelectFragment;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author zhouliang
@@ -70,7 +81,7 @@ public class TopicListActivity extends BaseActivity {
     @BindView(R.id.ll_manual_result)
     LinearLayout ll_manual_result;
 
-    private String toolsList[];
+
     private TextView toolsTextViews[];
     private View views[];
     private int currentItem = 0;
@@ -80,7 +91,10 @@ public class TopicListActivity extends BaseActivity {
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<String> mTitls = new ArrayList<>();
 
+    //测试数据
+//    private String toolsList[] = new String[]{"常用分类", "热门", "品牌男装", "内衣配饰", "家用电器", "手机数码", "电脑办公", "个护化妆", "母婴频道", "食物生鲜", "酒水饮料", "家居家纺", "整车车品", "鞋靴箱包", "运动户外", "图书", "玩具乐器", "钟表", "居家生活", "珠宝饰品", "音像制品", "家具建材", "计生情趣", "营养保健", "奢侈礼品", "生活服务", "旅游出行"};
 
+    private String toolsList[];
     //搜索部分
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
@@ -121,11 +135,42 @@ public class TopicListActivity extends BaseActivity {
     }
 
     @Override
+    public void initFirstData() {
+        getTopicCate();
+    }
+
+
+    private List<TopicBean> mTopicBeanList;
+    private void getTopicCate() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getTopicCate(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<TopicBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<TopicBean>> response) {
+
+                        mTopicBeanList = response.getReturn_data();
+                        if(null != mTopicBeanList && !mTopicBeanList.isEmpty()){
+                            toolsList = new String[mTopicBeanList.size()];
+                            for (int i = 0; i < mTopicBeanList.size(); i++) {
+                                toolsList[i] = mTopicBeanList.get(i).getTitle();
+                            }
+
+                            showToolsView();
+                            initPager();
+                        }
+                    }
+
+                });
+    }
+
+    @Override
     protected void initView() {
         //设置适配器
         inflater = LayoutInflater.from(this);
-        showToolsView();
-        initPager();
 
 
         initLayout();
@@ -139,35 +184,64 @@ public class TopicListActivity extends BaseActivity {
                     return true;
                 }
 
-                KLog.d("搜索内容:" + content);
+                KLog.d("tag","搜索内容:" + content);
 
-                getData();
+//                getData();
+
+                searchTopic(content);
 
             }
             return false;
         });
     }
 
+    private List<TopicBean> mSearchTopicList;
+    private void searchTopic(String keyword) {
+        Map<String,String> map = new HashMap<>();
+        map.put("keyword",keyword);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().searchTopic(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<List<TopicBean>>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<List<TopicBean>> response) {
+
+                        mSearchTopicList = response.getReturn_data();
+                        getData();
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
+                });
+    }
+
 
     private void getData() {
         KeyboardUtils.hideSoftInput(ll_manual_result);
-        list.clear();
-        TopicBean bean;
-        for (int i = 0; i < 10; i++) {
-            bean = new TopicBean();
-            bean.setName(typename);
-            list.add(bean);
-        }
+
+//        list.clear();
+//        TopicBean bean;
+//        for (int i = 0; i < 10; i++) {
+//            bean = new TopicBean();
+//            bean.setName(typename);
+//            list.add(bean);
+//        }
 
         ll_auto_results.setVisibility(View.GONE);
         ll_manual_result.setVisibility(View.VISIBLE);
 
-        if(list != null && !list.isEmpty()){
+        if(mSearchTopicList != null && !mSearchTopicList.isEmpty()){
            mRecyclerView.setVisibility(View.VISIBLE);
            ll_empty.setVisibility(View.GONE);
-            mTopicFocusAdapter.setNewData(list);
+           mTopicFocusAdapter.setNewData(mSearchTopicList);
         }else{
             ll_empty.setVisibility(View.VISIBLE);
+            ll_empty.findViewById(R.id.iv_empty).setBackgroundResource(R.mipmap.icon_empty_comment);
+            ((TextView) ll_empty.findViewById(R.id.tv_empty)).setText("没有搜索到相关话题~");
             mRecyclerView.setVisibility(View.GONE);
         }
 
@@ -182,7 +256,8 @@ public class TopicListActivity extends BaseActivity {
     private void initPager() {
         mFragmentList.clear();
         for (int i = 0; i < toolsList.length; i++) {
-            TopicFocusFragment fragment1 = TopicFocusFragment.getInstance(toolsList[i]);
+            TopicFocusFragment fragment1 = TopicFocusFragment.getInstance(toolsList[i],
+                    mTopicBeanList.get(i).getId() + "");
             mFragmentList.add(fragment1);
             mTitls.add(toolsList[i]);
         }
@@ -271,7 +346,6 @@ public class TopicListActivity extends BaseActivity {
      * 动态生成显示items中的textview
      */
     private void showToolsView() {
-        toolsList = new String[]{"常用分类", "热门", "品牌男装", "内衣配饰", "家用电器", "手机数码", "电脑办公", "个护化妆", "母婴频道", "食物生鲜", "酒水饮料", "家居家纺", "整车车品", "鞋靴箱包", "运动户外", "图书", "玩具乐器", "钟表", "居家生活", "珠宝饰品", "音像制品", "家具建材", "计生情趣", "营养保健", "奢侈礼品", "生活服务", "旅游出行"};
         toolsTextViews = new TextView[toolsList.length];
         views = new View[toolsList.length];
 

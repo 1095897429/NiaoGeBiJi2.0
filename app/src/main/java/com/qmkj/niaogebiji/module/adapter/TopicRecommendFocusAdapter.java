@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
@@ -32,31 +34,36 @@ import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
  * 描述:圈子中话题关注适配器
  * 关注 参照作者
  */
-public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicFocusBean, BaseViewHolder> {
+public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
 
-    public TopicRecommendFocusAdapter(@Nullable List<TopicFocusBean> data) {
+    public TopicRecommendFocusAdapter(@Nullable List<TopicBean> data) {
         super(R.layout.item_topic_focus_recommend,data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper,TopicFocusBean item) {
+    protected void convert(BaseViewHolder helper,TopicBean item) {
 
         TextView chineseTv = helper.getView(R.id.topic_titile);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
+        chineseTv.setText(item.getTitle());
 
         //图片
-        String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
-
-        ImageUtil.loadByDefaultHead(mContext,url,(ImageView) helper.getView(R.id.one_img));
+        if(TextUtils.isEmpty(item.getIcon())){
+            String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
+            ImageUtil.loadByDefaultHead(mContext,url, helper.getView(R.id.one_img));
+        }else{
+            ImageUtil.loadByDefaultHead(mContext,item.getIcon(), helper.getView(R.id.one_img));
+        }
 
 
         //点击事件
-        helper.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UIHelper.toTopicDetailActivity(mContext);
+        helper.itemView.setOnClickListener(v -> {
+
+            if(StringUtil.isFastClick()){
+                return;
             }
+            UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
         });
 
 
@@ -97,7 +104,8 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicFocusBean,
         helper.getView(R.id.focus).setOnClickListener(view ->{
             int mPosition = helper.getAdapterPosition();
             //手动修改
-            TopicFocusBean bean = mData.get(mPosition);
+            TopicBean bean = mData.get(mPosition);
+
             if(1 == bean.getIs_focus()){
                 bean.setIs_focus(0);
             }else{

@@ -137,6 +137,19 @@
             android:screenOrientation="portrait">
         </activity>
 
+
+        <activity android:name=".module.activity.TopicListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.TopicDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.AuthorDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".module.activity.ModifyUserInfoActivity"
             android:launchMode="singleTop">
         </activity>

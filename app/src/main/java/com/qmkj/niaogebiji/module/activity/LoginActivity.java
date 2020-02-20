@@ -40,6 +40,7 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.socks.library.KLog;
+import com.tencent.mm.opensdk.constants.Build;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -207,7 +208,7 @@ public class LoginActivity extends BaseActivity {
                     return;
                 }
 
-                if (isWeixinAvilible(this)) {
+                if (isWxAppInstalledAndSupported(this)) {
                     loginType = "weixin";
                     if (!mCheckBox.isChecked()) {
                         ToastUtils.setGravity(Gravity.BOTTOM, 0, SizeUtils.dp2px(40));
@@ -299,7 +300,35 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    //判断是否安装了微信
+    /**
+     * 判断手机是否安装微信
+     * 判断微信客户端是否安装及安装的版本是否支持微信开放平台(https://blog.csdn.net/aa1165768113/article/details/82109089?utm_source=distribute.pc_relevant.none-task)
+     * @param context 上下文
+     * @return
+     */
+    public static boolean isWxAppInstalledAndSupported(Context context) {
+        IWXAPI wxApi = WXAPIFactory.createWXAPI(context, Constant.WXAPPKEY);
+
+        boolean bIsWXAppInstalledAndSupported = wxApi.isWXAppInstalled();
+        if (!bIsWXAppInstalledAndSupported) {
+            final PackageManager packageManager = context.getPackageManager();// 获取packagemanager
+            List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);// 获取所有已安装程序的包信息
+            if (pinfo != null) {
+                for (int i = 0; i < pinfo.size(); i++) {
+                    String pn = pinfo.get(i).packageName;
+                    if (pn.equals("com.tencent.mm")) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+
+    //判断是否安装了微信 -- 单一方法并不能适配所有机型 （https://www.jianshu.com/p/8589e9d82a65）
     public static boolean isWeixinAvilible(Context context) {
         final PackageManager packageManager = context.getPackageManager();// 获取packagemanager
         List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);// 获取所有已安装程序的包信息

@@ -60,8 +60,6 @@ public class PicPreviewActivity extends BaseActivity {
     RelativeLayout head_part;
 
 
-
-
     private ImageBrowseAdapter mImageBrowseAdapter;
 
     private ArrayList<String> imageList = new ArrayList<>();

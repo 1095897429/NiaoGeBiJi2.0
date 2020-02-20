@@ -1,6 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/bg_img"
+                android:src="@color/bg_color"
+                android:layout_width="match_parent"
+                android:layout_height="228dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/common_title_layout"/>
+
+                <RelativeLayout
+                    android:padding="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="159dp">
+
+                    <com.qmkj.niaogebiji.module.widget.RCImageView
+                        android:id="@+id/one_img"
+                        android:visibility="visible"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:scaleType="centerCrop"
+                        app:round_as_circle="false"
+                        app:round_corner="8dp" />
+
+                    <LinearLayout
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@+id/one_img"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/topic_titile"
+                            android:textColor="@color/white"
+                            android:textSize="22sp"
+                            android:maxLength="20"
+                            android:text="#我要找资源"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="13dp" />
+
+                        <TextView
+                            android:id="@+id/topic_desc"
+                            android:maxLength="140"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:lineSpacingExtra="4dp"
+                            android:text="这里是找资源，找合作的话题专区，如果你有需求
+或者经验可以在此话题内发布求助或者观点，大家共同进步"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/ll_focus"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/focus"
+                                android:visibility="gone"
+                                android:textColor="@color/text_news_title_color"
+                                android:textSize="14sp"
+                                android:gravity="center"
+                                android:text="关注"
+                                android:background="@drawable/bg_corners_8_yellow"
+                                android:layout_width="70dp"
+                                android:layout_height="34dp" />
+
+                            <TextView
+                                android:id="@+id/alreadFocus"
+                                android:text="已关注"
+                                android:visibility="visible"
+                                android:gravity="center"
+                                android:textSize="14sp"
+                                android:background="@drawable/bg_corners_8_gray"
+                                android:textColor="@color/text_first_color"
+                                android:layout_width="70dp"
+                                android:layout_height="34dp" />
+
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:id="@+id/focus_num"
+                            android:layout_marginRight="20dp"
+                            android:layout_toLeftOf="@+id/ll_focus"
+                            android:layout_centerVertical="true"
+                            android:text="11w人关注"
+                            android:textSize="11sp"
+                            android:textColor="@color/white"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+
+                    </RelativeLayout>
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="帅选条件"
+                android:gravity="center"
+                android:layout_gravity="center|left"
+                android:textSize="16sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="64dp"
+                android:layout_height="match_parent" />
+
+
+            <TextView
+                android:id="@+id/send_choose"
+                android:drawableRight="@mipmap/icon_circle_report"
+                android:drawablePadding="10dp"
+                android:text="发布时间由近到远"
+                android:gravity="center|right"
+                android:textSize="11sp"
+                android:textColor="#AAAEB3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_line"/>
+
+
+        <include layout="@layout/common_refresh"/>
+        
+    </LinearLayout>
+
+   
+    <ImageView
+        android:id="@+id/create_blog"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:layout_marginRight="30dp"
+        android:src="@mipmap/icon_circle_send_msg"
+        android:layout_width="44dp"
+        android:layout_height="44dp" />
+
+
+</RelativeLayout>

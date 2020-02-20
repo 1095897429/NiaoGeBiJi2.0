@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import com.qmkj.niaogebiji.DaoMaster;
 import com.qmkj.niaogebiji.DaoSession;
 import com.qmkj.niaogebiji.HistoryDao;
+import com.qmkj.niaogebiji.TopicBeanDao;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.module.bean.History;
+import com.qmkj.niaogebiji.module.bean.TopicBean;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -154,6 +156,45 @@ public class DBManager {
 
 
     /** -------------  历史 结束部分  ------------   */
+
+
+
+
+    /** -------------   话题时间开始部分  ------------   */
+
+    public void insertTopic(TopicBean history) {
+        TopicBeanDao topicBeanDao = daoSession.getTopicBeanDao();
+        topicBeanDao.insert(history);
+    }
+
+    public void deleteTopic() {
+        TopicBeanDao topicBeanDao = daoSession.getTopicBeanDao();
+        topicBeanDao.deleteAll();
+    }
+
+    public void updateTopic(TopicBean history) {
+        TopicBeanDao topicBeanDao = daoSession.getTopicBeanDao();
+        topicBeanDao.update(history);
+    }
+
+
+    //descend 降序
+    public List<TopicBean> queryTopic() {
+        TopicBeanDao topicBeanDao = daoSession.getTopicBeanDao();
+        QueryBuilder<TopicBean> qb = topicBeanDao.queryBuilder().orderDesc(TopicBeanDao.Properties.CurrentTime);
+        List<TopicBean> list = qb.list();
+        return list;
+    }
+
+    public TopicBean queryTopic(String name){
+        TopicBeanDao topicBeanDao = daoSession.getTopicBeanDao();
+        QueryBuilder<TopicBean> qb = topicBeanDao.queryBuilder().where(TopicBeanDao.Properties.Name.eq(name));
+        List<TopicBean> list = qb.list();
+        if(null != list && !list.isEmpty()){
+            return list.get(0);
+        }
+        return null;
+    }
 
 
 }

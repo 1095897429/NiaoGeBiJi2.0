@@ -145,7 +145,7 @@ android {
 //数据库版本以及Dao的相关设置
 greendao {
     //数据库schema版本
-    schemaVersion 4
+    schemaVersion 5
     //设置DaoMaster DaoSession Dao包名，默认的是bean所在的包名
     daoPackage 'com.qmkj.niaogebiji'
     //设置DaoMaster DaoSeeeion Dao目录，默认是build/generated/source/greendao
@@ -280,4 +280,8 @@ dependencies {
 
     implementation 'org.apache.commons:commons-lang3:3.9'
 
+
+    implementation 'jp.wasabeef:glide-transformations:3.0.1'
+
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 }

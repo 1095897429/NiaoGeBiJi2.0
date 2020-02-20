@@ -303,7 +303,7 @@ public class CircleMakeActivity extends BaseActivity {
 
                 break;
             case R.id.topic:
-                UIHelper.toTopictivity(this);
+                UIHelper.toTopicSelectivity(this);
                 break;
 
             case R.id.part2222:

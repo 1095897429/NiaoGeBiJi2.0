@@ -18,10 +18,13 @@ import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -253,6 +256,28 @@ public class AuthorListActivity extends BaseActivity {
             default:
         }
     }
+
+
+
+    /** 点击关注，取关回调此方法 */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventBus(UpdateHomeListEvent event){
+        //更新某条数据 在集合中找到
+        if(null != this){
+            int position;
+            String authorId = event.getAuthorId();
+            for (AuthorBean.Author temp : mAuthorAdapter.getData()) {
+                if(authorId.equals(temp.getId())){
+                    position = mAuthorAdapter.getData().indexOf(temp);
+                    mAuthorAdapter.notifyItemChanged(position);
+                    break;
+                }
+            }
+        }
+
+
+    }
+
 
 
 

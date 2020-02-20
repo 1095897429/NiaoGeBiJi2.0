@@ -339,10 +339,10 @@ public class MyFragment extends BaseLazyFragment {
             paint.setFakeBoldText(true);
 
             if(!TextUtils.isEmpty(mUserInfo.getNickname())){
-//                name.setText(mUserInfo.getNickname());
+                name.setText(mUserInfo.getNickname());
 
                 // 解密
-                name.setText(StringEscapeUtils.unescapeJava(mUserInfo.getNickname().replace("\\\\u","\\u")));
+//                name.setText(StringEscapeUtils.unescapeJava(mUserInfo.getNickname().replace("\\\\u","\\u")));
 
 
             }else{

@@ -13,7 +13,7 @@ public class MultiCircleNewsBean extends BaseBean implements MultiItemEntity {
 
     private CircleBean mCircleBean;
 
-    //类型
+    //类型 圈子为1 关注话题为2
     private int itemType;
 
     public void setItemType(int itemType) {
@@ -34,29 +34,13 @@ public class MultiCircleNewsBean extends BaseBean implements MultiItemEntity {
     }
 
 
-    //
-//    public NewsItemBean getNewsItemBean() {
-//        return mNewsItemBean;
-//    }
-//
-//    public void setNewsItemBean(NewsItemBean newsItemBean) {
-//        mNewsItemBean = newsItemBean;
-//    }
-//
-//    public FirstItemBean getFirstItemBean() {
-//        return mFirstItemBean;
-//    }
-//
-//    public void setFirstItemBean(FirstItemBean firstItemBean) {
-//        mFirstItemBean = firstItemBean;
-//    }
-//
-//
-//    public IndexFocusBean.Article_list getArticleList() {
-//        return mArticleList;
-//    }
-//
-//    public void setArticleList(IndexFocusBean.Article_list articleList) {
-//        mArticleList = articleList;
-//    }
+    private TopicFocusBean mTopicFocusBean;
+
+    public TopicFocusBean getTopicFocusBean() {
+        return mTopicFocusBean;
+    }
+
+    public void setTopicFocusBean(TopicFocusBean topicFocusBean) {
+        mTopicFocusBean = topicFocusBean;
+    }
 }

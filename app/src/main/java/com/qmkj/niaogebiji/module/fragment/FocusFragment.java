@@ -159,7 +159,10 @@ public class FocusFragment extends BaseLazyFragment {
 
         mFocusAdapter.setAuthorDetailListener(position -> {
 
-            UIHelper.toWebViewActivity(getActivity(), StringUtil.getLink("authordetail/" + mAuther_lists.get(position).getId()));
+            //TODO 2.19 原生
+            UIHelper.toAuthorDetailActivity(getActivity(),"111");
+
+//            UIHelper.toWebViewActivity(getActivity(), StringUtil.getLink("authordetail/" + mAuther_lists.get(position).getId()));
         });
 
         mFocusAdapter.setOnItemChildClickListener((adapter, view, position) -> {

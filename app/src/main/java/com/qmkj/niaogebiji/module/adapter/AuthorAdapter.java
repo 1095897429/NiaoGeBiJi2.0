@@ -117,7 +117,11 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
             AuthorBean.Author mAuthor = mData.get(helper.getAdapterPosition());
             KLog.d("tag","点击的是 position " + helper.getAdapterPosition() );
             String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
-            UIHelper.toWebViewActivity(mContext,link);
+
+//            UIHelper.toWebViewActivity(mContext,link);
+
+            //测试数据 作者 id = 3854
+            UIHelper.toAuthorDetailActivity(mContext,mAuthor.getId());
         });
 
     }

@@ -629,8 +629,8 @@ public class StringUtil {
 
     public static void getIconLinkShow(CircleBean item, Activity activity,TextView msg) {
         SpannableString spanString2;
-//        String content = item.getBlog() + "";
-        String content = StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u"));
+        String content = item.getBlog() + "";
+//        String content = StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u"));
 
         String icon = "[icon]";
         //获取链接

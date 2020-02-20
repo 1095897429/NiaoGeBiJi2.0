@@ -19,6 +19,7 @@ import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -140,6 +141,9 @@ public class HomeActivity extends BaseActivity {
 
     @BindView(R.id.guide_num)
     TextView guide_num;
+
+    @BindView(R.id.red_point)
+    FrameLayout red_point;
 
 
     String [] string = new String[]{"这里是学院。我们根据知识脉络精心梳理了营销知识树WIKI，欢迎大家查阅\n" +

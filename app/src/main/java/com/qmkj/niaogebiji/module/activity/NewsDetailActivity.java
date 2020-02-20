@@ -221,7 +221,6 @@ public class NewsDetailActivity extends BaseActivity {
     @BindView(R.id.big_pic)
     RCImageView big_pic;
 
-
     @BindView(R.id.data_link_title)
     TextView data_link_title;
 
@@ -268,7 +267,7 @@ public class NewsDetailActivity extends BaseActivity {
     TextView comment_num_all;
 
     @BindView(R.id.author_type)
-    TextView author_type;
+    ImageView author_type;
 
 
 

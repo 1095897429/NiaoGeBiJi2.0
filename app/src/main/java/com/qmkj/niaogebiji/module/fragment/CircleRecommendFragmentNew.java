@@ -21,6 +21,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
+import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
@@ -150,6 +151,11 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                                 if(serverData != null && !serverData.isEmpty()){
                                     setData2(serverData);
                                     mCircleRecommentAdapterNew.setNewData(mAllList);
+
+
+                                    //TODO 2.18 在第一次设置的时候，把关注话题set进去
+                                    mCircleRecommentAdapterNew.setList(getTopicFocusData());
+
                                     //如果第一次返回的数据不满10条，则显示无更多数据
                                     if(serverData.size() < Constant.SEERVER_NUM){
                                         mCircleRecommentAdapterNew.loadMoreEnd();
@@ -199,7 +205,15 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 });
     }
 
-
+    private List<TopicFocusBean> getTopicFocusData() {
+        List<TopicFocusBean> topicFocusBeanList = new ArrayList<>();
+        TopicFocusBean topicFocusBean;
+        for (int i = 0; i < 10; i++) {
+            topicFocusBean = new TopicFocusBean();
+            topicFocusBeanList.add(topicFocusBean);
+        }
+        return topicFocusBeanList;
+    }
 
 
     List<CircleBean> teList = new ArrayList<>();

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:paddingBottom="20dp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="76dp"
+            android:layout_height="100dp">
+
+            <com.qmkj.niaogebiji.module.widget.RCImageView
+                android:id="@+id/one_img"
+                android:visibility="visible"
+                android:layout_width="76dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                app:round_as_circle="false"
+                app:round_corner="12dp" />
+
+
+            <TextView
+                android:id="@+id/topic_titile"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="#我要找资源"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_focus"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/focus"
+                android:visibility="visible"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:text="关注"
+                android:background="@drawable/bg_corners_6_yellow"
+                android:layout_width="64dp"
+                android:layout_height="26dp" />
+
+            <TextView
+                android:id="@+id/focus_aleady"
+                android:text="已关注"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:background="@drawable/bg_corners_6_gray"
+                android:textColor="@color/text_first_color"
+                android:layout_width="64dp"
+                android:layout_height="26dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="match_parent" />
+
+
+
+
+</LinearLayout>

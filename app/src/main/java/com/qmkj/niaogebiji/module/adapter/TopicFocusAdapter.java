@@ -1,23 +1,16 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.text.TextPaint;
-import android.text.TextUtils;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
-import com.qmkj.niaogebiji.common.helper.UIHelper;
-import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
-import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
-import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
+import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
-import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -27,13 +20,13 @@ import java.util.List;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2020-2-13
- * 描述:话题适配器
+ * 描述:在话题列表中 --- 话题关注适配器
  * 关注 参照作者
  */
-public class TopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
+public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
 
-    public TopicAdapter(@Nullable List<TopicBean> data) {
-        super(R.layout.item_topic,data);
+    public TopicFocusAdapter(@Nullable List<TopicBean> data) {
+        super(R.layout.item_topic_list_focus,data);
     }
 
     @Override
@@ -64,7 +57,7 @@ public class TopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
 //            }
 //        }
 
-        //是否选择 注：1-选择，0-未选择
+        //是否关注 注：1-关注，0-取消关注
         if(0 == item.getIs_select()){
             helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_yellow);
             helper.setVisible(R.id.focus,true);
@@ -76,8 +69,8 @@ public class TopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
         }
 
 
-        //选择
-        helper.getView(R.id.select).setOnClickListener(view ->{
+        //关注
+        helper.getView(R.id.focus).setOnClickListener(view ->{
             int mPosition = helper.getAdapterPosition();
             //手动修改
             TopicBean bean = mData.get(mPosition);
@@ -88,7 +81,7 @@ public class TopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
             }
             notifyItemChanged(mPosition);
 
-            EventBus.getDefault().post(new UpdateTopicEvent(bean.getName()));
+            EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
         });
 
     }

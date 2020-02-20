@@ -29,6 +29,8 @@ public class AuthorBean extends BaseBean {
         private String img;
         private String article_count;
         private String hit_count;
+
+        //1是已关注  0 是未关注
         private int is_follow;
 
 

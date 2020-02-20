@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.AboutUsActivity;
+import com.qmkj.niaogebiji.module.activity.AuthorDetailActivity;
 import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
@@ -44,7 +45,9 @@ import com.qmkj.niaogebiji.module.activity.TestResultActivity;
 import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
 import com.qmkj.niaogebiji.module.activity.ToolEditActivity;
 import com.qmkj.niaogebiji.module.activity.ToolSearchActivity;
+import com.qmkj.niaogebiji.module.activity.TopicListActivity;
 import com.qmkj.niaogebiji.module.activity.TopSelectActivity;
+import com.qmkj.niaogebiji.module.activity.TopicDetailActivity;
 import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
@@ -497,16 +500,37 @@ public class UIHelper {
 
 
 
-    /** 打开话题界面*/
-    public static void toTopictivity(Activity ctx) {
+    /** 打开话题界面 -- 从发布圈子处点击进入*/
+    public static void toTopicSelectivity(Activity ctx) {
         Intent intent = new Intent(ctx, TopSelectActivity.class);
         ctx.startActivityForResult(intent,CircleMakeActivity.REQUEST_SELECT_TOPIC_CODE);
     }
+
+    /** 打开话题界面 -- 从圈子的查看更多处点击进入*/
+    public static void toTopListActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TopicListActivity.class);
+        ctx.startActivity(intent);
+    }
+
 
 
     /** 打开用户编辑界面*/
     public static void toUserInfoModifyActivity(Activity ctx) {
         Intent intent = new Intent(ctx, UserInfoModifyActivity.class);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开话题明细界面*/
+    public static void toTopicDetailActivity(Context ctx) {
+        Intent intent = new Intent(ctx, TopicDetailActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    /** 打开作者详情页界面*/
+    public static void toAuthorDetailActivity(Context ctx,String authorId) {
+        Intent intent = new Intent(ctx, AuthorDetailActivity.class);
+        intent.putExtra("authorId",authorId);
         ctx.startActivity(intent);
     }
 }

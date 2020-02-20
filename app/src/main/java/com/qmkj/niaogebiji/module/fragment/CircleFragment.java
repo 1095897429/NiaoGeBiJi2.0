@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.NetworkUtils;
@@ -47,13 +51,21 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
+import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
+import com.qmkj.niaogebiji.module.adapter.CircleTopicAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
+import com.qmkj.niaogebiji.module.event.ShowCircleTopTitleEvent;
 import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
+import com.qmkj.niaogebiji.module.event.ShowTopTitleEvent;
+import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
+import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -121,6 +133,25 @@ public class CircleFragment extends BaseLazyFragment {
     TextView send_num;
 
 
+    @BindView(R.id.ll_3_part)
+    LinearLayout ll_3_part;
+
+    @BindView(R.id.icon_search)
+    ImageView icon_search;
+
+    @BindView(R.id.icon_send)
+    ImageView icon_send;
+
+    @BindView(R.id.rl_newmsg_2)
+    RelativeLayout rl_newmsg_2;
+
+    @BindView(R.id.red_point_2)
+    FrameLayout red_point_2;
+
+
+
+
+
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<String> mTitls = new ArrayList<>();
@@ -128,6 +159,17 @@ public class CircleFragment extends BaseLazyFragment {
     private List<ChannelBean> mChannelBeanList;
     //适配器
     private FirstFragmentAdapter mFirstFragmentAdapter;
+
+
+    //关注的话题
+    @BindView(R.id.recycler00)
+    RecyclerView mRecyclerView;
+    LinearLayoutManager mLinearLayoutManager;
+    CircleTopicAdapter mCircleTopicAdapter;
+    List<TopicBean> mAllList = new ArrayList<>();
+
+
+
 
 
     public static CircleFragment getInstance() {
@@ -152,8 +194,10 @@ public class CircleFragment extends BaseLazyFragment {
         if(userInfo != null){
             if("1".equals(userInfo.getIs_red())){
                 red_point.setVisibility(View.VISIBLE);
+                red_point_2.setVisibility(View.VISIBLE);
             }else if("0".equals(userInfo.getIs_red())){
                 red_point.setVisibility(View.GONE);
+                red_point_2.setVisibility(View.GONE);
             }
         }
 
@@ -164,6 +208,57 @@ public class CircleFragment extends BaseLazyFragment {
         if(!TextUtils.isEmpty(Constant.firstSearchName)){
             search_first.setHint(Constant.firstSearchName);
         }
+
+
+        //我关注的话题
+        initTopicLayout();
+
+        //数据
+        TopicBean topicBean;
+        int totalSize = 18;
+        for (int i = 0; i < totalSize; i++) {
+            topicBean = new TopicBean();
+            topicBean.setType("2");
+            topicBean.setCurrentTime(1582007933867L);
+            topicBean.setName("话题" + i);
+            mAllList.add(topicBean);
+        }
+
+        int lastSize = 0;
+        //横向最多展示10条，没有超过显示 8条 + 发现话题
+        //超过 10条 +  (+几) + 发现话题
+        if(mAllList != null && mAllList.size() > 10){
+            mAllList = mAllList.subList(0,10);
+            lastSize = totalSize - mAllList.size();
+
+            topicBean = new TopicBean();
+            topicBean.setType("3");
+            topicBean.setName(lastSize + "");
+            mAllList.add(topicBean);
+        }
+
+        topicBean = new TopicBean();
+        topicBean.setType("1");
+        topicBean.setName("发现话题");
+
+        mAllList.add(topicBean);
+
+        mCircleTopicAdapter.setNewData(mAllList);
+    }
+
+    private void initTopicLayout() {
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        //设置默认垂直布局
+        mLinearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        //设置适配器
+        mCircleTopicAdapter = new CircleTopicAdapter(mAllList);
+        mRecyclerView.setAdapter(mCircleTopicAdapter);
+        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        //解决数据加载不完
+        mRecyclerView.setNestedScrollingEnabled(true);
+        mRecyclerView.setHasFixedSize(true);
     }
 
 
@@ -232,9 +327,9 @@ public class CircleFragment extends BaseLazyFragment {
 
 
 
-    @OnClick({R.id.icon_send_msg,
-            R.id.rl_newmsg,
-        R.id.search_part,
+    @OnClick({R.id.icon_send_msg,R.id.icon_send,
+            R.id.rl_newmsg,R.id.rl_newmsg_2,
+        R.id.search_part,R.id.icon_search,
         R.id.toReSend,
         R.id.icon_send_cancel,
 
@@ -253,23 +348,27 @@ public class CircleFragment extends BaseLazyFragment {
                 changeData();
                 break;
             case R.id.search_part:
-
+            case R.id.icon_search:
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_searchbar_2_0_0);
 
                 UIHelper.toSearchActivity(getActivity());
                 break;
             case R.id.rl_newmsg:
+            case R.id.rl_newmsg_2:
                 //TODO 测试布局移动
 
 //                Animation translateAnimation = AnimationUtils.loadAnimation(getActivity(),R.anim.trans);
 //                ll_circle_send.setAnimation(translateAnimation);
 //                ll_circle_send.startAnimation(translateAnimation);
-
 //                initAnim();
+
+
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_message_2_0_0);
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
+
                 break;
             case R.id.icon_send_msg:
+            case R.id.icon_send:
 
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_2_0_0);
 
@@ -653,8 +752,8 @@ public class CircleFragment extends BaseLazyFragment {
 
     private void createBlog(){
         Map<String,String> map = new HashMap<>();
-//        map.put("blog",blog + "");
-        map.put("blog",StringEscapeUtils.escapeJava(blog) + "");
+        map.put("blog",blog + "");
+//        map.put("blog",StringEscapeUtils.escapeJava(blog) + "");
         map.put("images",lashPic + "");
         map.put("link",blog_link + "");
         map.put("link_title",blog_link_title + "");
@@ -772,10 +871,37 @@ public class CircleFragment extends BaseLazyFragment {
     public void onShowRedPointEvent(ShowRedPointEvent event){
         if("1".equals( event.getIs_red())){
             red_point.setVisibility(View.VISIBLE);
+            red_point_2.setVisibility(View.VISIBLE);
         }else if("0".equals(event.getIs_red())){
             red_point.setVisibility(View.GONE);
+            red_point_2.setVisibility(View.GONE);
         }
     }
+
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateRecommendTopicFocusListEvent(UpdateRecommendTopicFocusListEvent event){
+       if(null != this){
+           ToastUtils.showShort("重新获取数据源");
+       }
+    }
+
+
+    //滑动显示搜索
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowCircleTopTitleEvent(ShowCircleTopTitleEvent event) {
+        if (this != null) {
+            String statu = event.getData();
+            if("1".equals(statu)){
+                ll_3_part.setVisibility(View.VISIBLE);
+            }else{
+                ll_3_part.setVisibility(View.GONE);
+            }
+        }
+    }
+
 
 
 }

@@ -219,12 +219,12 @@ public class ModifyUserInfoActivity extends BaseActivity {
     private void alterinfo() {
         Map<String,String> map = new HashMap<>();
         if(!TextUtils.isEmpty(mNickname)){
-//            map.put("nickname",mNickname);
+            map.put("nickname",mNickname);
 
             //判断是否有表情
-           String lokggg = StringEscapeUtils.escapeJava(mNickname);
-           KLog.d("tag","加密的内容是 " + lokggg);
-            map.put("nickname",lokggg);
+//           String lokggg = StringEscapeUtils.escapeJava(mNickname);
+//           KLog.d("tag","加密的内容是 " + lokggg);
+//           map.put("nickname",lokggg);
         }
 
         if(!TextUtils.isEmpty(mName)){

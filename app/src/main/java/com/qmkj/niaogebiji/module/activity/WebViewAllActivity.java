@@ -291,6 +291,7 @@ public class WebViewAllActivity extends BaseActivity {
     }
 
 
+    //TODO 2.19 数据来自后台，h5从后台获取，传递给我们
     private void showShareVipDialog(RegisterLoginBean.UserInfo item) {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
         alertDialog.setSharelinkView().setTitleGone();
@@ -306,11 +307,6 @@ public class WebViewAllActivity extends BaseActivity {
                     bean1.setLink(mUserInfo.getInvite_url());
                     bean1.setResId(R.mipmap.icon_fenxiang);
 
-//                    if(!TextUtils.isEmpty(mUserInfo.getName())){
-//                        name1 = mUserInfo.getName();
-//                    }else{
-//                        name1 = mUserInfo.getNickname();
-//                    }
                     //TODO 2020.1.19 换成nickname
                     if(!TextUtils.isEmpty(mUserInfo.getNickname())){
                         name1 = mUserInfo.getNickname();

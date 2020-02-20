@@ -22,10 +22,12 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
+import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
+import com.qmkj.niaogebiji.module.fragment.TopicFocusFragment;
 import com.qmkj.niaogebiji.module.fragment.TopicSelectFragment;
 import com.socks.library.KLog;
 
@@ -43,9 +45,9 @@ import fr.castorflex.android.verticalviewpager.VerticalViewPager;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2020-02-13
- * 描述:话题选择
+ * 描述:话题列表
  */
-public class TopSelectActivity extends BaseActivity {
+public class TopicListActivity extends BaseActivity {
 
     @BindView(R.id.tools_scrlllview)
     ScrollView scrollView;
@@ -57,6 +59,7 @@ public class TopSelectActivity extends BaseActivity {
     VerticalViewPager goods_pager;
 
     View icon_select;
+
 
     @BindView(R.id.search_first)
     EditText search_first;
@@ -78,7 +81,7 @@ public class TopSelectActivity extends BaseActivity {
     private List<String> mTitls = new ArrayList<>();
 
 
-    //TODO 搜索部分
+    //搜索部分
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
@@ -87,7 +90,7 @@ public class TopSelectActivity extends BaseActivity {
 
 
     List<TopicBean> list =  new ArrayList<>();
-    TopicSelectAdapter mTopicSelectAdapter;
+    TopicFocusAdapter mTopicFocusAdapter;
     String typename;
 
     //布局管理器
@@ -98,8 +101,8 @@ public class TopSelectActivity extends BaseActivity {
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mTopicSelectAdapter = new TopicSelectAdapter(list);
-        mRecyclerView.setAdapter(mTopicSelectAdapter);
+        mTopicFocusAdapter = new TopicFocusAdapter(list);
+        mRecyclerView.setAdapter(mTopicFocusAdapter);
         //禁用change动画
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -109,7 +112,7 @@ public class TopSelectActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_topselect;
+        return R.layout.activity_topic_list;
     }
 
     @Override
@@ -162,7 +165,7 @@ public class TopSelectActivity extends BaseActivity {
         if(list != null && !list.isEmpty()){
            mRecyclerView.setVisibility(View.VISIBLE);
            ll_empty.setVisibility(View.GONE);
-           mTopicSelectAdapter.setNewData(list);
+            mTopicFocusAdapter.setNewData(list);
         }else{
             ll_empty.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
@@ -179,7 +182,7 @@ public class TopSelectActivity extends BaseActivity {
     private void initPager() {
         mFragmentList.clear();
         for (int i = 0; i < toolsList.length; i++) {
-            TopicSelectFragment fragment1 = TopicSelectFragment.getInstance(toolsList[i]);
+            TopicFocusFragment fragment1 = TopicFocusFragment.getInstance(toolsList[i]);
             mFragmentList.add(fragment1);
             mTitls.add(toolsList[i]);
         }
@@ -308,6 +311,7 @@ public class TopSelectActivity extends BaseActivity {
                 toolsTextViews[i].setTextColor(getResources().getColor(R.color.text_second_color));
             }
         }
+
         views[id].findViewById(R.id.left_icon).setVisibility(View.VISIBLE);
         views[id].setBackgroundResource(android.R.color.white);
         toolsTextViews[id].setTextColor(getResources().getColor(R.color.text_first_color));

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rl_specific_topic"
+        android:layout_width="76dp"
+        android:layout_height="100dp">
+
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:id="@+id/flash_img1"
+            android:layout_width="76dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
+            app:round_as_circle="false"
+            app:round_corner="8dp" />
+
+        <TextView
+            android:id="@+id/topic_titile"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="#我要找资源"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <FrameLayout
+            android:id="@+id/red_point"
+            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_white_point"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_gravity="center"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bg_red_point"
+                android:padding="0dp"
+                android:textSize="12dp"
+                android:visibility="visible" />
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_last_topic"
+        android:visibility="gone"
+        android:layout_width="76dp"
+        android:layout_height="100dp">
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:id="@+id/flash_img1_last"
+            android:layout_width="76dp"
+            android:layout_height="100dp"
+            android:background="@color/bg_color"
+            android:scaleType="fitXY"
+            app:round_as_circle="false"
+            app:round_corner="8dp" />
+
+
+        <TextView
+            android:id="@+id/last_topic_text"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:text="+5"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_find_topic"
+        android:visibility="gone"
+        android:layout_width="76dp"
+        android:layout_height="100dp">
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:layout_width="76dp"
+            android:layout_height="100dp"
+            android:background="@color/bg_color"
+            android:scaleType="fitXY"
+            app:round_as_circle="false"
+            app:round_corner="8dp" />
+
+
+        <ImageView
+            android:src="@mipmap/logo_icon"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:text="发现主题"
+            android:gravity="center"
+            android:textColor="@color/text_first_color"
+            android:textSize="11sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        
+    </RelativeLayout>
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

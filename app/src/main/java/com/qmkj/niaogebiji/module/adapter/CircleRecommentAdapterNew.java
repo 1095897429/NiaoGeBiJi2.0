@@ -5,17 +5,11 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -24,11 +18,11 @@ import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -41,27 +35,21 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
-import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
+import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
-import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
-import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -140,7 +128,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
         if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
-
+            //设置数据
+            initFocusLayout(helper);
             return;
         }
 
@@ -150,9 +139,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             //名字
             TextView sender_name = helper.getView(R.id.sender_name);
 
-//            sender_name.setText(userInfo.getName());
+            sender_name.setText(userInfo.getName());
 
-            sender_name.setText(StringEscapeUtils.unescapeJava(userInfo.getName().replace("\\\\u","\\u")));
+//            sender_name.setText(StringEscapeUtils.unescapeJava(userInfo.getName().replace("\\\\u","\\u")));
 
 
             //职位
@@ -232,9 +221,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 //对有links的原创文本进行富文本
                 StringUtil.getIconLinkShow(item, (Activity) mContext,msg);
             }else{
-//                msg.setText(item.getBlog());
+                msg.setText(item.getBlog());
 
-                msg.setText(StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u")));
+//                msg.setText(StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u")));
 
             }
 
@@ -385,6 +374,14 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             }
             UIHelper.toCommentDetailActivity(mContext,item.getP_blog().getId());
 
+        });
+
+        //点击话题事件
+        helper.getView(R.id.ll_topic).setOnClickListener(v -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            UIHelper.toTopicDetailActivity(mContext);
         });
 
         //转发图片点击预览
@@ -558,6 +555,40 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
     }
 
+
+    TopicRecommendFocusAdapter mTopicRecommendFocusAdapter;
+    List<TopicFocusBean> list;
+
+    public void setList(List<TopicFocusBean> list) {
+        this.list = list;
+    }
+
+    private void initFocusLayout(BaseViewHolder helper) {
+        RecyclerView recyclerView = helper.getView(R.id.recycler00);
+        //二级
+        LinearLayoutManager talkManager = new LinearLayoutManager(mContext);
+        talkManager.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerView.setLayoutManager(talkManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(true);
+        mTopicRecommendFocusAdapter = new TopicRecommendFocusAdapter(list);
+
+        //禁用change动画
+        ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        recyclerView.setAdapter(mTopicRecommendFocusAdapter);
+
+        helper.getView(R.id.more_topic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                UIHelper.toTopListActivity(mContext);
+            }
+        });
+
+
+
+    }
+
     //通过uid加载布局
     private void getIconType(BaseViewHolder helper, CircleBean item) {
         String uid = item.getUid();
@@ -574,13 +605,16 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     //通过type加载布局 并且 设置转发帖子的type
     private void getCircleType(BaseViewHolder helper, CircleBean item) {
 
+        helper.setVisible(R.id.ll_topic,true);
+
         if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
             helper.setVisible(R.id.rl_circle,false);
-            helper.setVisible(R.id.ll_topic,true);
+            helper.setVisible(R.id.ll_focus_topic,true);
 
         }else{
-            helper.setVisible(R.id.ll_topic,false);
+            helper.setVisible(R.id.ll_focus_topic,false);
             helper.setVisible(R.id.rl_circle,true);
+
 
 
             helper.setVisible(R.id.transfer_zf_ll,false);

@@ -6,15 +6,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-<RelativeLayout
-    android:id="@+id/rl_circle"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="20dp"
-    android:paddingBottom="12dp"
-    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/rl_circle"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
+        android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/part1111"
@@ -530,11 +530,34 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_topic"
+        android:layout_below="@+id/all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/select_topic_text"
+            android:background="@drawable/bg_corners_6_gray"
+            android:text="#我要找资源"
+            android:textSize="11sp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:gravity="center"
+            android:textColor="@color/text_first_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
 
     <!-- 底部part -->
     <LinearLayout
         android:id="@+id/partbottom"
-        android:layout_below="@+id/all"
+        android:layout_below="@+id/ll_topic"
         android:layout_width="match_parent"
         android:gravity="center|left"
         android:layout_height="40dp"

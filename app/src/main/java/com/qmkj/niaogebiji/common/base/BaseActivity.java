@@ -159,9 +159,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         //设置事件
         initAudioEvent();
 
+        initFirstData();
 
     }
 
+    //布局找到的时候设置数据
+    public void initFirstData() {
+
+    }
 
 
     @SuppressLint("CheckResult")

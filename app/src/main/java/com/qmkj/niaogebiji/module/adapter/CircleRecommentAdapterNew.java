@@ -136,6 +136,14 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             }
         }
 
+        //话题
+        if(item.getTopic_info() != null && !TextUtils.isEmpty(item.getTopic_info().getTitle())){
+            helper.setVisible(R.id.ll_topic,true);
+            helper.setText(R.id.select_topic_text,"#" + item.getTopic_info().getTitle());
+        }else{
+            helper.setVisible(R.id.ll_topic,false);
+        }
+
 
         if(item.getUser_info() != null){
             User_info userInfo = item.getUser_info();
@@ -384,7 +392,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             if(StringUtil.isFastClick()){
                 return;
             }
-            UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
+            if(item.getTopic_info() != null){
+                UIHelper.toTopicDetailActivity(mContext,item.getTopic_info().getId()+"");
+            }
         });
 
         //转发图片点击预览
@@ -554,7 +564,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 break;
                 default:
         }
-
 
     }
 

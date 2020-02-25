@@ -3,25 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:background="@mipmap/icon_news_bg"
+    android:background="@mipmap/bg_flash"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="20dp"
     android:paddingBottom="20dp"
-    android:layout_height="148dp">
+    android:layout_height="205dp">
+
 
     <LinearLayout
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
 
             <ImageView
                 android:src="@mipmap/icon_news"
+                android:visibility="gone"
                 android:layout_width="86dp"
                 android:layout_height="20dp" />
 
@@ -40,7 +44,7 @@
 
         <RelativeLayout
             android:layout_marginTop="8dp"
-            android:background="@drawable/bg_corners_10"
+            android:background="@drawable/bg_corners_12"
             android:paddingTop="16dp"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
@@ -50,99 +54,60 @@
 
             <LinearLayout
               android:id="@+id/part1"
+              android:gravity="center"
+              android:visibility="visible"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:orientation="vertical">
+              android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/time_part"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/dingzhi"
+                    android:visibility="gone"
+                    android:src="@mipmap/icon_flash_dingzhi"
+                    android:layout_marginRight="7dp"
+                    android:layout_width="32dp"
+                    android:layout_height="16dp" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_corners_18_yellow"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:id="@+id/mins"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="7dp"
-                        android:text="00"
-                        android:textColor="@color/white"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=":"
-                        android:textColor="@color/white"
-                        android:textSize="20sp" />
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="腾讯倒闭啦！"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="17sp" />
 
 
-                    <TextView
-                        android:id="@+id/sends"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="7dp"
-                        android:text="00"
-                        android:textColor="@color/white"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-
-              <TextView
-                  android:text="12:30"
-                  android:visibility="gone"
-                  android:background="@drawable/bg_corners_18_yellow"
-                  android:textSize="20sp"
-                  android:gravity="center"
-                  android:layout_centerVertical="true"
-                  android:textColor="@color/white"
-                  android:layout_width="68dp"
-                  android:layout_height="30dp" />
-
-              <TextView
-                  android:text="Today news"
-                  android:textSize="10sp"
-                  android:layout_centerVertical="true"
-                  android:textColor="#FFBA20"
-                  android:gravity="center"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content" />
 
           </LinearLayout>
-
-            <TextView
-                android:id="@+id/flash_title"
-                android:layout_marginLeft="12dp"
-                android:layout_toRightOf="@+id/part1"
-                android:layout_alignTop="@+id/part1"
-                android:layout_alignBottom="@+id/part1"
-                android:layout_centerVertical="true"
-                android:visibility="gone"
-                android:lineSpacingExtra="4dp"
-                android:textStyle="bold"
-                android:text="四通一达首次承诺双11时效：长三角72小时达，超时赔付"
-                android:textSize="14sp"
-                android:textColor="@color/text_first_color"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
 
             <ViewFlipper
                 android:id="@+id/viewflipper"
+                android:layout_below="@+id/part1"
+                android:layout_above="@+id/one_img_time"
                 android:background="@color/transparent"
-                android:layout_toRightOf="@+id/part1"
-                android:padding="12dp"
+                android:paddingTop="12dp"
                 android:visibility="visible"
                 android:layout_centerVertical="true"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></ViewFlipper>
 
 
+            <TextView
+                android:id="@+id/one_img_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="12dp"
+                android:layout_gravity="center_vertical"
+                android:text="2019.9.23"
+                android:layout_alignParentBottom="true"
+                android:textColor="@color/text_news_tag_color"
+                android:textSize="11sp" />
 
         </RelativeLayout>
+
 
 
     </LinearLayout>

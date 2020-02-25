@@ -27,10 +27,13 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.SystemUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.widget.SecurityCodeView;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -232,6 +235,8 @@ public class VertifyCodeActivity extends BaseActivity {
                             //保存一个对象
                             StringUtil.setUserInfoBean(mUserInfo);
                             SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                            //TODO 2.24 把wx里的发送事件移动到这里，原因在token失效后，去验证码界面之前发送了下面的事件，导致请求用户数据有问题
+                            EventBus.getDefault().post(new LoginGoodEvent("微信获取数据成功，在输入验证码成功后发送事件请求用户数据"));
                             finish();
                         }
 

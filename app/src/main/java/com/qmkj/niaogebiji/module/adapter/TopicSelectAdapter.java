@@ -21,6 +21,7 @@ import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -42,27 +43,28 @@ public class TopicSelectAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
         TextView chineseTv = helper.getView(R.id.top_title);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
-
+        chineseTv.setText(item.getTitle());
 
         //头像
-//        ImageUtil.load(mContext,item.getPic(),helper.getView(R.id.one_img_imgs));
-
+        if(!TextUtils.isEmpty(item.getIcon())){
+            ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.one_img_imgs));
+        }
 
         //关注数 x>=10000，展示1w+
-//        if(!TextUtils.isEmpty(item.getHit_count())){
-//            long count = Long.parseLong(item.getHit_count());
-//            if(count < 10000 ){
-//                helper.setText(R.id.tag,"影响力 " + item.getHit_count());
-//            }else{
-//                double temp = count  ;
-//                //1.将数字转换成以万为单位的数字
-//                double num = temp / 10000;
-//                BigDecimal b = new BigDecimal(num);
-//                //2.转换后的数字四舍五入保留小数点后一位;
-//                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-//                helper.setText(R.id.tag,"影响力 " + f1 + " w");
-//            }
-//        }
+        if(!TextUtils.isEmpty(item.getFollow_num())){
+            long count = Long.parseLong(item.getFollow_num());
+            if(count < 10000 ){
+                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人 关注");
+            }else{
+                double temp = count  ;
+                //1.将数字转换成以万为单位的数字
+                double num = temp / 10000;
+                BigDecimal b = new BigDecimal(num);
+                //2.转换后的数字四舍五入保留小数点后一位;
+                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+                helper.setText(R.id.top_focus_num,f1 + " w" + "人 关注");
+            }
+        }
 
         //是否选择 注：1-选择，0-未选择
         if(0 == item.getIs_select()){
@@ -88,7 +90,11 @@ public class TopicSelectAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
             }
             notifyItemChanged(mPosition);
 
-            EventBus.getDefault().post(new UpdateTopicEvent(bean.getName()));
+            //发送话题 id 和 名称
+            UpdateTopicEvent event = new UpdateTopicEvent(bean.getTitle());
+            event.setTopicId(bean.getId() + "");
+
+            EventBus.getDefault().post(event);
         });
 
     }

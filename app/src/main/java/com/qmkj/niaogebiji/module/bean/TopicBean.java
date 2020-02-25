@@ -19,7 +19,7 @@ public class TopicBean extends BaseBean {
     private long id;
     //话题名称
     private String name;
-
+    //默认话题type 为null
     private String type;
 
     //基本本地的时间戳（毫秒），后台返回的是 秒
@@ -36,6 +36,16 @@ public class TopicBean extends BaseBean {
 
     //后台定义的
     private boolean is_follow;
+
+    private String desc;
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
 
     public boolean isIs_follow() {
         return is_follow;
@@ -88,10 +98,10 @@ public class TopicBean extends BaseBean {
         this.updated_at = updated_at;
     }
 
-    @Generated(hash = 804890643)
+    @Generated(hash = 1520249269)
     public TopicBean(long id, String name, String type, long currentTime,
             int is_select, String title, String icon, String follow_num,
-            String updated_at, boolean is_follow, int is_focus) {
+            String updated_at, boolean is_follow, String desc, int is_focus) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -102,6 +112,7 @@ public class TopicBean extends BaseBean {
         this.follow_num = follow_num;
         this.updated_at = updated_at;
         this.is_follow = is_follow;
+        this.desc = desc;
         this.is_focus = is_focus;
     }
 

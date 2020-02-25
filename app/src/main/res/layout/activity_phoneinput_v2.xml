@@ -68,7 +68,7 @@
             android:id="@+id/phone_tv"
             android:layout_centerVertical="true"
             android:inputType="number"
-            android:text="+86 18616541823"
+            android:text=""
             android:textSize="28sp"
             android:cursorVisible="true"
             android:focusable="true"

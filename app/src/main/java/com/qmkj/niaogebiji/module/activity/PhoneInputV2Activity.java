@@ -26,6 +26,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.OnMultiClickUtils;
+import com.qmkj.niaogebiji.module.widget.ConfigUtils;
 import com.socks.library.KLog;
 
 import butterknife.BindView;
@@ -37,6 +38,7 @@ import butterknife.OnClick;
  * 创建时间 2020.2.9
  * 描述:输入手机号
  * 版本2 :  新增闪验 一键登录使用场景
+ * 1.避免了用户手动输入手机号码的操作
  */
 public class PhoneInputV2Activity extends BaseActivity {
 
@@ -69,7 +71,15 @@ public class PhoneInputV2Activity extends BaseActivity {
     }
 
 
+    @Override
+    public void initFirstData() {
+        openLoginActivity();
 
+
+        //自定义运营商授权页界面
+        OneKeyLoginManager.getInstance().setAuthThemeConfig(ConfigUtils.getUiConfig(getApplicationContext(),wechat_token,loginType));
+
+    }
 
     private void openLoginActivity() {
         //拉授权页方法

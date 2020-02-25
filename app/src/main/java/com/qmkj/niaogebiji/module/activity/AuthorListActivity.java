@@ -265,10 +265,12 @@ public class AuthorListActivity extends BaseActivity {
         //更新某条数据 在集合中找到
         if(null != this){
             int position;
+            int is_follow = event.getIs_follow();
             String authorId = event.getAuthorId();
             for (AuthorBean.Author temp : mAuthorAdapter.getData()) {
                 if(authorId.equals(temp.getId())){
                     position = mAuthorAdapter.getData().indexOf(temp);
+                    temp.setIs_follow(is_follow);
                     mAuthorAdapter.notifyItemChanged(position);
                     break;
                 }

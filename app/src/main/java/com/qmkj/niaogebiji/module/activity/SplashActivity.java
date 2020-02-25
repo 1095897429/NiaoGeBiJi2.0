@@ -402,14 +402,7 @@ public class SplashActivity extends BaseActivity {
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }else{
-
-                    //TODO 2020.2.7 闪验的接入，闪验SDK预取号（可缩短拉起授权页时间）
-                    OneKeyLoginManager.getInstance().getPhoneInfo((code, result) -> {
-                        //预取号回调
-                        KLog.e("tag", "预取号： code ==" + code + "   result==" + result);
-                        UIHelper.toLoginActivity(SplashActivity.this);
-                        finish();
-                    });
+                    UIHelper.toLoginActivity(SplashActivity.this);
                 }
                 finish();
             }else{

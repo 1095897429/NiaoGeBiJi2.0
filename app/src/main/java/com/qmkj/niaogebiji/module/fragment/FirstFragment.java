@@ -188,10 +188,11 @@ public class FirstFragment extends BaseLazyFragment {
 
     private void setVipHidden(){
         mUserInfo = StringUtil.getUserInfoBean();
+        //TODO 2.24 首页工具栏 不再限制用户点击进入每个工具
         if(null != mUserInfo && !TextUtils.isEmpty(mUserInfo.getIs_vip()) && !"0".equals(mUserInfo.getIs_vip())){
             toVip.setVisibility(View.GONE);
         }else{
-            toVip.setVisibility(View.VISIBLE);
+            toVip.setVisibility(View.GONE);
         }
     }
 
@@ -245,7 +246,7 @@ public class FirstFragment extends BaseLazyFragment {
             }
         });
 
-        String [] titile = new String[]{"关注","干货","活动","热榜"};
+        String [] titile = new String[]{"关注","干货","快讯","活动","热榜"};
 
         getUserInfo();
 
@@ -306,13 +307,12 @@ public class FirstFragment extends BaseLazyFragment {
         mChannelBeanList.add(bean);
         bean = new ChannelBean("1","干货");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("2","活动");
+        bean = new ChannelBean("2","快讯");
         mChannelBeanList.add(bean);
-//        bean = new ChannelBean("3","快讯");
-//        mChannelBeanList.add(bean);
-        bean = new ChannelBean("3","热榜");
+        bean = new ChannelBean("3","活动");
         mChannelBeanList.add(bean);
-
+        bean = new ChannelBean("4","热榜");
+        mChannelBeanList.add(bean);
 
         if(null != mChannelBeanList){
             setUpAdater();
@@ -473,10 +473,13 @@ public class FirstFragment extends BaseLazyFragment {
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(newsItemFragment);
             } else if(i == 2){
+                FlashFragmentV2 actionFragment = FlashFragmentV2.getInstance();
+                mFragmentList.add(actionFragment);
+            }else if(i == 3){
                 ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
-            } else if(i == 3){
+            }else if(i == 4){
                 HotFragment hotNewsFragment = HotFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(hotNewsFragment);
@@ -592,12 +595,14 @@ public class FirstFragment extends BaseLazyFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onActionThread(toActionEvent event){
-        mViewPager.setCurrentItem(2);
+        mViewPager.setCurrentItem(3);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFlashThread(toFlashEvent event){
         if("去活动信息流".equals(event.getContent())){
+            mViewPager.setCurrentItem(3);
+        }else if("去快讯信息流".equals(event.getContent())){
             mViewPager.setCurrentItem(2);
         }
     }

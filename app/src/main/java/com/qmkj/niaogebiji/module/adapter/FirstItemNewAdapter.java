@@ -167,32 +167,35 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
 
                 //设值
-                TextView mins = helper.getView(R.id.mins);
-                TextView sends = helper.getView(R.id.sends);
+//                TextView mins = helper.getView(R.id.mins);
+                TextView title = helper.getView(R.id.title);
                 ViewFlipper vp = helper.getView(R.id.viewflipper);
 
                 IndexBulltin indexBulltin = item.getIndexBulltin();
 
                 for (IndexBulltin.Bulletn_list temp:indexBulltin.getBulletn_list()) {
                     String hh = TimeUtils.millis2String(Long.parseLong(temp.getPub_time()) * 1000L,"HH");
-                    String mm = TimeUtils.millis2String(Long.parseLong(temp.getPub_time()) * 1000L,"mm");
-                    list.add(new MessageBean(mm,hh,temp.getTitle(),temp.getId()));
+//                    String mm = TimeUtils.millis2String(Long.parseLong(temp.getPub_time()) * 1000L,"mm");
+                    list.add(new MessageBean(hh,temp.getTitle(),temp.getId()));
                     mTimmm = new Timmm();
-                    mTimmm.setHh(hh);
-                    mTimmm.setMm(mm);
+                    mTimmm.setMyTitle(temp.getTitle());
+//                    mTimmm.setMm(mm);
                     mTimmmHashMap.put(temp.getTitle(),mTimmm);
                 }
 
                 //默认加载第一个
                 Timmm temp = mTimmmHashMap.get(indexBulltin.getBulletn_list().get(0).getTitle());
                 if(null != temp){
-                    mins.setText(temp.getHh());
-                    sends.setText(temp.getMm());
-                    mins.setTypeface(typeface);
-                    sends.setTypeface(typeface);
+//                    mins.setText(temp.getHh());
+//                    sends.setText(temp.getMm());
+//                    mins.setTypeface(typeface);
+//                    sends.setTypeface(typeface);
                 }
 
-                startFlipping(mContext,vp,list,mins,sends);
+                startFlipping(mContext,vp,list,title);
+
+
+                helper.getView(R.id.toMoreFlash).setOnClickListener(v -> EventBus.getDefault().post(new toFlashEvent("去快讯信息流")));
 
                 break;
             case ACTIVITY_TYPE:
@@ -238,7 +241,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
     }
 
     public void startFlipping(Context context, ViewFlipper vf, ArrayList<MessageBean> infos,
-                              TextView mins,TextView sends){
+                              TextView title){
         //设置自动切换的间隔时间
         vf.setFlipInterval(5 * 1000);
         vf.setInAnimation(context, R.anim.notice_in);
@@ -271,10 +274,10 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 final TextView textView = currentView.findViewById(R.id.home_news_text);
                 Timmm temp = mTimmmHashMap.get(textView.getText().toString());
                 if(null != temp){
-                    mins.setText(temp.getHh());
-                    sends.setText(temp.getMm());
-                    mins.setTypeface(typeface);
-                    sends.setTypeface(typeface);
+                    title.setText(temp.getMyTitle());
+                    title.setTypeface(typeface);
+//                    sends.setText(temp.getMm());
+//                    sends.setTypeface(typeface);
                 }
 
             }

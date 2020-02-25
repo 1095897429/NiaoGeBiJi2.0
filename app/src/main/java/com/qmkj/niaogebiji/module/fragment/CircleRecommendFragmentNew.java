@@ -126,8 +126,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        getRecommendTopic();
-
+        recommendBlogList();
     }
 
     private List<TopicBean> mTopicBeanList;
@@ -142,12 +141,24 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<List<TopicBean>> response) {
                         mTopicBeanList = response.getReturn_data();
-                        recommendBlogList();
+
+                        //TODO 新增话题,原本10条数据，现在11条了
+                        if(mTopicBeanList != null && !mTopicBeanList.isEmpty()){
+                            CircleBean tempBean = new CircleBean();
+                            tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
+                            teList.add(1,tempBean);
+                            //TODO 2.18 在第一次设置的时候，把关注话题set进去
+                            mCircleRecommentAdapterNew.setNewData(teList);
+
+                            //通过set传值到adapter中
+                            mCircleRecommentAdapterNew.setList(mTopicBeanList);
+                        }
+
                     }
 
                     @Override
                     public void onNetFail(String msg) {
-                        recommendBlogList();
+
                     }
                 });
     }
@@ -174,11 +185,10 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                             List<CircleBean> serverData = response.getReturn_data();
                             if(1 == page){
                                 if(serverData != null && !serverData.isEmpty()){
+
+                                    //加载原有数据
                                     setData2(serverData);
                                     mCircleRecommentAdapterNew.setNewData(mAllList);
-
-
-
 
                                     //如果第一次返回的数据不满10条，则显示无更多数据
                                     if(serverData.size() < Constant.SEERVER_NUM){
@@ -186,6 +196,13 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                                     }
                                     ll_empty.setVisibility(View.GONE);
                                     mRecyclerView.setVisibility(View.VISIBLE);
+
+                                    //检查是否关注过话题
+                                    boolean isFollow =  serverData.get(0).isIs_follow();
+                                    if(!isFollow){
+                                        getRecommendTopic();
+                                    }
+
                                 }else{
                                     KLog.d("tag","设置空布局");
                                     //第一次加载无数据
@@ -268,17 +285,8 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 temp.setCircleType(type);
                 teList.add(temp);
             }
+            //先添加圈子数据
             if(page == 1){
-                //TODO 新增话题,原本10条数据，现在11条了
-                if(mTopicBeanList != null && !mTopicBeanList.isEmpty()){
-                    CircleBean tempBean = new CircleBean();
-                    tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
-                    teList.add(1,tempBean);
-
-                    //TODO 2.18 在第一次设置的时候，把关注话题set进去
-                    mCircleRecommentAdapterNew.setList(mTopicBeanList);
-                }
-
                 mAllList.addAll(teList);
             }
         }

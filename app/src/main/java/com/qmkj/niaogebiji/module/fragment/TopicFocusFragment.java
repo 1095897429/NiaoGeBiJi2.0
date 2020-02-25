@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,10 +16,12 @@ import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
@@ -75,7 +78,26 @@ public class TopicFocusFragment extends BaseLazyFragment {
     protected void lazyLoadData() {
         showWaitingDialog();
         getTopicListByCate();
-//        getData();
+    }
+
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getUserVisibleHint()) {
+            if(!TextUtils.isEmpty(typename) && "我的关注".equals(typename)){
+                getTopicListByCate();
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //有焦点时再请求一次
+        if(!TextUtils.isEmpty(typename) && "我的关注".equals(typename)){
+            getTopicListByCate();
+        }
     }
 
     private List<TopicBean> mTopicBeanList;

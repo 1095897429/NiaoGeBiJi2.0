@@ -9,7 +9,9 @@ import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AppointmentBean;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
+import com.qmkj.niaogebiji.module.bean.AuthorArticleBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.AuthorDetailBean;
 import com.qmkj.niaogebiji.module.bean.BadegsAllBean;
 import com.qmkj.niaogebiji.module.bean.CateAllBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -737,11 +739,6 @@ public interface ApiEncryptService{
     @POST("app/blog/getRecommendTopic")
     Observable<HttpResponse<List<TopicBean>>> getRecommendTopic(@Field("params") String param);
 
-    /* 2020.2.20  圈子首页中推荐关注话题*/
-    @FormUrlEncoded
-    @POST("app/blog/followTopic")
-    Observable<HttpResponse<String>> followTopic(@Field("params") String param);
-
 
     /* 2020.2.20  话题列表首页*/
     @FormUrlEncoded
@@ -759,6 +756,49 @@ public interface ApiEncryptService{
     Observable<HttpResponse<List<TopicBean>>> searchTopic(@Field("params") String param);
 
 
+
+    /* 2020.2.25  圈子首页中推荐关注话题*/
+    @FormUrlEncoded
+    @POST("app/blog/followTopic")
+    Observable<HttpResponse<String>> followTopic(@Field("params") String param);
+
+
+    /* 2020.2.25  圈子首页中推荐不关注话题*/
+    @FormUrlEncoded
+    @POST("app/blog/unfollowTopic")
+    Observable<HttpResponse<String>> unfollowTopic(@Field("params") String param);
+
+    /* 2020.2.25  话题详情*/
+    @FormUrlEncoded
+    @POST("app/blog/getTopicDetail")
+    Observable<HttpResponse<TopicBean>> getTopicDetail(@Field("params") String param);
+
+    /* 2020.2.25  话题下圈子列表*/
+    @FormUrlEncoded
+    @POST("app/blog/getListByTopicId")
+    Observable<HttpResponse<List<CircleBean>>> getListByTopicId(@Field("params") String param);
+
+
+
+    /* 2020.2.25 作者详情接口  */
+    @FormUrlEncoded
+    @POST("app/item/authorView")
+    Observable<HttpResponse<AuthorDetailBean>> authorView(@Field("params") String param);
+
+    /* 2020.2.25 作者文章列表  */
+    @FormUrlEncoded
+    @POST("app/article/getAuthorArticle")
+    Observable<HttpResponse<AuthorArticleBean>> getAuthorArticle(@Field("params") String param);
+
+    /* 2020.2.25 一周热文  */
+    @FormUrlEncoded
+    @POST("app/article/hotArticle")
+    Observable<HttpResponse<ActicleAllBean>> hotArticle(@Field("params") String param);
+
+    /* 2020.2.25 作者周榜  */
+    @FormUrlEncoded
+    @POST("app/article/hotauthor")
+    Observable<HttpResponse<AuthorBean>> hotauthor(@Field("params") String param);
 
 
 

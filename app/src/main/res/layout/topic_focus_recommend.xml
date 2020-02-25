@@ -29,7 +29,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:text="关注话题  看看营销圈新鲜事"
+                    android:text="关注话题"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#242629"

@@ -10,11 +10,21 @@ public class UpdateTopicEvent {
 
     private String title;
 
+    private String topicId;
+
     public UpdateTopicEvent(String title) {
         this.title = title;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getTopicId() {
+        return topicId;
+    }
+
+    public void setTopicId(String topicId) {
+        this.topicId = topicId;
     }
 }

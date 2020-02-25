@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -40,9 +41,13 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
+import com.qmkj.niaogebiji.module.bean.AuthorArticleBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
+import com.qmkj.niaogebiji.module.bean.AuthorDetailBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
@@ -71,6 +76,7 @@ import java.util.concurrent.ExecutorService;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.glide.transformations.BlurTransformation;
@@ -89,7 +95,6 @@ public class AuthorDetailActivity extends BaseActivity {
     //作者
     private String focus_type = "1";
     private String authorId;
-    private AuthorBean.Author mAuthor;
 
     @BindView(R.id.focus)
     TextView focus;
@@ -109,6 +114,29 @@ public class AuthorDetailActivity extends BaseActivity {
     @BindView(R.id.bg_img)
     ImageView bg_img;
 
+    @BindView(R.id.small_head_icon)
+    CircleImageView small_head_icon;
+
+    @BindView(R.id.tv_title)
+    TextView tv_title;
+
+
+    @BindView(R.id.author_type)
+    ImageView author_type;
+
+    @BindView(R.id.author_desc)
+    TextView author_desc;
+
+    @BindView(R.id.acticle_count)
+    TextView acticle_count;
+
+    @BindView(R.id.hint_num)
+    TextView hint_num;
+
+
+    @BindView(R.id.author_name)
+    TextView author_name;
+
 
     @BindView(R.id.part_small_head)
     LinearLayout part_small_head;
@@ -119,10 +147,14 @@ public class AuthorDetailActivity extends BaseActivity {
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
+    @BindView(R.id.ll_empty)
+    LinearLayout ll_empty;
+
+
 
     private int page = 1;
     LinearLayoutManager mLinearLayoutManager;
-    FirstItemNewAdapter mFirstItemAdapter;
+    FirstItemNewAdapter mFirstItemNewAdapter;
     List<MultiNewsBean> mAllList = new ArrayList<>();
 
     @Override
@@ -150,23 +182,14 @@ public class AuthorDetailActivity extends BaseActivity {
 
         authorId = getIntent().getStringExtra("authorId");
 
-        //伪代码
-//        if(未关注/关注){
-//            显示：图标
-//        }
-
-        String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
-        Glide.with(this).load(url)
-                .apply(bitmapTransform(new BlurTransformation(25)))
-                .into(bg_img);
-//
-//        ImageUtil.loadByDefaultHead(this,url,id_auhtor_img);
-
-
+        authorView();
 
         initLayout();
 
-        initFdddData();
+        getAuthorArticle();
+
+//        initFdddData();
+
 
 
 //        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -196,6 +219,166 @@ public class AuthorDetailActivity extends BaseActivity {
 //              }
 //
 //          });
+    }
+
+    private void getAuthorArticle() {
+        KLog.e("tag","page " + page);
+        Map<String,String> map = new HashMap<>();
+        map.put("page",page + "");
+        map.put("author_id",authorId);
+        map.put("page_size",10 + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getAuthorArticle(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<AuthorArticleBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<AuthorArticleBean> response) {
+                        AuthorArticleBean bean = response.getReturn_data();
+                        if(bean != null){
+                            List<RecommendBean.Article_list> mList= bean.getList();
+                            setArticleData(mList);
+                        }
+                    }
+                });
+    }
+
+    private void setArticleData(List<RecommendBean.Article_list> articles) {
+        if(1 == page){
+            if(null != articles && !articles.isEmpty()){
+                setActicleData(articles);
+                mFirstItemNewAdapter.setNewData(mAllList);
+                //如果第一次返回的数据不满10条，则显示无更多数据
+                if(articles.size() < Constant.SEERVER_NUM){
+                    mFirstItemNewAdapter.loadMoreComplete();
+                    mFirstItemNewAdapter.loadMoreEnd();
+                }
+            }else{
+                //第一次加载无数据
+                ll_empty.setVisibility(View.VISIBLE);
+                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("暂无内容");
+                ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
+                mRecyclerView.setVisibility(View.GONE);
+            }
+        }else{
+            //已为加载更多有数据
+            if(articles != null && articles.size() > 0){
+                setActicleData(articles);
+                mFirstItemNewAdapter.addData(tempList);
+                mFirstItemNewAdapter.loadMoreComplete();
+            }else{
+                //已为加载更多无更多数据
+                mFirstItemNewAdapter.loadMoreEnd();
+            }
+        }
+    }
+
+
+
+    List<MultiNewsBean> tempList = new ArrayList<>();
+    private void setActicleData(List<RecommendBean.Article_list> article_lists) {
+
+        tempList.clear();
+        RecommendBean.Article_list itemBean;
+        MultiNewsBean bean1 ;
+
+        String pic_type;
+        for (int i = 0; i < article_lists.size(); i++) {
+            itemBean = article_lists.get(i);
+            bean1 = new MultiNewsBean();
+            pic_type = article_lists.get(i).getPic_type();
+            if("1".equals(pic_type)){
+                bean1.setItemType(1);
+            }else if("2".equals(pic_type)){
+                bean1.setItemType(3);
+            }else if("3".equals(pic_type)){
+                bean1.setItemType(2);
+            }else{
+                bean1.setItemType(1);
+            }
+            bean1.setNewsActicleList(itemBean);
+            tempList.add(bean1);
+        }
+
+        if(page == 1){
+            mAllList.addAll(tempList);
+        }
+    }
+
+
+
+
+
+
+
+
+
+    private AuthorDetailBean.AuthorDetail mAuthorDetail;
+    private void authorView() {
+        Map<String,String> map = new HashMap<>();
+        map.put("page",page + "");
+        map.put("id",authorId);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().authorView(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<AuthorDetailBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<AuthorDetailBean> response) {
+                        AuthorDetailBean bean = response.getReturn_data();
+                        if(bean != null){
+                            mAuthorDetail = bean.getDetail();
+                            setHeadData(mAuthorDetail);
+                        }
+                    }
+                });
+    }
+
+    private void setHeadData(AuthorDetailBean.AuthorDetail bean) {
+
+        Glide.with(this).load(bean.getImg())
+                .apply(bitmapTransform(new BlurTransformation(25)))
+                .into(bg_img);
+        ImageUtil.loadByDefaultHead(this,bean.getImg(),id_auhtor_img);
+
+
+        ImageUtil.loadByDefaultHead(this,bean.getImg(),small_head_icon);
+
+        author_name.setText(bean.getName());
+        tv_title.setText(bean.getName());
+
+
+        author_desc.setText(bean.getSummary());
+
+        //发表文章
+        acticle_count.setText(bean.getArticle_count());
+
+        //影响数 -- 后台返回的就是带有w
+        if(!TextUtils.isEmpty(bean.getHit_count())){
+            hint_num.setText( bean.getHit_count());
+//            long count = Long.parseLong(bean.getHit_count());
+//            if(count < 10000 ){
+//               hint_num.setText( bean.getHit_count());
+//            }else{
+//                double temp = count  ;
+//                //1.将数字转换成以万为单位的数字
+//                double num = temp / 10000;
+//                BigDecimal b = new BigDecimal(num);
+//                //2.转换后的数字四舍五入保留小数点后一位;
+//                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+//                hint_num.setText( f1 + " w");
+//            }
+        }
+
+       if(1 == bean.getIs_follow()){
+           focus_aleady.setVisibility(View.VISIBLE);
+           part_small_already_focus.setVisibility(View.VISIBLE);
+       }else {
+           focus.setVisibility(View.VISIBLE);
+           part_small_focus.setVisibility(View.VISIBLE);
+       }
     }
 
 
@@ -229,7 +412,7 @@ public class AuthorDetailActivity extends BaseActivity {
                 mAllList.add(bean1);
             }
 
-            mFirstItemAdapter.setNewData(mAllList);
+            mFirstItemNewAdapter.setNewData(mAllList);
         }else if(page == 2){
             List<MultiNewsBean> temps = new ArrayList<>();
             temps.clear();
@@ -241,16 +424,15 @@ public class AuthorDetailActivity extends BaseActivity {
                 bean1.setNewsActicleList(itemBean);
                 temps.add(bean1);
             }
-            mFirstItemAdapter.addData(temps);
-            mFirstItemAdapter.loadMoreComplete();
+            mFirstItemNewAdapter.addData(temps);
+            mFirstItemNewAdapter.loadMoreComplete();
         }else{
-            mFirstItemAdapter.loadMoreEnd();
+            mFirstItemNewAdapter.loadMoreEnd();
         }
 
     }
 
 
-    View headView;
     //初始化布局管理器
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(this);
@@ -259,16 +441,31 @@ public class AuthorDetailActivity extends BaseActivity {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mFirstItemAdapter = new FirstItemNewAdapter(mAllList);
-        mRecyclerView.setAdapter(mFirstItemAdapter);
+        mFirstItemNewAdapter = new FirstItemNewAdapter(mAllList);
+        mRecyclerView.setAdapter(mFirstItemNewAdapter);
         //false 这个方法主要是设置RecyclerView不处理滚动事件(主要用于嵌套中)
         mRecyclerView.setNestedScrollingEnabled(true);
         mRecyclerView.setHasFixedSize(true);
 
-        mFirstItemAdapter.setOnLoadMoreListener(() -> {
+        mFirstItemNewAdapter.setOnLoadMoreListener(() -> {
             ++page;
-            initFdddData();
+            getAuthorArticle();
         },mRecyclerView);
+
+
+        //点击事件
+        mFirstItemNewAdapter.setOnItemClickListener((adapter, view, position) -> {
+            KLog.d("tag","点击的是 position " + position );
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            String aid = mFirstItemNewAdapter.getData().get(position).getNewsActicleList().getAid();
+            if (!TextUtils.isEmpty(aid)) {
+                UIHelper.toNewsDetailActivity(this, aid);
+            }
+
+        });
 
 
 //        headView = LayoutInflater.from(this).inflate(R.layout.item_head_author_detail,null);
@@ -297,15 +494,8 @@ public class AuthorDetailActivity extends BaseActivity {
             case R.id.focus_aleady:
             case R.id.part_small_focus:
             case R.id.part_small_already_focus:
-                ToastUtils.showShort("点击乐乐乐了");
-                //带有authorId的事件
-                UpdateHomeListEvent event = new UpdateHomeListEvent();
-                event.setAuthorId(authorId);
-                EventBus.getDefault().post(event);
-//                showCancelFocusDialog();
+                showCancelFocusDialog();
                 break;
-
-
 
             default:
         }
@@ -379,7 +569,7 @@ public class AuthorDetailActivity extends BaseActivity {
 
 
     private void showCancelFocusDialog() {
-        if(mAuthor.getIs_follow() == 1){
+        if(mAuthorDetail.getIs_follow() == 1){
             focus_type = "0";
             final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(mContext).builder();
             iosAlertDialog.setPositiveButton("取消关注", v -> {
@@ -406,15 +596,15 @@ public class AuthorDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<IndexFocusBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
-                        if(1 == mAuthor.getIs_follow()){
-                            mAuthor.setIs_follow(0);
+                        if(1 == mAuthorDetail.getIs_follow()){
+                            mAuthorDetail.setIs_follow(0);
 
                             focus.setVisibility(View.VISIBLE);
                             part_small_focus.setVisibility(View.VISIBLE);
                             focus_aleady.setVisibility(View.GONE);
                             part_small_already_focus.setVisibility(View.GONE);
                         }else{
-                            mAuthor.setIs_follow(1);
+                            mAuthorDetail.setIs_follow(1);
 
                             focus.setVisibility(View.GONE);
                             part_small_focus.setVisibility(View.GONE);
@@ -425,6 +615,7 @@ public class AuthorDetailActivity extends BaseActivity {
                         //带有authorId的事件 -- 没有调用接口时，手动的判断可以
                         UpdateHomeListEvent event = new UpdateHomeListEvent();
                         event.setAuthorId(authorId);
+                        event.setIs_follow(mAuthorDetail.getIs_follow());
                         EventBus.getDefault().post(event);
                     }
 

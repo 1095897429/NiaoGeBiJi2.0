@@ -12,6 +12,16 @@ public class Timmm extends BaseBean {
     private String mm;
     private String hh;
 
+    private String myTitle;
+
+    public String getMyTitle() {
+        return myTitle;
+    }
+
+    public void setMyTitle(String myTitle) {
+        this.myTitle = myTitle;
+    }
+
     public String getMm() {
         return mm;
     }

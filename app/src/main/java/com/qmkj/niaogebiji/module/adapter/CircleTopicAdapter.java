@@ -75,7 +75,10 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
         TopicBean history = DBManager.getInstance().queryTopic(item.getTitle());
         if(null != history){
           long localTime =  history.getCurrentTime();
-          long serverTime = Long.parseLong(item.getUpdated_at());
+          long serverTime = 0;
+          if(!TextUtils.isEmpty(item.getUpdated_at())){
+              serverTime = Long.parseLong(item.getUpdated_at());
+          }
           if(localTime < serverTime){
               helper.setVisible(R.id.red_point,true);
           }else{
@@ -90,13 +93,15 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
                 return;
             }
             //记录点击时间，保存在本地
-            if("2".equals(item.getType())){
+            if(TextUtils.isEmpty(item.getType())){
                 insertToDb(item.getTitle());
                 UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
-            }else if("1".equals(item.getType())){
-                UIHelper.toTopListActivity(mContext);
-            }else if("3".equals(item.getType())){
-                UIHelper.toTopListActivity(mContext);
+            }else{
+                if("1".equals(item.getType())){
+                    UIHelper.toTopListActivity(mContext);
+                }else if("3".equals(item.getType())){
+                    UIHelper.toTopListActivity(mContext);
+                }
             }
         });
     }

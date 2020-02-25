@@ -175,9 +175,6 @@ public class CircleFragment extends BaseLazyFragment {
 
 
 
-
-
-
     public static CircleFragment getInstance() {
         return new CircleFragment();
     }
@@ -267,15 +264,31 @@ public class CircleFragment extends BaseLazyFragment {
 //        }
 //
         TopicBean topicBean;
-        int lastSize ;
-        int totalSize = list.size();
-        //横向最多展示10条，没有超过显示 8条 + 发现话题
-        //超过 10条 +  (+几) + 发现话题
-        if(mAllList != null && mAllList.size() > 10){
-            mAllList = mAllList.subList(0,10);
+//        int lastSize ;
+//        int totalSize = list.size();
+//        //横向最多展示10条，没有超过显示 8条 + 发现话题
+//        //超过 10条 +  (+几) + 发现话题
+//        if(list != null && list.size() > 10){
+//            list = list.subList(0,10);
+//            mAllList.addAll(list);
+//
+//            lastSize = totalSize - list.size();
+//            topicBean = new TopicBean();
+//            topicBean.setTitle(lastSize + "");
+//            topicBean.setType("3");
+//            mAllList.add(topicBean);
+//        }else{
+//            mAllList.addAll(list);
+//        }
 
-            lastSize = totalSize - mAllList.size();
 
+        //num 剩余的返回数据
+        mAllList.clear();
+        int lastSize = mTopicAllBean.getNum();
+        mAllList.addAll(list);
+
+        if(lastSize > 0){
+            mAllList.addAll(list);
             topicBean = new TopicBean();
             topicBean.setTitle(lastSize + "");
             topicBean.setType("3");
@@ -449,6 +462,8 @@ public class CircleFragment extends BaseLazyFragment {
         pathList = mTempMsgBean.getImgPath2();
         blog_link  = mTempMsgBean.getLinkurl();
         blog_link_title =  mTempMsgBean.getLinkTitle();
+
+        topic_id = mTempMsgBean.getTopicId();
 
 
         //TODO 12.21发现一张图片多次提交 需重新赋值
@@ -794,11 +809,12 @@ public class CircleFragment extends BaseLazyFragment {
     String article_title = "";
     //文字图片
     String article_image= "";
+    //话题id
+    String topic_id = "";
 
     private void createBlog(){
         Map<String,String> map = new HashMap<>();
         map.put("blog",blog + "");
-//        map.put("blog",StringEscapeUtils.escapeJava(blog) + "");
         map.put("images",lashPic + "");
         map.put("link",blog_link + "");
         map.put("link_title",blog_link_title + "");
@@ -808,6 +824,7 @@ public class CircleFragment extends BaseLazyFragment {
         map.put("article_id", article_id + "");
         map.put("article_title", article_title + "");
         map.put("article_image",article_image + "");
+        map.put("topic_id",topic_id + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().createBlog(result)
                 .subscribeOn(Schedulers.newThread())
@@ -929,7 +946,8 @@ public class CircleFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateRecommendTopicFocusListEvent(UpdateRecommendTopicFocusListEvent event){
        if(null != this){
-           ToastUtils.showShort("重新获取数据源");
+           KLog.d("tag"," 重新获取数据源 ");
+           getMyFocusTopicData();
        }
     }
 

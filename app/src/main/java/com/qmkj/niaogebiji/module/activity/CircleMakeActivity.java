@@ -156,7 +156,6 @@ public class CircleMakeActivity extends BaseActivity {
     TextView select_topic_text;
 
 
-
     @BindView(R.id.topic_first)
     ImageView topic_first;
 
@@ -175,6 +174,10 @@ public class CircleMakeActivity extends BaseActivity {
     //编辑字数限制
     private int num = 140;
     public  int pic_num = 9;
+
+    //话题
+    private String topicId = "";
+    private String topicName = "";
 
     //url地址
     private String linkurl = "";
@@ -288,7 +291,9 @@ public class CircleMakeActivity extends BaseActivity {
                 R.id.link,
                 R.id.to_delete_link,
                 R.id.make,
-                R.id.part2222})
+                R.id.part2222,
+                R.id.ll_topic
+    })
     public void clicks(View view){
         KeyboardUtils.hideSoftInput(mEditText);
 
@@ -297,10 +302,14 @@ public class CircleMakeActivity extends BaseActivity {
                 SPUtils.getInstance().put("isTopicIconClick",true);
                 topic_first.setVisibility(View.GONE);
                 break;
+            case R.id.ll_topic:
+                UIHelper.toTopicDetailActivity(this,topicId);
+                break;
             case R.id.topic_delete:
 
                 ll_topic.setVisibility(View.GONE);
-
+                topicId = "";
+                topicName = "";
                 break;
             case R.id.topic:
                 UIHelper.toTopicSelectivity(this);
@@ -361,6 +370,7 @@ public class CircleMakeActivity extends BaseActivity {
         }
     }
 
+    //把整体数据转移到Fragment中
     private void sendPicToQiuNiu() {
 
         sendData();
@@ -574,7 +584,11 @@ public class CircleMakeActivity extends BaseActivity {
         //添加话题
         if (requestCode == REQUEST_SELECT_TOPIC_CODE && resultCode == RESULT_OK) {
             ll_topic.setVisibility(View.VISIBLE);
-            select_topic_text.setText("#" + data.getExtras().getString("topicName"));
+
+            topicName = data.getExtras().getString("topicName");
+            topicId = data.getExtras().getString("topicId");
+
+            select_topic_text.setText("#" + topicName + "  " +  topicId );
         }
     }
 
@@ -612,6 +626,16 @@ public class CircleMakeActivity extends BaseActivity {
         mTempMsgBean.setLinkTitle(linkTitle);
         mTempMsgBean.setLinkurl(linkurl);
 
+
+        //设置话题
+        if(!TextUtils.isEmpty(topicId)){
+            mTempMsgBean.setTopicId(topicId);
+            mTempMsgBean.setTopicName(topicName);
+        }else{
+            mTempMsgBean.setTopicId("");
+            mTempMsgBean.setTopicName("");
+        }
+
         if(!mediaFiles.isEmpty()){
             mTempMsgBean.setImgPath(mediaFiles);
         }else{
@@ -648,6 +672,9 @@ public class CircleMakeActivity extends BaseActivity {
         }else{
             mTempMsgBean.setImgPath2(null);
         }
+
+        mTempMsgBean.setTopicName(topicName);
+        mTempMsgBean.setTopicId(topicId);
     }
 
     @Override
@@ -713,6 +740,11 @@ public class CircleMakeActivity extends BaseActivity {
                 mediaFiles.addAll(mTempMsgBean.getImgPath());
                 part3333.setVisibility(View.VISIBLE);
                 setStatus(false);
+            }
+
+            if(!TextUtils.isEmpty(mTempMsgBean.getTopicId())){
+                ll_topic.setVisibility(View.VISIBLE);
+                select_topic_text.setText("#" + mTempMsgBean.getTopicName());
             }
         }
     }

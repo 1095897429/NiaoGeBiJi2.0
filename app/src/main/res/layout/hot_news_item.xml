@@ -21,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="84dp"
             android:scaleType="centerCrop"
-            android:background="@color/bg_color"
             app:round_as_circle="false"
             app:round_corner="6dp" />
 
@@ -89,12 +88,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textColor="@color/text_news_tag_color"
+            android:layout_marginRight="8dp"
             android:text="奋斗的小胖子"
             android:textSize="11sp" />
 
-        <Space
-            android:layout_width="8dp"
-            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/reading_num"

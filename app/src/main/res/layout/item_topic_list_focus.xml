@@ -43,7 +43,7 @@
 
         <TextView
             android:id="@+id/top_focus_num"
-            android:text="1.1w人 关注"
+            android:text=""
             android:textSize="13sp"
             android:textColor="@color/text_second_color"
             android:layout_width="wrap_content"

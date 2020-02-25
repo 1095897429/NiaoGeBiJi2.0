@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,9 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
+import com.chuanglan.shanyan_sdk.listener.OneKeyLoginListener;
+import com.chuanglan.shanyan_sdk.listener.OpenLoginAuthListener;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
@@ -39,6 +43,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
+import com.qmkj.niaogebiji.module.widget.ConfigUtils;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.constants.Build;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -85,6 +90,10 @@ public class LoginActivity extends BaseActivity {
 
     //登录方式
     private String loginType;
+
+    @BindView(R.id.shanyan_dmeo_my_dialog_layout)
+    RelativeLayout loading_view;
+
 
     @Override
     protected boolean regEvent() {
@@ -144,11 +153,70 @@ public class LoginActivity extends BaseActivity {
                     if (!isAgree) {
                         showSecretDialog(this);
                     } else {
+
+                        loading_view.setVisibility(View.VISIBLE);
+
                         MobclickAgentUtils.onEvent(UmengEvent.wxlogin_phone_2_0_0);
-                        UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                        //TODO 2020.2.7 闪验的接入，闪验SDK预取号（可缩短拉起授权页时间）
+                        OneKeyLoginManager.getInstance().getPhoneInfo((code, result) -> {
+                            //预取号回调 code为1022:成功；其他：失败
+                            if(1022 == code){
+                                KLog.e("tag", "预取号： code ==" + code + "   result==" + result);
+
+                                //1自定义运营商授权页界面
+                                OneKeyLoginManager.getInstance().setAuthThemeConfig(ConfigUtils.getUiConfig(LoginActivity.this,
+                                        "", loginType));
+                                //2
+                                openLoginActivity();
+
+                            }else{
+                                UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                            }
+
+                        });
+
                     }
 
                 });
+    }
+
+
+    private void openLoginActivity() {
+        //拉授权页方法
+        OneKeyLoginManager.getInstance().openLoginAuth(false, new OpenLoginAuthListener() {
+            @Override
+            public void getOpenLoginAuthStatus(int code, String result) {
+                if (null != loading_view) {
+                    loading_view.setVisibility(View.GONE);
+                }
+                if (1000 == code) {
+                    //拉起授权页成功
+                    KLog.e("tag", "拉起授权页成功： _code==" + code + "   _result==" + result);
+                } else {
+                    //拉起授权页失败
+                    KLog.e("tag",  "拉起授权页失败： _code==" + code + "   _result==" + result);
+                    ToastUtils.showShort(result);
+                }
+            }
+        }, new OneKeyLoginListener() {
+            @Override
+            public void getOneKeyLoginStatus(int code, String result) {
+                if (null != loading_view) {
+                    loading_view.setVisibility(View.GONE);
+                }
+                if (1011 == code) {
+                    KLog.e("tag",  "用户点击授权页返回： _code==" + code + "   _result==" + result);
+                    return;
+                } else if (1000 == code) {
+                    KLog.e("tag",  "用户点击登录获取token成功： _code==" + code + "   _result==" + result);
+                    //TODO 调用后台接口传递token，去验证，成功后去主界面
+
+
+                } else {
+                    KLog.e("tag",  "用户点击登录获取token失败： _code==" + code + "   _result==" + result);
+                }
+            }
+        });
     }
 
     private void initEvent() {
@@ -386,6 +454,15 @@ public class LoginActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(null != OneKeyLoginManager.getInstance()){
+            OneKeyLoginManager.getInstance().finishAuthActivity();
+            OneKeyLoginManager.getInstance().removeAllListener();
+        }
+
+    }
 }
 
 

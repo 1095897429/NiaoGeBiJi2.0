@@ -3,8 +3,12 @@ package com.qmkj.niaogebiji.module.fragment;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +28,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -41,6 +46,7 @@ import com.qmkj.niaogebiji.module.bean.MyBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
+import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -379,9 +385,17 @@ public class MyFragment extends BaseLazyFragment {
                 name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
                         (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
-                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company1);
-                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-                name_author_tag.setCompoundDrawables(null,null,drawable,null);
+//                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company1);
+//                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+//                name_author_tag.setCompoundDrawables(null,null,drawable,null);
+
+
+                //居中对齐imageSpan
+                CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+                SpannableString spanString2 = new SpannableString("icon");
+                spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                name_author_tag.append(spanString2);
+
 
             }else{
                 name_vertify.setVisibility(View.VISIBLE);
@@ -566,7 +580,11 @@ public class MyFragment extends BaseLazyFragment {
             case R.id.advice_ll:
                 MobclickAgentUtils.onEvent(UmengEvent.i_feedback_2_0_0);
 
-                toUDesk();
+//                toUDesk();
+
+                //TODO 改为链接
+                UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(), Constant.ADVICE);
+
                 break;
             case R.id.toQue:
                 MobclickAgentUtils.onEvent(UmengEvent.i_question_2_0_0);

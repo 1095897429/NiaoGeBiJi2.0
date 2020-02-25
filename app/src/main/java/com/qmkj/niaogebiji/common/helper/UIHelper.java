@@ -60,6 +60,7 @@ import com.qmkj.niaogebiji.module.activity.WebViewActivityWithStep;
 import com.qmkj.niaogebiji.module.activity.WebViewAllActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewBadgeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewEditBadgeActivity;
+import com.qmkj.niaogebiji.module.activity.WebViewWithLayoutOnlyActivity;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
@@ -67,6 +68,8 @@ import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
+import com.qmkj.niaogebiji.module.bean.TopicAllBean;
+import com.qmkj.niaogebiji.module.bean.TopicBean;
 
 import java.util.ArrayList;
 
@@ -200,6 +203,17 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
+
+    /** 打开圈子发布界面  -- 用第二种*/
+    public static void toCircleMakeActivityV2(Context ctx, TopicBean topicBean) {
+        Intent intent = new Intent(ctx, CircleMakeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("topicBean",topicBean);
+        intent.putExtras(bundle);
+        ctx.startActivity(intent);
+    }
+
+
     /** 打开圈子发布2界面 */
     public static void toCircleMakeAddLinkActivity(Activity ctx,int reqCode) {
         Intent intent = new Intent(ctx, CircleMakeAddLinkActivity.class);
@@ -229,6 +243,13 @@ public class UIHelper {
     /** 打开网页界面  返回网页的上一页*/
     public static void toWebViewActivityWithOnStep(Context ctx,String link) {
         Intent intent = new Intent(ctx, WebViewActivityWithStep.class);
+        intent.putExtra("link",link);
+        ctx.startActivity(intent);
+    }
+
+
+    public static void toWebViewWithLayoutOnlyActivity(Context ctx,String link) {
+        Intent intent = new Intent(ctx, WebViewWithLayoutOnlyActivity.class);
         intent.putExtra("link",link);
         ctx.startActivity(intent);
     }

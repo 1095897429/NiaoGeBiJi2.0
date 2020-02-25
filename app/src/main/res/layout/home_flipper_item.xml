@@ -12,10 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:maxLines="2"
+        android:lineSpacingExtra="2dp"
         android:ellipsize="end"
         android:text="IDC：阿里、腾讯、中国电信、金山云跻身2018年全球十大IaaS服务商"
         android:textColor="#242629"
-        android:textSize="17sp"
+        android:textSize="13sp"
         />
 
 </LinearLayout>

@@ -510,3 +510,9 @@ public static java.lang.String TABLENAME;
 -keep class com.vivo.vms.**{*; }
 -keep class   xxx.xxx.xxx.VivoMessageReceiver{*;}
 
+#闪验
+-dontwarn com.cmic.sso.sdk.**
+-dontwarn com.sdk.**
+-keep class com.cmic.sso.sdk.**{*;}
+-keep class com.sdk.** { *;}
+-keep class cn.com.chinatelecom.account.api.**{*;}

@@ -134,10 +134,11 @@ public class FirstItemFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        //实时快讯 getIndexBulltin();
+        //实时快讯
+         getIndexBulltin();
 
         //推荐数据
-        recommendlist();
+//        recommendlist();
 
         //更懂你
         isPersonal();
@@ -321,14 +322,6 @@ public class FirstItemFragment extends BaseLazyFragment {
                 }
             }
 
-            if(null != indexBulltin){
-                indexBulltin1 = indexBulltin;
-                bean1 = new MultiNewsBean();
-                bean1.setItemType(4);
-                bean1.setIndexBulltin(indexBulltin1);
-                mAllList.add(4,bean1);
-            }
-
 
             if(article_lists.size() > 2){
                 for (int i = 0 + 2; i < article_lists.size() ; i++) {
@@ -356,6 +349,15 @@ public class FirstItemFragment extends BaseLazyFragment {
                 bean1.setItemType(FirstItemNewAdapter.ACTIVITY_TYPE);
                 bean1.setFristActionBean(fristActionBean);
                 mAllList.add(3,bean1);
+            }
+
+            //显示在第5条
+            if(null != indexBulltin){
+                indexBulltin1 = indexBulltin;
+                bean1 = new MultiNewsBean();
+                bean1.setItemType(FirstItemNewAdapter.FLASH_TYPE);
+                bean1.setIndexBulltin(indexBulltin1);
+                mAllList.add(4,bean1);
             }
 
             mFirstItemAdapter.setNewData(mAllList);

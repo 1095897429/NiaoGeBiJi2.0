@@ -31,6 +31,13 @@ public class MessageBean extends BaseBean {
         this.flash_id = flash_id;
     }
 
+    public MessageBean(String hour, String text,String flash_id) {
+        this.text = text;
+        this.mins = mins;
+        this.hour = hour;
+        this.flash_id = flash_id;
+    }
+
     public String getMins() {
         return mins;
     }

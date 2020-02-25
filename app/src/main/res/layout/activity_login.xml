@@ -73,7 +73,7 @@
 
                 <LinearLayout
                     android:id="@+id/phoneLogin"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:background="@drawable/bg_corners_12_gray"
                     android:layout_width="match_parent"
                     android:gravity="center"
@@ -127,13 +127,21 @@
 
 
 
+
             </LinearLayout>
+
+
+
 
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
+    <include
+        android:id="@+id/shanyan_dmeo_my_dialog_layout"
+        layout="@layout/shanyan_demo_dialog_layout"
+        android:visibility="gone" />
 
 
 </RelativeLayout>

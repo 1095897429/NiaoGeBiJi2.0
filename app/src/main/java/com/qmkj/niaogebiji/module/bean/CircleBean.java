@@ -43,6 +43,11 @@ public class CircleBean extends BaseBean {
 
         private String comment_class;
 
+        //TODO 新增话题
+        private TopicInfo topic_info;
+        //是否关注过话题
+        private boolean is_follow;
+
 
         //兼容搜索
         private String name;
@@ -66,6 +71,23 @@ public class CircleBean extends BaseBean {
 //    public void setTopicList(List<TopicBean> topicList) {
 //        this.topicList = topicList;
 //    }
+
+
+    public boolean isIs_follow() {
+        return is_follow;
+    }
+
+    public void setIs_follow(boolean is_follow) {
+        this.is_follow = is_follow;
+    }
+
+    public TopicInfo getTopic_info() {
+        return topic_info;
+    }
+
+    public void setTopic_info(TopicInfo topic_info) {
+        this.topic_info = topic_info;
+    }
 
     public String getComment_class() {
         return comment_class;
@@ -521,6 +543,55 @@ public class CircleBean extends BaseBean {
             return auth_com_status;
         }
 
+    }
+
+
+    public static class TopicInfo extends BaseBean{
+        private String id;
+        private String pid;
+        private String title;
+        private String desc;
+        private String ptitle;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getPid() {
+            return pid;
+        }
+
+        public void setPid(String pid) {
+            this.pid = pid;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        public String getPtitle() {
+            return ptitle;
+        }
+
+        public void setPtitle(String ptitle) {
+            this.ptitle = ptitle;
+        }
     }
 
 }

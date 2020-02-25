@@ -154,7 +154,9 @@
             android:launchMode="singleTop">
         </activity>
 
-
+        <activity android:name=".module.activity.WebViewWithLayoutOnlyActivity"
+            android:launchMode="singleTop">
+        </activity>
 
 
         <activity android:name=".module.activity.WelcomeActivity"
@@ -683,6 +685,33 @@
         <!--<meta-data-->
             <!--android:name="com.vivo.push.app_id"-->
             <!--android:value="16704" />-->
+
+
+
+
+        <activity
+            android:name="com.chuanglan.shanyan_sdk.view.CmccLoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/dialogStyle" />
+
+        <activity-alias
+            android:name="com.cmic.sso.sdk.activity.LoginAuthActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:targetActivity="com.chuanglan.shanyan_sdk.view.CmccLoginActivity"
+            android:theme="@style/dialogStyle" />
+        <activity
+            android:name="com.chuanglan.shanyan_sdk.view.ShanYanOneKeyActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/dialogStyle" />
+        <activity
+            android:name="com.chuanglan.shanyan_sdk.view.CTCCPrivacyProtocolActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind"
+            android:theme="@style/dialogStyle" />
 
 
     </application>

@@ -25,6 +25,27 @@ public class TempMsgBean extends BaseBean {
     //拍照
     private List<MediaFile> imgPath2;
 
+    //话题id
+    private String topicId;
+
+    //话题名称
+    private String topicName;
+
+    public String getTopicName() {
+        return topicName;
+    }
+
+    public void setTopicName(String topicName) {
+        this.topicName = topicName;
+    }
+
+    public String getTopicId() {
+        return topicId;
+    }
+
+    public void setTopicId(String topicId) {
+        this.topicId = topicId;
+    }
 
     public String getContent() {
         return content;

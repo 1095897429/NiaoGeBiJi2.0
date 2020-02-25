@@ -156,7 +156,6 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                             //wechat_token（不为空) 是 新用户
                             if(!TextUtils.isEmpty(mWxResultBean.getWechat_token())){
                                 UIHelper.toPhoneInputActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
-                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
                                 //TODO 新逻辑，进入闪验界面
 //                                UIHelper.toPhoneShanYanActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
 //                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
@@ -165,8 +164,15 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                                 StringUtil.setUserInfoBean(mUserInfo);
                                 SPUtils.getInstance().put(Constant.IS_LOGIN,true);
                                 UIHelper.toHomeActivity(WXEntryActivity.this,0);
-                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
+                                EventBus.getDefault().post(new LoginGoodEvent("微信获取数据成功，并在此发送事件请求用户数据"));
                             }
+
+//                            RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+//                            StringUtil.setUserInfoBean(mUserInfo);
+//                            SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+//                            UIHelper.toHomeActivity(WXEntryActivity.this,0);
+//                            //在FristFragment中有，
+//                            EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
 
                             finish();
                         }

@@ -509,8 +509,8 @@ public class NewsDetailActivity extends BaseActivity {
 
         StringUtil.setPublishTime(tv_tag1111,mNewsDetailBean.getPublished_at());
 
-        //相关资料
-        if(!TextUtils.isEmpty(mNewsDetailBean.getDl_mat_title())){
+        //TODO 相关资料 之前是标题，现在是链接,有的下载后台没有写标题，，，，
+        if(!TextUtils.isEmpty(mNewsDetailBean.getDl_link())){
             data_link_title.setText(mNewsDetailBean.getDl_mat_title());
             data_link_num_feather.setText(mNewsDetailBean.getDl_point());
             data_link_num_down.setText("下载数 " + mNewsDetailBean.getDl_times());

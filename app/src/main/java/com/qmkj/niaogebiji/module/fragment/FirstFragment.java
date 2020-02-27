@@ -1,14 +1,19 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -75,10 +80,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -527,6 +534,30 @@ public class FirstFragment extends BaseLazyFragment {
 
 
 
+    private boolean permissionCheck(Context context) {
+        Boolean result = true;
+        if (Build.VERSION.SDK_INT >= 23) {
+            try {
+                Class clazz = BassBoost.Settings.class;
+                Method canDrawOverlays = clazz.getDeclaredMethod("canDrawOverlays", Context.class);
+                result = (Boolean) canDrawOverlays.invoke(null, context);
+            } catch (Exception e) {
+                KLog.e(TAG, e.getMessage());
+            }
+        }
+        return result;
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+//        mWm.removeView(ll_circle_send);
+    }
+
+//    WindowManager mWm;
+//    LinearLayout ll_circle_send;
+
     @OnClick({R.id.search_part,R.id.toMoreMoring,R.id.icon_catogory,R.id.listenMoring,R.id.moring_content,R.id.rl_sign,
         R.id.ll_moring,R.id.toVip,
             R.id.icon_search
@@ -553,9 +584,25 @@ public class FirstFragment extends BaseLazyFragment {
             case R.id.rl_sign:
                 MobclickAgentUtils.onEvent(UmengEvent.index_sign_2_0_0);
 
-//                UIHelper.toFeatherctivity(getActivity());
+                UIHelper.toFeatherctivity(getActivity());
 
-                UIHelper.toToolEditActivity(getActivity());
+//                UIHelper.toToolEditActivity(getActivity());
+
+
+//                ll_circle_send = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.layout_send,null);
+//                mWm= (WindowManager) getActivity().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+//                WindowManager.LayoutParams mWmParams = new WindowManager.LayoutParams(
+//                        WindowManager.LayoutParams.WRAP_CONTENT,
+//                        WindowManager.LayoutParams.WRAP_CONTENT,
+//                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+//                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+//                        PixelFormat.TRANSLUCENT
+//                );
+//                mWmParams.gravity = Gravity.CENTER|Gravity.TOP;
+//                mWm.addView(ll_circle_send, mWmParams);
+
+
+
                 break;
             case R.id.search_part:
             case R.id.icon_search:

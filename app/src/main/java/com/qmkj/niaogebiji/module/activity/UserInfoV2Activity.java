@@ -222,17 +222,13 @@ public class UserInfoV2Activity extends BaseActivity {
         return true;
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        initUserInfo();
-    }
 
     private void initUserInfo() {
         myUid = StringUtil.getMyUid();
 
         otherUid = getIntent().getStringExtra("uid");
+        KLog.d("tag","用户的uid是 " + otherUid );
 
         //动态h5跳转过来，uid是不带的，那么肯定是自己
         if(TextUtils.isEmpty(otherUid)){
@@ -242,7 +238,7 @@ public class UserInfoV2Activity extends BaseActivity {
         mUserInfo = StringUtil.getUserInfoBean();
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
 
-
+        getUserInfoV2();
     }
 
 
@@ -273,7 +269,9 @@ public class UserInfoV2Activity extends BaseActivity {
 
     @Override
     public void initFirstData() {
-        getUserInfoV2();
+
+        initUserInfo();
+
     }
 
     @Override

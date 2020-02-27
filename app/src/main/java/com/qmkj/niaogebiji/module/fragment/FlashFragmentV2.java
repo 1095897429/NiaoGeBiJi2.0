@@ -9,8 +9,11 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.ScaleXSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +33,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.dialog.ShareFlashDialog;
+import com.qmkj.niaogebiji.common.dialog.ShareFlashDialogV2;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -242,7 +246,11 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                         MobclickAgentUtils.onEvent("news_laud" + (position + 1) + "_2_0_0");
                     }
 
-                    showShareDialog();
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+
+                    ShareFlashDialogV2();
                     break;
                 case R.id.part1111:
                     ArrayList<String> photos = new ArrayList<>();
@@ -299,7 +307,18 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                                 header_textview.setText(TimeUtils.millis2String(Long.parseLong(mBuilltinBeans.get(0).getCreated_at())* 1000L,"MM月dd日"));
                                 String temp = TimeUtils.millis2String(Long.parseLong(mBuilltinBeans.get(0).getCreated_at())* 1000L,"yyyy-MM-dd HH:mm:ss");
                                 String string = TimeUtils.getChineseWeek(temp);
+
+//                                boolean isToday = TimeUtils.isToday(temp);
+//                                if(isToday){
+//                                    string = string + "~ 今天";
+//                                    //创建一个SpannableString对象
+//                                    SpannableString sStr = new SpannableString(string);
+//                                    //设置字体大小（相对值,单位：像素） 参数表示为默认字体宽度的多少倍 ,2.0f表示默认字体宽度的两倍，即X轴方向放大为默认字体的两倍，而高度不变
+//                                    sStr.setSpan(new ScaleXSpan(0.75f), 2, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                }
+
                                 header_textview_weekend.setText(string);
+
                             }else{
                                 //已为加载更多有数据
                                 if(mBuilltinBeans != null && mBuilltinBeans.size() > 0){
@@ -377,37 +396,45 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
         mFlashItemAdapter.notifyItemChanged(myPosition);
     }
 
-
-    //分享
-    private void showShareDialog() {
-        ShareFlashDialog alertDialog = new ShareFlashDialog(getActivity()).builder();
+    private void ShareFlashDialogV2() {
+        ShareFlashDialogV2 alertDialog = new ShareFlashDialogV2(getActivity()).builder();
         alertDialog.setCanceledOnTouchOutside(true);
-        alertDialog.setTitle("分享快讯");
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
-                    sharePositon = 0;
-                    flash_ll.removeAllViews();
-//                    initShareLayout();
-//                    bulletinShare();
+                    KLog.d("tag","海报 朋友 1");
 
-                    //TODO 2020.2.11 现在是分享链接了
-                    bulletinShareByLink();
-                    break;
-                case 1:
                     sharePositon = 1;
                     flash_ll.removeAllViews();
-//                    initShareLayout();
-//                    bulletinShare();
+                    initShareLayout();
+                    bulletinShare();
 
-                    bulletinShareByLink();
+                    break;
+                case 1:
+                    KLog.d("tag","海报 朋友圈 0 ");
+                    sharePositon = 0;
+                    flash_ll.removeAllViews();
+                    initShareLayout();
+                    bulletinShare();
+
+                    break;
+                case 2:
                     KLog.d("tag","vx朋友");
+                    sharePositon = 1;
+                    bulletinShareByLink();
+                    break;
+                case 3:
+                    KLog.d("tag","vx朋友圈");
+                    sharePositon = 0;
+                    bulletinShareByLink();
                     break;
                 default:
             }
         });
         alertDialog.show();
     }
+
+
 
 
     /** --------------------------------- 快讯分享  ---------------------------------*/
@@ -626,7 +653,6 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
             return;
         }
 
-
         ShareBean bean1 = new ShareBean();
         bean1.setShareType("circle_link");
         bean1.setImg(builltinBean.getPic());
@@ -695,7 +721,7 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
 
     /** --------------------------------- 快讯微信请求分享  ---------------------------------*/
 
-    public static  boolean isFlashShare = false;
+    public  boolean isFlashShare = false;
 
     private void addBulletinSharePoint() {
 
@@ -721,11 +747,13 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                 });
     }
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventBus(FlashShareEvent event){
-        isFlashShare = false;
-        addBulletinSharePoint();
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isFlashShare){
+            addBulletinSharePoint();
+            isFlashShare = false;
+        }
     }
 
 

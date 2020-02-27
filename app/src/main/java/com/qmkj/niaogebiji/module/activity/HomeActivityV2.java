@@ -465,9 +465,8 @@ public class HomeActivityV2 extends BaseActivity {
 
                 //底部弹出Activity
 
-                UIHelper.toCooperationActivity(this);
-                //参数一：Activity2进入动画  参数二：Activity1退出动画
-                overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                UIHelper.toCooperationActivity(this,"");
+
 
                 break;
             case R.id.index_tool:

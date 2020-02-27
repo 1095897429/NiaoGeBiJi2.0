@@ -10,11 +10,22 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
  */
 public class MessageBean extends BaseBean {
 
+    //内容
     private String text;
-    private String mins;
-    private String hour;
+    //发布时间
+    private String time;
+    //标题
+    private String myTitle;
     //快讯索引
     private String flash_id;
+
+
+    public MessageBean(String text, String time, String myTitle, String flash_id) {
+        this.text = text;
+        this.time = time;
+        this.myTitle = myTitle;
+        this.flash_id = flash_id;
+    }
 
     public String getFlash_id() {
         return flash_id;
@@ -24,34 +35,20 @@ public class MessageBean extends BaseBean {
         this.flash_id = flash_id;
     }
 
-    public MessageBean(String mins, String hour, String text,String flash_id) {
-        this.text = text;
-        this.mins = mins;
-        this.hour = hour;
-        this.flash_id = flash_id;
+    public String getMyTitle() {
+        return myTitle;
     }
 
-    public MessageBean(String hour, String text,String flash_id) {
-        this.text = text;
-        this.mins = mins;
-        this.hour = hour;
-        this.flash_id = flash_id;
+    public void setMyTitle(String myTitle) {
+        this.myTitle = myTitle;
     }
 
-    public String getMins() {
-        return mins;
+    public String getTime() {
+        return time;
     }
 
-    public void setMins(String mins) {
-        this.mins = mins;
-    }
-
-    public String getHour() {
-        return hour;
-    }
-
-    public void setHour(String hour) {
-        this.hour = hour;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getText() {

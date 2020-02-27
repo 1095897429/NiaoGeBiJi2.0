@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qmkj.niaogebiji">
 
+
+
     <uses-permission android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -155,6 +157,11 @@
         </activity>
 
         <activity android:name=".module.activity.WebViewWithLayoutOnlyActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+
+        <activity android:name=".module.activity.WebViewWithLayoutOnlyActivityV2"
             android:launchMode="singleTop">
         </activity>
 

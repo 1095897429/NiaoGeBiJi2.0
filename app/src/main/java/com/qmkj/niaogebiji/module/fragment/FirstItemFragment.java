@@ -288,7 +288,6 @@ public class FirstItemFragment extends BaseLazyFragment {
         //5条 文章列表
         //文章列表
 
-
         tempList.clear();
 
         RecommendBean.Article_list itemBean;
@@ -342,22 +341,22 @@ public class FirstItemFragment extends BaseLazyFragment {
                 }
             }
 
-            //显示在第4条
+            //显示在第6条
             if(null != mFristActionBean && mFristActionBean.getActivity() != null){
                 fristActionBean = mFristActionBean;
                 bean1 = new MultiNewsBean();
                 bean1.setItemType(FirstItemNewAdapter.ACTIVITY_TYPE);
                 bean1.setFristActionBean(fristActionBean);
-                mAllList.add(3,bean1);
+                mAllList.add(6,bean1);
             }
 
-            //显示在第5条
+            //显示在第3条
             if(null != indexBulltin){
                 indexBulltin1 = indexBulltin;
                 bean1 = new MultiNewsBean();
                 bean1.setItemType(FirstItemNewAdapter.FLASH_TYPE);
                 bean1.setIndexBulltin(indexBulltin1);
-                mAllList.add(4,bean1);
+                mAllList.add(3,bean1);
             }
 
             mFirstItemAdapter.setNewData(mAllList);

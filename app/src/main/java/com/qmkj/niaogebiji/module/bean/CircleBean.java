@@ -375,6 +375,27 @@ public class CircleBean extends BaseBean {
        //网页链接地址
        private ArrayList<String> pcLinks;
 
+       private String comment_uid;
+
+       private String comment_nickname;
+
+
+       public String getComment_uid() {
+           return comment_uid;
+       }
+
+       public void setComment_uid(String comment_uid) {
+           this.comment_uid = comment_uid;
+       }
+
+       public String getComment_nickname() {
+           return comment_nickname;
+       }
+
+       public void setComment_nickname(String comment_nickname) {
+           this.comment_nickname = comment_nickname;
+       }
+
        public ArrayList<String> getPcLinks() {
            return pcLinks;
        }

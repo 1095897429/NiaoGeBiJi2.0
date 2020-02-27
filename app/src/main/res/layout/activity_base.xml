@@ -132,4 +132,7 @@
 
     </RelativeLayout>
 
+
+    <include layout="@layout/layout_send"/>
+
 </RelativeLayout>

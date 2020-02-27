@@ -134,7 +134,6 @@
                 <LinearLayout
                     android:id="@+id/ll_part1"
                     android:layout_marginTop="8dp"
-                    android:visibility="gone"
                     android:layout_below="@+id/content_des"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -143,7 +142,6 @@
                     <com.qmkj.niaogebiji.module.widget.RCImageView
                         android:id="@+id/one_img"
                         android:visibility="visible"
-                        android:background="@color/bg_color"
                         android:layout_width="match_parent"
                         android:layout_height="215dp"
                         android:scaleType="centerCrop"

@@ -90,6 +90,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         ((TextView)helper.getView(R.id.time)).setTypeface(typeface);
 
 
+
         //图片
 //        String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
 
@@ -198,9 +199,9 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         Typeface typeface2= Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
         ((TextView)helper.getView(R.id.zan_num)).setTypeface(typeface2);
 
-//        if(!TextUtils.isEmpty(mBean.getPub_time())){
-//            helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
-//        }
+        if(!TextUtils.isEmpty(mBean.getPub_time())){
+            helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
+        }
 
         //拿到它的createTime -- 显示日期 -- 再显示星期
         if(!TextUtils.isEmpty(mBean.getCreated_at())){

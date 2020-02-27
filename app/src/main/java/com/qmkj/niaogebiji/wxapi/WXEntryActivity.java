@@ -103,9 +103,9 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                 } else if (type == RETURN_MSG_TYPE_SHARE) {
                     KLog.d("tag","微信分享成功");
                     //通过EventBus发送
-                    if(FlashFragment.isFlashShare){
-                        EventBus.getDefault().post(new FlashShareEvent("快讯分享"));
-                    }
+//                    if(FlashFragment.isFlashShare){
+//                        EventBus.getDefault().post(new FlashShareEvent("快讯分享"));
+//                    }
 
                     //文章分享成功
                     if(Constant.isActicleShare){

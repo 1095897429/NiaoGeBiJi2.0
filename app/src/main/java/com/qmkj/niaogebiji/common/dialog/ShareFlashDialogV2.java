@@ -17,22 +17,21 @@ import java.util.List;
 
 /**
  * @author zhouliang
- * 版本 1.0
- * 创建时间 2019-11-18
- * 描述:文章详情里的分享
+ * 版本 2.0
+ * 创建时间 2019-11-13
+ * 描述:快讯分享框
+ * 1.布局样式改了
  */
-public class ShareWithLinkDialog {
+public class ShareFlashDialogV2 {
     private Context mContext;
     private Dialog dialog;
     private Display display;
 
-    private TextView title;
+    private LinearLayout poster_wx;
+    private LinearLayout poster_circle;
+    private LinearLayout link_wx;
+    private LinearLayout link_circle;
     private TextView cancel;
-    private TextView share_dynamic_text;
-    private LinearLayout share_dynamic;
-    private LinearLayout share_circle;
-    private LinearLayout share_friend;
-    private LinearLayout share_copy_link;
 
 
     /** 回调接口 开始 */
@@ -48,22 +47,22 @@ public class ShareWithLinkDialog {
 
     /** 回调接口 结束 */
 
-    public ShareWithLinkDialog(Context context){
+
+
+    public ShareFlashDialogV2(Context context){
         mContext = context;
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         display = windowManager.getDefaultDisplay();
     }
 
 
-    public ShareWithLinkDialog builder(){
+    public ShareFlashDialogV2 builder(){
         // 获取Dialog布局
-        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_news,null);
-        share_dynamic = view.findViewById(R.id.share_dynamic);
-        share_circle = view.findViewById(R.id.share_circle);
-        share_friend = view.findViewById(R.id.share_friend);
-        share_copy_link = view.findViewById(R.id.share_copy_link);
-        share_dynamic_text = view.findViewById(R.id.share_dynamic_text);
-        title = view.findViewById(R.id.title);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_flash_v2,null);
+        link_wx = view.findViewById(R.id.link_wx);
+        link_circle = view.findViewById(R.id.link_circle);
+        poster_wx = view.findViewById(R.id.poster_wx);
+        poster_circle = view.findViewById(R.id.poster_circle);
         cancel = view.findViewById(R.id.cancel);
         // 获取自定义Dialog布局中的控件
         dialog = new Dialog(mContext, R.style.MyDialog);
@@ -75,9 +74,6 @@ public class ShareWithLinkDialog {
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.width = (int) (display.getWidth() * 1.0f);
         lp.gravity = Gravity.BOTTOM;
-//        lp.y = (int) (display.getWidth() * 0.0f);//设置Dialog距离底部的距离
-        // 添加动画
-//        getWindow().setWindowAnimations(R.style.TransparentDialogAddanmi);
         //将属性设置给窗体
         dialogWindow.setAttributes(lp);
 
@@ -85,44 +81,14 @@ public class ShareWithLinkDialog {
     }
 
 
-    public ShareWithLinkDialog setHeadBeanList(List<String> list){
-        return this;
-    }
-
-    public ShareWithLinkDialog setTitleGone() {
-        title.setVisibility(View.GONE);
-        return this;
-    }
-
-    public ShareWithLinkDialog setShareDynamicView() {
-        share_dynamic.setVisibility(View.VISIBLE);
-        return this;
-    }
-
-    public ShareWithLinkDialog setShareDynamicViewText(String text) {
-        share_dynamic_text.setText("转发到圈子");
-        return this;
-    }
-
-    public ShareWithLinkDialog setSharelinkView() {
-        share_copy_link.setVisibility(View.VISIBLE);
-        return this;
-    }
-
-    public ShareWithLinkDialog setTranferView() {
-        share_copy_link.setVisibility(View.VISIBLE);
-        return this;
-    }
-
-
-    public ShareWithLinkDialog setCancelable(boolean cancel) {
+    public ShareFlashDialogV2 setCancelable(boolean cancel) {
         dialog.setCancelable(cancel);
         return this;
     }
 
 
 
-    public ShareWithLinkDialog setCanceledOnTouchOutside(boolean b) {
+    public ShareFlashDialogV2 setCanceledOnTouchOutside(boolean b) {
         dialog.setCanceledOnTouchOutside(b);
         return this;
     }
@@ -135,33 +101,34 @@ public class ShareWithLinkDialog {
 
     private void setEvent() {
 
-        cancel.setOnClickListener(view -> dialog.dismiss());
-
-        share_dynamic.setOnClickListener(view -> {
-            if(null != mOnDialogItemClickListener){
-                mOnDialogItemClickListener.func(4);
-                dialog.dismiss();
-            }
-        });
-
-        share_friend.setOnClickListener(view -> {
-            if(null != mOnDialogItemClickListener){
-                mOnDialogItemClickListener.func(1);
-                dialog.dismiss();
-            }
-        });
-        share_circle.setOnClickListener(view -> {
+        poster_wx.setOnClickListener(view -> {
             if(null != mOnDialogItemClickListener){
                 mOnDialogItemClickListener.func(0);
                 dialog.dismiss();
             }
         });
-        share_copy_link.setOnClickListener(view -> {
+        poster_circle.setOnClickListener(view -> {
+            if(null != mOnDialogItemClickListener){
+                mOnDialogItemClickListener.func(1);
+                dialog.dismiss();
+            }
+        });
+
+        link_wx.setOnClickListener(view -> {
             if(null != mOnDialogItemClickListener){
                 mOnDialogItemClickListener.func(2);
                 dialog.dismiss();
             }
         });
+
+        link_circle.setOnClickListener(view -> {
+            if(null != mOnDialogItemClickListener){
+                mOnDialogItemClickListener.func(3);
+                dialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(v -> dialog.dismiss());
     }
 
     private void setData(){

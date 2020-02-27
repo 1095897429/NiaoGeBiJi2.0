@@ -394,7 +394,7 @@ public class StringUtil {
                     .setCallback(new UMShareListener() {
                         @Override
                         public void onStart(SHARE_MEDIA share_media) {
-
+                            KLog.d("tag","分享开始");
                         }
 
                         @Override
@@ -641,6 +641,7 @@ public class StringUtil {
 
 
 
+    //正文 或者 【正文 + 图片link】
     public static void getIconLinkShow(CircleBean item, Activity activity,TextView msg) {
         SpannableString spanString2;
         String content = item.getBlog() + "";
@@ -761,7 +762,8 @@ public class StringUtil {
                 public void onClick(View widget) {
                     String li = item.getPcLinks().get(finalW);
                     KLog.d("tag","点击了网页 " + li);
-                    UIHelper.toWebViewActivityWithOnLayout(activity,li,"stringUtil");
+
+                    UIHelper.toWebViewNomal(activity,li);
                 }
             };
 

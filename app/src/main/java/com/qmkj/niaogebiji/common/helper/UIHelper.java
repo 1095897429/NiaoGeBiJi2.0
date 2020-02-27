@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.AboutUsActivity;
 import com.qmkj.niaogebiji.module.activity.AuthorDetailActivity;
@@ -63,6 +64,7 @@ import com.qmkj.niaogebiji.module.activity.WebViewAllActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewBadgeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewEditBadgeActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewWithLayoutOnlyActivity;
+import com.qmkj.niaogebiji.module.activity.WebViewWithLayoutOnlyActivityV2;
 import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
@@ -560,8 +562,19 @@ public class UIHelper {
 
 
     /** */
-    public static void toCooperationActivity(Context ctx) {
+    public static void toCooperationActivity(Activity ctx,String url) {
         Intent intent = new Intent(ctx, CooperationActivity.class);
+        intent.putExtra("url",url);
+        ctx.startActivity(intent);
+        //参数一：Activity2进入动画  参数二：Activity1退出动画
+        ctx.overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+    }
+
+
+    public static void toWebViewNomal(Context ctx,String link) {
+        Intent intent = new Intent(ctx, WebViewWithLayoutOnlyActivityV2.class);
+        intent.putExtra("link",link);
         ctx.startActivity(intent);
     }
+
 }

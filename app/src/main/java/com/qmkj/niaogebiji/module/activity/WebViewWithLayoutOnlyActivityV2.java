@@ -29,9 +29,9 @@ import butterknife.BindView;
  * 版本 1.0
  * 创建时间 2020-02-24
  * 描述:
- * 1.截取了web中的弹框显示
+ * 1.正常的显示网页
  */
-public class WebViewWithLayoutOnlyActivity extends BaseActivity {
+public class WebViewWithLayoutOnlyActivityV2 extends BaseActivity {
 
 
     @BindView(R.id.loading_dialog)
@@ -94,24 +94,6 @@ public class WebViewWithLayoutOnlyActivity extends BaseActivity {
 
         webview.setWebChromeClient(new WebChromeClient(){
 
-            @Override
-            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-
-                KLog.e("aaa", "onJsConfirm" + "," + "url: " + url);
-                AlertDialog.Builder builder = new AlertDialog.Builder(WebViewWithLayoutOnlyActivity.this);
-                builder.setMessage(message)
-                        .setNeutralButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int arg1) {
-                                dialog.dismiss();
-                            }
-                        }).setPositiveButton("确定", (dialog, which) -> {
-                            dialog.dismiss();
-                            new Handler().postDelayed(() -> finish(),1000);
-                        }).show();
-                result.cancel();
-                return true;
-            }
         });
 
         webview.setWebViewClient(new WebViewClient(){

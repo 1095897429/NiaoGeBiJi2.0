@@ -28,8 +28,10 @@ import com.qmkj.niaogebiji.module.bean.Timmm;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.FlashSpecificEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,8 +66,10 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
     }
 
 
-    private HashMap<String , Timmm> mTimmmHashMap = new HashMap<>();
+    //标题 -- 实体bean(标题，内容，发布时间)
+    private HashMap<String , MessageBean> mTimmmHashMap = new HashMap<>();
     Timmm mTimmm;
+    MessageBean mMessageBean;
     ArrayList<MessageBean> list = new ArrayList<>();
     private Typeface typeface;
 
@@ -166,33 +170,22 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
                 typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
 
-                //设值
-//                TextView mins = helper.getView(R.id.mins);
-                TextView title = helper.getView(R.id.title);
                 ViewFlipper vp = helper.getView(R.id.viewflipper);
 
                 IndexBulltin indexBulltin = item.getIndexBulltin();
 
                 for (IndexBulltin.Bulletn_list temp:indexBulltin.getBulletn_list()) {
-                    String hh = TimeUtils.millis2String(Long.parseLong(temp.getPub_time()) * 1000L,"HH");
-//                    String mm = TimeUtils.millis2String(Long.parseLong(temp.getPub_time()) * 1000L,"mm");
-                    list.add(new MessageBean(hh,temp.getTitle(),temp.getId()));
-                    mTimmm = new Timmm();
-                    mTimmm.setMyTitle(temp.getTitle());
-//                    mTimmm.setMm(mm);
-                    mTimmmHashMap.put(temp.getTitle(),mTimmm);
+                    String time = "";
+                    //发布时间
+                    if(StringUtil.checkNull(temp.getPub_time())){
+                        time =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getPub_time()) * 1000L);
+                    }
+                    mMessageBean = new MessageBean(temp.getContent(),time,temp.getTitle(),temp.getId());
+                    list.add(mMessageBean);
+                    mTimmmHashMap.put(temp.getTitle(),mMessageBean);
                 }
 
-                //默认加载第一个
-                Timmm temp = mTimmmHashMap.get(indexBulltin.getBulletn_list().get(0).getTitle());
-                if(null != temp){
-//                    mins.setText(temp.getHh());
-//                    sends.setText(temp.getMm());
-//                    mins.setTypeface(typeface);
-//                    sends.setTypeface(typeface);
-                }
-
-                startFlipping(mContext,vp,list,title);
+                startFlipping(mContext,vp,list);
 
 
                 helper.getView(R.id.toMoreFlash).setOnClickListener(v -> EventBus.getDefault().post(new toFlashEvent("去快讯信息流")));
@@ -240,8 +233,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
         }
     }
 
-    public void startFlipping(Context context, ViewFlipper vf, ArrayList<MessageBean> infos,
-                              TextView title){
+    public void startFlipping(Context context, ViewFlipper vf, ArrayList<MessageBean> infos){
         //设置自动切换的间隔时间
         vf.setFlipInterval(5 * 1000);
         vf.setInAnimation(context, R.anim.notice_in);
@@ -250,18 +242,24 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
         for (int i = 0; i < len; i++) {
             MessageBean info = infos.get(i);
             View v = ((Activity) context).getLayoutInflater().inflate(R.layout.home_flipper_item, null);
-            TextView titleTv =  v.findViewById(R.id.home_news_text);
-            titleTv.setOnClickListener(v1 -> {
+            TextView content_tv =  v.findViewById(R.id.home_news_text);
+            TextView title_tv = v.findViewById(R.id.title);
+            TextView time_tv = v.findViewById(R.id.one_img_time);
+
+            content_tv.setOnClickListener(v1 -> {
                 //TODO 12.18晚修改
                 EventBus.getDefault().post(new toFlashEvent("去快讯信息流"));
                 EventBus.getDefault().post(new FlashSpecificEvent((String) v1.getTag()));
             });
-            titleTv.setTag(info.getFlash_id());
-            //中文加粗
-            TextPaint paint = titleTv.getPaint();
+            content_tv.setTag(info.getFlash_id());
+            TextPaint paint = content_tv.getPaint();
             paint.setFakeBoldText(true);
+            content_tv.setText(info.getText());
 
-            titleTv.setText(info.getText());
+            title_tv.setText(info.getMyTitle());
+
+            time_tv.setText(info.getTime());
+
             vf.addView(v);
         }
         vf.startFlipping();
@@ -269,15 +267,16 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
         vf.getInAnimation().setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-//                KLog.d("tag","动画开启");
                 View currentView = vf.getCurrentView();
                 final TextView textView = currentView.findViewById(R.id.home_news_text);
-                Timmm temp = mTimmmHashMap.get(textView.getText().toString());
+                final TextView title_tv = currentView.findViewById(R.id.title);
+                final TextView time_tv = currentView.findViewById(R.id.one_img_time);
+//                KLog.d("tag","文本的标题是 " + title_tv.getText().toString());
+                MessageBean temp = mTimmmHashMap.get(title_tv.getText().toString());
                 if(null != temp){
-                    title.setText(temp.getMyTitle());
-                    title.setTypeface(typeface);
-//                    sends.setText(temp.getMm());
-//                    sends.setTypeface(typeface);
+                    textView.setText(temp.getText());
+                    title_tv.setText(temp.getMyTitle());
+                    time_tv.setText(temp.getTime());
                 }
 
             }

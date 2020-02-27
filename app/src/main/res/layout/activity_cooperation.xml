@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:background="@color/bg_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <LinearLayout
+        android:visibility="visible"
         android:layout_marginTop="@dimen/status_bar_height"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
+
         <RelativeLayout
+            android:id="@+id/rl_title"
             android:layout_width="match_parent"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
@@ -114,6 +120,7 @@
             android:orientation="vertical">
 
             <com.qmkj.niaogebiji.module.widget.MyWebView
+                android:id="@+id/webview"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1">
@@ -121,8 +128,80 @@
             </com.qmkj.niaogebiji.module.widget.MyWebView>
 
 
+
         </LinearLayout>
 
+
+
+    </LinearLayout>
+
+
+
+    <include
+        layout="@layout/dialog_waiting"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:id="@+id/ll_tool"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:background="@color/bg_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_height="44dp">
+
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="工具"
+                    android:textSize="17sp"
+                    android:textColor="@color/text_first_color"
+                    android:visibility="visible" />
+
+
+                <ImageView
+                    android:id="@+id/icon_cooperate_tool_delete"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@mipmap/icon_cooperate_tool_delete"
+                    android:layout_centerVertical="true"
+                    android:visibility="visible" />
+
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rl_tools"
+                android:overScrollMode="never"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/space_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#66000000"/>
 
 
     </LinearLayout>
@@ -201,4 +280,8 @@
 
     </RelativeLayout>
 
-</LinearLayout>
+
+
+
+
+</RelativeLayout>

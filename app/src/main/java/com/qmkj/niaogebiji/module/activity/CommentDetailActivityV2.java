@@ -378,12 +378,29 @@ public class CommentDetailActivityV2 extends BaseActivity {
             mCircleBean  =  StringUtil.addLinksData(mCircleBean);
 
 
-            //TODO 2.26 判断是否添加回复xxx的骚操作
-            if(!TextUtils.isEmpty(mCircleBean.getComment_uid()) && !"0".equals(mCircleBean.getComment_uid())){
-                getApplyAndIconLinkShow(mCircleBean, (Activity) mContext,content);
+            if(mCircleBean.getPcLinks() !=  null && !mCircleBean.getPcLinks().isEmpty()){
+                //TODO 2.26 判断是否添加回复xxx的骚操作
+                if(!TextUtils.isEmpty(mCircleBean.getComment_uid()) && !"0".equals(mCircleBean.getComment_uid())){
+                    if(!TextUtils.isEmpty(mCircleBean.getComment_nickname())){
+                        getApplyAndIconLinkShow(mCircleBean, (Activity) mContext,content);
+                    }else{
+                        StringUtil.getIconLinkShow(mCircleBean, (Activity) mContext,content);
+                    }
+                }else{
+                    //对有links的原创文本进行富文本
+                    StringUtil.getIconLinkShow(mCircleBean, (Activity) mContext,content);
+                }
             }else{
-                // 对有links的原创文本进行富文本
-                StringUtil.getIconLinkShow(mCircleBean,this,content);
+                //TODO 没有link 走这里  【是否有回复】
+                if(!TextUtils.isEmpty(mCircleBean.getComment_uid()) && !"0".equals(mCircleBean.getComment_uid())){
+                    if(!TextUtils.isEmpty(mCircleBean.getComment_nickname())){
+                        getCircleReply(content,mCircleBean);
+                    }else{
+                        content.setText(mCircleBean.getBlog());
+                    }
+                }else{
+                    content.setText(mCircleBean.getBlog());
+                }
             }
 
             //发帖人
@@ -494,12 +511,35 @@ public class CommentDetailActivityV2 extends BaseActivity {
             ImageUtil.load(this,mCircleBean.getArticle_image(),acticle_img);
         }else{
             if(mCircleBean.getP_blog() != null && mCircleBean.getP_blog().getP_user_info() != null){
+
+
                 //⑤ 转发者的一些信息
                 if(mCircleBean.getP_blog().getPcLinks() !=  null && !mCircleBean.getP_blog().getPcLinks().isEmpty()){
-                    StringUtil.getTransIconLinkShow(mCircleBean.getP_blog(),this,transfer_zf_content);
+                    if(!TextUtils.isEmpty(mCircleBean.getP_blog().getComment_uid())
+                            && !"0".equals(mCircleBean.getP_blog().getComment_uid())){
+
+                        if(!TextUtils.isEmpty(mCircleBean.getP_blog().getComment_nickname())){
+                            getAppTransIconLinkShow(mCircleBean.getP_blog(), (Activity) mContext,transfer_zf_content);
+                        }else{
+                            StringUtil.getTransIconLinkShow(mCircleBean.getP_blog(), (Activity) mContext,transfer_zf_content);
+                        }
+                    }else{
+                        //对有links的转发文本进行富文本
+                        StringUtil.getTransIconLinkShow(mCircleBean.getP_blog(), (Activity) mContext,transfer_zf_content);
+                    }
                 }else{
-                    transfer_zf_content.setText(mCircleBean.getP_blog().getBlog());
+                    if(!TextUtils.isEmpty(mCircleBean.getP_blog().getComment_uid())
+                            && !"0".equals(mCircleBean.getP_blog().getComment_uid())){
+                        if(!TextUtils.isEmpty(mCircleBean.getP_blog().getComment_nickname())){
+                            getTransCircleReply(transfer_zf_content,mCircleBean.getP_blog());
+                        }else{
+                            transfer_zf_content.setText(mCircleBean.getP_blog().getBlog());
+                        }
+                    }else{
+                        transfer_zf_content.setText(mCircleBean.getP_blog().getBlog());
+                    }
                 }
+
 
                 CircleBean.P_user_info temp = mCircleBean.getP_blog().getP_user_info();
                 transfer_zf_author.setText(temp.getName()  + "  " + temp.getCompany_name() +
@@ -529,6 +569,147 @@ public class CommentDetailActivityV2 extends BaseActivity {
     }
 
 
+
+    SpannableString spannableString ;
+    StringBuilder sb = new StringBuilder();
+
+    private void getCircleReply(TextView msg, CircleBean item) {
+        sb.setLength(0);
+        String name = item.getComment_nickname();
+        sb.append("回复 ").append(name).append(":").append(item.getBlog().trim());
+
+        int authorNamelength = name.length();
+        spannableString = new SpannableString(sb.toString().trim());
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + name);
+                UIHelper.toUserInfoV2Activity(mContext,item.getComment_uid());
+            }
+        };
+        spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        msg.setText(spannableString);
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
+    private void getTransCircleReply(TextView msg,CircleBean.P_blog pBlog) {
+        sb.setLength(0);
+        String name = pBlog.getComment_nickname();
+        KLog.d("tag","名字是 " + name);
+        sb.append("回复 ").append(name).append(":").append(pBlog.getBlog().trim());
+
+        int authorNamelength = name.length();
+        spannableString = new SpannableString(sb.toString().trim());
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + name);
+                UIHelper.toUserInfoV2Activity(mContext,pBlog.getComment_uid());
+            }
+        };
+        spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        msg.setText(spannableString);
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
+    public  void getAppTransIconLinkShow(CircleBean.P_blog item, Activity activity, TextView msg) {
+        SpannableString spanString2;
+        String name = item.getComment_nickname();
+        String content = "回复 " + name + ":" + item.getBlog();
+        String icon = "[icon]";
+        //获取链接
+        int size  =  item.getPcLinks().size();
+        if(size >  0){
+            for (int k = 0; k < size; k++) {
+                content = content.replace(item.getPcLinks().get(k),icon);
+            }
+        }
+//        KLog.d("tag","最新字符串是 " + content);
+
+        String newContent = content;
+
+        //保存字符的开始下标
+        List<Integer> pos = new ArrayList<>();
+
+        int c = 0;
+        for(int i = 0; i< size ;i++ ){
+            c = content.indexOf(icon,c);
+            //如果有S这样的子串。则C的值不是-1.
+            if(c != -1){
+                //记录找到字符的索引
+                pos.add(c);
+                //记录字符串后面的
+                c = c + 1;
+                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
+                //将剩下的字符冲洗取出放到str中
+                //content = content.substring(c + 1);
+            }
+            else {
+                //i++;
+                KLog.d("tag","没有");
+                break;
+            }
+        }
+
+        //拼接链接
+        Drawable drawableLink = activity.getResources().getDrawable(R.mipmap.icon_link_http);
+        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+
+        spanString2 = new SpannableString(newContent);
+
+        int w;
+        for (int k = 0; k < size; k++) {
+            w = k;
+            int finalW = w;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    String li = item.getPcLinks().get(finalW);
+                    KLog.d("tag","点击了网页 " + li);
+                    UIHelper.toWebViewActivityWithOnLayout(activity,li,"stringUtil");
+                }
+            };
+
+            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_link_http,2);
+            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+        int authorNamelength = name.length();
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spanString2.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + name);
+                UIHelper.toUserInfoV2Activity(mContext,item.getComment_uid());
+            }
+        };
+        spanString2.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        msg.setText( spanString2);
+        //下面语句不写的话，点击clickablespan没效果
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+
+
+
+    //先构建 回复xxx + 正文 -- 再富文本话
     public  void getApplyAndIconLinkShow(CircleBean item, Activity activity,TextView msg) {
 
         SpannableString spanString2;

@@ -24,6 +24,16 @@ public class ToolBean extends BaseBean {
     private String url;
     private int is_collected;
 
+    //跳转类型 0外链 1小程序
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public boolean isSave() {
         return isSave;

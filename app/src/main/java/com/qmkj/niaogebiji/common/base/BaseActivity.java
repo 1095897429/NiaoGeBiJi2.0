@@ -29,6 +29,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -106,6 +108,15 @@ import io.reactivex.schedulers.Schedulers;
  * 2.手动播放添加
  * 3.切换界面添加监听
  * 4.移动seekbar添加监听
+ *
+ *
+ * 1.全局变量isAudaioShow 判断是否 显示音频播放控件
+ * 2.全局变量 mMyBinder 控制音频的播放
+ * 3.控件点击事件 保存到全局变量中
+ * 3.每次界面进入时，都给这个控件设置了点击事件，因此在退出上个界面时，再点击控件还是有效果
+ *
+ *
+ * 全局发送布局
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -159,7 +170,34 @@ public abstract class BaseActivity extends AppCompatActivity {
         //设置事件
         initAudioEvent();
 
+        //设置发送事件
+        initSendEvent();
+
         initFirstData();
+
+    }
+
+
+    @BindView(R.id.ll_circle_send)
+    LinearLayout ll_circle_send;
+
+    @BindView(R.id.rl_sending)
+    RelativeLayout rl_sending;
+
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.rl_send_ok)
+    RelativeLayout rl_send_ok;
+
+    @BindView(R.id.rl_send_fail)
+    RelativeLayout rl_send_fail;
+
+
+    private static int currentSendProgress;
+    private static int maxSendProgress;
+
+    private void initSendEvent() {
 
     }
 

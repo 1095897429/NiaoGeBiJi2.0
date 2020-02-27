@@ -19,6 +19,8 @@ public class ChannelBean extends BaseBean {
     private String chaname;
     private String status;
 
+    private String num;
+
     private boolean isSelect;
 
     public boolean isSelect() {
@@ -51,5 +53,13 @@ public class ChannelBean extends BaseBean {
 
     public void setChaname(String chaname) {
         this.chaname = chaname;
+    }
+
+    public String getNum() {
+        return num;
+    }
+
+    public void setNum(String num) {
+        this.num = num;
     }
 }

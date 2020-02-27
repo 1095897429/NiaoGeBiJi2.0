@@ -29,6 +29,36 @@ public class PersonUserInfoBean extends BaseBean {
         private List<CircleBean> blog_list;
         private int follow_status;
 
+        //TODO 2.26 版本2新增的作者
+        private boolean is_author;
+        //圈子被关注人数
+        private int follow_count;
+        private AuthorBean.Author author_info;
+
+        public int getFollow_count() {
+            return follow_count;
+        }
+
+        public void setFollow_count(int follow_count) {
+            this.follow_count = follow_count;
+        }
+
+        public boolean isIs_author() {
+                return is_author;
+        }
+
+        public void setIs_author(boolean is_author) {
+            this.is_author = is_author;
+        }
+
+        public AuthorBean.Author getAuthor_info() {
+            return author_info;
+        }
+
+        public void setAuthor_info(AuthorBean.Author author_info) {
+            this.author_info = author_info;
+        }
+
         public String getAuth_email_status() {
             return auth_email_status;
         }

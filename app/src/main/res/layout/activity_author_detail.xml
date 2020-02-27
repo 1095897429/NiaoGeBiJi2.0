@@ -42,7 +42,6 @@
                     android:layout_marginTop="84dp"
                     android:layout_marginLeft="16dp"
                     android:id="@+id/id_auhtor_img"
-                    android:src="@mipmap/icon_head_default"
                     android:layout_width="80dp"
                     android:layout_height="80dp"/>
 

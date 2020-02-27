@@ -73,7 +73,7 @@ public class HotAuthorFragment extends BaseLazyFragment {
     //适配器 -- 需手动排序
     HotAuthorAdapter mHotAuthorAdapter;
     //组合集合
-    List<MultiNewsBean> mAllList = new ArrayList<>();
+    List<AuthorBean.Author> mAllList = new ArrayList<>();
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
 
@@ -104,6 +104,7 @@ public class HotAuthorFragment extends BaseLazyFragment {
     private void hotauthor() {
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
+        map.put("page_size",30 + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().hotauthor(result)
                 .subscribeOn(Schedulers.newThread())
@@ -120,14 +121,12 @@ public class HotAuthorFragment extends BaseLazyFragment {
                             mAuthors =  mAuthorBean.getList();
                             if(1 == page){
                                 if(mAuthors != null && !mAuthors.isEmpty()){
-
-
                                     //加载原有数据
                                     setData2(mAuthors);
                                     mHotAuthorAdapter.setNewData(mAllList);
 
                                     //如果第一次返回的数据不满10条，则显示无更多数据
-                                    if(mAuthors.size() < Constant.SEERVER_NUM){
+                                    if(mAuthors.size() <= 30){
                                         mHotAuthorAdapter.loadMoreEnd();
                                     }
 
@@ -172,9 +171,10 @@ public class HotAuthorFragment extends BaseLazyFragment {
                 });
     }
 
-    List<CircleBean> teList = new ArrayList<>();
+    List<AuthorBean.Author> teList = new ArrayList<>();
     private void setData2(List<AuthorBean.Author> authors) {
         teList.clear();
+        teList.addAll(authors);
         if(page == 1){
             mAllList.addAll(teList);
         }
@@ -194,17 +194,18 @@ public class HotAuthorFragment extends BaseLazyFragment {
     }
 
     private void getData() {
-        NewsItemBean itemBean;
-        MultiNewsBean bean1 ;
-        for (int i = 0; i < 10; i++) {
-                itemBean = new NewsItemBean();
-                itemBean.setRank((i + 1 + ""));
-                bean1 = new MultiNewsBean();
-                bean1.setItemType(1);
-                bean1.setNewsItemBean(itemBean);
-            mAllList.add(bean1);
-        }
-        mHotAuthorAdapter.setNewData(mAllList);
+
+//        NewsItemBean itemBean;
+//        MultiNewsBean bean1 ;
+//        for (int i = 0; i < 10; i++) {
+//                itemBean = new NewsItemBean();
+//                itemBean.setRank((i + 1 + ""));
+//                bean1 = new MultiNewsBean();
+//                bean1.setItemType(1);
+//                bean1.setNewsItemBean(itemBean);
+//            mAllList.add(bean1);
+//        }
+//        mHotAuthorAdapter.setNewData(mAllList);
 
 //        mRecyclerView.setVisibility(View.GONE);
 //        ll_empty.setVisibility(View.VISIBLE);
@@ -222,7 +223,7 @@ public class HotAuthorFragment extends BaseLazyFragment {
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
-            getData();
+            hotauthor();
         });
 
     }
@@ -245,10 +246,10 @@ public class HotAuthorFragment extends BaseLazyFragment {
     }
 
     private void initEvent() {
-        mHotAuthorAdapter.setOnLoadMoreListener(() -> {
-           page ++;
-           getData();
-        }, mRecyclerView);
+//        mHotAuthorAdapter.setOnLoadMoreListener(() -> {
+//           page ++;
+//           hotauthor();
+//        }, mRecyclerView);
     }
 
 

@@ -73,17 +73,71 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
 
     @Override
     protected void convert(BaseViewHolder helper, CommentCircleBean item) {
+
+        getIconType(helper,item);
+
+        //textview的赋值功能
+        helper.getView(R.id.comment_text).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                StringUtil.copyText(item.getComment());
+                return false;
+            }
+        });
+
+        //点击item项
+        helper.itemView.setOnClickListener(v -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
+
+            if(mToShowDialogListener != null){
+                mToShowDialogListener.func(item,helper.getAdapterPosition());
+            }
+        });
+
+        //删除评论
+        helper.getView(R.id.comment_delete).setOnClickListener(view -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            showRemoveDialog(item,helper.getAdapterPosition());
+        });
+
+
+        //点赞事件
+        helper.getView(R.id.circle_priase).setOnClickListener(view -> {
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            if("0".equals(item.getIs_like() + "")){
+                likeComment(item,helper.getAdapterPosition());
+            }else if("1".equals(item.getIs_like() + "")){
+                likeComment(item,helper.getAdapterPosition());
+            }
+        });
+
+        //头像点击
+        helper.getView(R.id.head_icon).setOnClickListener(v -> {
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+            UIHelper.toUserInfoActivity(mContext,item.getUid());
+        });
+
+
+
         //设置子View点击事件
         helper
                 .addOnClickListener(R.id.ll_has_second_comment)
                 .addOnClickListener(R.id.comment_priase)
                 .addOnClickListener(R.id.toFirstComment);
 
+
         User_info userInfo = item.getUser_info();
-
+        //名称
         helper.setText(R.id.nickname,userInfo.getName());
-
-
         //职位
         TextView sender_tag = helper.getView(R.id.name_tag);
         //是否认证
@@ -92,25 +146,22 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
             Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
             drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
             sender_tag.setCompoundDrawables(null,null,drawable,null);
-
         }else{
             sender_tag.setCompoundDrawables(null,null,null,null);
             sender_tag.setText("");
         }
 
-
-        User_info temp = item.getUser_info();
-        if(null != temp){
-            if(!StringUtil.checkNull((temp.getCompany_name()))
-                    && !StringUtil.checkNull((temp.getPosition()))){
+        if(null != userInfo){
+            if(!StringUtil.checkNull((userInfo.getCompany_name()))
+                    && !StringUtil.checkNull((userInfo.getPosition()))){
                 sender_tag.setText("TA 还未职业认证");
             }else{
-                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name() + " ") +
-                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+                sender_tag.setText( (TextUtils.isEmpty(userInfo.getCompany_name())?"":userInfo.getCompany_name() + " ") +
+                        (TextUtils.isEmpty(userInfo.getPosition())?"":userInfo.getPosition()));
             }
         }
 
-
+        //头像
         ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
 
         //评论文本
@@ -124,37 +175,12 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
             helper.setText(R.id.time,"");
         }
 
-        //头像点击
-        helper.getView(R.id.head_icon).setOnClickListener(v -> {
-
-                    if(StringUtil.isFastClick()){
-                        return;
-                    }
-                    UIHelper.toUserInfoActivity(mContext,item.getUid());
-                });
-
-
-
 
         //点赞数
         TextView zan_num = helper.getView(R.id.zan_num);
         ImageView imageView =  helper.getView( R.id.iamge_priase);
         zanChange(zan_num,imageView,item.getLike_num(),item.getIs_like());
 
-
-
-
-        helper.getView(R.id.circle_priase).setOnClickListener(view -> {
-
-            if(StringUtil.isFastClick()){
-                return;
-            }
-            if("0".equals(item.getIs_like() + "")){
-                likeComment(item,helper.getAdapterPosition());
-            }else if("1".equals(item.getIs_like() + "")){
-                likeComment(item,helper.getAdapterPosition());
-            }
-        });
 
 
         //二级评论数据
@@ -176,15 +202,7 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         });
 
 
-        helper.itemView.setOnClickListener(v -> {
-            if(StringUtil.isFastClick()){
-                return;
-            }
-            KLog.d("tag","点击的是啥 ");
-            if(mToShowDialogListener != null){
-                mToShowDialogListener.func(item,helper.getAdapterPosition());
-            }
-        });
+
 
         //禁用change动画
         ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -206,17 +224,6 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         }else{
             helper.setVisible(R.id.ll_has_second_comment,false);
         }
-
-
-        getIconType(helper,item);
-
-        //删除评论
-        helper.getView(R.id.comment_delete).setOnClickListener(view -> {
-                    if(StringUtil.isFastClick()){
-                        return;
-                    }
-            showRemoveDialog(item,helper.getAdapterPosition());
-                });
 
 
     }
@@ -256,11 +263,12 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
 
                         //竟然mCircleBean会出现""的情况
 
-                        //手动添加 评论数1
+                        //① 手动添加 评论数1
                         mCircleBean.setComment_num((Integer.parseInt(mCircleBean.getComment_num()) - 1) + "");
                         EventBus.getDefault().post(new BlogPriaseEvent(myPotion,mCircleBean.getIs_like(),
                                 mCircleBean.getLike_num(),mCircleBean.getComment_num()));
 
+                        //② 接口回调
                         if(mChangeDetailListener != null){
                             mChangeDetailListener.func(mCircleBean.getLike_num(),mCircleBean.getIs_like(),mCircleBean.getComment_num());
                         }

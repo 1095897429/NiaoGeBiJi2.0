@@ -48,6 +48,8 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2019-11-21
  * 描述:转发帖子
  *  1. 图片 + 文本 显示
+ *
+ *  2. 点击发布时 -- 添加动态效果
  */
 public class TranspondActivity extends BaseActivity {
 

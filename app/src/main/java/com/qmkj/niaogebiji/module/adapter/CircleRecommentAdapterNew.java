@@ -5,7 +5,13 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +33,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -41,8 +48,10 @@ import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
+import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -128,6 +137,27 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         getIconType(helper,item);
 
 
+        TextView msg = helper.getView(R.id.content);
+
+        if(item.getPcLinks() !=  null && !item.getPcLinks().isEmpty()){
+            //TODO 2.26 判断是否添加回复xxx的骚操作
+            if(!TextUtils.isEmpty(item.getComment_uid()) && !"0".equals(item.getComment_uid())){
+                getApplyAndIconLinkShow(item, (Activity) mContext,msg);
+            }else{
+                //对有links的原创文本进行富文本
+                StringUtil.getIconLinkShow(item, (Activity) mContext,msg);
+            }
+        }else{
+
+            //TODO 2.26 判断是否添加回复xxx的骚操作
+            if(!TextUtils.isEmpty(item.getComment_uid()) && !"0".equals(item.getComment_uid())){
+                getCircleReply(msg,item);
+            }else{
+                msg.setText(item.getBlog());
+            }
+        }
+
+
         if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
             //设置数据
             if(list != null && !list.isEmpty()){
@@ -151,9 +181,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             TextView sender_name = helper.getView(R.id.sender_name);
 
             sender_name.setText(userInfo.getName());
-
-//            sender_name.setText(StringEscapeUtils.unescapeJava(userInfo.getName().replace("\\\\u","\\u")));
-
 
             //职位
             TextView sender_tag = helper.getView(R.id.sender_tag);
@@ -227,16 +254,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             zanCommentChange(com_num,zan_num,imageView,item.getLike_num(),item.getIs_like(),item.getComment_num());
 
 
-            TextView msg = helper.getView(R.id.content);
-            if(item.getPcLinks() !=  null && !item.getPcLinks().isEmpty()){
-                //对有links的原创文本进行富文本
-                StringUtil.getIconLinkShow(item, (Activity) mContext,msg);
-            }else{
-                msg.setText(item.getBlog());
 
-//                msg.setText(StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u")));
-
-            }
 
         }
 
@@ -564,6 +582,33 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 break;
                 default:
         }
+
+    }
+
+    SpannableString spannableString ;
+    StringBuilder sb = new StringBuilder();
+
+    private void getCircleReply(TextView msg, CircleBean item) {
+
+        String name = item.getComment_nickname();
+        sb.append("回复 ").append(name).append(":").append(item.getBlog().trim());
+
+        int authorNamelength = name.length();
+        spannableString = new SpannableString(sb.toString().trim());
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spannableString.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + name);
+                UIHelper.toUserInfoV2Activity(mContext,item.getComment_uid());
+            }
+        };
+        spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        msg.setText(spannableString);
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
 
@@ -937,6 +982,95 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     }
                 });
     }
+
+
+
+    public  void getApplyAndIconLinkShow(CircleBean item, Activity activity,TextView msg) {
+
+        SpannableString spanString2;
+        String name = item.getComment_nickname();
+        String content = "回复 " + name + ":" + item.getBlog() + "";
+
+        String icon = "[icon]";
+        //获取链接
+        int size  =  item.getPcLinks().size();
+        if(size >  0){
+            for (int k = 0; k < size; k++) {
+                content = content.replace(item.getPcLinks().get(k),icon);
+            }
+        }
+        //如果没有匹配，则还是原来的字符串
+        String newContent = content;
+        //保存字符的开始下标
+        List<Integer> pos = new ArrayList<>();
+        int c = 0;
+        for(int i = 0; i< size ;i++ ){
+            c = content.indexOf(icon,c);
+            //如果有S这样的子串。则C的值不是-1.
+            if(c != -1){
+                //记录找到字符的索引
+                pos.add(c);
+                //记录字符串后面的
+                c = c + 1;
+                //这里的c+1 而不是 c+ s.length();这是因为。如果str的字符串是“aaaa”， s = “aa”，则结果是2个。但是实际上是3个子字符串
+                //将剩下的字符冲洗取出放到str中
+                //content = content.substring(c + 1);
+            }
+            else {
+                //i++;
+                KLog.d("tag","没有");
+                break;
+            }
+        }
+
+        //拼接链接
+//        Drawable drawableLink = activity.getResources().getDrawable(R.mipmap.icon_link_http);
+//        drawableLink.setBounds(0, 0, drawableLink.getMinimumWidth(), drawableLink.getMinimumHeight());
+
+        spanString2 = new SpannableString(newContent);
+
+        int w;
+        for (int k = 0; k < size; k++) {
+            w = k;
+            int finalW = w;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    String li = item.getPcLinks().get(finalW);
+                    UIHelper.toWebViewActivity(activity,li);
+                }
+            };
+
+            //居中对齐imageSpan  -- 每次都要创建一个新的 才有效果
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_link_http,2);
+            spanString2.setSpan(imageSpan, pos.get(k), pos.get(k) + icon.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanString2.setSpan(clickableSpan, pos.get(k), pos.get(k) + icon.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        }
+
+
+        int authorNamelength = name.length();
+        ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+        //中间有 回复 两个字 + 1个空格
+        spanString2.setSpan(fCs2,   3,   3 + authorNamelength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+            @Override
+            public void onClick(View widget) {
+                KLog.d("tag","点击的是 " + name);
+                UIHelper.toUserInfoV2Activity(mContext,item.getComment_uid());
+            }
+        };
+        spanString2.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        msg.setText( spanString2);
+
+        //下面语句不写的话，点击clickablespan没效果
+        msg.setMovementMethod(LinkMovementMethod.getInstance());
+
+    }
+
 
 
 }

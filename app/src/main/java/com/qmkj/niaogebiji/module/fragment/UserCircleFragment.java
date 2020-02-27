@@ -128,33 +128,31 @@ public class UserCircleFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
-        getPersonInfo();
+        getUserBlog();
     }
 
-    private void getPersonInfo() {
+    private void getUserBlog() {
         Map<String,String> map = new HashMap<>();
         map.put("uid",otherUid);
         map.put("page",page + "");
         String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().getPersonInfo(result)
+        RetrofitHelper.getApiService().getUserBlog(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<PersonUserInfoBean>>() {
+                .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
-                    public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
+                    public void onSuccess(HttpResponse<List<CircleBean>> response) {
 
-                       PersonUserInfoBean temp = response.getReturn_data();
-                        if(temp != null){
-                            if(null != smartRefreshLayout){
-                                mIsRefreshing = false;
-                                smartRefreshLayout.finishRefresh();
-                            }
 
+                        if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
+                            smartRefreshLayout.finishRefresh();
+                        }
                             hideWaitingDialog();
 
-                            List<CircleBean> serverData = temp.getBlog_list();
+                            List<CircleBean> serverData = response.getReturn_data();
                             if(1 == page){
                                 if(serverData != null && !serverData.isEmpty()){
                                     setData2(serverData);
@@ -184,7 +182,6 @@ public class UserCircleFragment extends BaseLazyFragment {
                                     mCircleRecommentAdapterNew.loadMoreEnd();
                                 }
                             }
-                        }
                     }
                 });
     }
@@ -294,10 +291,6 @@ public class UserCircleFragment extends BaseLazyFragment {
                 teList.add(temp);
             }
             if(page == 1){
-                //TODO 新增话题,原本10条数据，现在11条了
-                CircleBean tempBean = new CircleBean();
-                tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
-                teList.add(1,tempBean);
                 mAllList.addAll(teList);
             }
         }

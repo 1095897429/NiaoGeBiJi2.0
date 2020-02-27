@@ -213,6 +213,18 @@ public class StringUtil {
         
     }
 
+    public static void copyText(String share_url) {
+        //获取剪贴板管理器：
+        ClipboardManager cm = (ClipboardManager) BaseApp.getApplication().getSystemService(Context.CLIPBOARD_SERVICE);
+        // 创建普通字符型ClipData
+        ClipData mClipData = ClipData.newPlainText("Label", share_url);
+        // 将ClipData内容放到系统剪贴板里。
+        cm.setPrimaryClip(mClipData);
+        ToastUtils.setGravity(Gravity.BOTTOM, 0, SizeUtils.dp2px(40));
+        ToastUtils.showShort("文本复制成功！");
+
+    }
+
     /** 判定操作 */
     public static boolean checkNull(String param) {
         if (TextUtils.isEmpty(param)) {
@@ -627,10 +639,11 @@ public class StringUtil {
 
 
 
+
+
     public static void getIconLinkShow(CircleBean item, Activity activity,TextView msg) {
         SpannableString spanString2;
         String content = item.getBlog() + "";
-//        String content = StringEscapeUtils.unescapeJava(item.getBlog().replace("\\\\u","\\u"));
 
         String icon = "[icon]";
         //获取链接

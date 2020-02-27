@@ -801,5 +801,16 @@ public interface ApiEncryptService{
     Observable<HttpResponse<AuthorBean>> hotauthor(@Field("params") String param);
 
 
+    /* 2020.2.26 获取用户信息V2 == 加上作者模块  */
+    @FormUrlEncoded
+    @POST("app/center/getUserInfoV2")
+    Observable<HttpResponse<PersonUserInfoBean>> getUserInfoV2(@Field("params") String param);
+
+    /* 2020.2.26 用户发布圈子V2 == 加上作者模块  */
+    @FormUrlEncoded
+    @POST("app/center/getUserBlog")
+    Observable<HttpResponse<List<CircleBean>>> getUserBlog(@Field("params") String param);
+
+
 
 }

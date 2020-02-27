@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_corners_left_16_right"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:background="@drawable/bg_corners_left_16_right"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="取消"
+                    android:gravity="center|left"
+                    android:textColor="@color/text_first_color"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/send"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|right"
+                    android:text="发布"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:background="@drawable/bg_corners_6_selector"
+                    android:textColor="#CC818386"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/line1"
+                android:layout_above="@+id/bottom_part"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"></View>
+
+            <EditText
+                android:id="@+id/et_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:lineSpacingExtra="2dp"
+                android:layout_marginBottom="16dp"
+                android:background="@null"
+                android:focusable="true"
+                android:hint=""
+                android:textColorHint="@color/text_second_color"
+                android:focusableInTouchMode="true"
+                android:gravity="left"
+                android:paddingTop="10dp"
+                android:textColor="@color/text_first_color"
+                android:textSize="16sp" />
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/comment_succuss_transfer"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/line2"
+                android:layout_above="@+id/bottom_part"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_line"></View>
+
+            <LinearLayout
+                android:id="@+id/bottom_part"
+                android:layout_width="match_parent"
+                android:gravity="center|left"
+                android:paddingLeft="16dp"
+                android:layout_height="36dp"
+                android:orientation="horizontal">
+
+
+                <CheckBox
+                    android:id="@+id/checkbox"
+                    android:visibility="visible"
+                    android:gravity="center"
+                    style="@style/CustomCheckBoxTheme"
+                    android:padding="5dp"
+                    android:checked="false"
+                    android:background="@null"
+                    android:textColor="@color/text_second_color"
+                    android:text="评论成功转发到圈子"
+                    android:textSize="13sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+
+                <LinearLayout
+                    android:background="@color/white"
+                    android:paddingRight="16dp"
+                    android:gravity="center|right"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/listentext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/text_second_color"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/listentext2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="/140"
+                        android:textColor="@color/text_second_color"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

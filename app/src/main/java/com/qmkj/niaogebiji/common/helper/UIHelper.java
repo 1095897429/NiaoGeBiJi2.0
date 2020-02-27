@@ -14,6 +14,8 @@ import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
+import com.qmkj.niaogebiji.module.activity.CommentDetailActivityV2;
+import com.qmkj.niaogebiji.module.activity.CooperationActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
 import com.qmkj.niaogebiji.module.activity.ExchangeAllListActivity;
 import com.qmkj.niaogebiji.module.activity.ExchangeDetailActivity2;
@@ -286,7 +288,7 @@ public class UIHelper {
 
     /** 打开评论详情界面  position 放在set方法中传入*/
     public static void toCommentDetailActivity(Context ctx,String blog_id) {
-        Intent intent = new Intent(ctx, CommentDetailActivity.class);
+        Intent intent = new Intent(ctx, CommentDetailActivityV2.class);
         Bundle  bundle = new Bundle();
         bundle.putString("blog_id",blog_id);
         intent.putExtras(bundle);
@@ -553,6 +555,13 @@ public class UIHelper {
     public static void toAuthorDetailActivity(Context ctx,String authorId) {
         Intent intent = new Intent(ctx, AuthorDetailActivity.class);
         intent.putExtra("authorId",authorId);
+        ctx.startActivity(intent);
+    }
+
+
+    /** */
+    public static void toCooperationActivity(Context ctx) {
+        Intent intent = new Intent(ctx, CooperationActivity.class);
         ctx.startActivity(intent);
     }
 }

@@ -99,16 +99,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 helper.setText(R.id.comment_text,item.getMessage());
                 TextView nickname = helper.getView(R.id.nickname);
 
-                //名称 + 认证
-//                if("1".equals(item.getAuth_status())){
-//                    nickname.setText(item.getUsername() + (TextUtils.isEmpty(item.getCompany_name())?"":item.getCompany_name()) + " "+
-//                            (TextUtils.isEmpty(item.getPosition())?"":item.getPosition()));
-//                }else{
-//                    nickname.setText(item.getUsername() + " TA还未职业认证");
-//                }
-
-
-
 
                 //TODO 2020.1.7
                 if(!StringUtil.checkNull((item.getCompany_name()))
@@ -180,6 +170,8 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
 
 
                 break;
+
+
             case CIRCLE:
                 CommentCircleBean comment = bean.getCircleComment();
                 helper.setText(R.id.comment_text,comment.getComment());
@@ -207,11 +199,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                         nick.setCompoundDrawables(null,null,null,null);
                     }
                 }
-
-
-
-
-
 
 
                 ImageUtil.loadByDefaultHead(mContext,comment.getUser_info().getAvatar(),helper.getView(R.id.head_icon));

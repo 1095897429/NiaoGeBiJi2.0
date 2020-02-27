@@ -41,9 +41,20 @@ public class AuthorBean extends BaseBean {
         private String published_at;
         private String pic;
 
+
+        //作者类型
+        private String type;
+
         public Author() {
         }
 
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
 
         public String getAid() {
             return aid;

@@ -60,6 +60,22 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
         helper.setText(R.id.author_name,item.getName());
 
+        //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
+        if(TextUtils.isEmpty(item.getType()) || "1".equals(item.getType())){
+            helper.setVisible(R.id.author_type,false);
+        }else if("2".equals(item.getType())){
+            helper.setVisible(R.id.author_type,true);
+            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_newuser);
+        }else if("3".equals(item.getType())){
+            helper.setVisible(R.id.author_type,true);
+            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_new);
+        }else if("4".equals(item.getType())){
+            helper.setVisible(R.id.author_type,true);
+            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_professor);
+        }
+
+
+
         //作者简介
         TextView sumary = helper.getView(R.id.author_tag);
         if(!TextUtils.isEmpty(item.getSummary())){

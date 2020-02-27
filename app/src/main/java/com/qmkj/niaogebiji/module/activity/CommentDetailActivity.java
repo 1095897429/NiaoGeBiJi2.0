@@ -99,7 +99,21 @@ import io.reactivex.schedulers.Schedulers;
  * 0.评论的实体叫做CommentBeanNew ，圈子叫做CircleBean
  * 1.构建临时变量 oneComment ，在每次点击列表item时重新赋值
  * 2.二级评论实体adapter中多实体
+ *
+ *
+ *  动态详情 blogDetail
+ *  动态评论列表  getBlogComment
+ *  动态举报 reportBlog
+ *  动态删除 deleteBlog
+ *  动态点赞 likeBlog
+ *
+ * 1.评论动态 createBlogComment
+ * 2.评论评论 createCommentComment
+ * 3.评论详情 blogCommentDetail
+ * 4.评论点赞 likeComment
+ * 5.评论删除 deleteComment
  */
+
 
 
 public class CommentDetailActivity extends BaseActivity {
@@ -307,17 +321,21 @@ public class CommentDetailActivity extends BaseActivity {
 
 
 
-    @OnClick({R.id.toComment,
+    @OnClick({R.id.toBlogComment,
             R.id.circle_comment,
             R.id.iv_back,
             R.id.part_zf_link,
             R.id.part_yc_link,
             R.id.part1111,
             R.id.part_yc_acticle,
-            R.id.transfer_zf_ll
+            R.id.transfer_zf_ll,
+            R.id.ll_topic
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.ll_topic:
+                UIHelper.toTopicDetailActivity(this,mCircleBean.getTopic_id());
+                break;
             case R.id.part1111:
                 //头像跳转事件
                 UIHelper.toUserInfoActivity(this,mCircleBean.getUid());
@@ -342,7 +360,7 @@ public class CommentDetailActivity extends BaseActivity {
                 UIHelper.toCommentDetailActivity(mContext,mCircleBean.getP_blog().getId());
                 break;
             case R.id.circle_comment:
-            case R.id.toComment:
+            case R.id.toBlogComment:
                 //TODO 弹框评论圈子
                 showTalkDialog(mCircleBean.getId(),"");
                 break;
@@ -929,10 +947,23 @@ public class CommentDetailActivity extends BaseActivity {
                 });
     }
 
+    @BindView(R.id.ll_topic)
+    LinearLayout ll_topic;
+
+    @BindView(R.id.select_topic_text)
+    TextView select_topic_text;
 
     @SuppressLint("SetTextI18n")
     private void setData() {
         if(mCircleBean.getUser_info() != null){
+
+            //话题
+            if(mCircleBean.getTopic_info() != null && !TextUtils.isEmpty(mCircleBean.getTopic_info().getTitle())){
+                ll_topic.setVisibility(View.VISIBLE);
+                select_topic_text.setText("#" + mCircleBean.getTopic_info().getTitle());
+            }else{
+                ll_topic.setVisibility(View.GONE);
+            }
 
             //加载不同的布局
             getIconType(mCircleBean);

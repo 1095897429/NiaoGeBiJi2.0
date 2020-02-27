@@ -375,7 +375,7 @@ public class UserInfoActivity extends BaseActivity {
     private void setHeadData() {
         //头部信息
         part2222_2 = headView.findViewById(R.id.part2222_2);
-        send_article_num = headView.findViewById(R.id.send_article_num);
+        send_article_num = headView.findViewById(R.id.fans_num);
         medal_count = headView.findViewById(R.id.medal_count);
         sender_name = headView.findViewById(R.id.sender_name);
         user_des = headView.findViewById(R.id.user_des);

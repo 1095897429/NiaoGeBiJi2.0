@@ -395,7 +395,7 @@ public class SplashActivity extends BaseActivity {
                 if(isLogin){
                     KLog.e("tag"," 闪屏去主界面 ");
 
-                    Intent intent = new Intent(this, HomeActivity.class);
+                    Intent intent = new Intent(this, HomeActivityV2.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("type",0);
                     bundle.putSerializable("jpushbean",mJPushBean);

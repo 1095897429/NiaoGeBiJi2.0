@@ -89,7 +89,6 @@
                     android:layout_below="@+id/nickname"
                     android:layout_marginTop="2dp"
                     android:textSize="16sp"
-                    android:maxLines="6"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
                     android:text="10月31日，格力电器公告拟修订公司章程，其中，经营范围新增了「研发、制造、销售新能源发电产品、储能系统及充电桩」的内容。"

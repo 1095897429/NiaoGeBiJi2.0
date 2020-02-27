@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
+import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
@@ -67,6 +69,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,6 +157,33 @@ public class UserInfoV2Activity extends BaseActivity {
     TextView already_focus;
 
 
+    @BindView(R.id.fans_num)
+    TextView fans_num;
+
+
+    @BindView(R.id.rl_author)
+    LinearLayout rl_author;
+
+
+    @BindView(R.id.head_author_icon)
+    CircleImageView head_author_icon;
+
+
+    @BindView(R.id.author_name)
+    TextView author_name;
+
+
+    @BindView(R.id.author_desc)
+    TextView author_desc;
+
+
+    @BindView(R.id.hint_num)
+    TextView hint_num;
+
+    @BindView(R.id.author_type)
+    ImageView author_type;
+
+
     private List<ChannelBean> mChannelBeanList;
     private List<String> mTitls = new ArrayList<>();
     private FirstFragmentAdapter mFirstFragmentAdapter;
@@ -167,11 +197,15 @@ public class UserInfoV2Activity extends BaseActivity {
     private String  otherUid;
     private RegisterLoginBean.UserInfo  mUserInfo;
 
-    private  PersonUserInfoBean temp;
+
     //关注状态
     private String follow_status;
     //屏蔽 取消屏蔽
     private String shareContent;
+
+
+    //是否是作者
+    boolean isAuthor;
 
     @Override
     protected int getLayoutId() {
@@ -208,12 +242,27 @@ public class UserInfoV2Activity extends BaseActivity {
         mUserInfo = StringUtil.getUserInfoBean();
         iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
 
+
+    }
+
+
+    private void setShowPart(){
         mChannelBeanList = new ArrayList<>();
         ChannelBean bean ;
-        bean = new ChannelBean("0","发布文章");
-        mChannelBeanList.add(bean);
-        bean = new ChannelBean("1","发布动态");
-        mChannelBeanList.add(bean);
+
+        if(isAuthor){
+            bean = new ChannelBean("0","发布文章");
+            bean.setNum(temp.getAuthor_info().getArticle_count() + "");
+            mChannelBeanList.add(bean);
+            bean = new ChannelBean("1","发布动态");
+            bean.setNum(temp.getBlog_count() + "");
+            mChannelBeanList.add(bean);
+        }else{
+            bean = new ChannelBean("0","发布动态");
+            bean.setNum(temp.getBlog_count() + "");
+            mChannelBeanList.add(bean);
+        }
+
 
         if(null != mChannelBeanList){
             setUpAdater();
@@ -223,9 +272,13 @@ public class UserInfoV2Activity extends BaseActivity {
     }
 
     @Override
+    public void initFirstData() {
+        getUserInfoV2();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        getPersonInfo();
     }
 
 
@@ -549,13 +602,12 @@ public class UserInfoV2Activity extends BaseActivity {
                 });
     }
 
-
-    private void getPersonInfo() {
+    private  PersonUserInfoBean temp;
+    private void getUserInfoV2() {
         Map<String,String> map = new HashMap<>();
         map.put("uid",otherUid);
-        map.put("page",page + "");
         String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().getPersonInfo(result)
+        RetrofitHelper.getApiService().getUserInfoV2(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
@@ -563,7 +615,6 @@ public class UserInfoV2Activity extends BaseActivity {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
-
                         temp = response.getReturn_data();
                         if(temp != null){
                             setHeadData();
@@ -573,7 +624,6 @@ public class UserInfoV2Activity extends BaseActivity {
     }
 
     private void setHeadData() {
-
         //设置逻辑
         initDifferLogic();
 
@@ -596,8 +646,6 @@ public class UserInfoV2Activity extends BaseActivity {
             ImageUtil.loadByDefaultHead(this,temp.getAvatar(),small_head_icon);
             //小作者
             tv_title.setText(temp.getName());
-
-
 
             //徽章
             if(temp.getBadge() != null && !temp.getBadge().isEmpty()){
@@ -627,6 +675,35 @@ public class UserInfoV2Activity extends BaseActivity {
 
     private void initDifferLogic() {
 
+        //是否作者信息
+        if(temp.isIs_author() && temp.getAuthor_info() != null){
+            isAuthor = true;
+            AuthorBean.Author bean = temp.getAuthor_info();
+            rl_author.setVisibility(View.VISIBLE);
+            ImageUtil.loadByDefaultHead(this,bean.getImg(),head_author_icon);
+            author_name.setText(bean.getName());
+            author_desc.setText(bean.getSummary());
+            hint_num.setText(bean.getHit_count());
+
+
+            //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
+            if("1".equals(bean.getType())){
+                author_type.setVisibility(View.GONE);
+            }else if("2".equals(bean.getType())){
+                author_type.setImageResource(R.mipmap.hot_author_newuser);
+            }else if("3".equals(bean.getType())){
+                author_type.setImageResource(R.mipmap.hot_author_new);
+            }else if("4".equals(bean.getType())){
+                author_type.setImageResource(R.mipmap.hot_author_professor);
+            }
+        }
+
+        //设置下方的选择
+        setShowPart();
+
+        fans_num.setText(temp.getFollow_count() + "");
+        medal_count.setText(temp.getFans_count() + "");
+
         //自己
         if(myUid.equals(otherUid)){
             iv_text.setVisibility(View.VISIBLE);
@@ -652,6 +729,25 @@ public class UserInfoV2Activity extends BaseActivity {
 //                  显示：编辑信息
 //              }
 
+
+
+
+            //影响数
+//                if(!TextUtils.isEmpty(bean.getHit_count())){
+//                    long count = Long.parseLong(bean.getHit_count());
+//                    if(count < 10000 ){
+//                        hint_num.setText(bean.getHit_count());
+//                    }else{
+//                        double temp = count  ;
+//                        //1.将数字转换成以万为单位的数字
+//                        double num = temp / 10000;
+//                        BigDecimal b = new BigDecimal(num);
+//                        //2.转换后的数字四舍五入保留小数点后一位;
+//                        double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+//                        hint_num.setText( f1 + " w");
+//                    }
+//
+//                }
 
             //认证
             if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
@@ -719,7 +815,6 @@ public class UserInfoV2Activity extends BaseActivity {
             iv_right.setVisibility(View.VISIBLE);
             iv_right_1.setVisibility(View.VISIBLE);
             part3333.setVisibility(View.VISIBLE);
-
         }
     }
 
@@ -785,7 +880,6 @@ public class UserInfoV2Activity extends BaseActivity {
 
 
     private void setUpTabLayout() {
-
         //设置指示器颜色
         mTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.yellow));
         //设置可滑动模式
@@ -810,7 +904,7 @@ public class UserInfoV2Activity extends BaseActivity {
             public void onTabUnselected(TabLayout.Tab tab) {
                 View view=tab.getCustomView();
                 if(null != view){
-                    TextView textView=view.findViewById(R.id.tv_header);
+                    TextView textView = view.findViewById(R.id.tv_header);
                     textView.setTextSize(16);
                     textView.setTypeface(Typeface.DEFAULT);
                     textView.setTextColor(getResources().getColor(R.color.text_news_tag_color));
@@ -830,6 +924,8 @@ public class UserInfoV2Activity extends BaseActivity {
             if (tab != null) {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.tool_item_tablyout, null);
                 TextView textView=view.findViewById(R.id.tv_header);
+                TextView num = view.findViewById(R.id.num);
+                num.setText(mChannelBeanList.get(i).getNum());
                 textView.setText(mChannelBeanList.get(i).getChaname());
                 tab.setCustomView(view);
             }
@@ -844,20 +940,34 @@ public class UserInfoV2Activity extends BaseActivity {
     private void setUpAdater() {
         mFragmentList.clear();
         mTitls.clear();
-        for (int i = 0; i < mChannelBeanList.size(); i++) {
-            if(i== 0){
-                FirstItemFragment fragment1 = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-                        mChannelBeanList.get(i).getChaname());
-                mFragmentList.add(fragment1);
-            }else if(i == 1){
+
+        //只有一个，那么是圈子
+        if(mChannelBeanList.size() == 1){
+            for (int i = 0; i < mChannelBeanList.size(); i++) {
                 //第一个参数填传递的Uid
                 UserCircleFragment fragment1 = UserCircleFragment.getInstance(otherUid,
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(fragment1);
-            }
 
-            mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
+                mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
+            }
+        }else{
+            for (int i = 0; i < mChannelBeanList.size(); i++) {
+                if(i== 0){
+                    FirstItemFragment fragment1 = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                            mChannelBeanList.get(i).getChaname());
+                    mFragmentList.add(fragment1);
+                }else if(i == 1){
+                    //第一个参数填传递的Uid
+                    UserCircleFragment fragment1 = UserCircleFragment.getInstance(otherUid,
+                            mChannelBeanList.get(i).getChaname());
+                    mFragmentList.add(fragment1);
+                }
+
+                mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
+            }
         }
+
 
         //设置适配器
         mFirstFragmentAdapter = new FirstFragmentAdapter(this,getSupportFragmentManager(), mFragmentList, mTitls);
@@ -885,7 +995,7 @@ public class UserInfoV2Activity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onProfessionEvent(ProfessionEvent event){
         if("2".equals( event.getType())){
-            getPersonInfo();
+            getUserInfoV2();
         }
 
     }

@@ -45,8 +45,13 @@ public class CircleBean extends BaseBean {
 
         //TODO 新增话题
         private TopicInfo topic_info;
+        private String topic_id;
         //是否关注过话题
         private boolean is_follow;
+        //被评论用户UID，默认0
+        private String comment_uid;
+        private String comment_nickname;
+
 
 
         //兼容搜索
@@ -72,6 +77,30 @@ public class CircleBean extends BaseBean {
 //        this.topicList = topicList;
 //    }
 
+
+    public String getComment_uid() {
+        return comment_uid;
+    }
+
+    public void setComment_uid(String comment_uid) {
+        this.comment_uid = comment_uid;
+    }
+
+    public String getComment_nickname() {
+        return comment_nickname;
+    }
+
+    public void setComment_nickname(String comment_nickname) {
+        this.comment_nickname = comment_nickname;
+    }
+
+    public String getTopic_id() {
+        return topic_id;
+    }
+
+    public void setTopic_id(String topic_id) {
+        this.topic_id = topic_id;
+    }
 
     public boolean isIs_follow() {
         return is_follow;

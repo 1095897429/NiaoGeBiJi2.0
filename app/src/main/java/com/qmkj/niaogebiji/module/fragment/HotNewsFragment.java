@@ -95,7 +95,7 @@ public class HotNewsFragment extends BaseLazyFragment {
         KLog.e("tag","当前的页数是 " + page + "");
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
-        map.put("page_size",10 + "");
+        map.put("page_size",30 + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().hotArticle(result)
                 .subscribeOn(Schedulers.newThread())
@@ -117,7 +117,7 @@ public class HotNewsFragment extends BaseLazyFragment {
                                 setActicleData(articles);
                                 mHotNewsAdapter.setNewData(mAllList);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
-                                if(articles.size() < Constant.SEERVER_NUM){
+                                if(articles.size() <= 30){
                                     mHotNewsAdapter.loadMoreComplete();
                                     mHotNewsAdapter.loadMoreEnd();
                                 }
@@ -234,10 +234,10 @@ public class HotNewsFragment extends BaseLazyFragment {
     }
 
     private void initEvent() {
-        mHotNewsAdapter.setOnLoadMoreListener(() -> {
-           page ++;
-           hotArticle();
-        }, mRecyclerView);
+//        mHotNewsAdapter.setOnLoadMoreListener(() -> {
+//           page ++;
+//           hotArticle();
+//        }, mRecyclerView);
     }
 
 

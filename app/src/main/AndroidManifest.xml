@@ -208,7 +208,19 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".module.activity.CooperationActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.HomeActivityV2"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".module.activity.PicPreviewActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".module.activity.CommentDetailActivityV2"
             android:screenOrientation="portrait">
         </activity>
 

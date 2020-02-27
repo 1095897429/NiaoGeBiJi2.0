@@ -29,6 +29,7 @@
             android:textColor="#A6A6A6" />
 
     </LinearLayout>
+
     <include
         layout="@layout/common_title_layout"/>
 
@@ -87,7 +88,7 @@
                             <TextView
                                 android:id="@+id/first_comment_num"
                                 android:text="全部条评论"
-                                android:visibility="gone"
+                                android:visibility="visible"
                                 android:textStyle="bold"
                                 android:gravity="center|left"
                                 android:textSize="17sp"
@@ -131,8 +132,6 @@
 
             </androidx.core.widget.NestedScrollView>
 
-
-
             <LinearLayout
                 android:id="@+id/bottom_no_comment"
                 android:visibility="visible"
@@ -148,7 +147,7 @@
                     android:layout_height="18dp" />
 
                 <RelativeLayout
-                    android:id="@+id/toComment"
+                    android:id="@+id/toBlogComment"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:layout_width="match_parent"

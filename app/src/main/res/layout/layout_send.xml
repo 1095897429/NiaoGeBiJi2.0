@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,7 +10,6 @@
         android:id="@+id/ll_circle_send"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:paddingTop="12dp"
         android:paddingBottom="12dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
@@ -51,8 +51,7 @@
                 style="@style/send_progress_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
-                android:progress="0"
-                android:max="100"/>
+                android:progress="0" />
 
 
             <ImageView

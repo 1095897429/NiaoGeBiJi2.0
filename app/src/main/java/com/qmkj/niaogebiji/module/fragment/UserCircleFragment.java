@@ -187,79 +187,6 @@ public class UserCircleFragment extends BaseLazyFragment {
     }
 
 
-    private void recommendBlogList() {
-        Map<String,String> map = new HashMap<>();
-        map.put("page",page + "");
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().recommendBlogList(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
-                    @Override
-                    public void onSuccess(HttpResponse<List<CircleBean>> response) {
-                        if(null != smartRefreshLayout){
-                            mIsRefreshing = false;
-                            smartRefreshLayout.finishRefresh();
-                        }
-
-                          hideWaitingDialog();
-
-                            List<CircleBean> serverData = response.getReturn_data();
-                            if(1 == page){
-                                if(serverData != null && !serverData.isEmpty()){
-                                    setData2(serverData);
-                                    mCircleRecommentAdapterNew.setNewData(mAllList);
-                                    //如果第一次返回的数据不满10条，则显示无更多数据
-                                    if(serverData.size() < Constant.SEERVER_NUM){
-                                        mCircleRecommentAdapterNew.loadMoreEnd();
-                                    }
-                                    ll_empty.setVisibility(View.GONE);
-                                    mRecyclerView.setVisibility(View.VISIBLE);
-                                }else{
-                                    KLog.d("tag","设置空布局");
-                                    //第一次加载无数据
-                                    ll_empty.setVisibility(View.VISIBLE);
-                                    ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("暂无推荐内容");
-                                    ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
-                                    mRecyclerView.setVisibility(View.GONE);
-                                }
-                            }else{
-                                //已为加载更多有数据
-                                if(serverData != null && serverData.size() > 0){
-                                    setData2(serverData);
-                                    mCircleRecommentAdapterNew.loadMoreComplete();
-                                    mCircleRecommentAdapterNew.addData(teList);
-                                }else{
-                                    //已为加载更多无更多数据
-                                    mCircleRecommentAdapterNew.loadMoreEnd();
-                                }
-                            }
-                    }
-
-                    //{"return_code":"200","return_msg":"success","return_data":{}} -- 后台空集合返回{}，那么会出现解析异常，在这里所判断
-                    @Override
-                    public void onNetFail(String msg) {
-                        super.onNetFail(msg);
-                        if(null != smartRefreshLayout){
-                            mIsRefreshing = false;
-                            smartRefreshLayout.finishRefresh();
-                        }
-                        hideWaitingDialog();
-                        if("解析错误".equals(msg)){
-                            if(page == 1){
-                                setData2(null);
-                            }else{
-                                mCircleRecommentAdapterNew.loadMoreComplete();
-                                mCircleRecommentAdapterNew.loadMoreEnd();
-                            }
-                        }
-                    }
-
-                });
-    }
-
-
 
 
     List<CircleBean> teList = new ArrayList<>();
@@ -362,7 +289,7 @@ public class UserCircleFragment extends BaseLazyFragment {
             mAllList.clear();
             mIsRefreshing = true;
             page = 1;
-            recommendBlogList();
+            getUserBlog();
         });
 
         mRecyclerView.setOnTouchListener(
@@ -381,7 +308,7 @@ public class UserCircleFragment extends BaseLazyFragment {
     private void initEvent() {
         mCircleRecommentAdapterNew.setOnLoadMoreListener(() -> {
             ++page;
-            recommendBlogList();
+            getUserBlog();
         }, mRecyclerView);
 
     }
@@ -393,7 +320,7 @@ public class UserCircleFragment extends BaseLazyFragment {
         mAllList.clear();
         page = 1;
         mIsRefreshing = true;
-        recommendBlogList();
+        getUserBlog();
     }
 
 //    private void initExitAnim(){
@@ -473,7 +400,7 @@ public class UserCircleFragment extends BaseLazyFragment {
             page = 1;
             mIsRefreshing = true;
             mAllList.clear();
-            recommendBlogList();
+            getUserBlog();
 
             //TODO 12.17 留给自己的疑问：出现情况是，如果是page = 2的 时候，会变化吗
         }

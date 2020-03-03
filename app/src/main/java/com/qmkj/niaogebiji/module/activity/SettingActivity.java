@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -31,6 +32,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler;
+import com.jakewharton.disklrucache.DiskLruCache;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
@@ -44,6 +46,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.Base64;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
+import com.qmkj.niaogebiji.common.utils.FormatUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.NotificationUtil;
@@ -121,8 +124,25 @@ public class SettingActivity extends BaseActivity {
         return R.layout.activity_setting;
     }
 
+    DiskLruCache mDiskLruCache;
+
+    private void diskLruCache(Context context){
+        File diskCacheDir=new File(context.getCacheDir().getPath()+"/bitmap");
+        if(!diskCacheDir.exists()){
+            diskCacheDir.mkdirs();
+        }
+        try {
+            mDiskLruCache = DiskLruCache.open(diskCacheDir,1,1,1024*1024*10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
     protected void initView() {
+
+        diskLruCache(this);
 
         userInfo = StringUtil.getUserInfoBean();
         //头像
@@ -163,9 +183,14 @@ public class SettingActivity extends BaseActivity {
 //
 //        }
 
-        Random rand = new Random();
-        int i = rand.nextInt(15) + 1;
-        clean_text.setText("当前缓存" + i + "M");
+
+        //缓存 -- 字节转M;
+        String result = FormatUtil.sizeFormatNum2String(mDiskLruCache.size());
+        clean_text.setText("当前缓存" + result);
+
+//        Random rand = new Random();
+//        int i = rand.nextInt(15) + 1;
+//        clean_text.setText("当前缓存" + i + "M");
 
 
         //应用程序接收通知开关是否打开
@@ -332,8 +357,15 @@ public class SettingActivity extends BaseActivity {
     private void showCacheDialog() {
         final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(SettingActivity.this).builder();
         iosAlertDialog.setPositiveButton("确定", v -> {
+
+            try {
+                mDiskLruCache.delete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //清除历史，刷新界面
-            clean_text.setText("当前缓存0M");
+            clean_text.setText("当前缓存0.00KB");
             SPUtils.getInstance().put("is_cached", true);
             ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
             ToastUtils.showShort("清除成功");

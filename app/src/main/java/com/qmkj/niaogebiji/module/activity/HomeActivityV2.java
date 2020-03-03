@@ -1,7 +1,9 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -185,6 +187,9 @@ public class HomeActivityV2 extends BaseActivity {
         initFragment();
 
     }
+
+
+
 
     private JPushBean mJPushBean;
 
@@ -704,6 +709,10 @@ public class HomeActivityV2 extends BaseActivity {
             toGiveToken();
         }
     }
+
+
+
+
 
 }
 

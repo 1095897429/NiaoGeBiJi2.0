@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.viewpager.widget.ViewPager;
 
 import com.qmkj.niaogebiji.R;
@@ -24,6 +25,7 @@ import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.ImageBrowseAdapter;
+import com.qmkj.niaogebiji.module.bean.PicBean;
 import com.socks.library.KLog;
 
 import java.util.ArrayList;
@@ -62,7 +64,13 @@ public class PicPreviewActivity extends BaseActivity {
 
     private ImageBrowseAdapter mImageBrowseAdapter;
 
+
+    private ArrayList<PicBean> imagePicList = new ArrayList<>();
+    PicBean mPicBean;
+
     private ArrayList<String> imageList = new ArrayList<>();
+
+    private ArrayList<String> tempList = new ArrayList<>();
 
     //点击是哪个索引的图片
     private int currentIndex = 0;
@@ -95,6 +103,7 @@ public class PicPreviewActivity extends BaseActivity {
         showData();
     }
 
+    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
 
     private void loadData(){
         Intent intent = getIntent();
@@ -103,9 +112,20 @@ public class PicPreviewActivity extends BaseActivity {
             fromNet = intent.getBooleanExtra("fromNet",false);
             isShowDown = intent.getBooleanExtra("isShowDown",true);
             imageList =  intent.getStringArrayListExtra("imageList");
-            mImageBrowseAdapter = new ImageBrowseAdapter (PicPreviewActivity.this,imageList);
+
+            //封装新的对象
+
+            for (int i = 0; i < imageList.size(); i++) {
+                mPicBean = new PicBean();
+                mPicBean.setPic(imageList.get(i) + scaleSize);
+                mPicBean.setYuanTu(false);
+                imagePicList.add(mPicBean);
+            }
+
+            mImageBrowseAdapter = new ImageBrowseAdapter (PicPreviewActivity.this,imagePicList);
             imageBrowseViewPager.setAdapter (mImageBrowseAdapter);
             imageBrowseViewPager.setCurrentItem (currentIndex);
+
 
             if(!isShowDown){
                 head_part.setVisibility(View.GONE);
@@ -114,6 +134,8 @@ public class PicPreviewActivity extends BaseActivity {
             }
         }
     }
+
+
 
     private void initEvents(){
         imageBrowseViewPager.addOnPageChangeListener (new ViewPager.OnPageChangeListener () {
@@ -155,11 +177,22 @@ public class PicPreviewActivity extends BaseActivity {
 
 
     @OnClick({R.id.icon_preview_back,
-            R.id.icon_preview_download
+            R.id.icon_preview_download,
+            R.id.pic_look
 
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.pic_look:
+                //得到当前索引
+                KLog.d("tag","获取图片的原图路径是 " + imageList.get(currentIndex) );
+                //展示进度 --- 更新视图
+                imagePicList.get(currentIndex).setPic(imageList.get(currentIndex));
+                imagePicList.get(currentIndex).setYuanTu(true);
+
+                mImageBrowseAdapter.notifyDataSetChanged();
+
+                break;
             case R.id.icon_preview_back:
                 finish();
                 break;

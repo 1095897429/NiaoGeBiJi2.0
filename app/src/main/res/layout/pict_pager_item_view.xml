@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,16 +11,38 @@
 
         <com.bm.library.PhotoView
             android:id="@+id/photoView"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
 
         <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
             android:id="@+id/sub_imageview"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+
     </FrameLayout>
 
-</LinearLayout>
+
+    <TextView
+        android:visibility="visible"
+        android:paddingLeft="16dp"
+        android:paddingTop="10dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="10dp"
+        android:layout_marginBottom="26dp"
+        android:background="@drawable/bg_corners_8_gray"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/pic_look"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:lineSpacingExtra="2dp"
+        android:text="查看原图"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>

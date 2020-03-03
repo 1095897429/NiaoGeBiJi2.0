@@ -43,7 +43,7 @@
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
                        <LinearLayout
                            android:layout_width="wrap_content"
@@ -57,13 +57,13 @@
                                android:layout_height="wrap_content"
                                android:ellipsize="end"
                                android:lineSpacingExtra="2dp"
-                               android:maxLines="1"
-                               android:text="小羽毛"
+                               android:text="小羽毛小羽毛小羽毛小羽毛小羽毛"
                                android:textColor="@color/text_first_color"
                                android:textSize="22sp" />
                            
                            <ImageView
                                android:id="@+id/id_auther"
+                               android:visibility="gone"
                                android:layout_marginLeft="8dp"
                                android:src="@mipmap/icon_auther_shenfen"
                                android:layout_width="51dp"
@@ -71,6 +71,7 @@
 
                            <ImageView
                                android:id="@+id/id_profession"
+                               android:visibility="gone"
                                android:layout_marginLeft="8dp"
                                android:src="@mipmap/icon_authen_company1"
                                android:layout_width="51dp"
@@ -94,7 +95,6 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
-                    android:maxLines="1"
                     android:text="上海青墨网络科技有限公司 铲平经理"
                     android:textColor="@color/text_first_color"
                     android:textSize="13sp" />

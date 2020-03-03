@@ -284,4 +284,7 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:3.0.1'
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+
+
+    implementation 'com.jakewharton:disklrucache:2.0.2'
 }

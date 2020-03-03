@@ -51,6 +51,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
+import com.qmkj.niaogebiji.module.activity.CircleMakeActivityV2;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.CircleTopicAdapter;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
@@ -432,8 +433,10 @@ public class CircleFragment extends BaseLazyFragment {
 
 
                 //① 用getActivity方法发起调用，只有父Activity的onActivityResult会调用，Fragment中的onActivityResult不会被调用
-                Intent intent = new Intent(getActivity(), CircleMakeActivity.class);
-                startActivityForResult(intent,100);
+//                Intent intent = new Intent(getActivity(), CircleMakeActivityV2.class);
+//                startActivityForResult(intent,100);
+
+                UIHelper.toCircleMakeActivityV2(getActivity(),null);
 
                 //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
                 getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
@@ -446,12 +449,12 @@ public class CircleFragment extends BaseLazyFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 100 && resultCode == 200){
-            Bundle bundle = data.getExtras();
-            mTempMsgBean = (TempMsgBean) bundle.getSerializable("key");
-
-            changeData();
-        }
+//        if(requestCode == 100 && resultCode == 200){
+//            Bundle bundle = data.getExtras();
+//            mTempMsgBean = (TempMsgBean) bundle.getSerializable("key");
+//
+//            changeData();
+//        }
     }
 
     private ExecutorService mExecutorService;
@@ -714,6 +717,7 @@ public class CircleFragment extends BaseLazyFragment {
                     //网络正常，显示进度
                     ll_circle_send.setVisibility(View.VISIBLE);
                     part11.setVisibility(View.VISIBLE);
+
                     //① 如果没有图片，显示属性动画
                     if(TextUtils.isEmpty(resultPic)){
                         setAnimation(progressBar);
@@ -941,12 +945,10 @@ public class CircleFragment extends BaseLazyFragment {
     }
 
 
-
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateRecommendTopicFocusListEvent(UpdateRecommendTopicFocusListEvent event){
        if(null != this){
-           KLog.d("tag"," 重新获取数据源 ");
+           KLog.d("tag"," 重新获取  顶部话题  数据源 ");
            getMyFocusTopicData();
        }
     }
@@ -965,6 +967,9 @@ public class CircleFragment extends BaseLazyFragment {
         }
     }
 
-
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        KLog.d("tag","onResume === 显示");
+    }
 }

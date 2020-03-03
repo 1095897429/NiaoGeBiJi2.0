@@ -6,4 +6,7 @@
     <dimen name="status_bar_height_1">33dp</dimen>
 
     <dimen name="status_bar_height_2">15dp</dimen>
+
+    <dimen name="status_bar_height_237">212dp</dimen>
+
 </resources>

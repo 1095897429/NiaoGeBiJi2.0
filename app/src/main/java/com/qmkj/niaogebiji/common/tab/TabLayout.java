@@ -351,7 +351,7 @@ public class TabLayout extends HorizontalScrollView {
         try {
             mTabTextSize = ta.getDimensionPixelSize(
                    R.styleable.TextAppearance_android_textSize, dpToPx(25));
-            KLog.d("tag" ,"mTabTextSize=" + mTabTextSize);
+//            KLog.d("tag" ,"mTabTextSize=" + mTabTextSize);
             mTabTextColors = ta.getColorStateList(R.styleable.TextAppearance_android_textColor);
 
         } finally {
@@ -1705,7 +1705,7 @@ public class TabLayout extends HorizontalScrollView {
         final void update() {
             final Tab tab = mTab;
             final View custom = tab != null ? tab.getCustomView() : null;
-            KLog.d("tag" , "update:" + (tab != null ? tab.getText() : null));
+//            KLog.d("tag" , "update:" + (tab != null ? tab.getText() : null));
             if (custom != null) {
                 final ViewParent customParent = custom.getParent();
                 if (customParent != this) {

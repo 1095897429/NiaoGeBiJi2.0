@@ -41,6 +41,9 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
     @Override
     protected void convert(BaseViewHolder helper, TopicBean item) {
 
+        //显示文本
+        helper.setText(R.id.topic_titile,"#" + item.getTitle());
+
 
         if(!TextUtils.isEmpty(item.getIcon())){
             ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.flash_img1));

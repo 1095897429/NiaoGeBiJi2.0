@@ -201,6 +201,15 @@
                     android:layout_height="35dp" />
 
 
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_alignRight="@+id/topic_first"
+                    android:layout_marginLeft="140dp"
+                    android:src="@mipmap/icon_delete_small"
+                    android:layout_width="12.5dp"
+                    android:layout_height="12.5dp" />
+
+
                 <LinearLayout
                     android:id="@+id/ll_topic"
                     android:visibility="gone"
@@ -230,8 +239,8 @@
                     <ImageView
                         android:id="@+id/topic_delete"
                         android:src="@mipmap/icon_topic_delete"
-                        android:layout_width="12.5dp"
-                        android:layout_height="12.5dp" />
+                        android:layout_width="28dp"
+                        android:layout_height="28dp" />
 
                 </LinearLayout>
 

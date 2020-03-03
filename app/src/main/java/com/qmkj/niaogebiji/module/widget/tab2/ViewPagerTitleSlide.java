@@ -147,6 +147,7 @@ public class ViewPagerTitleSlide extends HorizontalScrollView {
 //            }if(i == 2){
 //                textView.setBackgroundColor(getResources().getColor(R.color.roseEnd));
 //            }
+
             textView.setLayoutParams(params);
             textView.setGravity(Gravity.BOTTOM|Gravity.LEFT);
             textView.setOnClickListener(onClickListener);

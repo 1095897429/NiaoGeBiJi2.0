@@ -7,22 +7,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
+import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
 import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
@@ -68,6 +80,9 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
 
 
 
+
+
+
         //头像
 //        ImageUtil.load(mContext,item.getPic(),helper.getView(R.id.one_img_imgs));
 
@@ -102,19 +117,72 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
 
         //选择
         helper.getView(R.id.focus).setOnClickListener(view ->{
-            int mPosition = helper.getAdapterPosition();
-            //手动修改
-            TopicBean bean = mData.get(mPosition);
 
-            if(1 == bean.getIs_focus()){
-                bean.setIs_focus(0);
+            if(!item.isIs_follow()){
+                followTopic(helper.getAdapterPosition(),item.getId() + "");
             }else{
-                bean.setIs_focus(1);
+                unfollowTopic(helper.getAdapterPosition(),item.getId() + "");
             }
-            notifyItemChanged(mPosition);
+
 
         });
 
     }
+
+
+
+    private void followTopic(int mPosition,String topic_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("topic_id",topic_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followTopic(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse<String>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<String> response) {
+                        KLog.d("tag","关注成功，改变状态");
+                        mData.get(mPosition).setIs_follow(true);
+
+                        EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
+                });
+    }
+
+
+    private void unfollowTopic(int mPosition,String topic_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("topic_id",topic_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().unfollowTopic(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
+                .subscribe(new BaseObserver<HttpResponse<String>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<String> response) {
+                        KLog.d("tag","取关成功，改变状态");
+                        mData.get(mPosition).setIs_follow(false);
+                        EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
+                });
+    }
+
+
+
+
+
+
 }
 

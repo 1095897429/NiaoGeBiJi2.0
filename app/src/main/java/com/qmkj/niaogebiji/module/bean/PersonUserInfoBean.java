@@ -35,7 +35,18 @@ public class PersonUserInfoBean extends BaseBean {
         private int follow_count;
         private AuthorBean.Author author_info;
 
-        public int getFollow_count() {
+        //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
+        private String auth_idno_status;
+
+    public String getAuth_idno_status() {
+        return auth_idno_status;
+    }
+
+    public void setAuth_idno_status(String auth_idno_status) {
+        this.auth_idno_status = auth_idno_status;
+    }
+
+    public int getFollow_count() {
             return follow_count;
         }
 

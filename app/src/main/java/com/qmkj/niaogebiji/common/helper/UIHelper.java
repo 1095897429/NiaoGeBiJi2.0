@@ -13,6 +13,7 @@ import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryActivity;
 import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
+import com.qmkj.niaogebiji.module.activity.CircleMakeActivityV2;
 import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivityV2;
@@ -38,6 +39,7 @@ import com.qmkj.niaogebiji.module.activity.NewsThingDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputV2Activity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
+import com.qmkj.niaogebiji.module.activity.PicPreviewActivityV2;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.SecretActivity;
 import com.qmkj.niaogebiji.module.activity.SettingActivity;
@@ -168,7 +170,7 @@ public class UIHelper {
 
     /** 打开图片预览界面 */
     public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos,int position,boolean isShowDown) {
-        Intent intent = new Intent(ctx, PicPreviewActivity.class);
+        Intent intent = new Intent(ctx, PicPreviewActivityV2.class);
         Bundle bundle = new Bundle ();
         bundle.putStringArrayList ("imageList", photos);
         bundle.putBoolean("fromNet",true);
@@ -203,14 +205,14 @@ public class UIHelper {
 
     /** 打开圈子发布界面 */
     public static void toCircleMakeActivity(Context ctx) {
-        Intent intent = new Intent(ctx, CircleMakeActivity.class);
+        Intent intent = new Intent(ctx, CircleMakeActivityV2.class);
         ctx.startActivity(intent);
     }
 
 
     /** 打开圈子发布界面  -- 用第二种*/
     public static void toCircleMakeActivityV2(Context ctx, TopicBean topicBean) {
-        Intent intent = new Intent(ctx, CircleMakeActivity.class);
+        Intent intent = new Intent(ctx, CircleMakeActivityV2.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("topicBean",topicBean);
         intent.putExtras(bundle);

@@ -6,9 +6,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -30,7 +35,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
+import com.qmkj.niaogebiji.common.dialog.ToolDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -89,10 +96,18 @@ public class CooperationActivity extends BaseActivity {
     @BindView(R.id.ll_tool)
     LinearLayout ll_tool;
 
+
+
+    @BindView(R.id.space_view)
+    TextView space_view;
+
+
     String url;
 
     @Override
     public void initFirstData() {
+
+        toollist();
 
         url  = getIntent().getStringExtra("url");
 
@@ -120,7 +135,9 @@ public class CooperationActivity extends BaseActivity {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                tv_title.setText(title);
+                if(tv_title != null){
+                    tv_title.setText(title);
+                }
             }
 
         });
@@ -155,6 +172,13 @@ public class CooperationActivity extends BaseActivity {
     }
 
 
+    public void showToolDialog(List<ToolBean> lists) {
+        final ToolDialog iosAlertDialog = new ToolDialog(this).builder();
+        iosAlertDialog.setList(lists);
+        iosAlertDialog.show();
+    }
+
+
     @OnClick({
             R.id.iv_back, R.id.icon_cooperate_close,
             R.id.icon_tool,
@@ -164,15 +188,30 @@ public class CooperationActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.space_view:
-                showShareCooperateDialog();
+//                showShareCooperateDialog();
+                space_view.setVisibility(View.GONE);
             case R.id.icon_cooperate_tool_delete:
-             ll_tool.setVisibility(View.GONE);
+                ll_tool.setVisibility(View.GONE);
+                space_view.setVisibility(View.GONE);
             break;
             case R.id.icon_tool:
-                ll_tool.setVisibility(View.VISIBLE);
+
+//                CircleBean item = new CircleBean();
+//                showPopupWindow(item);
+//                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
+
+//                showToolDialog(mLists);
+
                 initLayout();
 
-                toollist();
+
+                space_view.setVisibility(View.VISIBLE);
+
+                ll_tool.setVisibility(View.VISIBLE);
+                //添加动画
+                Animation animation = AnimationUtils.loadAnimation(this, R.anim.enter_anim_from_top);
+                ll_tool.setAnimation(animation);
+
 
                 break;
             case R.id.icon_cooperate_close:
@@ -193,6 +232,43 @@ public class CooperationActivity extends BaseActivity {
         }
     }
 
+    private void showPopupWindow(CircleBean circleBean) {
+        //加载布局
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.popupwindow_cooperate, null);
+        PopupWindow mPopupWindow = new PopupWindow(inflate);
+        TextView report = inflate.findViewById(R.id.report);
+        TextView share = inflate.findViewById(R.id.share);
+        //必须设置宽和高
+        mPopupWindow.setWidth(SizeUtils.dp2px(134f));
+        mPopupWindow.setHeight(SizeUtils.dp2px(88f));
+
+
+
+
+        //点击其他地方隐藏,false为无反应
+        mPopupWindow.setFocusable(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //以view的左下角为原点，xoff为正表示向x轴正方向偏移像素
+//            mPopupWindow.showAsDropDown(this.getWindow().getDecorView(), ScreenUtils.getScreenWidth() -SizeUtils.dp2px(16f * 2 + 64f + 134f), SizeUtils.dp2px(0f));
+            mPopupWindow.showAsDropDown(findViewById(R.id.rl_title),0,-SizeUtils.dp2px(44 + 25), Gravity.TOP);
+        }
+
+        mPopupWindow.setAnimationStyle(R.style.PopAnimation);
+
+
+        //对popupWindow进行显示
+        mPopupWindow.update();
+        //消失时将透明度设置回来
+        mPopupWindow.setOnDismissListener(() -> {
+            if (null != mContext) {
+                StringUtil.setBackgroundAlpha((Activity) mContext, 1f);
+            }
+        });
+
+    }
+
+
+
 
 
     /**- ------------------------------- 浮层  --------------------------------- */
@@ -208,7 +284,7 @@ public class CooperationActivity extends BaseActivity {
     GridLayoutManager mGridLayoutManager;
 
     private void initLayout() {
-        mGridLayoutManager = new GridLayoutManager(this,5);
+        mGridLayoutManager = new GridLayoutManager(this,4);
         //设置布局管理器
         rl_tools.setLayoutManager(mGridLayoutManager);
         //设置适配器
@@ -222,6 +298,7 @@ public class CooperationActivity extends BaseActivity {
         mCooperateToolAdapter.setOnItemClickListener((adapter, view, position) -> {
 
             ll_tool.setVisibility(View.GONE);
+            space_view.setVisibility(View.GONE);
 
             ToolBean temp = mLists.get(position);
             if("0".equals(temp.getType())){
@@ -265,7 +342,7 @@ public class CooperationActivity extends BaseActivity {
                     public void onSuccess(HttpResponse<List<ToolBean>> response) {
                         KLog.d("tag","response " + response.getReturn_code());
                         mLists = response.getReturn_data();
-                        setData();
+//                        setData();
                     }
                 });
     }

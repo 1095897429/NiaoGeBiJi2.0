@@ -1,6 +1,9 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -17,10 +20,12 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -35,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -96,6 +102,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -212,8 +219,6 @@ public class CircleMakeActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
-//        mHandler = new MyHandler(this);
 
         mTempMsgBean = getTempMsg();
         //上次是保存草稿的
@@ -346,11 +351,30 @@ public class CircleMakeActivity extends BaseActivity {
                 }
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_message_onekeybtn_2_0_0);
 
+                //判断网络是否连接 检测链接的网络能否上网[子线程中]
+                if(!NetworkUtils.isConnected() ){
+                    ToastUtils.showShort("无网络连接");
+                    return;
+                }
+
+//                if(! NetworkUtils.isAvailable()){
+//                    ToastUtils.showShort("当前网络不可用");
+//                    return;
+//                }
+
+
                 if(mString.length() > num){
                     ToastUtils.showShort("内容最多输入140字");
                     return;
                 }
-                sendPicToQiuNiu();
+
+                //TODO 2.28
+                ll_circle_send.setVisibility(View.VISIBLE);
+                setAnimation(progressBar);
+
+
+
+//                sendPicToQiuNiu();
                 break;
             case R.id.cancel:
                 if(StringUtil.isFastClick()){
@@ -369,6 +393,72 @@ public class CircleMakeActivity extends BaseActivity {
             default:
         }
     }
+
+
+    boolean isAnimPause;
+    ValueAnimator animator;
+
+    private void setAnimation(ProgressBar view) {
+        animator = ValueAnimator.ofInt(0, 100).setDuration(10000);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(valueAnimator -> {
+            view.setProgress((Integer) valueAnimator.getAnimatedValue());
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                KLog.d("tag","取消了");
+                isAnimPause = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //动画正常结束 动画对象存在 界面存储 文本存在
+//                if(!isAnimPause && animation != null && null != this){
+                    KLog.d("tag","动画结束");
+//                    rl_sending.setVisibility(View.GONE);
+//                    rl_send_ok.setVisibility(View.VISIBLE);
+//                    Random rand = new Random();
+//                    int temp = rand.nextInt(5000) + 5000;
+//                    send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
+//                    //发送事件去更新
+//                    EventBus.getDefault().post(new SendOkCircleEvent());
+//                    removeTempMsg();
+//
+//                    new Handler().postDelayed(() -> {
+//                        hideState();
+//                    },2000);
+//                }
+//
+//                //重新恢复状态
+//                isAnimPause = false;
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+            }
+
+            @Override
+            public void onAnimationPause(Animator animation) {
+                super.onAnimationPause(animation);
+            }
+        });
+        animator.start();
+    }
+
+
+    private void hideState() {
+//        ll_circle_send.setVisibility(View.GONE);
+//        rl_send_ok.setVisibility(View.GONE);
+//        progressBar.setProgress(0);
+//        progressBar.setMax(100);
+    }
+
+
+
+
+
 
     //把整体数据转移到Fragment中
     private void sendPicToQiuNiu() {
@@ -769,6 +859,7 @@ public class CircleMakeActivity extends BaseActivity {
         return mTempMsgBean;
     }
 
+    @Override
     public  void removeTempMsg() {
         mTempMsgBean = null;
         SPUtils.getInstance().remove(Constant.TMEP_MSG_INFO);

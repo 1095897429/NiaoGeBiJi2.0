@@ -169,7 +169,7 @@ public class SplashActivity extends BaseActivity {
      * 获取token
      */
     private void getToken() {
-        KLog.d("tag","get token: begin");
+//        KLog.d("tag","get token: begin");
         HMSAgent.Push.getToken(rtnCode -> KLog.d("tag","get token: end" + rtnCode));
     }
 

@@ -523,7 +523,6 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
                 //预览事件
                 mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
-                    KLog.d("tag","点击预览");
                     if(StringUtil.isFastClick()){
                         return;
                     }
@@ -653,7 +652,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     private void getTransCircleReply(TextView msg,CircleBean.P_blog pBlog) {
         sb.setLength(0);
         String name = pBlog.getComment_nickname();
-        KLog.d("tag","名字是 " + name);
+//        KLog.d("tag","名字是 " + name);
         sb.append("回复 ").append(name).append(":").append(pBlog.getBlog().trim());
 
         int authorNamelength = name.length();

@@ -68,16 +68,29 @@
                 android:layout_width="16dp"
                 android:layout_height="match_parent" />
 
+
+
+
+
             <RelativeLayout
                 android:id="@+id/rl_sign"
+                android:visibility="visible"
                 android:layout_width="34dp"
                 android:layout_height="30dp">
 
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/icon_sign"
                     android:src="@mipmap/icon_is_sign"
                     android:layout_width="28dp"
                     android:layout_height="28dp" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/rl_sign_lottie"
+                    android:layout_width="34dp"
+                    android:layout_height="30dp"
+                    app:lottie_loop="true"
+                    app:lottie_autoPlay="true" />
 
                 <FrameLayout
                     android:id="@+id/red_point"
@@ -108,7 +121,7 @@
 
         <LinearLayout
             android:id="@+id/ll_moring"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -194,7 +207,7 @@
         <RelativeLayout
             android:layout_marginTop="9dp"
             android:id="@+id/tool_part"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="76dp"
             android:paddingLeft="16dp"
@@ -237,8 +250,9 @@
 
     </LinearLayout>
 
+    <!-- android:layout_marginLeft="16dp" -->
     <LinearLayout
-        android:layout_marginLeft="16dp"
+
         android:paddingRight="16dp"
         android:layout_width="match_parent"
         android:layout_height="44dp"
@@ -256,14 +270,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3
+                <com.qmkj.niaogebiji.module.widget.tab4.ViewPagerTitleSlide4
                     android:id="@+id/pager_title"
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="0dp">
 
-                </com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3>
+                </com.qmkj.niaogebiji.module.widget.tab4.ViewPagerTitleSlide4>
 
 
 
@@ -276,7 +290,7 @@
         <ImageView
             android:id="@+id/icon_search"
             android:src="@mipmap/hot_search_icon"
-            android:layout_marginRight="18dp"
+            android:layout_marginRight="10dp"
             android:visibility="gone"
             android:layout_gravity="center"
             android:layout_width="28dp"

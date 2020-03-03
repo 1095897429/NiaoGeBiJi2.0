@@ -1,8 +1,11 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -23,6 +28,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.PicPathHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
@@ -30,9 +36,12 @@ import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+import com.xzh.imagepicker.ImagePicker;
+import com.xzh.imagepicker.bean.MediaFile;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +59,11 @@ import io.reactivex.schedulers.Schedulers;
  *  1. 图片 + 文本 显示
  *
  *  2. 点击发布时 -- 添加动态效果
+ *
+ *
+ *
+ *  1.有图片的话 显示图片的第一张和 文本
+ *  2.没有图片，显示作者头像 和 文本
  */
 public class TranspondActivity extends BaseActivity {
 
@@ -154,12 +168,57 @@ public class TranspondActivity extends BaseActivity {
         acticle_title.setText(mCircleBean.getBlog());
     }
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //添加话题
+        if (requestCode == REQUEST_SELECT_TOPIC_CODE && resultCode == RESULT_OK) {
+            ll_topic.setVisibility(View.VISIBLE);
+
+            topicName = data.getExtras().getString("topicName");
+            topicId = data.getExtras().getString("topicId");
+            select_topic_text.setText("#" + topicName + "  " +  topicId );
+        }
+    }
+
+
+
+
+
+    //话题
+    private String topicId = "";
+    private String topicName = "";
+    public static final int REQUEST_SELECT_TOPIC_CODE = 4;
+
+    @BindView(R.id.ll_topic)
+    LinearLayout ll_topic;
+
+    @BindView(R.id.select_topic_text)
+    TextView select_topic_text;
+
     @OnClick({R.id.cancel,R.id.send,
-            R.id.acticle_part
+            R.id.acticle_part,
+            R.id.topic_delete,
+            R.id.topic,R.id.ll_topic
     })
     public void clicks(View view){
         KeyboardUtils.hideSoftInput(mEditText);
         switch (view.getId()){
+            case R.id.ll_topic:
+                UIHelper.toTopicDetailActivity(this,topicId);
+                break;
+            case R.id.topic_delete:
+
+                ll_topic.setVisibility(View.GONE);
+                topicId = "";
+                topicName = "";
+                break;
+            case R.id.topic:
+                UIHelper.toTopicSelectivity(this);
+                break;
+
             case R.id.acticle_part:
 //                UIHelper.toCommentDetailActivity(this,mCircleBean.getId(),mCircleBean.getSlefPosition());
                 UIHelper.toCommentDetailActivity(this,mCircleBean.getId());
@@ -207,6 +266,8 @@ public class TranspondActivity extends BaseActivity {
     String article_title = "";
     //文字图片
     String article_image= "";
+    //话题id
+    String topic_id = "";
 
     private void createBlog(){
         blog = mString;
@@ -221,6 +282,7 @@ public class TranspondActivity extends BaseActivity {
         map.put("article_id", article_id + "");
         map.put("article_title", article_title + "");
         map.put("article_image",article_image + "");
+        map.put("topic_id",topic_id + "");
         String result =  RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().createBlog(result)
                 .subscribeOn(Schedulers.newThread())

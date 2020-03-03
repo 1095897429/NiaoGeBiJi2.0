@@ -1,21 +1,29 @@
 package com.qmkj.niaogebiji.common.base;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -27,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,6 +53,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
@@ -52,17 +62,30 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCancellationSignal;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
+import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.service.MediaService;
+import com.qmkj.niaogebiji.common.service.SendService;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
+import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
+import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.SendEvent;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -71,18 +94,25 @@ import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
+import com.xzh.imagepicker.bean.MediaFile;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -114,11 +144,11 @@ import io.reactivex.schedulers.Schedulers;
  * 2.全局变量 mMyBinder 控制音频的播放
  * 3.控件点击事件 保存到全局变量中
  * 3.每次界面进入时，都给这个控件设置了点击事件，因此在退出上个界面时，再点击控件还是有效果
- *
+ * 4.发送事件 1 --- 开始播放 2 -- 播放回传进度 3 --- 界面显示进度 4 --- 在onResume继续播放 5 --- 在onResume继续监听进度 6
  *
  * 全局发送布局
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity  {
 
     //上下文
     protected Context mContext;
@@ -175,31 +205,621 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         initFirstData();
 
+        //动态注册广播接收器
+        msgReceiver = new MsgReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.example.communication.RECEIVER");
+        registerReceiver(msgReceiver, intentFilter);
     }
+
+    private MsgReceiver msgReceiver;
+    private Intent mIntent;
+    /**
+     * 广播接收器
+     * @author len
+     *
+     */
+    public class MsgReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //拿到进度，更新UI
+            int progress = intent.getIntExtra("progress", 0);
+//            KLog.e("tag","progress " + progress);
+
+            int no_pic = intent.getIntExtra("no_pic", 0);
+//            KLog.e("tag","no_pic " + no_pic);
+            if(1 == no_pic){
+                setAnimation(progressBar);
+                KLog.e("tag"," 发送请求0噗噗噗噗噗2222没有图片  ");
+                return;
+            }
+
+
+
+
+            //设置进度条的最大值  和 正在进行的进度
+            if(progressBar != null){
+                progressBar.setProgress( progress);
+                progressBar.setMax(maxSendProgress);
+                KLog.e("tag"," 发送请求0噗噗噗噗噗3333 加载进度  ");
+                if(maxSendProgress == currentSendProgress){
+
+                    KLog.e("tag","发送请求0噗噗噗噗噗4444 上传完成");
+                    //针对有图片特殊处理
+                    if( rl_sending != null){
+                        rl_sending.setVisibility(View.GONE);
+                    }
+
+                    if(rl_send_ok != null){
+                        rl_send_ok.setVisibility(View.VISIBLE);
+                    }
+
+                    Random rand = new Random();
+                    int temp = rand.nextInt(5000) + 5000;
+                    if(send_num != null){
+                        send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
+                    }
+
+                    new Handler().postDelayed(() -> {
+                        hideState();
+                    },2000);
+                    //发送事件去更新
+                    EventBus.getDefault().post(new SendOkCircleEvent());
+
+                    isSending = false;
+
+                    //重新恢复状态
+                    //重新恢复状态
+                    isAnimPause = false;
+
+                }
+            }
+
+        }
+
+    }
+
+
+
 
 
     @BindView(R.id.ll_circle_send)
-    LinearLayout ll_circle_send;
+    public LinearLayout ll_circle_send;
 
     @BindView(R.id.rl_sending)
-    RelativeLayout rl_sending;
+    public RelativeLayout rl_sending;
 
     @BindView(R.id.progressBar)
-    ProgressBar progressBar;
+    public ProgressBar progressBar;
 
     @BindView(R.id.rl_send_ok)
-    RelativeLayout rl_send_ok;
+    public RelativeLayout rl_send_ok;
 
     @BindView(R.id.rl_send_fail)
-    RelativeLayout rl_send_fail;
+    public RelativeLayout rl_send_fail;
+
+    @BindView(R.id.send_num)
+    public TextView send_num;
+
+    @BindView(R.id.icon_send_cancel)
+    public ImageView icon_send_cancel;
 
 
-    private static int currentSendProgress;
-    private static int maxSendProgress;
+    public static boolean isSending ;
+    public static boolean isSendResult ;
 
+
+
+    @SuppressLint("CheckResult")
     private void initSendEvent() {
+        //发送关闭
+        RxView.clicks(icon_send_cancel)
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                    ll_circle_send.setVisibility(View.GONE);
+                    isSending = false;
+                    if(sendService != null){
+                        stopService(sendService);
+                    }
+                });
+    }
+
+    Intent sendService;
+    private TempMsgBean mTempMsgBean;
+
+
+    public void toSendBlog(TempMsgBean tempMsgBean){
+        mTempMsgBean = tempMsgBean;
+
+        //正在发送中
+        isSending = true;
+
+        toRetrunBack();
+
+        //启动服务
+        mIntent = new Intent(this,SendService.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("mTempMsgBean",mTempMsgBean);
+        mIntent.putExtras(bundle);
+        startService(mIntent);
 
     }
+
+    private static SendService msgService;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d("tag", "Service与Activity已连接");
+            msgService = ((SendService.MsgBinder) service).getService();
+
+            msgService.setTempMsgBean(mTempMsgBean);
+
+
+            msgService.changeData();
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    //这个方法是让界面退出时，重新获取的界面时 有所需要的数据
+    public void toRetrunBack(){
+
+    }
+
+
+    /** --------------------------------- 发布帖子中  ---------------------------------v*/
+    //文件路径
+    private String data;
+    private String key;
+    private boolean isCancelled;
+    //七牛上传图片完成计数
+    private int uploadTaskCount;
+    //图片选择器临时返回数据
+    private List<MediaFile> mediaFiles = new ArrayList<>();
+    private List<MediaFile> pathList = new ArrayList<>();
+    //动态配图，多图链接之间用英文逗号隔开
+    private StringBuilder picbycomma = new StringBuilder();
+    //界面传递过来的
+    private String resultPic = "";
+    //构建七牛
+    private StringBuilder qiniuPic = new StringBuilder();
+    private String lashPic = "";
+    String blog = "";
+    String blog_images = "";
+    String blog_link = "";
+    String blog_link_title = "";
+    //0原创 1转发
+    int blog_type = 0;
+    //被转发动态ID，原创为0
+    int blog_pid = 0;
+    //转发时是否同时评论动态，1是 0否
+    int blog_is_comment = 0;
+    //文章Id
+    int article_id;
+    //文字标题
+    String article_title = "";
+    //文字图片
+    String article_image= "";
+    //话题id
+    String topic_id = "";
+
+    private void changeData() {
+
+        mediaFiles = mTempMsgBean.getImgPath();
+        pathList = mTempMsgBean.getImgPath2();
+        blog_link  = mTempMsgBean.getLinkurl();
+        blog_link_title =  mTempMsgBean.getLinkTitle();
+
+        topic_id = mTempMsgBean.getTopicId();
+        //TODO 12.21发现一张图片多次提交 需重新赋值
+        picbycomma = new StringBuilder();
+        qiniuPic = new StringBuilder();
+
+        if(mediaFiles != null && !mediaFiles.isEmpty()){
+            for (int i = 0; i < mediaFiles.size(); i++) {
+                picbycomma.append(mediaFiles.get(i).getPath()).append(",");
+            }
+        }
+
+        if(pathList != null && !pathList.isEmpty()){
+            for (int i = 0; i < pathList.size(); i++) {
+                picbycomma.append(pathList.get(i).getPath()).append(",");
+            }
+        }
+
+        //有图则 赋值 resultPic
+        if(!TextUtils.isEmpty(picbycomma.toString())){
+            KLog.d("tag","picbycomma 值 是：" + picbycomma.toString());
+            resultPic =  picbycomma.substring(0,picbycomma.length()  - 1);
+            KLog.d("tag","去掉最后一个,显示的值：" + resultPic);
+        }else{
+            resultPic = "";
+        }
+
+
+        //内容
+        blog  = mTempMsgBean.getContent();
+
+
+        //① 如果没有图片，显示属性动画
+        KLog.d("tag","resultPic " + resultPic);
+        if(TextUtils.isEmpty(resultPic)){
+            isTextALl = true;
+            toRetrunBack();
+            createBlog();
+        }else{
+            isTextALl = false;
+            mExecutorService = Executors.newFixedThreadPool(2);
+            getUploadToken();
+        }
+    }
+
+
+    String qiniuToken;
+    private void getUploadToken() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUploadToken(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<HttpResponse<QINiuTokenBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<QINiuTokenBean> response) {
+                        qiniuToken = response.getReturn_data().getToken();
+                        if(!TextUtils.isEmpty(qiniuToken)){
+                            if(!TextUtils.isEmpty(resultPic)){
+                                uploadPicToQiNiu();
+                            }
+                        }
+                    }
+                });
+    }
+
+
+    UploadManager uploadManager;
+    LinkedList<String> linkedList;
+    //返回图片所有的集合
+    List<String>  tempList;
+    private int tempProgress;
+    private ExecutorService mExecutorService;
+
+    private void uploadPicToQiNiu() {
+        com.qiniu.android.storage.Configuration config = new com.qiniu.android.storage.Configuration.Builder()
+                // 分片上传时，每片的大小。 默认256K
+                .chunkSize(512 * 1024)
+                // 启用分片上传阀值。默认512K
+                .putThreshhold(1024 * 1024)
+                // 链接超时。默认10秒
+                .connectTimeout(10)
+                // 是否使用https上传域名
+                .useHttps(true)
+                // 服务器响应超时。默认60秒
+                .responseTimeout(60)
+                .build();
+
+        // 重用uploadManager一般地，只需要创建一个uploadManager对象
+        uploadManager = new UploadManager(config);
+        //data = <File对象、或 文件路径、或 字节数组>
+        //String key = <指定七牛服务上的文件名，或 null>;
+        //String token = <从服务端获取>;
+        key = "niaogebiji";
+        qiniuToken = qiniuToken.replace("\\s","");
+        qiniuToken = qiniuToken.replace("\n","");
+
+        tempList = new ArrayList<>();
+        tempList.clear();
+
+        if(null != mediaFiles && !mediaFiles.isEmpty()){
+            for (MediaFile fileBean  : mediaFiles) {
+                tempList.add(fileBean.getPath());
+            }
+        }
+
+        if(null != pathList && !pathList.isEmpty()){
+            for (MediaFile fileBean  : pathList) {
+                tempList.add(fileBean.getPath());
+            }
+        }
+
+        linkedList = new LinkedList<>();
+        linkedList.clear();
+        linkedList.addAll(tempList);
+
+        progressBar.setMax(tempList.size() * 100);
+        maxSendProgress = tempList.size() * 100;
+        tempProgress = 0;
+        currentSendProgress = 0;
+        uploadPicToQiNiuByOnePic();
+        toRetrunBack();
+    }
+
+    private void uploadPicToQiNiuByOnePic() {
+
+        //查询并移除第一个元素；
+        if(linkedList.size() > 0){
+            data = linkedList.poll();
+
+            mExecutorService.submit(() -> {
+                KLog.d("tag","本地存储的路径是 "  + data);
+                uploadManager.put(data, System.currentTimeMillis() + key , qiniuToken, new UpCompletionHandler() {
+                    @Override
+                    public void complete(String key, ResponseInfo info, JSONObject response) {
+                        //res包含hash、key等信息，具体字段取决于上传策略的设置
+                        if(info.isOK()) {
+                            KLog.i("tag", key + " Upload Success");
+                            //恢复默认值
+                            data = "";
+
+
+                        } else {
+                            KLog.i("tag", key + " Upload Fail");
+                            //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
+                        }
+                    }
+                },new UploadOptions(null,"image/jpeg",true,upProgressHandler,upCancellationSignal));
+            });
+        }
+    }
+
+
+    UpProgressHandler upProgressHandler = new UpProgressHandler() {
+        /**
+         * @param key 上传时的upKey；
+         * @param percent 上传进度；
+         */
+        @Override
+        public void progress(String key, double percent) {
+//            KLog.e("tag","percent11111 " + percent);
+            Log.e("1", "run:--------->当前类名: "+ getClass().getSimpleName());
+            if(progressBar == null){
+                progressBar = findViewById(R.id.progressBar);
+            }
+
+            KLog.e("tag","我疯了" + tempProgress);
+            KLog.e("tag","percent " + percent);
+            progressBar.setMax(maxSendProgress);
+            progressBar.setProgress(tempProgress + (int) (percent * 100));
+            currentSendProgress = tempProgress + (int) (percent * 100);
+
+
+            if(percent == 1.0){
+                Message message = Message.obtain();
+                message.what = QI_NIU_UPLOAD_OK;
+                handler.sendMessage(message);
+                //上传成功一个，就添加到qiniuPic中去
+                qiniuPic.append(key).append(",");
+                tempProgress += 100;
+                KLog.e("tag", "tempProgress " + tempProgress);
+            }
+
+        }
+    };
+
+
+
+
+    UpCancellationSignal upCancellationSignal = new UpCancellationSignal() {
+        @Override
+        public boolean isCancelled() {
+            return isCancelled;
+        }
+    };
+
+    private static final int QI_NIU_UPLOAD_OK = 120;
+
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                //七牛上传图片完成计数
+                case QI_NIU_UPLOAD_OK:
+                    uploadTaskCount++;
+                    KLog.e("tag", "上传的个数 " + uploadTaskCount + "");
+                    //容器中图片全部上传完成
+                    if (uploadTaskCount == tempList.size()) {
+
+                        if(ll_circle_send != null){
+                            ll_circle_send.setVisibility(View.GONE);
+                        }
+
+
+                        if(!TextUtils.isEmpty(qiniuPic.toString())){
+                            lashPic =  qiniuPic.substring(0,qiniuPic.length()  - 1);
+                            KLog.d("tag","构建七牛的图片路径是：" + lashPic);
+                        }
+
+                        createBlog();
+                        return;
+                    }
+
+
+                    //类似手动点击
+                    uploadPicToQiNiuByOnePic();
+
+                    break;
+                default:
+            }
+        }
+    };
+
+
+    private void createBlog(){
+        Map<String,String> map = new HashMap<>();
+        map.put("blog",blog + "");
+        map.put("images",lashPic + "");
+        map.put("link",blog_link + "");
+        map.put("link_title",blog_link_title + "");
+        map.put("type",blog_type + "");
+        map.put("pid",blog_pid + "");
+        map.put("is_comment",blog_is_comment + "");
+        map.put("article_id", article_id + "");
+        map.put("article_title", article_title + "");
+        map.put("article_image",article_image + "");
+        map.put("topic_id",topic_id + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().createBlog(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        KLog.e("tag","response " + response.getReturn_code());
+
+                        //针对有图片特殊处理
+                        if(!TextUtils.isEmpty(resultPic)){
+                            if(ll_circle_send != null){
+                                ll_circle_send.setVisibility(View.VISIBLE);
+                            }
+
+                            if(rl_send_ok != null){
+                                rl_send_ok.setVisibility(View.VISIBLE);
+                            }
+
+
+                            Random rand = new Random();
+                            int temp = rand.nextInt(5000) + 5000;
+                            if(send_num != null){
+                                send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
+                            }
+
+                            new Handler().postDelayed(() -> {
+                                hideState();
+                            },2000);
+                            //发送事件去更新
+                            EventBus.getDefault().post(new SendOkCircleEvent());
+
+                            isSending = false;
+
+                            //重新恢复状态
+                            isAnimPause = false;
+
+                        }else{
+                            //① 成功了显示成功进度条
+                            setAnimation(progressBar);
+
+                        }
+
+
+                        removeTempMsg();
+                        cleanData();
+                    }
+
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                        if(rl_send_fail != null){
+                            rl_send_fail.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+    }
+
+    public  void removeTempMsg() {
+        mTempMsgBean = null;
+        SPUtils.getInstance().remove(Constant.TMEP_MSG_INFO);
+    }
+
+    private void cleanData() {
+        uploadTaskCount = 0;
+        data = "";
+        key = "";
+        resultPic = "";
+        lashPic = "";
+        blog_link  = "";
+        blog_link_title = "";
+    }
+
+    private void hideState() {
+        if(ll_circle_send != null){
+            ll_circle_send.setVisibility(View.GONE);
+            rl_sending.setVisibility(View.VISIBLE);
+            rl_send_fail.setVisibility(View.GONE);
+            rl_send_ok.setVisibility(View.GONE);
+            maxSendProgress = 0;
+            progressBar.setProgress(0);
+            progressBar.setMax(maxSendProgress);
+            uploadTaskCount = 0;
+        }
+
+    }
+
+
+    //是否是纯文本
+    public static boolean isTextALl;
+    public static boolean isAnimPause;
+    public static int currentSendProgress;
+    public static int maxSendProgress;
+    ValueAnimator animator;
+
+    private void setAnimation(ProgressBar view) {
+        animator = ValueAnimator.ofInt(0, 100).setDuration(500);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(valueAnimator -> {
+            view.setProgress((Integer) valueAnimator.getAnimatedValue());
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                KLog.d("tag","取消了");
+                isAnimPause = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //动画正常结束 动画对象存在 界面存储 文本存在
+                if(!isAnimPause && animation != null && null != this){
+                  KLog.d("tag","动画结束");
+                    if(rl_sending != null){
+                        rl_sending.setVisibility(View.GONE);
+                    }
+                    if(rl_send_ok != null){
+                        rl_send_ok.setVisibility(View.VISIBLE);
+                    }
+
+
+                    Random rand = new Random();
+                    int temp = rand.nextInt(5000) + 5000;
+
+                    if(send_num != null){
+                        send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
+                    }
+                    //发送事件去更新
+                    EventBus.getDefault().post(new SendOkCircleEvent());
+                    removeTempMsg();
+
+                    new Handler().postDelayed(() -> {
+                        hideState();
+                    },2000);
+                }
+
+                //重新恢复状态
+                isAnimPause = false;
+
+                isSending = false;
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+            }
+
+            @Override
+            public void onAnimationPause(Animator animation) {
+                super.onAnimationPause(animation);
+            }
+        });
+        animator.start();
+    }
+
+
 
     //布局找到的时候设置数据
     public void initFirstData() {
@@ -476,6 +1096,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        unregisterReceiver(msgReceiver);
+
+
         //将Activity从管理器移除
         BaseApp.getApplication().getActivityManage().removeActivity(this);
         //解绑
@@ -569,6 +1193,29 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         super.onResume();
         MobclickAgent.onResume(this);
+        Log.e("1", "run:--------->当前类名: "+ getClass().getSimpleName());
+
+        //如果在发送中，显示布局
+        if(isSending){
+            ll_circle_send.setVisibility(View.VISIBLE);
+            if(!isAnimPause && isTextALl){
+                //这里重新设置了，因为progressBar是个新的
+                setAnimation(progressBar);
+            }
+
+            if(!isTextALl){
+                //设置最大的进度
+                if(progressBar != null){
+                    KLog.d("最大的进度 " + maxSendProgress);
+                    progressBar.setProgress(currentSendProgress);
+                    progressBar.setMax(maxSendProgress);
+                }
+            }
+
+
+        }else{
+            ll_circle_send.setVisibility(View.GONE);
+        }
 
         //存在 + view显示
         if(HomeActivity.mMyBinder != null && isAudaioShow){
@@ -841,17 +1488,4 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-
-    public interface OnAudioListener {
-        void onAudio();
-    }
-
-    /**
-     * 完成结束回调
-     */
-    private OnAudioListener mOnAudioListener;
-
-    public void setOnAudioListener(OnAudioListener onAudioListener) {
-        mOnAudioListener = onAudioListener;
-    }
 }

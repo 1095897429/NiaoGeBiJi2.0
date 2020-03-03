@@ -42,7 +42,8 @@ public class CirclePicAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
         super(R.layout.item_circle_pic,data);
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
+
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

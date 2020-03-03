@@ -811,6 +811,10 @@ public interface ApiEncryptService{
     @POST("app/center/getUserBlog")
     Observable<HttpResponse<List<CircleBean>>> getUserBlog(@Field("params") String param);
 
+    /* 2020.3.3  记录课程参与人数 */
+    @FormUrlEncoded
+    @POST("app/academy/recordCourse")
+    Observable<HttpResponse<String>> recordCourse(@Field("params") String param);
 
 
 }

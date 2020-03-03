@@ -207,11 +207,11 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         if(!TextUtils.isEmpty(mBean.getCreated_at())){
             String temp = TimeUtils.millis2String(Long.parseLong(mBean.getCreated_at())* 1000L,"yyyy-MM-dd HH:mm:ss");
             helper.setText(R.id.header_textview, TimeUtils.millis2String(Long.parseLong(mBean.getCreated_at())* 1000L,"MM月dd日"));
-            KLog.e("tag","创建时间 " +  temp);
+//            KLog.e("tag","创建时间 " +  temp);
 
             String string = TimeUtils.getChineseWeek(temp);
             helper.setText(R.id.header_textview_weekend, string);
-            KLog.e("tag","星期： " +  string);
+//            KLog.e("tag","星期： " +  string);
         }
 
 

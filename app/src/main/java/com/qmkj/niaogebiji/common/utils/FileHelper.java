@@ -3,6 +3,8 @@ package com.qmkj.niaogebiji.common.utils;
 import android.content.Context;
 import android.os.Environment;
 
+import com.socks.library.KLog;
+
 import java.io.File;
 
 /**
@@ -12,6 +14,11 @@ import java.io.File;
  * 描述: 一些常用的存储位置
  */
 public class FileHelper {
+    public static File getCacheImageFile(Context context){
+        File diskCacheDir = new File(context.getCacheDir().getPath()+"/bitmap");
+        KLog.d("tag",diskCacheDir);
+        return diskCacheDir;
+    }
 
     /** 圈子拍照的图片文件 /storage/mnt/Android/data/包名/files/Download/out_image.png */
     public static File getOutputCircleImageFile(Context context){

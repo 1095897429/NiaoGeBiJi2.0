@@ -141,9 +141,19 @@
         layout="@layout/dialog_waiting"
         android:visibility="gone" />
 
-    <LinearLayout
+    <TextView
         android:visibility="gone"
         android:layout_marginTop="@dimen/status_bar_height"
+        android:id="@+id/space_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000000"/>
+
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:paddingTop="@dimen/status_bar_height"
         android:id="@+id/ll_tool"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -154,6 +164,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:paddingLeft="16dp"
@@ -196,15 +207,9 @@
         </LinearLayout>
 
 
-        <TextView
-            android:id="@+id/space_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="#66000000"/>
-
-
     </LinearLayout>
+
+
 
 
 

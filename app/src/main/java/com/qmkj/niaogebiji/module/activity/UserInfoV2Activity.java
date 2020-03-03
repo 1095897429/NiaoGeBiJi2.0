@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -32,6 +34,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
@@ -59,7 +62,9 @@ import com.qmkj.niaogebiji.module.fragment.CircleRecommendFragmentNew;
 import com.qmkj.niaogebiji.module.fragment.FirstItemFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolCollectionListFragment;
 import com.qmkj.niaogebiji.module.fragment.ToolRecommentListFragment;
+import com.qmkj.niaogebiji.module.fragment.UserArticleFragment;
 import com.qmkj.niaogebiji.module.fragment.UserCircleFragment;
+import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -183,6 +188,12 @@ public class UserInfoV2Activity extends BaseActivity {
     @BindView(R.id.author_type)
     ImageView author_type;
 
+//    @BindView(R.id.id_auther)
+//    ImageView id_auther;
+//
+//    @BindView(R.id.id_profession)
+//    ImageView id_profession;
+
 
     private List<ChannelBean> mChannelBeanList;
     private List<String> mTitls = new ArrayList<>();
@@ -248,6 +259,8 @@ public class UserInfoV2Activity extends BaseActivity {
 
         if(isAuthor){
             bean = new ChannelBean("0","发布文章");
+            //作者是id
+            bean.setChaid(temp.getAuthor_info().getId());
             bean.setNum(temp.getAuthor_info().getArticle_count() + "");
             mChannelBeanList.add(bean);
             bean = new ChannelBean("1","发布动态");
@@ -634,7 +647,7 @@ public class UserInfoV2Activity extends BaseActivity {
 
         if(temp != null){
             user_des.setText(temp.getPro_summary());
-            sender_name.setText(temp.getName());
+
 
             medal_count.setText(StringUtil.formatPeopleNum(temp.getFans_count() + ""));
 
@@ -681,7 +694,26 @@ public class UserInfoV2Activity extends BaseActivity {
             ImageUtil.loadByDefaultHead(this,bean.getImg(),head_author_icon);
             author_name.setText(bean.getName());
             author_desc.setText(bean.getSummary());
-            hint_num.setText(bean.getHit_count());
+
+
+            //影响数
+            if(!TextUtils.isEmpty(bean.getHit_count())){
+                long count = Long.parseLong(bean.getHit_count());
+                if(count < 10000 ){
+                    hint_num.setText(bean.getHit_count());
+                }else{
+                    double temp = count  ;
+                    //1.将数字转换成以万为单位的数字
+                    double num = temp / 10000;
+                    BigDecimal b = new BigDecimal(num);
+                    //2.转换后的数字四舍五入保留小数点后一位;
+                    double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+                    hint_num.setText( f1 + " w");
+                }
+
+            }
+
+
 
 
             //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
@@ -702,6 +734,30 @@ public class UserInfoV2Activity extends BaseActivity {
         fans_num.setText(temp.getFollow_count() + "");
         medal_count.setText(temp.getFans_count() + "");
 
+//        if(已实名){ ok
+//                显示：已实名状态
+//            }
+
+        sender_name.setText(temp.getName());
+        //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
+        if("1".equals(temp.getAuth_idno_status())){
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_auther_shenfen,2);
+            SpannableString spanString2 = new SpannableString("  icon");
+            spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sender_name.append(spanString2);
+        }
+
+        //是否认证通过
+        if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+            //居中对齐imageSpan
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+            SpannableString spanString2 = new SpannableString("  icon");
+            spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sender_name.append(spanString2);
+
+        }
+
+
         //自己
         if(myUid.equals(otherUid)){
             iv_text.setVisibility(View.VISIBLE);
@@ -719,43 +775,30 @@ public class UserInfoV2Activity extends BaseActivity {
 //               }
 //            }
 //
-//            if(用户是作者){
+//            if(用户是作者){ ok
 //                显示：作者部分描述 + 文章
 //            }
 
-//              if(自己){
+//              if(自己){ ok
 //                  显示：编辑信息
 //              }
 
 
-
-
-            //影响数
-//                if(!TextUtils.isEmpty(bean.getHit_count())){
-//                    long count = Long.parseLong(bean.getHit_count());
-//                    if(count < 10000 ){
-//                        hint_num.setText(bean.getHit_count());
-//                    }else{
-//                        double temp = count  ;
-//                        //1.将数字转换成以万为单位的数字
-//                        double num = temp / 10000;
-//                        BigDecimal b = new BigDecimal(num);
-//                        //2.转换后的数字四舍五入保留小数点后一位;
-//                        double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-//                        hint_num.setText( f1 + " w");
-//                    }
-//
-//                }
-
-            //认证
+            //职业认证
             if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
-                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
-                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-                sender_tag.setCompoundDrawables(null,null,drawable,null);
+//                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+//                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+//                sender_tag.setCompoundDrawables(null,null,drawable,null);
                 sender_tag.setVisibility(View.VISIBLE);
                 sender_not_verticity.setVisibility(View.GONE);
                 sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()+" ") +
                         (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+
+//                CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+//                SpannableString spanString2 = new SpannableString("icon");
+//                spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                sender_tag.append(spanString2);
+
             }else{
                 sender_tag.setVisibility(View.GONE);
                 sender_not_verticity.setText("立即职业认证，建立人脉");
@@ -770,17 +813,17 @@ public class UserInfoV2Activity extends BaseActivity {
         }else{
 
             //TODO 伪代码
-//            if(没完善司职信息){
+//            if(没完善司职信息 company + position){
 //                显示：TA还未完善信息
 //            }else{
-//                if(通过){
+//                if(认证通过){
 //                    显示：已职业认证 + 公司 + 职位
 //                }else{
 //                    显示：未职业认证
 //                }
 //            }
 
-//            if(别人){
+//            if(别人){ ok
 //                显示：分享图层
 //            }
 
@@ -798,14 +841,23 @@ public class UserInfoV2Activity extends BaseActivity {
                 }
 
 
-                //是否认证
+                //是否认证通过
                 if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
-                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
-                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-                    sender_tag.setCompoundDrawables(null,null,drawable,null);
+//                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+//                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+//                    sender_tag.setCompoundDrawables(null,null,drawable,null);
+
+                    //居中对齐imageSpan
+//                    CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+//                    SpannableString spanString2 = new SpannableString("icon");
+//                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    sender_tag.append(spanString2);
                 }else{
                     sender_tag.setCompoundDrawables(null,null,null,null);
                 }
+
+
+
             }
 
             //别人
@@ -952,7 +1004,7 @@ public class UserInfoV2Activity extends BaseActivity {
         }else{
             for (int i = 0; i < mChannelBeanList.size(); i++) {
                 if(i== 0){
-                    FirstItemFragment fragment1 = FirstItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+                    UserArticleFragment fragment1 = UserArticleFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                             mChannelBeanList.get(i).getChaname());
                     mFragmentList.add(fragment1);
                 }else if(i == 1){

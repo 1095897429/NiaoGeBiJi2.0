@@ -11,22 +11,22 @@
         android:layout_height="40dp">
 
         <View
-            android:layout_alignParentBottom="true"
             android:background="@color/yellow"
-            android:layout_width="20dp"
+            android:layout_width="40dp"
             android:layout_height="10dp"/>
 
         <LinearLayout
             android:id="@+id/ll"
             android:visibility="visible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="44dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/first_11"
-                android:layout_width="44dp"
-                android:gravity="bottom|center"
+                android:layout_width="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
                 android:layout_height="match_parent"
                 android:text="关注"
                 android:textColor="@color/text_first_color"
@@ -41,9 +41,9 @@
                 android:id="@+id/first_22"
                 android:text="干货"
                 android:textSize="16sp"
-                android:gravity="bottom|center"
+                android:gravity="center|bottom"
                 android:textColor="@color/text_second_color"
-                android:layout_width="44dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
             <Space
@@ -54,7 +54,7 @@
             <TextView
                 android:text="快讯"
                 android:textSize="16sp"
-                android:gravity="bottom|center"
+                android:gravity="center"
                 android:textColor="@color/text_second_color"
                 android:layout_width="44dp"
                 android:layout_height="match_parent" />
@@ -67,7 +67,7 @@
             <TextView
                 android:text="活动"
                 android:textSize="16sp"
-                android:gravity="bottom|center"
+                android:gravity="center"
                 android:textColor="@color/text_second_color"
                 android:layout_width="44dp"
                 android:layout_height="match_parent" />
@@ -78,10 +78,10 @@
 
 
             <ImageView
-
+                android:gravity="bottom|center"
                 android:src="@mipmap/icon_first_hot"
                 android:layout_width="49dp"
-                android:layout_height="19dp" />
+                android:layout_height="match_parent" />
 
 
         </LinearLayout>

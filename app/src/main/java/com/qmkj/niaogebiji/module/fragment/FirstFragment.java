@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
@@ -69,6 +70,7 @@ import com.qmkj.niaogebiji.module.widget.MyLinearLayout;
 import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
 import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
 import com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3;
+import com.qmkj.niaogebiji.module.widget.tab4.ViewPagerTitleSlide4;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -106,7 +108,7 @@ public class FirstFragment extends BaseLazyFragment {
     ViewPager mViewPager;
 
     @BindView(R.id.pager_title)
-    ViewPagerTitleSlide3 pager_title;
+    ViewPagerTitleSlide4 pager_title;
 
     @BindView(R.id.ll_moring)
     LinearLayout ll_moring;
@@ -193,6 +195,17 @@ public class FirstFragment extends BaseLazyFragment {
 
     }
 
+    @BindView(R.id.rl_sign_lottie)
+    LottieAnimationView rl_sign_lottie;
+
+    public void showQianDaoDialog() {
+        rl_sign_lottie.setImageAssetsFolder("images");
+        rl_sign_lottie.setAnimation("images/qiandao.json");
+        rl_sign_lottie.loop(true);
+        rl_sign_lottie.playAnimation();
+    }
+
+
     private void setVipHidden(){
         mUserInfo = StringUtil.getUserInfoBean();
         //TODO 2.24 首页工具栏 不再限制用户点击进入每个工具
@@ -245,6 +258,10 @@ public class FirstFragment extends BaseLazyFragment {
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
+
+
+        showQianDaoDialog();
+
 
         coordinator.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override

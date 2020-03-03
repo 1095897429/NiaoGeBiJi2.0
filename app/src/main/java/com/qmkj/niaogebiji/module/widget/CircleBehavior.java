@@ -66,7 +66,7 @@ public class CircleBehavior extends AppBarLayout.ScrollingViewBehavior {
         LinearLayout part =  coordinatorLayout.findViewById(R.id.ll_circle_solid);
         Rect localRect = new Rect();
         boolean isVisible = part.getLocalVisibleRect(localRect);
-        KLog.d("tag","头部信息的状态 " + isVisible );
+//        KLog.d("tag","头部信息的状态 " + isVisible );
         //在看不见的情况下，去显示搜索图片
         if(!isVisible){
             EventBus.getDefault().post(new ShowCircleTopTitleEvent("1"));

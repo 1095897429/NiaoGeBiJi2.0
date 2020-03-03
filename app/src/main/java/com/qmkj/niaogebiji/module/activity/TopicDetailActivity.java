@@ -2,16 +2,21 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
@@ -36,6 +41,7 @@ import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -51,6 +57,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.glide.transformations.BlurTransformation;
@@ -65,29 +72,29 @@ import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
  */
 public class TopicDetailActivity extends BaseActivity {
 
-    @BindView(R.id.bg_img)
-    ImageView bg_img;
+//    @BindView(R.id.bg_img)
+//    ImageView bg_img;
 
-    @BindView(R.id.one_img)
-    ImageView one_img;
+//    @BindView(R.id.one_img)
+//    ImageView one_img;
 
-    @BindView(R.id.send_choose)
-    TextView send_choose;
+//    @BindView(R.id.send_choose)
+//    TextView send_choose;
 
-    @BindView(R.id.topic_titile)
-    TextView topic_titile;
+//    @BindView(R.id.topic_titile)
+//    TextView topic_titile;
 
-    @BindView(R.id.topic_desc)
-    TextView topic_desc;
+//    @BindView(R.id.topic_desc)
+//    TextView topic_desc;
 
-    @BindView(R.id.focus_num)
-    TextView focus_num;
+//    @BindView(R.id.focus_num)
+//    TextView focus_num;
 
-    @BindView(R.id.focus)
-    TextView focus;
+//    @BindView(R.id.focus)
+//    TextView focus;
 
-    @BindView(R.id.alreadFocus)
-    TextView alreadFocus;
+//    @BindView(R.id.alreadFocus)
+//    TextView alreadFocus;
 
 
     @BindView(R.id.smartRefreshLayout)
@@ -96,9 +103,32 @@ public class TopicDetailActivity extends BaseActivity {
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
+
+    @BindView(R.id.rl_common_title)
+    RelativeLayout rl_common_title;
+
+    @BindView(R.id.part_small_head)
+    LinearLayout part_small_head;
+
+    @BindView(R.id.tv_title)
+    TextView tv_title;
+
+    @BindView(R.id.part_small_focus)
+    TextView part_small_focus;
+
+    @BindView(R.id.part_small_already_focus)
+    TextView part_small_already_focus;
+
+    //没有blog时显示
+    @BindView(R.id.no_blogs_layout)
+    LinearLayout no_blogs_layout;
+
+    @BindView(R.id.rl_topic)
+    RelativeLayout rl_topic;
+
+
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
-
 
     private String topicId;
     //排序方式 0默认，按排序值 1按时间
@@ -119,18 +149,83 @@ public class TopicDetailActivity extends BaseActivity {
         return R.layout.activity_topic_detail;
     }
 
+
+    private boolean mIsRefreshing;
+    @SuppressLint("ClickableViewAccessibility")
+    private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setEnableLoadMore(false);
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+
+            mAllList.clear();
+            page = 1;
+            getTopicDetail();
+        });
+
+        mRecyclerView.setOnTouchListener(
+                (v, event) -> {
+                    if (mIsRefreshing) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+        );
+    }
+
+
+
     @Override
     public void initFirstData() {
 
         topicId = getIntent().getStringExtra("topicId");
 
 
-        initLayout();
+        initSamrtLayout();
 
+        initLayout();
 
         getTopicDetail();
 
-        getListByTopicId();
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                float spacce =  getScollYDistance(recyclerView.getLayoutManager());
+//                KLog.d("tag","距离时 " + spacce);
+                if(spacce >= SizeUtils.dp2px(168f - 21f)){
+                    part_small_head.setVisibility(View.VISIBLE);
+                    return;
+                }else{
+                    part_small_head.setVisibility(View.GONE);
+                }
+
+                // 计算alpha通道值
+                float percent = spacce /  SizeUtils.dp2px(168f -21f);
+                if(percent >= 1f){
+                    percent = 1f;
+                }
+                float alpha = percent * 255;
+                KLog.d("tag","alpha " + alpha);
+                //设置背景颜色
+                rl_common_title.setBackgroundColor(Color.argb((int) alpha,  255,255,255));
+
+            }
+        });
+
+
+    }
+
+    public int getScollYDistance(RecyclerView.LayoutManager layoutManager) {
+        if (layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearManager = (LinearLayoutManager) layoutManager;
+            int position = linearManager.findFirstVisibleItemPosition();
+            View firstVisiableChildView = layoutManager.findViewByPosition(position);
+            int itemHeight = firstVisiableChildView.getHeight();
+            return (position) * itemHeight - firstVisiableChildView.getTop();
+        }
+        return  0;
     }
 
     private void getListByTopicId() {
@@ -147,24 +242,32 @@ public class TopicDetailActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse<List<CircleBean>> response) {
                         hideWaitingDialog();
+
+
                         List<CircleBean> serverData = response.getReturn_data();
                         if(1 == page){
                             if(serverData != null && !serverData.isEmpty()){
+                                //第一次获取不为空的情况下展示
+                                setHeadData(headView,mTopicBean);
                                 setData2(serverData);
                                 mCircleRecommentAdapterNew.setNewData(mAllList);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
                                 if(serverData.size() < Constant.SEERVER_NUM){
                                     mCircleRecommentAdapterNew.loadMoreEnd();
                                 }
-                                ll_empty.setVisibility(View.GONE);
-                                mRecyclerView.setVisibility(View.VISIBLE);
+                                smartRefreshLayout.setVisibility(View.VISIBLE);
+                                no_blogs_layout.setVisibility(View.GONE);
                             }else{
                                 KLog.d("tag","设置空布局");
-                                //第一次加载无数据
+                                //第一次加载无数据,显示不加载数据
+                                setHeadData(no_blogs_layout,mTopicBean);
+                                ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_comment);
+                                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("还没有圈子");
+
+                                no_blogs_layout.setVisibility(View.VISIBLE);
+                                //布局中再显示
                                 ll_empty.setVisibility(View.VISIBLE);
-                                ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("暂无推荐内容");
-                                ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_article);
-                                mRecyclerView.setVisibility(View.GONE);
+                                smartRefreshLayout.setVisibility(View.GONE);
                             }
                         }else{
                             //已为加载更多有数据
@@ -232,13 +335,50 @@ public class TopicDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<TopicBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<TopicBean> response) {
+
+                        if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         mTopicBean = response.getReturn_data();
-                        setHeadData(response.getReturn_data());
+                        tv_title.setText("#" + mTopicBean.getTitle());
+                        getListByTopicId();
                     }
                 });
     }
 
-    private void setHeadData(TopicBean bean) {
+
+
+    LinearLayout part2222_2;
+    TextView send_article_num;
+    TextView medal_count;
+    TextView sender_name;
+    TextView user_des;
+    CircleImageView head_icon;
+    LinearLayout ll_badge;
+    TextView senderverticity;
+    TextView sender_tag;
+
+    ImageView bg_img;
+    ImageView one_img;
+    TextView topic_titile;
+    TextView topic_desc;
+    TextView focus_num;
+    TextView focus;
+    TextView alreadFocus;
+    TextView send_choose;
+
+    private void setHeadData(View headView,TopicBean bean) {
+
+        bg_img = headView.findViewById(R.id.bg_img);
+        one_img = headView.findViewById(R.id.one_img);
+        topic_titile = headView.findViewById(R.id.topic_titile);
+        topic_desc = headView.findViewById(R.id.topic_desc);
+        focus_num = headView.findViewById(R.id.focus_num);
+        focus = headView.findViewById(R.id.focus);
+        alreadFocus = headView.findViewById(R.id.alreadFocus);
+        send_choose = headView.findViewById(R.id.send_choose);
 
         //图片背景
         if(!TextUtils.isEmpty(bean.getIcon())){
@@ -254,6 +394,11 @@ public class TopicDetailActivity extends BaseActivity {
             ImageUtil.loadByDefaultHead(this,url,one_img);
         }
 
+//        String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
+//        Glide.with(this).load(url)
+//                .apply(bitmapTransform(new BlurTransformation(25)))
+//                .into(bg_img);
+//        ImageUtil.loadByDefaultHead(this,url,one_img);
 
         topic_titile.setText("#" + bean.getTitle());
 
@@ -278,10 +423,34 @@ public class TopicDetailActivity extends BaseActivity {
         //是否关注 注：1-关注，0-取消关注
         if(!bean.isIs_follow()){
            focus.setVisibility(View.VISIBLE);
+           part_small_focus.setVisibility(View.VISIBLE);
         }else{
             alreadFocus.setVisibility(View.VISIBLE);
+            part_small_already_focus.setVisibility(View.VISIBLE);
         }
 
+
+        focus.setOnClickListener(v -> {
+            if(!mTopicBean.isIs_follow()){
+                followTopic(0,mTopicBean.getId() + "");
+            }else{
+                unfollowTopic(0,mTopicBean.getId() + "");
+            }
+        });
+
+        alreadFocus.setOnClickListener(v -> {
+            if(!mTopicBean.isIs_follow()){
+                followTopic(0,mTopicBean.getId() + "");
+            }else{
+                unfollowTopic(0,mTopicBean.getId() + "");
+            }
+        });
+
+        send_choose.setOnClickListener(v -> {
+            CircleBean item = new CircleBean();
+            showPopupWindow(item,send_choose);
+            StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
+        });
     }
 
 
@@ -301,12 +470,29 @@ public class TopicDetailActivity extends BaseActivity {
         initEvent();
     }
 
+
+    View headView;
+    float headHeight;
     @SuppressLint("CheckResult")
     private void initEvent() {
         mCircleRecommentAdapterNew.setOnLoadMoreListener(() -> {
             ++page;
-//            recommendBlogList();
+            getListByTopicId();
         }, mRecyclerView);
+
+
+        headView = LayoutInflater.from(this).inflate(R.layout.head_topic_detail,null);
+
+        mCircleRecommentAdapterNew.setHeaderView(headView);
+
+        headView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                headHeight = headView.getHeight() - SizeUtils.dp2px(25);
+                KLog.d("tag ", "标题的固定高度为 " + headHeight );
+                headView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
     }
 
@@ -322,25 +508,27 @@ public class TopicDetailActivity extends BaseActivity {
 
 
     @OnClick({R.id.iv_back,
-            R.id.send_choose,
-            R.id.focus,R.id.alreadFocus,
-            R.id.create_blog
+//            R.id.send_choose,
+//            R.id.focus,R.id.alreadFocus,
+            R.id.create_blog,
+            R.id.part_small_focus,
+            R.id.part_small_already_focus
            })
     public void clicks(View view){
         switch (view.getId()){
-            case R.id.send_choose:
-                CircleBean item = new CircleBean();
-                showPopupWindow(item,send_choose);
-                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
-                break;
+//            case R.id.send_choose:
+//                CircleBean item = new CircleBean();
+//                showPopupWindow(item,send_choose);
+//                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
+//                break;
             case R.id.create_blog:
                 UIHelper.toCircleMakeActivityV2(this,mTopicBean);
                 break;
             case R.id.iv_back:
                 finish();
                 break;
-            case R.id.focus:
-            case R.id.alreadFocus:
+            case R.id.part_small_focus:
+            case R.id.part_small_already_focus:
                 if(!mTopicBean.isIs_follow()){
                     followTopic(0,mTopicBean.getId() + "");
                 }else{
@@ -369,7 +557,9 @@ public class TopicDetailActivity extends BaseActivity {
                         KLog.d("tag","关注成功，改变状态");
                         mTopicBean.setIs_follow(true);
                         alreadFocus.setVisibility(View.VISIBLE);
+                        part_small_already_focus.setVisibility(View.VISIBLE);
                         focus.setVisibility(View.GONE);
+                        part_small_focus.setVisibility(View.GONE);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
                     }
 
@@ -396,7 +586,9 @@ public class TopicDetailActivity extends BaseActivity {
 
                         mTopicBean.setIs_follow(false);
                         focus.setVisibility(View.VISIBLE);
+                        part_small_focus.setVisibility(View.VISIBLE);
                         alreadFocus.setVisibility(View.GONE);
+                        part_small_already_focus.setVisibility(View.GONE);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
                     }
 

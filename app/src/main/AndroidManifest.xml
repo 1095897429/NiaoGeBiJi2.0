@@ -166,6 +166,10 @@
         </activity>
 
 
+        <activity android:name=".module.activity.PicPreviewActivityV2"
+            android:launchMode="singleTop">
+        </activity>
+
         <activity android:name=".module.activity.WelcomeActivity"
             android:screenOrientation="portrait">
 
@@ -257,6 +261,13 @@
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
         </activity>
+
+
+        <activity android:name=".module.activity.CircleMakeActivityV2"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+        </activity>
+
 
         <activity android:name=".module.activity.CircleMakeAddLinkActivity"
             android:windowSoftInputMode="adjustResize"
@@ -449,6 +460,7 @@
 
 
         <service android:name=".common.service.MediaService"/>
+        <service android:name=".common.service.SendService"/>
 
 
         <!-- 7.0之后下载需要的provider name一般都固定 -->

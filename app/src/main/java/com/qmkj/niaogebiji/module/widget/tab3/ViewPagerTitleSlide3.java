@@ -89,6 +89,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
         setLineMargin();
 
         setCurrentItem(defaultIndex);
+        //添加传递进来vp的滑动事件
         onPageChangeListener = new MyOnPageChangeListener3(getContext(), viewPager, dynamicLine, this,defaultIndex);
         viewPager.addOnPageChangeListener(onPageChangeListener);
 
@@ -167,7 +168,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
         textViewLl.setLayoutParams(linearLayoutParams);
 
         textViewLl.setOrientation(LinearLayout.HORIZONTAL);
-
+        //设置布局中的textView居左中间dui'q
         textViewLl.setGravity(Gravity.CENTER|Gravity.LEFT);
 
         // 给与一定的宽度

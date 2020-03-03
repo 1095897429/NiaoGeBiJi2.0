@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -282,16 +283,42 @@ public class SchoolFragment extends BaseLazyFragment {
                 return;
             }
 
+
             if(position <= 9){
                 MobclickAgentUtils.onEvent("academy_newcourse_" + (position + 1) +"_2_0_0");
             }
 
-            String link = mSchoolBookAdapter.getData().get(position).getLink();
+
+            SchoolBean.SchoolBook book = mSchoolBookAdapter.getData().get(position);
+            recordCourse(book.getId());
+
+            String link = book.getLink();
             if(!TextUtils.isEmpty(link)){
                 UIHelper.toWebViewActivity(getActivity(),link);
             }
 
         });
+    }
+
+
+    private void recordCourse(String course_id) {
+        Map<String,String> map = new HashMap<>();
+        map.put("course_id",course_id);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().recordCourse(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<HttpResponse<String>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<String> response) {
+                        KLog.d("tag","记录课程参与人数");
+                    }
+
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
+                });
     }
 
 

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +41,8 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
+import com.qmkj.niaogebiji.module.bean.PicBean;
+import com.qmkj.niaogebiji.module.widget.BitmapCache;
 import com.socks.library.KLog;
 
 import java.io.File;
@@ -57,7 +60,7 @@ public class ImageBrowseAdapter extends PagerAdapter {
 
 
     private Activity activity;
-    private ArrayList<String> imageList;
+    private ArrayList<PicBean> imageList;
     private Bitmap bitmap =  null;
     private ExecutorService mExecutorService;
 
@@ -67,7 +70,8 @@ public class ImageBrowseAdapter extends PagerAdapter {
     private static final int MAX_SCALE = 8;
 
 
-    public ImageBrowseAdapter(Activity activity,ArrayList<String> imageList){
+
+    public ImageBrowseAdapter(Activity activity,ArrayList<PicBean> imageList){
         this.activity = activity;
         this.imageList = imageList;
         mExecutorService = Executors.newFixedThreadPool(2);
@@ -90,25 +94,37 @@ public class ImageBrowseAdapter extends PagerAdapter {
     }
 
 
+
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
 
-
         final Context cxt = container.getContext();
+
+
 
         View view = LayoutInflater.from(cxt).inflate(R.layout.pict_pager_item_view,null);
         final PhotoView photoView = view.findViewById(R.id.photoView);
-        final SubsamplingScaleImageView scaleImageView = (SubsamplingScaleImageView) view.findViewById(R.id.sub_imageview);
+        final SubsamplingScaleImageView scaleImageView = view.findViewById(R.id.sub_imageview);
+        final TextView pic_look = view.findViewById(R.id.pic_look);
         photoView.setVisibility(View.VISIBLE);
         scaleImageView.setVisibility(View.GONE);
         scaleImageView.setMaxScale(10.0F);
 
+
+        bitmap = BitmapCache.getInstance().getBitmap(imageList.get(position).getPic());
+        if(bitmap == null){
+            pic_look.setVisibility(View.VISIBLE);
+        }else{
+            pic_look.setVisibility(View.GONE);
+        }
+
         mRequestManager = Glide.with(cxt);
-        mRequestManager.load(imageList.get(position))
+        mRequestManager.load(imageList.get(position).getPic() )
                 .dontAnimate()
                 .dontTransform()
                 .into(new SimpleTarget<Drawable>() {
+                    @SuppressLint("CheckResult")
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                         int h = resource.getIntrinsicHeight();
@@ -118,7 +134,7 @@ public class ImageBrowseAdapter extends PagerAdapter {
                             photoView.setVisibility(View.GONE);
                             scaleImageView.setVisibility(View.VISIBLE);
 
-                            mRequestManager.load(imageList.get(position))
+                            mRequestManager.load(imageList.get(position).getPic())
                                     .downloadOnly(new SimpleTarget<File>() {
                                         @Override
                                         public void onResourceReady(@NonNull File resource, @Nullable Transition<? super File> transition) {
@@ -129,9 +145,9 @@ public class ImageBrowseAdapter extends PagerAdapter {
                                     });
 
                         } else {
-//                            photoView.setImageBitmap(DrawableToBitmap(resource));
+                            KLog.d("tag",imageList.get(position).getPic() );
                             Glide.with(activity)
-                                .load(imageList.get(position))
+                                .load(imageList.get(position).getPic() )
                                 .placeholder(R.mipmap.img_loading)
                                 .into(photoView);
                             //开启图片缩放功能

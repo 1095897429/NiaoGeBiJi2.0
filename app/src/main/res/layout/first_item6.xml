@@ -48,7 +48,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="@color/bg_color"
                     app:round_as_circle="false"
                     app:round_corner="6dp" />
 

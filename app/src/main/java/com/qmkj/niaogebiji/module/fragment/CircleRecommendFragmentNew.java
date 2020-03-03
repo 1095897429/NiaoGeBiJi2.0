@@ -25,12 +25,15 @@ import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
+import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -202,6 +205,10 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                                     if(!isFollow){
                                         getRecommendTopic();
                                     }
+
+                                    //刷新发送更新请求
+                                    EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+
 
                                 }else{
                                     KLog.d("tag","设置空布局");
@@ -500,6 +507,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             lottieAnimationView.cancelAnimation();
         }
     }
+
 
 
 }

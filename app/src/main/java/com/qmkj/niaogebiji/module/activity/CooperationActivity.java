@@ -49,6 +49,7 @@ import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolRecommentItemAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
+import com.qmkj.niaogebiji.module.bean.MessageCooperationBean;
 import com.qmkj.niaogebiji.module.bean.MessageLinkBean;
 import com.qmkj.niaogebiji.module.bean.MessageUserBean;
 import com.qmkj.niaogebiji.module.bean.MessageVipBean;
@@ -83,6 +84,8 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2020-02-26
  * 描述:招合作
+ *
+ * 分享字段：toShareCooperate
  */
 public class CooperationActivity extends BaseActivity {
 
@@ -406,9 +409,17 @@ public class CooperationActivity extends BaseActivity {
                         //去vip界面
                         String link = StringUtil.getLink("vipmember");
                         UIHelper.toWebViewAllActivity(CooperationActivity.this,link,"vipmember");
-                    }else if("shareVip".equals(result)){
-                        //找合作分享
-                       showShareCooperateDialog();
+                    }else if("toShareCooperate".equals(result)){
+
+                        //TODO 3.4 找合作分享数据
+                        MessageCooperationBean javaBean = JSON.parseObject(param, MessageCooperationBean.class);
+                        MessageCooperationBean.CooperationBean bean = javaBean.getParams();
+
+                        if(bean != null){
+                            showShareCooperateDialog(bean);
+                        }
+
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -419,38 +430,39 @@ public class CooperationActivity extends BaseActivity {
     }
 
     // 当前合作信息详情页H5，从后端获取
-    private void showShareCooperateDialog() {
+    private void showShareCooperateDialog(MessageCooperationBean.CooperationBean bean) {
+
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
         alertDialog.setSharelinkView().setTitleGone();
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setOnDialogItemClickListener(position -> {
-
+            ShareBean bean1;
             switch (position) {
                 case 0:
-                    ShareBean bean1 = new ShareBean();
+                    bean1 = new ShareBean();
                     bean1.setShareType("circle_link");
-                    bean1.setLink(url);
-                    bean1.setResId(R.mipmap.icon_fenxiang);
+                    bean1.setLink(bean.getLink());
+                    bean1.setImg(bean.getImg());
 
-                    bean1.setTitle("【找合作】" + "标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题");
-                    bean1.setContent("【分类】" + "内容");
+                    bean1.setTitle("【找合作】" + bean.getTitle());
+                    bean1.setContent("【分类】" + bean.getSubTitle());
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
                     KLog.d("tag","朋友 是链接");
 
-                    ShareBean bean = new ShareBean();
-                    bean.setResId(R.mipmap.icon_fenxiang);
-                    bean.setShareType("weixin_link");
-                    bean.setLink(url);
+                    bean1 = new ShareBean();
+                    bean1.setShareType("weixin_link");
+                    bean1.setLink(bean.getLink());
+                    bean1.setImg(bean.getImg());
 
-                    bean.setTitle("【找合作】" + "标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题");
+                    bean1.setTitle("【找合作】" + bean.getTitle());
+                    bean1.setContent("【分类】" + bean.getSubTitle());
 
-                    bean.setContent("【分类】" + "内容");
-                    StringUtil.shareWxByWeb((Activity) mContext,bean);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 2:
-                    String result = "【寻求合作】" + "\n" + "找合作" + "\n" + url;
+                    String result = "【寻求合作】" + "\n" + bean.getTitle() + "\n" + bean.getLink();
                     StringUtil.copyLink(result);
                     break;
                 default:

@@ -50,6 +50,7 @@ import com.qmkj.niaogebiji.module.activity.TestResultActivity;
 import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
 import com.qmkj.niaogebiji.module.activity.ToolEditActivity;
 import com.qmkj.niaogebiji.module.activity.ToolSearchActivity;
+import com.qmkj.niaogebiji.module.activity.TopicDetailActivityV2;
 import com.qmkj.niaogebiji.module.activity.TopicListActivity;
 import com.qmkj.niaogebiji.module.activity.TopSelectActivity;
 import com.qmkj.niaogebiji.module.activity.TopicDetailActivity;
@@ -550,7 +551,7 @@ public class UIHelper {
 
     /** 打开话题明细界面*/
     public static void toTopicDetailActivity(Context ctx,String topicId) {
-        Intent intent = new Intent(ctx, TopicDetailActivity.class);
+        Intent intent = new Intent(ctx, TopicDetailActivityV2.class);
         intent.putExtra("topicId",topicId);
         ctx.startActivity(intent);
     }

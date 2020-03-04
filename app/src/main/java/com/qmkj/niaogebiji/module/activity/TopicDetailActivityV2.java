@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
@@ -32,23 +31,22 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
-import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
-import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
+import com.qmkj.niaogebiji.module.event.ShowTopAuthorEvent;
+import com.qmkj.niaogebiji.module.event.ShowTopTopicEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
-import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -71,41 +69,37 @@ import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
  * 创建时间 2020-02-14
  * 描述:话题明细页
  */
-public class TopicDetailActivity extends BaseActivity {
+public class TopicDetailActivityV2 extends BaseActivity {
 
-//    @BindView(R.id.bg_img)
-//    ImageView bg_img;
+    @BindView(R.id.bg_img)
+    ImageView bg_img;
 
-//    @BindView(R.id.one_img)
-//    ImageView one_img;
+    @BindView(R.id.one_img)
+    ImageView one_img;
 
-//    @BindView(R.id.send_choose)
-//    TextView send_choose;
+    @BindView(R.id.send_choose)
+    TextView send_choose;
 
-//    @BindView(R.id.topic_titile)
-//    TextView topic_titile;
+    @BindView(R.id.topic_titile)
+    TextView topic_titile;
 
-//    @BindView(R.id.topic_desc)
-//    TextView topic_desc;
+    @BindView(R.id.topic_desc)
+    TextView topic_desc;
 
-//    @BindView(R.id.focus_num)
-//    TextView focus_num;
+    @BindView(R.id.focus_num)
+    TextView focus_num;
 
-//    @BindView(R.id.focus)
-//    TextView focus;
+    @BindView(R.id.focus)
+    TextView focus;
 
-//    @BindView(R.id.alreadFocus)
-//    TextView alreadFocus;
-
-
-    @BindView(R.id.smartRefreshLayout)
-    SmartRefreshLayout smartRefreshLayout;
+    @BindView(R.id.alreadFocus)
+    TextView alreadFocus;
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
 
-    @BindView(R.id.rl_common_title)
+    @BindView(R.id.rl_title)
     RelativeLayout rl_common_title;
 
     @BindView(R.id.part_small_head)
@@ -120,12 +114,6 @@ public class TopicDetailActivity extends BaseActivity {
     @BindView(R.id.part_small_already_focus)
     TextView part_small_already_focus;
 
-    //没有blog时显示
-    @BindView(R.id.no_blogs_layout)
-    LinearLayout no_blogs_layout;
-
-    @BindView(R.id.rl_topic)
-    RelativeLayout rl_topic;
 
 
     @BindView(R.id.ll_empty)
@@ -147,34 +135,8 @@ public class TopicDetailActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_topic_detail;
+        return R.layout.activity_topic_detail_v2;
     }
-
-
-    private boolean mIsRefreshing;
-    @SuppressLint("ClickableViewAccessibility")
-    private void initSamrtLayout() {
-        XnClassicsHeader header =  new XnClassicsHeader(this);
-        smartRefreshLayout.setRefreshHeader(header);
-        smartRefreshLayout.setEnableLoadMore(false);
-        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
-
-            mAllList.clear();
-            page = 1;
-            getTopicDetail();
-        });
-
-        mRecyclerView.setOnTouchListener(
-                (v, event) -> {
-                    if (mIsRefreshing) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-        );
-    }
-
 
 
     @Override
@@ -183,52 +145,15 @@ public class TopicDetailActivity extends BaseActivity {
         topicId = getIntent().getStringExtra("topicId");
 
 
-        initSamrtLayout();
+//        initSamrtLayout();
 
         initLayout();
 
         getTopicDetail();
 
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                float spacce =  getScollYDistance(recyclerView.getLayoutManager());
-//                KLog.d("tag","距离时 " + spacce);
-                if(spacce >= SizeUtils.dp2px(168f - 21f)){
-                    part_small_head.setVisibility(View.VISIBLE);
-                    return;
-                }else{
-                    part_small_head.setVisibility(View.GONE);
-                }
-
-                // 计算alpha通道值
-                float percent = spacce /  SizeUtils.dp2px(168f -21f);
-                if(percent >= 1f){
-                    percent = 1f;
-                }
-                float alpha = percent * 255;
-                KLog.d("tag","alpha " + alpha);
-                //设置背景颜色
-                rl_common_title.setBackgroundColor(Color.argb((int) alpha,  255,255,255));
-
-            }
-        });
+        getListByTopicId();
 
 
-    }
-
-    public int getScollYDistance(RecyclerView.LayoutManager layoutManager) {
-        if (layoutManager instanceof LinearLayoutManager) {
-            LinearLayoutManager linearManager = (LinearLayoutManager) layoutManager;
-            int position = linearManager.findFirstVisibleItemPosition();
-            View firstVisiableChildView = layoutManager.findViewByPosition(position);
-            if(firstVisiableChildView != null){
-                int itemHeight = firstVisiableChildView.getHeight();
-                return (position) * itemHeight - firstVisiableChildView.getTop();
-            }
-        }
-        return  0;
     }
 
     private void getListByTopicId() {
@@ -250,27 +175,23 @@ public class TopicDetailActivity extends BaseActivity {
                         List<CircleBean> serverData = response.getReturn_data();
                         if(1 == page){
                             if(serverData != null && !serverData.isEmpty()){
-                                //第一次获取不为空的情况下展示
-                                setHeadData(headView,mTopicBean);
                                 setData2(serverData);
                                 mCircleRecommentAdapterNew.setNewData(mAllList);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
                                 if(serverData.size() < Constant.SEERVER_NUM){
                                     mCircleRecommentAdapterNew.loadMoreEnd();
                                 }
-                                smartRefreshLayout.setVisibility(View.VISIBLE);
-                                no_blogs_layout.setVisibility(View.GONE);
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                                ll_empty.setVisibility(View.GONE);
                             }else{
                                 KLog.d("tag","设置空布局");
                                 //第一次加载无数据,显示不加载数据
-                                setHeadData(no_blogs_layout,mTopicBean);
                                 ((ImageView)ll_empty.findViewById(R.id.iv_empty)).setImageResource(R.mipmap.icon_empty_comment);
                                 ((TextView)ll_empty.findViewById(R.id.tv_empty)).setText("还没有圈子");
 
-                                no_blogs_layout.setVisibility(View.VISIBLE);
                                 //布局中再显示
+                                mRecyclerView.setVisibility(View.GONE);
                                 ll_empty.setVisibility(View.VISIBLE);
-                                smartRefreshLayout.setVisibility(View.GONE);
                             }
                         }else{
                             //已为加载更多有数据
@@ -338,50 +259,16 @@ public class TopicDetailActivity extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<TopicBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<TopicBean> response) {
-
-                        if(null != smartRefreshLayout){
-                            mIsRefreshing = false;
-                            smartRefreshLayout.finishRefresh();
-                        }
-
                         mTopicBean = response.getReturn_data();
                         tv_title.setText("#" + mTopicBean.getTitle());
-                        getListByTopicId();
+                        setHeadData(mTopicBean);
                     }
                 });
     }
 
 
 
-    LinearLayout part2222_2;
-    TextView send_article_num;
-    TextView medal_count;
-    TextView sender_name;
-    TextView user_des;
-    CircleImageView head_icon;
-    LinearLayout ll_badge;
-    TextView senderverticity;
-    TextView sender_tag;
-
-    ImageView bg_img;
-    ImageView one_img;
-    TextView topic_titile;
-    TextView topic_desc;
-    TextView focus_num;
-    TextView focus;
-    TextView alreadFocus;
-    TextView send_choose;
-
-    private void setHeadData(View headView,TopicBean bean) {
-
-        bg_img = headView.findViewById(R.id.bg_img);
-        one_img = headView.findViewById(R.id.one_img);
-        topic_titile = headView.findViewById(R.id.topic_titile);
-        topic_desc = headView.findViewById(R.id.topic_desc);
-        focus_num = headView.findViewById(R.id.focus_num);
-        focus = headView.findViewById(R.id.focus);
-        alreadFocus = headView.findViewById(R.id.alreadFocus);
-        send_choose = headView.findViewById(R.id.send_choose);
+    private void setHeadData(TopicBean bean) {
 
         //图片背景
         if(!TextUtils.isEmpty(bean.getIcon())){
@@ -474,8 +361,6 @@ public class TopicDetailActivity extends BaseActivity {
     }
 
 
-    View headView;
-    float headHeight;
     @SuppressLint("CheckResult")
     private void initEvent() {
         mCircleRecommentAdapterNew.setOnLoadMoreListener(() -> {
@@ -483,19 +368,6 @@ public class TopicDetailActivity extends BaseActivity {
             getListByTopicId();
         }, mRecyclerView);
 
-
-        headView = LayoutInflater.from(this).inflate(R.layout.head_topic_detail,null);
-
-        mCircleRecommentAdapterNew.setHeaderView(headView);
-
-        headView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                headHeight = headView.getHeight() - SizeUtils.dp2px(25);
-                KLog.d("tag ", "标题的固定高度为 " + headHeight );
-                headView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
 
     }
 
@@ -677,6 +549,23 @@ public class TopicDetailActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+    //滑动显示搜索
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onShowTopTopicEvent(ShowTopTopicEvent event) {
+        if (this != null) {
+            String statu = event.getData();
+            if("1".equals(statu)){
+                part_small_head.setVisibility(View.VISIBLE);
+            }else{
+                part_small_head.setVisibility(View.GONE);
+            }
+        }
+    }
 
 
 

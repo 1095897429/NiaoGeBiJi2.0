@@ -79,7 +79,7 @@ import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.service.SendService;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
-import com.qmkj.niaogebiji.module.activity.HomeActivity;
+import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.bean.WxShareBean;
@@ -223,63 +223,80 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            //拿到进度，更新UI
-            int progress = intent.getIntExtra("progress", 0);
-//            KLog.e("tag","progress " + progress);
 
+            // ① 发送错误
+            int error = intent.getIntExtra("error", 0);
+            if(1 == error){
+                ll_circle_send.setVisibility(View.VISIBLE);
+                rl_sending.setVisibility(View.GONE);
+                rl_send_fail.setVisibility(View.VISIBLE);
+                sendStatus = isSendFail;
+                return;
+            }
+
+            // ① 纯文本发送成功
             int no_pic = intent.getIntExtra("no_pic", 0);
-//            KLog.e("tag","no_pic " + no_pic);
             if(1 == no_pic){
+                ll_circle_send.setVisibility(View.VISIBLE);
+                progressBar.setMax(maxSendProgress);
                 setAnimation(progressBar);
-                KLog.e("tag"," 发送请求0噗噗噗噗噗2222没有图片  ");
+                sendStatus = isSendOk;
+                KLog.e("tag","当前呈现的类名是 "+  BaseActivity.this.getClass().getSimpleName() + "  2222没有图片  ");
+                return;
+            }
+
+            // ② 图片后台发送成功
+            int pic = intent.getIntExtra("pic", 0);
+            if(1 == pic){
+                showNumView();
+                sendStatus = isSendOk;
+                KLog.e("tag","当前呈现的类名是 "+  BaseActivity.this.getClass().getSimpleName() + "  2222有图片  ");
                 return;
             }
 
 
 
-
+            // ③ 图片上传拿到进度，更新UI
+            int progress = intent.getIntExtra("progress", 0);
             //设置进度条的最大值  和 正在进行的进度
             if(progressBar != null){
-                progressBar.setProgress( progress);
+                ll_circle_send.setVisibility(View.VISIBLE);
+                progressBar.setProgress(progress);
                 progressBar.setMax(maxSendProgress);
-                KLog.e("tag"," 发送请求0噗噗噗噗噗3333 加载进度  ");
-                if(maxSendProgress == currentSendProgress){
-
-                    KLog.e("tag","发送请求0噗噗噗噗噗4444 上传完成");
-                    //针对有图片特殊处理
-                    if( rl_sending != null){
-                        rl_sending.setVisibility(View.GONE);
-                    }
-
-                    if(rl_send_ok != null){
-                        rl_send_ok.setVisibility(View.VISIBLE);
-                    }
-
-                    Random rand = new Random();
-                    int temp = rand.nextInt(5000) + 5000;
-                    if(send_num != null){
-                        send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
-                    }
-
-                    new Handler().postDelayed(() -> {
-                        hideState();
-                    },2000);
-                    //发送事件去更新
-                    EventBus.getDefault().post(new SendOkCircleEvent());
-
-                    isSending = false;
-
-                    //重新恢复状态
-                    //重新恢复状态
-                    isAnimPause = false;
-
-                }
+                sendStatus = isSending;
             }
 
         }
 
     }
 
+
+    public void showNumView(){
+        if( rl_sending != null){
+            rl_sending.setVisibility(View.GONE);
+        }
+
+        if(rl_send_ok != null){
+            rl_send_ok.setVisibility(View.VISIBLE);
+        }
+
+        Random rand = new Random();
+        int temp = rand.nextInt(5000) + 5000;
+        if(send_num != null){
+            send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
+        }
+
+        new Handler().postDelayed(() -> {
+            hideState();
+        },2000);
+
+
+        //发送事件去更新
+        EventBus.getDefault().post(new SendOkCircleEvent());
+
+        removeTempMsg();
+        cleanData();
+}
 
 
 
@@ -305,24 +322,32 @@ public abstract class BaseActivity extends AppCompatActivity  {
     @BindView(R.id.icon_send_cancel)
     public ImageView icon_send_cancel;
 
+    @BindView(R.id.toReSend)
+    public TextView toReSend;
 
-    public static boolean isSending ;
-    public static boolean isSendResult ;
 
 
 
     @SuppressLint("CheckResult")
     private void initSendEvent() {
-        //发送关闭
+
+        //发送取消
         RxView.clicks(icon_send_cancel)
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
-                    ll_circle_send.setVisibility(View.GONE);
-                    isSending = false;
-                    if(sendService != null){
-                        stopService(sendService);
-                    }
+                    hideState();
+                    HomeActivityV2.mService.cancelRequest();
+
                 });
+
+        //重新发送
+        RxView.clicks(toReSend)
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(object -> {
+                   hideState();
+                   HomeActivityV2.mService.sendRequest();
+                });
+
     }
 
     Intent sendService;
@@ -332,8 +357,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
     public void toSendBlog(TempMsgBean tempMsgBean){
         mTempMsgBean = tempMsgBean;
 
-        //正在发送中
-        isSending = true;
+        //正在发送中...
+        sendStatus = BaseActivity.isSending;
 
         toRetrunBack();
 
@@ -695,7 +720,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
                             //发送事件去更新
                             EventBus.getDefault().post(new SendOkCircleEvent());
 
-                            isSending = false;
+                            sendStatus =  BaseActivity.isSendOk;
 
                             //重新恢复状态
                             isAnimPause = false;
@@ -728,6 +753,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
     }
 
     private void cleanData() {
+        maxSendProgress = 0;
+        currentSendProgress = 0;
         uploadTaskCount = 0;
         data = "";
         key = "";
@@ -735,6 +762,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
         lashPic = "";
         blog_link  = "";
         blog_link_title = "";
+        blog_is_comment = 0;
+        blog_type = 0;
     }
 
     private void hideState() {
@@ -743,21 +772,26 @@ public abstract class BaseActivity extends AppCompatActivity  {
             rl_sending.setVisibility(View.VISIBLE);
             rl_send_fail.setVisibility(View.GONE);
             rl_send_ok.setVisibility(View.GONE);
-            maxSendProgress = 0;
             progressBar.setProgress(0);
             progressBar.setMax(maxSendProgress);
-            uploadTaskCount = 0;
         }
 
     }
 
 
     //是否是纯文本
+    public static int  sendStatus;
+    public static final int isSending  = 1;
+    public static final int isSendOk  = 2;
+    public static final int isSendFail  = 3  ;
     public static boolean isTextALl;
     public static boolean isAnimPause;
     public static int currentSendProgress;
     public static int maxSendProgress;
     ValueAnimator animator;
+
+
+
 
     private void setAnimation(ProgressBar view) {
         animator = ValueAnimator.ofInt(0, 100).setDuration(500);
@@ -776,34 +810,16 @@ public abstract class BaseActivity extends AppCompatActivity  {
             public void onAnimationEnd(Animator animation) {
                 //动画正常结束 动画对象存在 界面存储 文本存在
                 if(!isAnimPause && animation != null && null != this){
-                  KLog.d("tag","动画结束");
-                    if(rl_sending != null){
-                        rl_sending.setVisibility(View.GONE);
-                    }
-                    if(rl_send_ok != null){
-                        rl_send_ok.setVisibility(View.VISIBLE);
-                    }
+                  KLog.d("tag","动画结束 改变布局");
 
+                    showNumView();
 
-                    Random rand = new Random();
-                    int temp = rand.nextInt(5000) + 5000;
-
-                    if(send_num != null){
-                        send_num.setText("发布成功！已推荐给 " + temp +"位同行营销圈同行");
-                    }
-                    //发送事件去更新
-                    EventBus.getDefault().post(new SendOkCircleEvent());
-                    removeTempMsg();
-
-                    new Handler().postDelayed(() -> {
-                        hideState();
-                    },2000);
                 }
 
                 //重新恢复状态
                 isAnimPause = false;
 
-                isSending = false;
+                sendStatus = isSending;
             }
 
             @Override
@@ -851,8 +867,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
-                    if(HomeActivity.mMyBinder != null){
-                        HomeActivity.mMyBinder.pauseMusic();
+                    if(HomeActivityV2.mMyBinder != null){
+                        HomeActivityV2.mMyBinder.pauseMusic();
                         pause();
                     }
                 });
@@ -867,8 +883,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
                     //主要用于不在播放时，不可移动seekbar
                     seekbar.setEnabled(true);
-                    HomeActivity.mMyBinder.playMusic();
-                    HomeActivity.mMediaService.setOnProgressListener(progress -> {
+                    HomeActivityV2.mMyBinder.playMusic();
+                    HomeActivityV2.mMediaService.setOnProgressListener(progress -> {
                         if(seekbar != null){
                             runOnUiThread(() -> {
                                 timeParse(time,progress);
@@ -894,8 +910,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
                     if(seekbar != null){
                        seekbar.setProgress(0);
                     }
-                    if(HomeActivity.mMyBinder != null){
-                        HomeActivity.mMyBinder.closeMedia();
+                    if(HomeActivityV2.mMyBinder != null){
+                        HomeActivityV2.mMyBinder.closeMedia();
                     }
 
                 });
@@ -922,8 +938,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
                     seekBar.setProgress(currentProgress);
                     timeParse(time,dest);
                 });
-                if(HomeActivity.mMyBinder != null){
-                    HomeActivity.mMyBinder.seekToPositon(dest);
+                if(HomeActivityV2.mMyBinder != null){
+                    HomeActivityV2.mMyBinder.seekToPositon(dest);
                 }
             }
         });
@@ -968,16 +984,16 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
 
         //先暂停
-        HomeActivity.mMyBinder.pauseMusic();
+        HomeActivityV2.mMyBinder.pauseMusic();
 
         //有资源时 先关闭之前资源
-        HomeActivity.mMyBinder.closeMedia();
+        HomeActivityV2.mMyBinder.closeMedia();
 
         //有资源时 重新准备新资源
-        HomeActivity.mMediaService.prepare(url);
+        HomeActivityV2.mMediaService.prepare(url);
 
 
-        HomeActivity.mMediaService.setOnCloseListener(() -> {
+        HomeActivityV2.mMediaService.setOnCloseListener(() -> {
             if(play != null){
                 play.setVisibility(View.VISIBLE);
             }
@@ -993,7 +1009,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
         });
 
-        HomeActivity.mMediaService.setOnEndListener(() -> {
+        HomeActivityV2.mMediaService.setOnEndListener(() -> {
 
             if(play != null){
                 play.setVisibility(View.VISIBLE);
@@ -1009,7 +1025,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
 
         //准备完成回调 重置默认值
-        HomeActivity.mMediaService.setOnStartListener(totalLength -> {
+        HomeActivityV2.mMediaService.setOnStartListener(totalLength -> {
             currentProgress = 0;
             maxProgress = totalLength;
             audiotime = totalLength;
@@ -1030,8 +1046,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
             }
             //👇是自动播放
             play();
-            HomeActivity.mMyBinder.playMusic();
-            HomeActivity.mMediaService.setOnProgressListener(progress -> {
+            HomeActivityV2.mMyBinder.playMusic();
+            HomeActivityV2.mMediaService.setOnProgressListener(progress -> {
                 if(seekbar != null){
 
                     runOnUiThread(() -> {
@@ -1193,35 +1209,49 @@ public abstract class BaseActivity extends AppCompatActivity  {
 
         super.onResume();
         MobclickAgent.onResume(this);
-        Log.e("1", "run:--------->当前类名: "+ getClass().getSimpleName());
+        Log.e("tag", "run:--------->当前呈现的类名是: "+ getClass().getSimpleName());
 
-        //如果在发送中，显示布局
-        if(isSending){
+
+        if(sendStatus == isSending){
             ll_circle_send.setVisibility(View.VISIBLE);
-            if(!isAnimPause && isTextALl){
-                //这里重新设置了，因为progressBar是个新的
-                setAnimation(progressBar);
+            //显示当前的状态值
+            if(progressBar != null){
+                progressBar.setProgress(currentSendProgress);
+                progressBar.setMax(maxSendProgress);
             }
-
-            if(!isTextALl){
-                //设置最大的进度
-                if(progressBar != null){
-                    KLog.d("最大的进度 " + maxSendProgress);
-                    progressBar.setProgress(currentSendProgress);
-                    progressBar.setMax(maxSendProgress);
-                }
-            }
-
-
-        }else{
-            ll_circle_send.setVisibility(View.GONE);
         }
 
+
+        //这个是在打开新的界面 同样展示进度的
+//        if(sendStatus == isSending){
+//            ll_circle_send.setVisibility(View.VISIBLE);
+//
+//            //动画没有结束 并且是文本
+//            if(!isAnimPause && isTextALl){
+//                //这里重新设置了，因为progressBar是个新的
+//                progressBar.setMax(maxSendProgress);
+//                setAnimation(progressBar);
+//            }
+//
+//            if(!isTextALl){
+//                //设置最大的进度
+//                if(progressBar != null){
+//                    KLog.d("最大的进度 " + maxSendProgress);
+//                    progressBar.setProgress(currentSendProgress);
+//                    progressBar.setMax(maxSendProgress);
+//                }
+//            }
+//
+//
+//        }else{
+//            ll_circle_send.setVisibility(View.GONE);
+//        }
+
         //存在 + view显示
-        if(HomeActivity.mMyBinder != null && isAudaioShow){
+        if(HomeActivityV2.mMyBinder != null && isAudaioShow){
             part_audio.setVisibility(View.VISIBLE);
 
-            if(getClass().getSimpleName().equals("HomeActivity")
+            if(getClass().getSimpleName().equals("HomeActivityV2")
                 || getClass().getSimpleName().equals("NewsDetailActivity") ){
                 //设置view的距离
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) part_audio.getLayoutParams();
@@ -1239,8 +1269,8 @@ public abstract class BaseActivity extends AppCompatActivity  {
             //设置当时时间
             time.setText(timeParse(currenttime) + "");
             //视频正在播放
-            if( HomeActivity.mMyBinder.isPlaying()){
-                HomeActivity.mMyBinder.playMusic();
+            if( HomeActivityV2.mMyBinder.isPlaying()){
+                HomeActivityV2.mMyBinder.playMusic();
                 play.setVisibility(View.GONE);
                 close.setVisibility(View.GONE);
                 pause.setVisibility(View.VISIBLE);
@@ -1250,7 +1280,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
                 pause.setVisibility(View.GONE);
             }
 
-            HomeActivity.mMediaService.setOnProgressListener(progress -> {
+            HomeActivityV2.mMediaService.setOnProgressListener(progress -> {
                 if(seekbar != null){
                     runOnUiThread(() -> {
                         timeParse(time,progress);
@@ -1262,7 +1292,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
             });
 
 
-            HomeActivity.mMediaService.setOnEndListener(() -> {
+            HomeActivityV2.mMediaService.setOnEndListener(() -> {
                 if(play != null){
                     play.setVisibility(View.VISIBLE);
                 }

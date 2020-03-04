@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
@@ -216,10 +217,11 @@ public class CircleMakeActivityV2 extends BaseActivity {
         }
 
 
-        //放在这里让话题布局不显示
+        //放在这里让话题布局不显示 -- 赋值话题id
         if(getIntent().getExtras() != null){
             mTopicBean = (TopicBean) getIntent().getExtras().getSerializable("topicBean");
             if(null != mTopicBean){
+                topicId = mTopicBean.getId() + "";
                 select_topic_text.setText(mTopicBean.getTitle());
                 topic_delete.setVisibility(View.GONE);
                 ll_topic.setVisibility(View.VISIBLE);
@@ -356,6 +358,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
                     return;
                 }
 
+
+
                 //设置发送数据
                 sendData();
 
@@ -382,7 +386,12 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 }
 
 
-                toSendBlog(mTempMsgBean);
+//                toSendBlog(mTempMsgBean);
+
+
+                toSendBlogByService(mTempMsgBean);
+
+                sendPicToQiuNiu();
 
 
                 break;
@@ -403,6 +412,17 @@ public class CircleMakeActivityV2 extends BaseActivity {
             default:
         }
     }
+
+
+    public void toSendBlogByService(TempMsgBean tempMsgBean){
+        mTempMsgBean = tempMsgBean;
+
+        HomeActivityV2.mSendBinder.setData(tempMsgBean);
+
+        //启动
+        HomeActivityV2.mService.sendRequest();
+    }
+
 
 
     @Override

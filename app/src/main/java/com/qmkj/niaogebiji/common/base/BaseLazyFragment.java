@@ -64,7 +64,7 @@ public abstract class BaseLazyFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-        KLog.e(TAG,getClass().getSimpleName() + " -- onAttach");
+//        KLog.e(TAG,getClass().getSimpleName() + " -- onAttach");
     }
 
 
@@ -75,7 +75,7 @@ public abstract class BaseLazyFragment extends Fragment {
         if (getUserVisibleHint()) {
             isVisible = true;
             onVisible();
-            KLog.e(TAG,getClass().getSimpleName() + " -- setUserVisibleHint -- " +isVisibleToUser);
+//            KLog.e(TAG,getClass().getSimpleName() + " -- setUserVisibleHint -- " +isVisibleToUser);
         } else {
             isVisible = false;
             onInvisible();
@@ -87,7 +87,7 @@ public abstract class BaseLazyFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        KLog.e(TAG,getClass().getSimpleName() + " -- onCreateView");
+//        KLog.e(TAG,getClass().getSimpleName() + " -- onCreateView");
         View view = getLayoutInflater().inflate(getLayoutId(),null);
         mUnbinder = ButterKnife.bind(this,view);
         if(regEvent()){
@@ -100,7 +100,7 @@ public abstract class BaseLazyFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        KLog.e(TAG,getClass().getSimpleName() + " -- onViewCreated");
+//        KLog.e(TAG,getClass().getSimpleName() + " -- onViewCreated");
         initView();
         finishCreateView();
         initData();
@@ -110,7 +110,7 @@ public abstract class BaseLazyFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        KLog.e(TAG,getClass().getSimpleName() + " -- onDestroy");
+//        KLog.e(TAG,getClass().getSimpleName() + " -- onDestroy");
         super.onDestroy();
         //解绑
         if(null != mUnbinder){
@@ -132,7 +132,7 @@ public abstract class BaseLazyFragment extends Fragment {
 
     /** 默认加载数据 */
     protected void initData() {
-        KLog.e(TAG,getClass().getSimpleName() + " -- initData");
+//        KLog.e(TAG,getClass().getSimpleName() + " -- initData");
     }
 
     /** 第一次都会走这里，不过后续通过Fragment是否可见判断 */
@@ -165,7 +165,7 @@ public abstract class BaseLazyFragment extends Fragment {
 
 
     protected void lazyLoadData() {
-        KLog.e(TAG,getClass().getSimpleName() + " -- 懒加载数据开始");
+//        KLog.e(TAG,getClass().getSimpleName() + " -- 懒加载数据开始");
     }
 
 

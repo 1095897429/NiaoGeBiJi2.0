@@ -92,7 +92,7 @@ public class HotNewsFragment extends BaseLazyFragment {
     }
 
     private void hotArticle() {
-        KLog.e("tag","当前的页数是 " + page + "");
+//        KLog.e("tag","当前的页数是 " + page + "");
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
         map.put("page_size",30 + "");

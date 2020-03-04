@@ -101,7 +101,7 @@ public class ViewPagerTitleSlide4 extends LinearLayout {
                 if(textViews.get(i) instanceof TextView){
                     TextView textView = (TextView) textViews.get(i);
                     textView.setTextColor(getResources().getColor(R.color.text_first_color));
-                    textView.setTextSize(18);
+                    textView.setTextSize(16);
                     textView.setTypeface(typeface);
                 }
 
@@ -156,11 +156,11 @@ public class ViewPagerTitleSlide4 extends LinearLayout {
 //        textViewLl.setBackgroundColor(R.color.greenStart);
 
         textViewLl.setOrientation(LinearLayout.HORIZONTAL);
-        //设置布局中的textView居左中间
-//        textViewLl.setGravity(Gravity.BOTTOM);
+        //设置距离底部的边距
+        textViewLl.setPadding(0,0,0,20);
 
         // 给与一定的宽度
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams params ;
 
         typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/DIN-Bold.otf");
 
@@ -169,6 +169,8 @@ public class ViewPagerTitleSlide4 extends LinearLayout {
             if(i == titles.length - 1){
                 ImageView imageView = new ImageView(getContext());
                 imageView.setImageResource(R.mipmap.icon_first_hot_default);
+                params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                params.gravity = Gravity.BOTTOM;
                 imageView.setLayoutParams(params);
                 imageView.setTag(i);
                 imageView.setOnClickListener(onClickListener);
@@ -195,11 +197,15 @@ public class ViewPagerTitleSlide4 extends LinearLayout {
 //                textView.setBackgroundColor(getResources().getColor(R.color.roseEnd));
 //            }
 
+            //每次重新创建一个新的
+            params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.MATCH_PARENT);
+
             if(i == 0){
                 params.setMargins(SizeUtils.dp2px(16),0,SizeUtils.dp2px(16),0);
             }else{
                 params.setMargins(0,0,SizeUtils.dp2px(16),0);
             }
+            params.gravity = Gravity.TOP;
             textView.setLayoutParams(params);
             textView.setGravity(Gravity.BOTTOM);
             textView.setOnClickListener(onClickListener);
@@ -220,6 +226,7 @@ public class ViewPagerTitleSlide4 extends LinearLayout {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         dynamicLine = new DynamicLineNoRadiu4(getContext());
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params.setMargins(0,0,0,20);
         dynamicLine.setLayoutParams(params);
     }
 
@@ -257,7 +264,8 @@ public class ViewPagerTitleSlide4 extends LinearLayout {
                     if(textViews.get(i) instanceof TextView){
                         TextView textView = (TextView) textViews.get(i);
                         textView.setTextColor(getResources().getColor(R.color.text_first_color));
-                        textView.setTextSize(18);
+                        textView.setTextSize(16);
+
                         textView.setTypeface(null);
                     }
 

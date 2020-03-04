@@ -41,8 +41,10 @@ import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
 import com.qmkj.niaogebiji.module.bean.AutherCertInitBean;
 import com.qmkj.niaogebiji.module.bean.BadegsAllBean;
+import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
 import com.qmkj.niaogebiji.module.bean.MyBean;
+import com.qmkj.niaogebiji.module.bean.MyProductBean;
 import com.qmkj.niaogebiji.module.bean.OfficialBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
@@ -129,12 +131,16 @@ public class MyFragment extends BaseLazyFragment {
     @BindView(R.id.recycler1111)
     RecyclerView recycler1111;
 
+    @BindView(R.id.ll_product)
+    LinearLayout ll_product;
+
+
 
     //商品适配器
-    LinearLayoutManager mLinearLayoutManager;
+    GridLayoutManager mProductGridLayoutManager;
     FeatherItemAdapterMy mProductItemNewAdapter;
     //集合1
-    List<FeatherProductBean.Productean.ProductItemBean> temps = new ArrayList<>();
+    List<FeatherProductBean.Productean.ProductItemBean> temps;
 
 
     //适配器
@@ -161,11 +167,9 @@ public class MyFragment extends BaseLazyFragment {
 
     //初始化布局管理器
     private void initVertical() {
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
-        //设置默认垂直布局
-        mLinearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        mProductGridLayoutManager = new GridLayoutManager(getActivity(),4);
         //设置布局管理器
-        recycler1111.setLayoutManager(mLinearLayoutManager);
+        recycler1111.setLayoutManager(mProductGridLayoutManager);
         //禁用change动画
         ((SimpleItemAnimator)recycler1111.getItemAnimator()).setSupportsChangeAnimations(false);
         //设置适配器
@@ -174,21 +178,6 @@ public class MyFragment extends BaseLazyFragment {
         //解决数据加载不完
         recycler1111.setNestedScrollingEnabled(false);
         recycler1111.setHasFixedSize(true);
-
-        //点击事件
-        mProductItemNewAdapter.setOnItemClickListener((adapter, view, position) -> {
-
-        });
-
-        //全部
-        mProductItemNewAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                KLog.d("tag","tag");
-                UIHelper.toFeatherCatListActivity(mContext,temps.get(position).getId(),temps.get(position).getTitle());
-            }
-        });
-
 
     }
 
@@ -202,11 +191,9 @@ public class MyFragment extends BaseLazyFragment {
     @Override
     protected void initView() {
 
-
+        getRecommendMallList();
 
         initVertical();
-
-        getProducts();
 
         getUserInfo();
 
@@ -219,11 +206,15 @@ public class MyFragment extends BaseLazyFragment {
         feather_count.setTypeface(typeface);
     }
 
-    private void getProducts() {
-        for (int i = 0; i < 4; i++) {
-            temps.add(new FeatherProductBean.Productean.ProductItemBean());
-        }
-        mProductItemNewAdapter.setNewData(temps);
+
+
+    private void getProducts(List<FeatherProductBean.Productean.ProductItemBean> temp) {
+        //测试数据
+//        for (int i = 0; i < 4; i++) {
+//            temps.add(new FeatherProductBean.Productean.ProductItemBean());
+//        }
+
+        mProductItemNewAdapter.setNewData(temp);
     }
 
     List<BadegsAllBean.BadegBean> listall = new ArrayList<>();
@@ -298,6 +289,30 @@ public class MyFragment extends BaseLazyFragment {
             getUserInfo();
         }
     }
+
+
+
+    private void getRecommendMallList() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getRecommendMallList(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<MyProductBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<MyProductBean> response) {
+                        MyProductBean tem = response.getReturn_data();
+                        temps = tem.getList();
+                        if(temps != null && !temps.isEmpty()){
+                            getProducts(temps);
+                        }else{
+                            ll_product.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
+
 
 
     private void getUserInfo() {

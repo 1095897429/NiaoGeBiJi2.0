@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Typeface;
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -33,18 +34,23 @@ public class FeatherItemAdapterMy extends BaseQuickAdapter<FeatherProductBean.Pr
 
     @Override
     protected void convert(BaseViewHolder helper, FeatherProductBean.Productean.ProductItemBean mBean) {
-//        ImageUtil.load(mContext,mBean.getImg_list(),helper.getView(R.id.one_img_imgs));
-//
-//        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
-//        ((TextView)helper.getView(R.id.name)).setTypeface(typeface);
-//
-//        helper.setText(R.id.name,mBean.getTitle())
-//                .setText(R.id.money,mBean.getPoint());
-//
-//        //点击事件
+
+
+        if(!TextUtils.isEmpty(mBean.getImg_list())){
+            ImageUtil.load(mContext,mBean.getImg_list(),helper.getView(R.id.one_img_imgs));
+        }
+
+
+        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
+        ((TextView)helper.getView(R.id.name)).setTypeface(typeface);
+
+        helper.setText(R.id.name,mBean.getTitle())
+                .setText(R.id.money,mBean.getPoint());
+
+       //点击事件
         helper.itemView.setOnClickListener(v -> {
-            ToastUtils.showShort("去明细页");
-//            UIHelper.toFeatherListDetailActivity(mContext,mBean.getId())
+//            ToastUtils.showShort("去明细页");
+            UIHelper.toFeatherListDetailActivity(mContext,mBean.getId());
         });
     }
 

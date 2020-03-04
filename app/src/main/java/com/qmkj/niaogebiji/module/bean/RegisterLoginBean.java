@@ -99,6 +99,16 @@ public class RegisterLoginBean extends BaseBean {
 
         private String is_180_vip;
 
+        //职位状态：1-在职，2-离职，3-自由职业，4-学生
+        private String position_status;
+
+        public String getPosition_status() {
+            return position_status;
+        }
+
+        public void setPosition_status(String position_status) {
+            this.position_status = position_status;
+        }
 
         public String getIs_180_vip() {
             return is_180_vip;

@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
+import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
@@ -166,10 +168,13 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 });
     }
 
+    //TODO 3.4 请求第一页第一条数据发布时间戳
+    private String last_time = "";
 
     private void recommendBlogList() {
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
+        map.put("last_time",last_time + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().recommendBlogList(result)
                 .subscribeOn(Schedulers.newThread())
@@ -188,6 +193,9 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                             List<CircleBean> serverData = response.getReturn_data();
                             if(1 == page){
                                 if(serverData != null && !serverData.isEmpty()){
+
+                                    //TODO 3.4 获取数据，防止下次获取数据的时候重复了，也就是数据少的
+                                    last_time = serverData.get(0).getCreated_at();
 
                                     //加载原有数据
                                     setData2(serverData);
@@ -365,6 +373,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             mAllList.clear();
             mIsRefreshing = true;
             page = 1;
+            last_time = "";
             recommendBlogList();
         });
 
@@ -395,6 +404,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     public void onSendCircleEvent(SendOkCircleEvent event) {
         mAllList.clear();
         page = 1;
+        last_time = "";
         mIsRefreshing = true;
         recommendBlogList();
     }
@@ -476,6 +486,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             page = 1;
             mIsRefreshing = true;
             mAllList.clear();
+            last_time = "";
             recommendBlogList();
 
             //TODO 12.17 留给自己的疑问：出现情况是，如果是page = 2的 时候，会变化吗
@@ -507,6 +518,16 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
             lottieAnimationView.cancelAnimation();
         }
     }
+
+
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onUpdateCircleRecommendEvent(UpdateCircleRecommendEvent event){
+//        if(null != this){
+//            KLog.d("tag"," 重新获取  圈子中 话题  数据源 ");
+//            recommendBlogList();
+//        }
+//    }
+
 
 
 

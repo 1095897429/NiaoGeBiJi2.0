@@ -20,6 +20,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
+import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -103,8 +104,8 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
 //            }
 //        }
 
-        //是否选择 注：1-选择，0-未选择
-        if(0 == item.getIs_focus()){
+        //是否选择 注：true-关注
+        if(!item.isIs_follow()){
             helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_yellow);
             helper.setVisible(R.id.focus,true);
             helper.setVisible(R.id.focus_aleady,false);
@@ -144,8 +145,10 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","关注成功，改变状态");
                         mData.get(mPosition).setIs_follow(true);
+                        notifyItemInserted(mPosition);
 
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override
@@ -169,7 +172,9 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","取关成功，改变状态");
                         mData.get(mPosition).setIs_follow(false);
+                        notifyItemInserted(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override

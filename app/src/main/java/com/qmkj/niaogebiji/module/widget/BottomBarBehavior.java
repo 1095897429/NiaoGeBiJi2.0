@@ -66,7 +66,7 @@ public class BottomBarBehavior extends AppBarLayout.ScrollingViewBehavior {
         LinearLayout part =  coordinatorLayout.findViewById(R.id.first_part1);
         Rect localRect = new Rect();
         boolean isVisible = part.getLocalVisibleRect(localRect);
-        KLog.d("tag","搜索栏的状态 " + isVisible );
+//        KLog.d("tag","搜索栏的状态 " + isVisible );
         //在看不见的情况下，去显示搜索图片
         if(!isVisible){
             EventBus.getDefault().post(new ShowSearchEvent("1"));

@@ -137,9 +137,12 @@ public class CircleFocusFragment extends BaseLazyFragment {
         followBlogList();
     }
 
+    //TODO 3.4 请求第一页第一条数据发布时间戳
+    private String last_time = "";
     private void followBlogList() {
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
+        map.put("last_time",last_time + "");
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().followBlogList(result)
                 .subscribeOn(Schedulers.newThread())
@@ -156,6 +159,10 @@ public class CircleFocusFragment extends BaseLazyFragment {
                         List<CircleBean> serverData = response.getReturn_data();
                         if(1 == page){
                             if(serverData != null && !serverData.isEmpty()){
+
+                                //TODO 3.4 获取数据，防止下次获取数据的时候重复了，也就是数据少的
+                                last_time = serverData.get(0).getCreated_at();
+
                                 setData2(serverData);
                                 mCircleRecommentAdapterNew.setNewData(mAllList);
                                 //如果第一次返回的数据不满10条，则显示无更多数据
@@ -271,6 +278,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
         smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             mAllList.clear();
             page = 1;
+            last_time = "";
             followBlogList();
         });
     }
@@ -353,6 +361,7 @@ public class CircleFocusFragment extends BaseLazyFragment {
     public void onSendCircleEvent(SendOkCircleEvent event) {
         mAllList.clear();
         page = 1;
+        last_time = "";
         followBlogList();
     }
 

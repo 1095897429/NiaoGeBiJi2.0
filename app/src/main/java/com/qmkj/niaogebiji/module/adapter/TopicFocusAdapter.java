@@ -19,6 +19,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
+import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -146,6 +147,7 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                         mData.get(mPosition).setIs_follow(true);
                         notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override
@@ -171,6 +173,7 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                         mData.get(mPosition).setIs_follow(false);
                         notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
+//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override

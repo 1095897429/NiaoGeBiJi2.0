@@ -118,6 +118,26 @@ public class UserInfoModifyActivity extends BaseActivity {
     @BindView(R.id.company_name_now_text)
     TextView company_name_now_text;
 
+    @BindView(R.id.ll_company)
+    LinearLayout ll_company;
+
+    @BindView(R.id.profession_name_now)
+    LinearLayout profession_name_now;
+
+
+
+    @BindView(R.id.company_name_old)
+    LinearLayout company_name_old;
+
+    @BindView(R.id.profession_name_old)
+    LinearLayout profession_name_old;
+
+    @BindView(R.id.profession_other)
+    LinearLayout profession_other;
+
+    @BindView(R.id.ll_school)
+    LinearLayout ll_school;
+
 
 
     private Uri imageUri;
@@ -151,6 +171,29 @@ public class UserInfoModifyActivity extends BaseActivity {
 //        } -- 后台需添加字段
 
         userInfo = StringUtil.getUserInfoBean();
+
+        //职业信息
+        getStatePosition();
+
+        if("1".equals(userInfo.getPosition_status())){
+            profession_name.setText("在职");
+            //当前职位
+            if(!TextUtils.isEmpty(userInfo.getPosition())){
+                profession_name_now_text.setText(userInfo.getPosition());
+            }
+
+            //当前公司
+            if(!TextUtils.isEmpty(userInfo.getCompany())){
+                company_name_now_text.setText(userInfo.getCompany_name());
+            }
+        }else if("2".equals(userInfo.getPosition_status())){
+            profession_name.setText("离职");
+        }else if("3".equals(userInfo.getPosition_status())){
+            profession_name.setText("自由职业");
+        }else if("4".equals(userInfo.getPosition_status())){
+            profession_name.setText("学生");
+        }
+
         //头像
         if(userInfo != null){
             ImageUtil.loadByDefaultHead(mContext,userInfo.getAvatar(),head_icon);
@@ -161,15 +204,7 @@ public class UserInfoModifyActivity extends BaseActivity {
         //简介
         profile_info_text.setText(userInfo.getPro_summary());
 
-        //当前职位
-        if(!TextUtils.isEmpty(userInfo.getPosition())){
-            profession_name_now_text.setText(userInfo.getPosition());
-        }
 
-        //当前公司
-        if(!TextUtils.isEmpty(userInfo.getCompany())){
-            company_name_now_text.setText(userInfo.getCompany());
-        }
 
 
         mNickname = userInfo.getNickname();
@@ -213,6 +248,21 @@ public class UserInfoModifyActivity extends BaseActivity {
 //            KLog.d("tag","应用程序接收通知开关未打开");
 //        }
 
+
+    }
+
+    private void getStatePosition() {
+        if("1".equals(userInfo.getPosition_status())){
+            ll_company.setVisibility(View.VISIBLE);
+            profession_name_now.setVisibility(View.VISIBLE);
+        }else if("2".equals(userInfo.getPosition_status())){
+            company_name_old.setVisibility(View.VISIBLE);
+            profession_name_old.setVisibility(View.VISIBLE);
+        }else if("3".equals(userInfo.getPosition_status())){
+            profession_other.setVisibility(View.VISIBLE);
+        }else if("4".equals(userInfo.getPosition_status())){
+            ll_school.setVisibility(View.VISIBLE);
+        }
 
     }
 

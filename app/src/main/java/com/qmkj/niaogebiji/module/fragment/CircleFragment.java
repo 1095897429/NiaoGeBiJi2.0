@@ -242,6 +242,8 @@ public class CircleFragment extends BaseLazyFragment {
                             if(mTopicAllBean.getList() != null && !mTopicAllBean.getList().isEmpty()){
                                 ll_topic.setVisibility(View.VISIBLE);
                                 setMyFocusTopicData(mTopicAllBean.getList());
+                            }else{
+                                ll_topic.setVisibility(View.GONE);
                             }
                         }
                     }

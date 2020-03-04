@@ -162,14 +162,14 @@ public class LoginActivity extends BaseActivity {
                             //预取号回调 code为1022:成功；其他：失败
                             if(1022 == code){
                                 KLog.e("tag", "预取号： code ==" + code + "   result==" + result);
-
+                                loading_view.setVisibility(View.GONE);
                                 //1自定义运营商授权页界面
                                 OneKeyLoginManager.getInstance().setAuthThemeConfig(ConfigUtils.getUiConfig(LoginActivity.this,
                                         "", loginType));
-                                //2
                                 openLoginActivity();
 
                             }else{
+                                loading_view.setVisibility(View.GONE);
                                 UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
                             }
 

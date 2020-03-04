@@ -63,7 +63,7 @@ public class DynamicLineNoRadiu4 extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec(20, MeasureSpec.getMode(heightMeasureSpec));
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(10, MeasureSpec.getMode(heightMeasureSpec));
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -75,7 +75,7 @@ public class DynamicLineNoRadiu4 extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        rectF.set(startX,0,stopX, SizeUtils.dp2px(10));
+        rectF.set(startX,0,stopX, SizeUtils.dp2px(5));
         canvas.drawRect(rectF,paint);
     }
 

@@ -1,7 +1,6 @@
 package com.qmkj.niaogebiji.common.service;
 
 import android.annotation.SuppressLint;
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -10,7 +9,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
+
+import androidx.lifecycle.LifecycleOwner;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.qiniu.android.http.ResponseInfo;
@@ -19,7 +19,6 @@ import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
-import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -27,11 +26,11 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
-import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.socks.library.KLog;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.xzh.imagepicker.bean.MediaFile;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,66 +47,73 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * @author zhouliang
  * 版本 1.0
- * 创建时间 2020-02-28
+ * 创建时间 2020-03-04
  * 描述:
  */
-public class SendService extends Service {
+public class SendBinderService extends Service {
+
+    private TempMsgBean mTempMsgBean;
+
+    //构建一个对象
+    public class MyBinder extends Binder{
 
 
-    private Intent intent ;
 
-    /**
-     * 返回一个Binder对象
-     */
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new MsgBinder();
-    }
-
-    public class MsgBinder extends Binder {
-        /**
-         * 获取当前Service的实例
-         *
-         * @return
-         */
-        public SendService getService() {
-            return SendService.this;
+        public SendBinderService getService(){
+            return SendBinderService.this;
         }
 
+        //③写一个公共方法，用来对data数据赋值。
+        public void setData(TempMsgBean mTempMsgBean){
+            SendBinderService.this.mTempMsgBean = mTempMsgBean;
+            changeData();
+        }
     }
+
+    //通过binder实现调用者client与Service之间的通信
+    private MyBinder binder = new MyBinder();
 
 
     @Override
     public void onCreate() {
+        Log.i("DemoLog","TestService -> onCreate, Thread: " + Thread.currentThread().getName());
         super.onCreate();
-        KLog.d("tag","service开启");
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent.getExtras() != null){
-            mTempMsgBean = (TempMsgBean) intent.getExtras().getSerializable("mTempMsgBean");
-            changeData();
-        }
-
-        return super.onStartCommand(intent, flags, startId);
+        Log.i("DemoLog", "TestService -> onStartCommand, startId: " + startId + ", Thread: " + Thread.currentThread().getName());
+        return START_NOT_STICKY;
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.i("DemoLog", "TestService -> onBind, Thread: " + Thread.currentThread().getName());
+        return binder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i("DemoLog", "TestService -> onUnbind, from:" + intent.getStringExtra("from"));
+        return false;
+    }
 
     @Override
     public void onDestroy() {
+        Log.i("DemoLog", "TestService -> onDestroy, Thread: " + Thread.currentThread().getName());
         super.onDestroy();
-        KLog.d("tag","自动销毁");
     }
 
-    public void setTempMsgBean(TempMsgBean tempMsgBean) {
-        mTempMsgBean = tempMsgBean;
+
+    //以下是方法
+    private boolean isRequestCancelled;
+    public void cancelRequest(){
+        isRequestCancelled = true;
     }
 
     /** --------------------------------- 发布帖子中  ---------------------------------v*/
     private ExecutorService mExecutorService;
-    private TempMsgBean mTempMsgBean;
     //文件路径
     private String data;
     private String key;
@@ -177,26 +182,27 @@ public class SendService extends Service {
             resultPic = "";
         }
 
-
         //内容
         blog  = mTempMsgBean.getContent();
-
-        //① 如果没有图片，显示属性动画
-        KLog.d("tag","resultPic " + resultPic);
-        if(TextUtils.isEmpty(resultPic)){
-            BaseActivity.isTextALl = true;
-            createBlog();
-        }else{
-            BaseActivity.isTextALl = false;
-            mExecutorService = Executors.newFixedThreadPool(2);
-            getUploadToken();
-        }
-
 
         //转发
         blog_is_comment = mTempMsgBean.getBlog_is_comment();
         blog_type = mTempMsgBean.getBlog_type();
+
     }
+
+    public void sendRequest(){
+        //① 如果没有图片，显示属性动画
+        KLog.d("tag","resultPic " + resultPic);
+        if(TextUtils.isEmpty(resultPic)){
+            createBlog();
+        }else{
+            mExecutorService = Executors.newFixedThreadPool(2);
+            getUploadToken();
+        }
+
+    }
+
 
 
     String qiniuToken;
@@ -281,6 +287,12 @@ public class SendService extends Service {
 
             mExecutorService.submit(() -> {
                 KLog.d("tag","本地存储的路径是 "  + data);
+
+                //手动设值，取消的话不上传到七牛云上
+                if(isRequestCancelled){
+                    return;
+                }
+
                 uploadManager.put(data, System.currentTimeMillis() + key , qiniuToken, new UpCompletionHandler() {
                     @Override
                     public void complete(String key, ResponseInfo info, JSONObject response) {
@@ -301,6 +313,10 @@ public class SendService extends Service {
         }
     }
 
+
+
+    //广播意图
+    private Intent intent ;
 
     UpProgressHandler upProgressHandler = new UpProgressHandler() {
         /**
@@ -401,8 +417,16 @@ public class SendService extends Service {
                             intent = new Intent("com.example.communication.RECEIVER");
                             intent.putExtra("no_pic", 1);
                             sendBroadcast(intent);
-                        }
 
+//                            intent = new Intent("com.example.communication.RECEIVER");
+//                            intent.putExtra("error", 1);
+//                            sendBroadcast(intent);
+                        }else {
+                            //① 发送广播  -- 图片
+                            intent = new Intent("com.example.communication.RECEIVER");
+                            intent.putExtra("pic", 1);
+                            sendBroadcast(intent);
+                        }
 
                         cleanData();
                         removeTempMsg();
@@ -412,7 +436,10 @@ public class SendService extends Service {
 
                     @Override
                     public void onNetFail(String msg) {
-                        BaseActivity.sendStatus = BaseActivity.isSendFail;
+                        //① 发送失败广播
+                        intent = new Intent("com.example.communication.RECEIVER");
+                        intent.putExtra("error", 1);
+                        sendBroadcast(intent);
                     }
                 });
     }
@@ -438,14 +465,5 @@ public class SendService extends Service {
 
 
 
-    public MyListe mMyListe;
 
-    public interface  MyListe{
-        void listener(double percent);
-    }
-
-
-    public void setMyListe(MyListe myListe) {
-        mMyListe = myListe;
-    }
 }

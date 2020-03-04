@@ -223,6 +223,10 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".module.activity.TopicDetailActivityV2"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".module.activity.HomeActivityV2"
             android:screenOrientation="portrait">
         </activity>
@@ -461,6 +465,7 @@
 
         <service android:name=".common.service.MediaService"/>
         <service android:name=".common.service.SendService"/>
+        <service android:name=".common.service.SendBinderService"/>
 
 
         <!-- 7.0之后下载需要的provider name一般都固定 -->

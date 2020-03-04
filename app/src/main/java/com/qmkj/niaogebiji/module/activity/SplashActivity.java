@@ -49,7 +49,7 @@ import butterknife.BindView;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-08
- * 描述:权限管理 -- 弹框，然后弹出所有权限 --
+ * 描述:权限管理 -- 弹框，然后弹出所有权限
  */
 public class SplashActivity extends BaseActivity {
 
@@ -74,9 +74,6 @@ public class SplashActivity extends BaseActivity {
 
     String permissions2[] = new String[]{
             Manifest.permission.READ_PHONE_STATE};
-
-    private boolean isSdcardOk;
-    private boolean isPhoneok;
 
     private AnimationDrawable animationDrawable;
 
@@ -109,11 +106,6 @@ public class SplashActivity extends BaseActivity {
         animationIV.setImageResource(R.drawable.splash_animation1);
         animationDrawable = (AnimationDrawable) animationIV.getDrawable();
         animationDrawable.start();
-
-//        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-//            finish();
-//            return;
-//        }
 
 
         //TODO 2020.1.10 应用宝渠道首个界面显示隐私弹框
@@ -212,14 +204,12 @@ public class SplashActivity extends BaseActivity {
 
         //如果有权限了，设置对勾状态
         if(hasPermissions(this,permissions1)){
-            isSdcardOk = true;
             if(null != mLaunchPermissDialog){
                 mLaunchPermissDialog.setSdcardOK();
             }
         }
 
         if(hasPermissions(this,permissions2)){
-            isPhoneok = true;
             if(null != mLaunchPermissDialog){
                 mLaunchPermissDialog.setPhoneOK();
             }
@@ -341,14 +331,12 @@ public class SplashActivity extends BaseActivity {
 
         //根据选择结果显示对勾
         if(hasPermissions(this,permissions1)){
-            isSdcardOk = true;
             if(null != mLaunchPermissDialog){
                 mLaunchPermissDialog.setSdcardOK();
             }
         }
 
         if(hasPermissions(this,permissions2)){
-            isPhoneok = true;
             if(null != mLaunchPermissDialog){
                 mLaunchPermissDialog.setPhoneOK();
             }

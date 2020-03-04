@@ -115,6 +115,10 @@ public class HotAuthorFragment extends BaseLazyFragment {
                     @Override
                     public void onSuccess(HttpResponse<AuthorBean> response) {
 
+                        if(smartRefreshLayout !=  null){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         AuthorBean mAuthorBean = response.getReturn_data();
                         if(null != mAuthorBean){
                             //得到集合

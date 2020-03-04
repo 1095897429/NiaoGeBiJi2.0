@@ -259,6 +259,7 @@
     <!--</androidx.appcompat.widget.Toolbar>-->
 
 
+    <!-- 默认为39dp  + padding = 25dp -->
     <RelativeLayout
         app:layout_anchor="@id/bg_img"
         app:layout_behavior=".module.widget.TranslucentBehavior"

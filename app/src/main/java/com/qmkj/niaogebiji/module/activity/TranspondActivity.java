@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -31,6 +32,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.PicPathHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
+import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
@@ -43,6 +45,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -233,9 +236,47 @@ public class TranspondActivity extends BaseActivity {
                 if(mCheckbox.isChecked()){
                     blog_is_comment = 1;
                 }
+                //转发
+                blog_type = 1;
 
 
-                createBlog();
+//                createBlog();
+
+
+                //判断网络是否连接 检测链接的网络能否上网[子线程中]
+                if(!NetworkUtils.isConnected() ){
+                    ToastUtils.showShort("无网络连接");
+                    return;
+                }
+
+//                if(! NetworkUtils.isAvailable()){
+//                    ToastUtils.showShort("当前网络不可用");
+//                    return;
+//                }
+
+
+                if(mString.length() > num){
+                    ToastUtils.showShort("内容最多输入140字");
+                    return;
+                }
+
+                //设置发送数据
+                sendData();
+
+                //① 在这里设置进度条的最大进度
+                List<String> tempList = new ArrayList<>();
+                tempList.clear();
+
+                if(!tempList.isEmpty()){
+                    BaseActivity.maxSendProgress = tempList.size() * 100;
+                }else{
+                    BaseActivity.maxSendProgress = 100;
+                }
+
+
+                toSendBlog(mTempMsgBean);
+
+
 
 
                 break;
@@ -246,6 +287,27 @@ public class TranspondActivity extends BaseActivity {
         }
     }
 
+    //发送的数据
+    private TempMsgBean mTempMsgBean;
+    private void sendData() {
+        if(null == mTempMsgBean){
+            mTempMsgBean = new TempMsgBean();
+        }
+
+        mTempMsgBean.setContent(mEditText.getText().toString().trim());
+        //12.26 link 在点击删除按钮时清空了
+        mTempMsgBean.setLinkTitle("");
+        mTempMsgBean.setLinkurl("");
+        mTempMsgBean.setImgPath(null);
+        mTempMsgBean.setImgPath2(null);
+        mTempMsgBean.setTopicName(topicName);
+        mTempMsgBean.setTopicId(topicId);
+
+        //转发 + 评论
+        mTempMsgBean.setBlog_is_comment(blog_is_comment );
+        mTempMsgBean.setBlog_type(blog_type );
+
+    }
 
 
 

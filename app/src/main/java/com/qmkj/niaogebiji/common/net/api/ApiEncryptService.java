@@ -32,6 +32,7 @@ import com.qmkj.niaogebiji.module.bean.InvitePosterBean;
 import com.qmkj.niaogebiji.module.bean.IsPhoneBindBean;
 import com.qmkj.niaogebiji.module.bean.MoringAllBean;
 import com.qmkj.niaogebiji.module.bean.MoringIndexBean;
+import com.qmkj.niaogebiji.module.bean.MyProductBean;
 import com.qmkj.niaogebiji.module.bean.NewPointTaskBean;
 import com.qmkj.niaogebiji.module.bean.NewUserTaskBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
@@ -816,5 +817,9 @@ public interface ApiEncryptService{
     @POST("app/academy/recordCourse")
     Observable<HttpResponse<String>> recordCourse(@Field("params") String param);
 
+    /* 2020.3.4  推荐商品列表 -- 我的*/
+    @FormUrlEncoded
+    @POST("app/my/getRecommendMallList")
+    Observable<HttpResponse<MyProductBean>> getRecommendMallList(@Field("params") String param);
 
 }

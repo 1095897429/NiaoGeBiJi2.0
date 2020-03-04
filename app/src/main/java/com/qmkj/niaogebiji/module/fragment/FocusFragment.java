@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -11,6 +12,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
@@ -97,6 +99,7 @@ public class FocusFragment extends BaseLazyFragment {
 
     @Override
     protected void lazyLoadData() {
+        showWaitingDialog();
         getIndexArticle();
     }
 
@@ -160,7 +163,8 @@ public class FocusFragment extends BaseLazyFragment {
         mFocusAdapter.setAuthorDetailListener(position -> {
 
             //TODO 2.19 原生
-            UIHelper.toAuthorDetailActivity(getActivity(),"111");
+            String id =  mAuther_lists.get(position).getId();
+            UIHelper.toAuthorDetailActivity(getActivity(),id);
 
 //            UIHelper.toWebViewActivity(getActivity(), StringUtil.getLink("authordetail/" + mAuther_lists.get(position).getId()));
         });
@@ -253,6 +257,9 @@ public class FocusFragment extends BaseLazyFragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
+
+                        hideWaitingDialog();
+
                         IndexFocusBean mIndexFocusBean = response.getReturn_data();
                         if(null != mIndexFocusBean){
                             mIsRefreshing = false;
@@ -305,7 +312,7 @@ public class FocusFragment extends BaseLazyFragment {
                     @Override
                     public void onHintError(String return_code, String errorMes) {
                         super.onHintError(return_code, errorMes);
-
+                        hideWaitingDialog();
                         if(null != smartRefreshLayout){
                             mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
@@ -316,6 +323,7 @@ public class FocusFragment extends BaseLazyFragment {
                     @Override
                     public void onNetFail(String msg) {
                         super.onNetFail(msg);
+                        hideWaitingDialog();
                         if(null != smartRefreshLayout){
                             mIsRefreshing = false;
                             smartRefreshLayout.finishRefresh();
@@ -487,5 +495,29 @@ public class FocusFragment extends BaseLazyFragment {
         }
     }
 
+
+    @BindView(R.id.loading_dialog)
+    LinearLayout loading_dialog;
+
+    @BindView(R.id.lottieAnimationView)
+    LottieAnimationView lottieAnimationView;
+
+    public void showWaitingDialog() {
+        loading_dialog.setVisibility(View.VISIBLE);
+        lottieAnimationView.setImageAssetsFolder("images");
+        lottieAnimationView.setAnimation("images/loading.json");
+        lottieAnimationView.loop(true);
+        lottieAnimationView.playAnimation();
+    }
+
+    /**
+     * 隐藏等待提示框
+     */
+    public void hideWaitingDialog() {
+        if(null != lottieAnimationView){
+            loading_dialog.setVisibility(View.GONE);
+            lottieAnimationView.cancelAnimation();
+        }
+    }
 
 }

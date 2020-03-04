@@ -172,7 +172,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
         textViewLl.setGravity(Gravity.CENTER|Gravity.LEFT);
 
         // 给与一定的宽度
-        LayoutParams params = new LayoutParams(SizeUtils.dp2px(60) ,ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(SizeUtils.dp2px(50) ,ViewGroup.LayoutParams.WRAP_CONTENT);
 
         typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/DIN-Bold.otf");
 

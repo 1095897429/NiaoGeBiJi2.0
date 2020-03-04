@@ -76,35 +76,35 @@ public class MyOnPageChangeListener4 implements ViewPager.OnPageChangeListener {
             //当前文本
             TextView temp1 = (TextView) textViews.get(position);
             KLog.d("tag","当前文本是 " + temp1.getText().toString());
+//            KLog.d("tag","getLeft1 " + temp1.getPaddingLeft());
+            KLog.d("tag","getLeft2 " + temp1.getLeft());
 
             dynamicLine.updateView(temp1.getLeft(),temp1.getRight());
         }
 
 
-//        if(textViews.get(position) instanceof ImageView){
-////            dynamicLine.updateView(0,0);
-//            ImageView imageView = (ImageView) textViews.get(position);
-//            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
-//            lp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-//            lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//            imageView.setLayoutParams(lp);
-//            imageView.setImageResource(R.mipmap.icon_first_hot);
-//        }else{
+        if(textViews.get(position) instanceof ImageView){
+            dynamicLine.updateView(0,0);
+            ImageView imageView = (ImageView) textViews.get(position);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+            lp.height = SizeUtils.dp2px(15);
+//            lp.width =  SizeUtils.dp2px(60);
+            lp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            lp.setMargins(0,0,0,10);
+            imageView.setLayoutParams(lp);
+            imageView.setImageResource(R.mipmap.icon_first_hot);
+        } else{
 
-//            //当前文本
-//            TextView temp1 = (TextView) textViews.get(position);
-//            KLog.d("tag","当前文本是 " + temp1.getText().toString());
-//
-//            dynamicLine.updateView(temp1.getLeft(),temp1.getRight());
-
-//            //处理图片
-//            ImageView imageView = (ImageView) textViews.get(textViews.size() - 1);
-//            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
-//            lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//            lp.width =  LinearLayout.LayoutParams.WRAP_CONTENT;
-//            imageView.setImageResource(R.mipmap.icon_first_hot_default);
-//            imageView.setLayoutParams(lp);
-//        }
+            //处理图片
+            ImageView imageView = (ImageView) textViews.get(textViews.size() - 1);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+            lp.height = SizeUtils.dp2px(15);
+//            lp.width =  SizeUtils.dp2px(60);
+            lp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            lp.setMargins(0,0,0,10);
+            imageView.setImageResource(R.mipmap.icon_first_hot_default);
+            imageView.setLayoutParams(lp);
+        }
 
 
 

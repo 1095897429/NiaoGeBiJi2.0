@@ -108,7 +108,7 @@ public class FirstFragment extends BaseLazyFragment {
     ViewPager mViewPager;
 
     @BindView(R.id.pager_title)
-    ViewPagerTitleSlide4 pager_title;
+    ViewPagerTitleSlide3 pager_title;
 
     @BindView(R.id.ll_moring)
     LinearLayout ll_moring;

@@ -43,6 +43,8 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.push.JPushReceiver;
 import com.qmkj.niaogebiji.common.service.MediaService;
+import com.qmkj.niaogebiji.common.service.SendBinderService;
+import com.qmkj.niaogebiji.common.service.SendService;
 import com.qmkj.niaogebiji.common.utils.AppUpdateUtilNew;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
@@ -197,20 +199,51 @@ public class HomeActivityV2 extends BaseActivity {
     //下面是app从关闭杀死到启动首页 - 走这里）
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        KLog.e("tag","HomeActivity  onCreate");
+        KLog.e("tag","HomeActivity2  onCreate");
         super.onCreate(savedInstanceState);
         if(null != getIntent().getExtras()){
             mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
         }
 
         initService();
+
+        initSendService();
     }
+
+
+    //“绑定”服务的intent
+    static Intent intentSend;
+    public static SendBinderService.MyBinder mSendBinder;
+
+    public static SendBinderService mService;
+    private void initSendService() {
+        intentSend = new Intent(this, SendBinderService.class);
+        //绑定播放音乐的服务
+        bindService(intentSend, mServiceConnectionSend, BIND_AUTO_CREATE);
+    }
+
+    private ServiceConnection mServiceConnectionSend = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mSendBinder = (SendBinderService.MyBinder) service;
+            Log.e("tag", "Service与Activity已连接111111");
+            mService = ((SendBinderService.MyBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+
+
 
 
     //“绑定”服务的intent
     Intent MediaServiceIntent;
     public static MediaService.MyBinder mMyBinder;
-
+    //① 通过全局变量服务来操作
     public static MediaService mMediaService;
 
     private void initService() {
@@ -625,6 +658,8 @@ public class HomeActivityV2 extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+
+        unbindService(mServiceConnectionSend);
     }
 
     public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";

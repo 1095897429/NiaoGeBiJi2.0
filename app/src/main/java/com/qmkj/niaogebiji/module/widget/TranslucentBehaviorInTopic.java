@@ -7,11 +7,11 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.module.event.ShowTopAuthorEvent;
+import com.qmkj.niaogebiji.module.event.ShowTopTopicEvent;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,12 +22,12 @@ import org.greenrobot.eventbus.EventBus;
  * 创建时间 2020-02-20
  * 描述:
  */
-public class TranslucentBehavior extends CoordinatorLayout.Behavior<RelativeLayout> {
+public class TranslucentBehaviorInTopic extends CoordinatorLayout.Behavior<RelativeLayout> {
 
     /**标题栏的高度*/
     private int mToolbarHeight = 0;
 
-    public TranslucentBehavior(Context context, AttributeSet attrs) {
+    public TranslucentBehaviorInTopic(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -44,20 +44,22 @@ public class TranslucentBehavior extends CoordinatorLayout.Behavior<RelativeLayo
 
         // 初始化高度
         if (mToolbarHeight == 0) {
-            //为了更慢的 -- 减去30是偏移量 (310总的)
+            //为了更慢的 -- 减去30是偏移量
             KLog.d("tag","child.getBottom() " + child.getBottom());
-            mToolbarHeight = SizeUtils.dp2px(216f);
+            mToolbarHeight = SizeUtils.dp2px( 237f - 25 - 39f);
+            KLog.d("tag","mToolbarHeight " + mToolbarHeight);
         }
-        //
+
+        KLog.d("tag","dependency.getY() " + dependency.getY());
         //计算toolbar从开始移动到最后的百分比
         float percent = dependency.getY() / mToolbarHeight;
 
         //百分大于1，直接赋值为1
         if (percent >= 1) {
             percent = 1f;
-            EventBus.getDefault().post(new ShowTopAuthorEvent("1"));
+            EventBus.getDefault().post(new ShowTopTopicEvent("1"));
         }else{
-            EventBus.getDefault().post(new ShowTopAuthorEvent("0"));
+            EventBus.getDefault().post(new ShowTopTopicEvent("0"));
         }
 
         // 计算alpha通道值

@@ -31,6 +31,29 @@ public class TempMsgBean extends BaseBean {
     //话题名称
     private String topicName;
 
+    //是否是转发
+    private int blog_type;
+
+    //是否评论
+    int blog_is_comment ;
+
+
+    public int getBlog_type() {
+        return blog_type;
+    }
+
+    public void setBlog_type(int blog_type) {
+        this.blog_type = blog_type;
+    }
+
+    public int getBlog_is_comment() {
+        return blog_is_comment;
+    }
+
+    public void setBlog_is_comment(int blog_is_comment) {
+        this.blog_is_comment = blog_is_comment;
+    }
+
     public String getTopicName() {
         return topicName;
     }

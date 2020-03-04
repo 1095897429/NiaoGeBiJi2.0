@@ -75,8 +75,9 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
             dynamicLine.updateView(0,0);
             ImageView imageView = (ImageView) textViews.get(position);
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
-            lp.width = SizeUtils.dp2px(60);
-            lp.height = SizeUtils.dp2px(20);
+            lp.width = SizeUtils.dp2px(50);
+//            lp.height = SizeUtils.dp2px(20);
+            lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
             imageView.setLayoutParams(lp);
             imageView.setImageResource(R.mipmap.icon_first_hot);
         }else{
@@ -84,6 +85,7 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
 
             ImageView imageView = (ImageView) textViews.get(textViews.size() - 1);
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+            lp.width = SizeUtils.dp2px(50);
             lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
             imageView.setImageResource(R.mipmap.icon_first_hot_default);
             imageView.setLayoutParams(lp);
@@ -112,13 +114,13 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
         this.dynamicLine = dynamicLine;
         textViews = viewPagerTitle.getTextView();
         pagerCount = textViews.size();
-        screenWidth = getScreenWidth((Activity)context) - SizeUtils.dp2px(16 + 28 + 16 );
+        screenWidth = getScreenWidth((Activity)context) - SizeUtils.dp2px(16 + 28 + 16  );
 //        screenWidth = ScreenUtils.getScreenWidth();
         //得到第一个选中文本的大小
         lineWidth = (int)getTextViewLength((TextView) textViews.get(defaultIndex));
         everyLength = screenWidth / pagerCount;
 //        KLog.d("tag","每个控件均分长度为  " + everyLength);
-        everyLength = SizeUtils.dp2px(60);
+        everyLength = SizeUtils.dp2px(50);
         //默认绘制
         dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (defaultIndex)*everyLength );
 

@@ -12,6 +12,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
+import com.blankj.utilcode.util.CrashUtils;
 import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
 import com.chuanglan.shanyan_sdk.listener.InitListener;
 import com.huawei.android.hms.agent.HMSAgent;
@@ -102,6 +103,13 @@ public class BaseApp extends Application {
         initJPush();
 
         initSY();
+
+        initCrash();
+    }
+
+    //在app崩溃的时候记录信息到文件中去cache目录下
+    private void initCrash() {
+        CrashUtils.init();
     }
 
     //闪验配置 使用一键登录功能前，必须先进行初始化操作

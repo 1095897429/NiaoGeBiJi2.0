@@ -39,7 +39,7 @@ public class MediaService extends Service {
 
 
     public MediaService() {
-        KLog.d("tag"," service的构造函数 ");
+//        KLog.d("tag"," service的构造函数 ");
         if(null == mMediaPlayer){
             mMediaPlayer = new MediaPlayer();
             // 设置音量，参数分别表示左右声道声音大小，取值范围为0~1
@@ -56,7 +56,7 @@ public class MediaService extends Service {
 
     @Override
     public void onCreate() {
-        KLog.d("tag"," onCreate ");
+//        KLog.d("tag"," onCreate ");
         super.onCreate();
     }
 

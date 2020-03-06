@@ -648,11 +648,12 @@
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottieAnimationView"
-                    android:visibility="visible"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    app:lottie_loop="false"
-                    app:lottie_autoPlay="false" />
+                    android:visibility="gone"
+                    android:src="@mipmap/icon_zan_2"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    app:lottie_loop="true"
+                    app:lottie_autoPlay="true" />
 
 
             </RelativeLayout>

@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class NewsDetailBean extends BaseBean {
 
+    //文章的id
     private String aid;
     private String catid;
     private String title;
@@ -471,7 +472,7 @@ public class NewsDetailBean extends BaseBean {
 
 
     //问答
-    public static class Que_answer_json {
+    public static class Que_answer_json extends BaseBean{
 
         private int answer_id;
         private String answer_title;
@@ -493,7 +494,7 @@ public class NewsDetailBean extends BaseBean {
 
 
     //相关文章
-    public static class Relate {
+    public static class Relate extends BaseBean{
 
         private String aid;
         private String title;

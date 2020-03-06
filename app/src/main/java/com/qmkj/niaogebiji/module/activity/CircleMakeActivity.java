@@ -231,6 +231,8 @@ public class CircleMakeActivity extends BaseActivity {
 
     }
 
+
+
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
@@ -243,6 +245,10 @@ public class CircleMakeActivity extends BaseActivity {
         RxTextView
                 .textChanges(mEditText)
                 .subscribe(charSequence -> {
+                    //unicode emoji 是四个字节
+                    //中文在utf-8    是三个字节
+                    //英文           是一个字节
+
                     //英文单词占1个字符  表情占2个字符 中文占1个字符
                     //目前用上面的方案的
                     KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );

@@ -440,7 +440,7 @@ public interface ApiEncryptService{
     Observable<HttpResponse> sendverifycode(@Field("params") String param);
 
 
-    /* 2019.12.17 使用手机验证码登录  */
+    /* 2019.12.17 使用手机验证码登录 -- 不用了，此时loginType也没啥作用了  */
     @FormUrlEncoded
     @POST("app/auth/loginViaCode")
     Observable<HttpResponse<RegisterLoginBean.UserInfo>> loginViaCode(@Field("params") String param);
@@ -822,4 +822,9 @@ public interface ApiEncryptService{
     @POST("app/my/getRecommendMallList")
     Observable<HttpResponse<MyProductBean>> getRecommendMallList(@Field("params") String param);
 
+
+    /* 2020.3.6  底部推荐工具*/
+    @FormUrlEncoded
+    @POST("app/tool/getRecommendTool")
+    Observable<HttpResponse<ToolBean>> getRecommendTool(@Field("params") String param);
 }

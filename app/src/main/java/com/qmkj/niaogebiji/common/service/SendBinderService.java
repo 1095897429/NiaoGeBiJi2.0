@@ -136,18 +136,18 @@ public class SendBinderService extends Service {
     String blog_link_title = "";
     //0原创 1转发
     int blog_type = 0;
-    //被转发动态ID，原创为0
-    int blog_pid = 0;
     //转发时是否同时评论动态，1是 0否
     int blog_is_comment = 0;
     //文章Id
-    int article_id;
+    String article_id = "";
     //文字标题
     String article_title = "";
     //文字图片
     String article_image= "";
     //话题id
     String topic_id = "";
+    //转发哪个圈子的id
+    String pid = "";
 
     public void changeData() {
 
@@ -185,9 +185,23 @@ public class SendBinderService extends Service {
         //内容
         blog  = mTempMsgBean.getContent();
 
-        //转发
+        //转发 pid = "" 不能为null
         blog_is_comment = mTempMsgBean.getBlog_is_comment();
         blog_type = mTempMsgBean.getBlog_type();
+
+        if(!TextUtils.isEmpty(mTempMsgBean.getPid())){
+            pid = mTempMsgBean.getPid();
+        }
+
+
+         //文章
+        if(!TextUtils.isEmpty(mTempMsgBean.getArticle_id())){
+            article_id = mTempMsgBean.getArticle_id();
+            article_title = mTempMsgBean.getArticle_title();
+            article_image = mTempMsgBean.getArticle_img();
+        }
+
+
 
     }
 
@@ -394,7 +408,7 @@ public class SendBinderService extends Service {
         map.put("link",blog_link + "");
         map.put("link_title",blog_link_title + "");
         map.put("type",blog_type + "");
-        map.put("pid",blog_pid + "");
+        map.put("pid",pid + "");
         map.put("is_comment",blog_is_comment + "");
         map.put("article_id", article_id + "");
         map.put("article_title", article_title + "");
@@ -454,6 +468,10 @@ public class SendBinderService extends Service {
         blog_link_title = "";
         blog_type = 0;
         blog_is_comment = 0;
+        article_id = "";
+        article_title = "";
+        article_image = "";
+
     }
 
 

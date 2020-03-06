@@ -21,6 +21,7 @@ import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
+import com.qmkj.niaogebiji.module.event.LoginSyEvent;
 import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -155,10 +156,13 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                             KLog.e("tag","wechatoken 是 " + response.getReturn_data().getWechat_token());
                             //wechat_token（不为空) 是 新用户
                             if(!TextUtils.isEmpty(mWxResultBean.getWechat_token())){
-                                UIHelper.toPhoneInputActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
+//                                UIHelper.toPhoneInputActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
+
                                 //TODO 新逻辑，进入闪验界面
 //                                UIHelper.toPhoneShanYanActivity(WXEntryActivity.this,mWxResultBean.getWechat_token(),"weixin");
 //                                EventBus.getDefault().post(new LoginGoodEvent("微信登录 成功，销毁登录界面"));
+
+                                EventBus.getDefault().post(new LoginSyEvent(mWxResultBean.getWechat_token()));
                             }else{
                                 RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
                                 StringUtil.setUserInfoBean(mUserInfo);

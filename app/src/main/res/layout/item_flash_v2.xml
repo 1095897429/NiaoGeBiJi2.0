@@ -283,9 +283,11 @@
 
                 <ImageView
                     android:id="@+id/zan_img"
+                    android:visibility="visible"
                     android:src="@mipmap/icon_flash_priase"
                     android:layout_width="20dp"
                     android:layout_height="20dp" />
+
 
                 <Space
                     android:layout_width="5dp"

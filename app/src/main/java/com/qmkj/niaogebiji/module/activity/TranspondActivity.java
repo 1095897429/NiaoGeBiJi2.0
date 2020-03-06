@@ -255,28 +255,9 @@ public class TranspondActivity extends BaseActivity {
 //                }
 
 
-                if(mString.length() > num){
-                    ToastUtils.showShort("内容最多输入140字");
-                    return;
-                }
-
-                //设置发送数据
-                sendData();
-
-                //① 在这里设置进度条的最大进度
-                List<String> tempList = new ArrayList<>();
-                tempList.clear();
-
-                if(!tempList.isEmpty()){
-                    BaseActivity.maxSendProgress = tempList.size() * 100;
-                }else{
-                    BaseActivity.maxSendProgress = 100;
-                }
 
 
-                toSendBlog(mTempMsgBean);
-
-
+                sendToService();
 
 
                 break;
@@ -286,6 +267,53 @@ public class TranspondActivity extends BaseActivity {
             default:
         }
     }
+
+
+
+
+    private void sendToService() {
+        //设置发送数据
+        sendData();
+
+        //① 在这里设置进度条的最大进度
+        List<String>  tempList = new ArrayList<>();
+        tempList.clear();
+
+
+        if(!tempList.isEmpty()){
+            BaseActivity.maxSendProgress = tempList.size() * 100;
+        }else{
+            BaseActivity.maxSendProgress = 100;
+        }
+
+
+        toSendBlogByService(mTempMsgBean);
+
+        sendPicToQiuNiu();
+    }
+
+
+    //把整体数据转移到Fragment中
+    private void sendPicToQiuNiu() {
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("key",mTempMsgBean);
+        intent.putExtras(bundle);
+        setResult(200,intent);
+        finish();
+    }
+
+
+    public void toSendBlogByService(TempMsgBean tempMsgBean){
+        mTempMsgBean = tempMsgBean;
+
+        HomeActivityV2.mSendBinder.setData(tempMsgBean);
+
+        //启动
+        HomeActivityV2.mService.sendRequest();
+    }
+
+
 
     //发送的数据
     private TempMsgBean mTempMsgBean;
@@ -304,9 +332,9 @@ public class TranspondActivity extends BaseActivity {
         mTempMsgBean.setTopicId(topicId);
 
         //转发 + 评论
-        mTempMsgBean.setBlog_is_comment(blog_is_comment );
-        mTempMsgBean.setBlog_type(blog_type );
-
+        mTempMsgBean.setBlog_is_comment(blog_is_comment);
+        mTempMsgBean.setBlog_type(blog_type);
+        mTempMsgBean.setPid(mCircleBean.getId());
     }
 
 

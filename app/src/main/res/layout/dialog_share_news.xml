@@ -40,7 +40,7 @@
             <TextView
                 android:id="@+id/share_dynamic_text"
                 android:text="转发到动态"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:gravity="center"
                 android:padding="8dp"
                 android:textColor="@color/text_second_color"
@@ -64,7 +64,7 @@
 
             <TextView
                 android:text="朋友圈"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:gravity="center"
                 android:padding="8dp"
                 android:textColor="@color/text_second_color"
@@ -89,7 +89,7 @@
 
             <TextView
                 android:text="微信好友"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:gravity="center"
                 android:padding="8dp"
                 android:textColor="@color/text_second_color"
@@ -114,7 +114,7 @@
 
             <TextView
                 android:text="复制链接"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:gravity="center"
                 android:padding="8dp"
                 android:textColor="@color/text_second_color"

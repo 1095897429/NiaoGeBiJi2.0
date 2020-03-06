@@ -27,6 +27,17 @@ public class ToolBean extends BaseBean {
     //跳转类型 0外链 1小程序
     private String type;
 
+    //首页显示的icon
+    private String tab_icon;
+
+    public String getTab_icon() {
+        return tab_icon;
+    }
+
+    public void setTab_icon(String tab_icon) {
+        this.tab_icon = tab_icon;
+    }
+
     public String getType() {
         return type;
     }

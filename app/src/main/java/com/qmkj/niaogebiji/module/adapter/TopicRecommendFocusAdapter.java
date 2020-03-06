@@ -145,10 +145,10 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","关注成功，改变状态");
                         mData.get(mPosition).setIs_follow(true);
-                        notifyItemInserted(mPosition);
+                        notifyItemChanged(mPosition);
 
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override
@@ -172,9 +172,9 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","取关成功，改变状态");
                         mData.get(mPosition).setIs_follow(false);
-                        notifyItemInserted(mPosition);
+                        notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override

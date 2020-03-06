@@ -96,6 +96,26 @@ public class ImageUtil {
     }
 
 
+
+    public static void loadToolDefault(Context context, String url, ImageView imageView) {
+
+        if (context == null){
+            return;
+        }
+
+        if (context instanceof Activity) {
+            if (((Activity) context).isFinishing()) {
+                return;
+            }
+        }
+
+        Glide.with(context).load(url).placeholder(R.mipmap.icon_index_20).into(imageView);
+
+
+    }
+
+
+
     public static void load(Context context, int res, ImageView imageView) {
 
         if (context == null){

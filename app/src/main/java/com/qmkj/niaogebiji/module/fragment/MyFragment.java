@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
@@ -22,6 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -190,6 +193,7 @@ public class MyFragment extends BaseLazyFragment {
 
     @Override
     protected void initView() {
+
 
         getRecommendMallList();
 
@@ -370,9 +374,8 @@ public class MyFragment extends BaseLazyFragment {
                 name.setText(mUserInfo.getName());
             }
 
-
-//            if(没有认证显示去认证){
-//                显示：立即完善信息，建立人脉
+//            if(没有认证显示去认证 -- 名字是否为空判断){ ok
+//                显示：立即完善信息，建立人脉(下划线)
 //                点击：编辑名片信息
 //            }else{
 //                if( 认证没通过){
@@ -390,42 +393,57 @@ public class MyFragment extends BaseLazyFragment {
 //            }
 
 
-            //①  认证了显示公司 + 职位
-            //②  没认证去h5 显示：去认证
-            //③  填写了信息没有认证通过 显示：公司 + 职位 + 立即认证
-            //认证 -- 这里不用改(不用显示用户名在认证的情况下)
-            if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
-                name_author_tag.setVisibility(View.VISIBLE);
-                name_vertify.setVisibility(View.GONE);
-                name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
-                        (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
-
-//                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company1);
-//                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-//                name_author_tag.setCompoundDrawables(null,null,drawable,null);
-
-
-                //居中对齐imageSpan
-                CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
-                SpannableString spanString2 = new SpannableString("icon");
-                spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                name_author_tag.append(spanString2);
-
-
-            }else{
+            if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
+                    TextUtils.isEmpty(mUserInfo.getPosition()) ){
                 name_vertify.setVisibility(View.VISIBLE);
                 name_author_tag.setVisibility(View.GONE);
                 name_vertify.setText("立即完善信息，建立人脉");
-                name_vertify.setTextColor(Color.parseColor("#AAAEB3"));
+                //下划线
+                name_vertify.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                //抗锯齿
+                name_vertify.getPaint().setAntiAlias(true);
                 name_vertify.setOnClickListener(v -> {
                     MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
                     if(StringUtil.isFastClick()){
                         return;
                     }
 
-                    posCertInit();
+                    UIHelper.toUserInfoModifyActivity(getActivity());
+
                 });
+            }else{
+                //认证是否通过 -- 这里不用改(不用显示用户名在认证的情况下)
+                if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
+                    name_author_tag.setVisibility(View.VISIBLE);
+                    name_vertify.setVisibility(View.GONE);
+                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+
+                    //居中对齐imageSpan
+                    CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+                    SpannableString spanString2 = new SpannableString("icon");
+                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    name_author_tag.append(spanString2);
+
+
+                }else{
+                    name_author_tag.setVisibility(View.VISIBLE);
+                    name_vertify_no.setVisibility(View.VISIBLE);
+                    //下划线
+                    name_vertify_no.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                    //抗锯齿
+                    name_vertify_no.getPaint().setAntiAlias(true);
+                    name_vertify.setVisibility(View.GONE);
+                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+
+                    name_vertify_no.setOnClickListener(v -> ToastUtils.showShort("去认证h5界面"));
+
+                }
             }
+
+
+
 
             //是否领过vip 1-领取过，0-未领取过 180天字段
             if("1".equals(mUserInfo.getIs_180_vip())){

@@ -94,17 +94,7 @@ public class UserInfoModifyActivity extends BaseActivity {
     @BindView(R.id.profile_info_text)
     TextView profile_info_text;
 
-    @BindView(R.id.open_push)
-    ImageView open_push;
 
-    @BindView(R.id.exit_txt)
-    TextView exit_txt;
-
-    @BindView(R.id.push_tx)
-    TextView push_tx;
-
-    @BindView(R.id.clean_text)
-    TextView clean_text;
 
     @BindView(R.id.profession_status)
     LinearLayout profession_status;
@@ -124,6 +114,11 @@ public class UserInfoModifyActivity extends BaseActivity {
     @BindView(R.id.profession_name_now)
     LinearLayout profession_name_now;
 
+    @BindView(R.id.profession_name_old_text)
+    TextView profession_name_old_text;
+
+    @BindView(R.id.company_name_old_text)
+    TextView company_name_old_text;
 
 
     @BindView(R.id.company_name_old)
@@ -138,6 +133,12 @@ public class UserInfoModifyActivity extends BaseActivity {
     @BindView(R.id.ll_school)
     LinearLayout ll_school;
 
+
+    @BindView(R.id.profession_ohter_name)
+    TextView profession_ohter_name;
+
+    @BindView(R.id.school_text)
+    TextView school_text;
 
 
     private Uri imageUri;
@@ -173,7 +174,7 @@ public class UserInfoModifyActivity extends BaseActivity {
         userInfo = StringUtil.getUserInfoBean();
 
         //职业信息
-        getStatePosition();
+        getStatePosition(userInfo.getPosition_status());
 
         if("1".equals(userInfo.getPosition_status())){
             profession_name.setText("在职");
@@ -183,15 +184,29 @@ public class UserInfoModifyActivity extends BaseActivity {
             }
 
             //当前公司
-            if(!TextUtils.isEmpty(userInfo.getCompany())){
+            if(!TextUtils.isEmpty(userInfo.getCompany_name())){
                 company_name_now_text.setText(userInfo.getCompany_name());
             }
+            mPosition = userInfo.getPosition();
+            mCompany = userInfo.getCompany_name();
         }else if("2".equals(userInfo.getPosition_status())){
             profession_name.setText("离职");
+            mComanyOld = userInfo.getCompany_name();
+
+            mComanyOld = mComanyOld.substring(1);
+            mPositionOld = userInfo.getPosition();
+
+            company_name_old_text.setText(mComanyOld);
+            profession_name_old_text.setText(mPositionOld);
+
         }else if("3".equals(userInfo.getPosition_status())){
             profession_name.setText("自由职业");
+            mPositionOther = userInfo.getPosition();
+            profession_ohter_name.setText(mPositionOther);
         }else if("4".equals(userInfo.getPosition_status())){
             profession_name.setText("学生");
+            mSchool = userInfo.getCompany_name();
+            school_text.setText(mSchool);
         }
 
         //头像
@@ -205,62 +220,45 @@ public class UserInfoModifyActivity extends BaseActivity {
         profile_info_text.setText(userInfo.getPro_summary());
 
 
-
-
         mNickname = userInfo.getNickname();
         mName = userInfo.getName();
         mGender = userInfo.getGender();
-        mPosition = userInfo.getPosition();
-        mCompany = userInfo.getCompany();
         mAvatar_ext = "png";
         mPro_summary = userInfo.getPro_summary() ;
         mBirthday =  userInfo.getBirthday();
 
 
-        tv_title.setText("编辑");
-
-//        boolean isOpen = SPUtils.getInstance().getBoolean("push_open",true);
-//        if(isOpen){
-//            open_push.setImageResource(R.mipmap.icon_push_open);
-//            push_tx.setText("已开启");
-//            if(BuildConfig.DEBUG){
-//                requestPermission(this);
-//            }
-//            JPushInterface.resumePush(getApplicationContext());
-//        }else{
-//            open_push.setImageResource(R.mipmap.icon_push_close);
-//            push_tx.setText("已关闭");
-//            JPushInterface.stopPush(getApplicationContext());
-//
-//        }
-
-        Random rand = new Random();
-        int i = rand.nextInt(15) + 1;
-        clean_text.setText("当前缓存" + i + "M");
 
 
-        //应用程序接收通知开关是否打开
-//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-//        boolean areNotificationsEnabled = notificationManagerCompat.areNotificationsEnabled();
-//        if(areNotificationsEnabled){
-//            KLog.d("tag","应用程序接收通知开关已打开");
-//        }else{
-//            KLog.d("tag","应用程序接收通知开关未打开");
-//        }
+        tv_title.setText("编辑资料");
 
 
     }
 
-    private void getStatePosition() {
-        if("1".equals(userInfo.getPosition_status())){
+    private void hideView() {
+        ll_company.setVisibility(View.GONE);
+        profession_name_now.setVisibility(View.GONE);
+        company_name_old.setVisibility(View.GONE);
+        profession_name_old.setVisibility(View.GONE);
+        profession_other.setVisibility(View.GONE);
+        ll_school.setVisibility(View.GONE);
+    }
+
+    private void getStatePosition(String stutus) {
+        //职业状态
+        mPositionStatus = stutus;
+
+        hideView();
+
+        if("1".equals(stutus)){
             ll_company.setVisibility(View.VISIBLE);
             profession_name_now.setVisibility(View.VISIBLE);
-        }else if("2".equals(userInfo.getPosition_status())){
+        }else if("2".equals(stutus)){
             company_name_old.setVisibility(View.VISIBLE);
             profession_name_old.setVisibility(View.VISIBLE);
-        }else if("3".equals(userInfo.getPosition_status())){
+        }else if("3".equals(stutus)){
             profession_other.setVisibility(View.VISIBLE);
-        }else if("4".equals(userInfo.getPosition_status())){
+        }else if("4".equals(stutus)){
             ll_school.setVisibility(View.VISIBLE);
         }
 
@@ -270,43 +268,52 @@ public class UserInfoModifyActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //判断是否需要开启通知栏功能
-            NotificationUtil.OpenNotificationSetting(mContext, new NotificationUtil.OnSettingLitener() {
-                @Override
-                public void onSetting() {
-                    KLog.d("tag","应用程序接收通知开关未打开");
-                    open_push.setImageResource(R.mipmap.icon_push_close);
-                    push_tx.setText("已关闭");
-                    isOk = false;
-
-                }
-            },new NotificationUtil.OnNextLitener() {
-                @Override
-                public void onNext() {
-                    isOk = true;
-                    KLog.d("tag","应用程序接收通知开关已打开");
-                    open_push.setImageResource(R.mipmap.icon_push_open);
-                    push_tx.setText("已开启");
-                }
-            });
-        }
-
     }
 
-    @OnClick({R.id.iv_back,R.id.change_head,
-            R.id.exit_ll,
-            R.id.open_push,
-            R.id.change_cache,
-            R.id.change_resetData,
+    @OnClick({R.id.iv_back,R.id.tv_back,
+            R.id.change_head,
             R.id.change_nickname,
             R.id.profile_info,
             R.id.profession_status,
             R.id.profession_name_now,
-            R.id.company_name_now
+            R.id.company_name_now,
+            R.id.company_name_old,
+            R.id.profession_name_old,
+            R.id.school_name,
+            R.id.profession_other,
+            R.id.submit
+
     })
     public void clicks(View view){
+
+        if(StringUtil.isFastClick()){
+            return;
+        }
+
         switch (view.getId()){
+            case R.id.tv_back:
+                finish();
+                break;
+            case R.id.company_name_old:
+
+                UIHelper.toModifyUserInfo(this,"company_old",mComanyOld);
+                break;
+
+            case R.id.profession_name_old:
+
+                UIHelper.toModifyUserInfo(this,"profession_old",mPositionOld);
+                break;
+
+            case R.id.school_name:
+
+                UIHelper.toModifyUserInfo(this,"school_name",mSchool);
+                break;
+
+            case R.id.profession_other:
+
+                UIHelper.toModifyUserInfo(this,"profession_other", mPositionOther);
+                break;
+
 
             case R.id.company_name_now:
 
@@ -333,56 +340,12 @@ public class UserInfoModifyActivity extends BaseActivity {
 
                 UIHelper.toModifyUserInfo(this,"nickname",mNickname);
                 break;
-            case R.id.change_resetData:
-                MobclickAgentUtils.onEvent(UmengEvent.i_setting_reset_2_0_0);
-
-                showReSetDataDialog();
-                break;
             case R.id.change_head:
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_icon_2_0_0);
                 showHeadDialog();
                 break;
-            case R.id.iv_back:
-                finish();
-                break;
-            case R.id.exit_ll:
-
-               finish();
-
-                break;
-            case R.id.open_push:
-
-                //判断机型
-
-
-                MobclickAgentUtils.onEvent(UmengEvent.i_setting_push_2_0_0);
-
-                NotificationUtil.gotoSet(BaseApp.getApplication());
-
-//                if(!isOk){
-//                    NotificationUtil.gotoSet(BaseApp.getApplication());
-//                }else{
-//                    boolean isOpen = SPUtils.getInstance().getBoolean("push_open",false);
-//                    if(isOpen){
-//                        open_push.setImageResource(R.mipmap.icon_push_close);
-//                        push_tx.setText("已关闭");
-//                        SPUtils.getInstance().put("push_open",false);
-//                    }else{
-//                        open_push.setImageResource(R.mipmap.icon_push_open);
-//                        push_tx.setText("已开启");
-//                        SPUtils.getInstance().put("push_open",true);
-//                    }
-//                }
-
-
-
-
-                break;
-            case R.id.change_cache:
-                MobclickAgentUtils.onEvent(UmengEvent.i_setting_clear_2_0_0);
-
-                showCacheDialog();
-
+            case R.id.submit:
+               alterinfo();
                 break;
             default:
         }
@@ -404,8 +367,10 @@ public class UserInfoModifyActivity extends BaseActivity {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 //返回的分别是三个级别的选中位置
-                KLog.d("tag",options1Items.get(options1) + "");
+                KLog.d("tag",options1Items.get(options1) + " position " + options1 );
                 profession_name.setText(options1Items.get(options1) + "");
+
+                getStatePosition((options1 + 1) + "");
             }
         })
                 .setTitleText("职业状态")
@@ -424,8 +389,6 @@ public class UserInfoModifyActivity extends BaseActivity {
                 .setOptionsSelectChangeListener(new OnOptionsSelectChangeListener() {
                     @Override
                     public void onOptionsSelectChanged(int options1, int options2, int options3) {
-                        String str = "options1: " + options1 + "\noptions2: " + options2 + "\noptions3: " + options3;
-//                        Toast.makeText(UserInfoModifyActivity.this, str, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .build();
@@ -438,81 +401,6 @@ public class UserInfoModifyActivity extends BaseActivity {
           pvOptions.show();
     }
 
-
-    private void logout() {
-        Map<String,String> map = new HashMap<>();
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().logout(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        ToastUtils.showShort("用户登出成功");
-                        exit();
-                    }
-                });
-    }
-
-    private void resetPersonal() {
-        Map<String,String> map = new HashMap<>();
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().resetPersonal(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
-                .subscribe(new BaseObserver<HttpResponse>() {
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onSuccess(HttpResponse response) {
-                        ToastUtils.showShort("重置成功");
-                    }
-                });
-    }
-
-
-    private void showReSetDataDialog() {
-        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(UserInfoModifyActivity.this).builder();
-        iosAlertDialog.setPositiveButton("是的", v -> {
-            resetPersonal();
-        }).setNegativeButton("取消", v -> {}).setMsg("是否重置个性化数据?\n重置后，可在首页重新选择").setCanceledOnTouchOutside(false);
-        iosAlertDialog.show();
-
-    }
-
-
-
-    private void showCacheDialog() {
-        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(UserInfoModifyActivity.this).builder();
-        iosAlertDialog.setPositiveButton("确定", v -> {
-            //清除历史，刷新界面
-            clean_text.setText("当前缓存0M");
-            SPUtils.getInstance().put("is_cached", true);
-            ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
-            ToastUtils.showShort("清除成功");
-        }).setNegativeButton("取消", v -> {}).setMsg("确认要清空缓存?").setCanceledOnTouchOutside(false);
-        iosAlertDialog.show();
-
-    }
-
-
-    public void showExitDialog(){
-        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(UserInfoModifyActivity.this).builder();
-        iosAlertDialog.setPositiveButton("退出", v -> {
-            logout();
-        }).setNegativeButton("再想想", v -> {}).setMsg("退出当前账号?").setCanceledOnTouchOutside(false);
-        iosAlertDialog.show();
-    }
-
-    private void exit() {
-        //清数据
-        SPUtils.getInstance().put(Constant.IS_LOGIN,false);
-        StringUtil.removeUserInfoBean();
-        BaseApp.getApplication().exitApp();
-        UIHelper.toLoginActivity(this);
-    }
 
 
 
@@ -647,12 +535,62 @@ public class UserInfoModifyActivity extends BaseActivity {
 
 
     private void setBackUserInfo(Intent data) {
-        nickname.setText(data.getExtras().getString("nickname"));
-        mNickname = data.getExtras().getString("nickname");
-        profile_info_text.setText(data.getExtras().getString("profile"));
-        mPro_summary = data.getExtras().getString("profile");
-        profession_name_now_text.setText(data.getExtras().getString("profession"));
-        mPosition = data.getExtras().getString("profession");
+        String temp1 = data.getExtras().getString("nickname");
+        String temp2 = data.getExtras().getString("profile");
+        String temp3 = data.getExtras().getString("profession");
+        String temp4 = data.getExtras().getString("company");
+        String temp5 = data.getExtras().getString("company_old");
+        String temp6 = data.getExtras().getString("profession_old");
+        String temp7 = data.getExtras().getString("profession_other");
+        String temp8 = data.getExtras().getString("school_name");
+
+
+        if(!TextUtils.isEmpty(temp8)){
+            school_text.setText(temp8);
+            mSchool = temp8;
+        }
+
+        if(!TextUtils.isEmpty(temp7)){
+            profession_ohter_name.setText(temp7);
+            mPositionOther = temp7;
+        }
+
+        if(!TextUtils.isEmpty(temp6)){
+            profession_name_old_text.setText(temp6);
+            mPositionOld = temp6;
+        }
+
+        if(!TextUtils.isEmpty(temp1)){
+            nickname.setText(temp1);
+            mNickname = temp1;
+        }
+
+        if(!TextUtils.isEmpty(temp2)){
+            profile_info_text.setText(temp2);
+            mPro_summary = temp2;
+        }
+
+        if(!TextUtils.isEmpty(temp3)){
+            profession_name_now_text.setText(temp3);
+            mPosition = temp3;
+        }
+
+        if(!TextUtils.isEmpty(temp4)){
+            company_name_now_text.setText(temp4);
+            mCompany = temp4;
+        }
+
+        if(!TextUtils.isEmpty(temp5)){
+            company_name_old_text.setText(temp5);
+            mComanyOld = temp5;
+        }
+
+
+
+
+
+
+
     }
 
 
@@ -694,6 +632,11 @@ public class UserInfoModifyActivity extends BaseActivity {
 
 
     /** --------------------------------- 修改用户信息  ---------------------------------*/
+    String mPositionStatus = "";
+    String mSchool = "";
+    String mPositionOther = "";
+    String mPositionOld = "";
+    String mComanyOld = "";
     String mCompany = "";
     String mNickname = "";
     String mName = "";
@@ -714,12 +657,52 @@ public class UserInfoModifyActivity extends BaseActivity {
         if(!TextUtils.isEmpty(mName)){
             map.put("name",mName);
         }
+
+        if("1".equals(mPositionStatus)){
+            if(!TextUtils.isEmpty(mCompany)){
+                map.put("company_name",mCompany);
+            }
+
+            if(!TextUtils.isEmpty(mPosition)){
+                map.put("position",mPosition);
+            }
+        }else if("2".equals(mPositionStatus)){
+            if(!TextUtils.isEmpty(mComanyOld)){
+                //TODO 在源头加，不然每个地方改的地方太多了：显示 前
+                map.put("company_name", "前" + mComanyOld);
+            }
+
+            if(!TextUtils.isEmpty(mPositionOld)){
+                map.put("position",mPositionOld);
+            }
+
+        }else if("3".equals(mPositionStatus)){
+
+            map.put("company_name","自由职业");
+
+            if(!TextUtils.isEmpty(mPositionOther)){
+                map.put("position",mPositionOther);
+            }
+
+        }else if("4".equals(mPositionStatus)){
+
+            if( !TextUtils.isEmpty(mSchool)){
+                map.put("company_name",mSchool);
+            }
+            map.put("position","学生");
+        }
+
+
+        if(!TextUtils.isEmpty(mPositionStatus)){
+            map.put("position_status",mPositionStatus);
+        }
+
+
         if(!TextUtils.isEmpty(mGender)){
             map.put("gender",mGender);
         }
-        if(!TextUtils.isEmpty(mPosition)){
-            map.put("position",mPosition);
-        }
+
+
         if(!TextUtils.isEmpty(mAvatar_base)){
             map.put("avatar_base",mAvatar_base);
         }
@@ -742,6 +725,9 @@ public class UserInfoModifyActivity extends BaseActivity {
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
                         ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                         ToastUtils.showShort("修改成功");
+
+                        finish();
+
                         if(1 == type){
                             ImageUtil.load(UserInfoModifyActivity.this,response.getReturn_data().getAvatar(),head_icon);
                             type = 0;
@@ -749,8 +735,6 @@ public class UserInfoModifyActivity extends BaseActivity {
                     }
                 });
     }
-
-
 
 
 

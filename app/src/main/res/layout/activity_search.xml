@@ -186,7 +186,7 @@
                     android:id="@+id/delete_history"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@mipmap/icon_history_delete"
+                    android:src="@mipmap/icon_history_delete_new"
                     android:layout_width="28dp"
                     android:layout_height="28dp" />
 

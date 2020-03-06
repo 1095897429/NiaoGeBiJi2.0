@@ -257,8 +257,7 @@ public class StringUtil {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position) {
                 case 4:
-                    CircleBean circle = new CircleBean();
-                    UIHelper.toTranspondActivity(activity,circle);
+                    UIHelper.toCircleMakeActivityV2(activity,null,mNewsDetailBean);
                     break;
                 case 0:
                     MobclickAgentUtils.onEvent(UmengEvent.index_detail_share_moments_2_0_0);

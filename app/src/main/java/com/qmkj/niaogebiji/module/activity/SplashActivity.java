@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.Manifest;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,8 +21,19 @@ import androidx.annotation.Size;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.blankj.utilcode.constant.TimeConstants;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.BarUtils;
+import com.blankj.utilcode.util.CleanUtils;
+import com.blankj.utilcode.util.ClickUtils;
+import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.CrashUtils;
+import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.EncodeUtils;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.Utils;
 import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
 import com.chuanglan.shanyan_sdk.listener.GetPhoneInfoListener;
 import com.huawei.android.hms.agent.HMSAgent;
@@ -40,6 +52,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.socks.library.KLog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +92,72 @@ public class SplashActivity extends BaseActivity {
 
 
     private JPushBean mJPushBean;
+
+
+    @Override
+    public void initFirstData() {
+        KLog.d("tag","应用的Id  " + AppUtils.getAppUid());
+        KLog.d("tag","应用的签名MD5  " + AppUtils.getAppSignatureMD5());
+        KLog.d("tag","应用的签名SHA256  " + AppUtils.getAppSignatureSHA256());
+        KLog.d("tag","状态栏的高度  " + BarUtils.getStatusBarHeight());
+        KLog.d("tag","内部缓存路径  " + Utils.getApp().getCacheDir().getAbsolutePath());
+
+        String string = "中文";
+        KLog.d("tag","字节是  " + string.getBytes());
+        ConvertUtils.bytes2Bits(string.getBytes());
+
+
+
+        KLog.d("tag","当前设备是否root过，通过是否有/system/su文件判断  " + DeviceUtils.isDeviceRooted());
+        KLog.d("tag","应用ADB是否可用 [设置中关闭调试即可] " +  DeviceUtils.isAdbEnabled());
+        KLog.d("tag","设备的Android系统版本  " +  DeviceUtils.getSDKVersionName());
+        KLog.d("tag","设备的Android系统API  " +  DeviceUtils.getSDKVersionCode());
+        KLog.d("tag","设备当前的AndroidID [此值改变情况有：恢复出厂设置/刷机/root等] " + DeviceUtils.getAndroidID());
+        KLog.d("tag","应用的MAC地址  " +  DeviceUtils.getMacAddress());
+        KLog.d("tag","手机的厂商  " +  DeviceUtils.getManufacturer());
+        KLog.d("tag","手机的型号  " +  DeviceUtils.getModel());
+        KLog.d("tag","是否是平板  " +  DeviceUtils.isTablet());
+        KLog.d("tag","是否是模拟器【他的方法不能用，主要是有个unkwon,去掉即可】  " +  DeviceUtils.isEmulator());
+
+        String url = "http://www.baidu.com?wd=";
+        KLog.d("tag","编码url [You don't encode the entire URL]" +  EncodeUtils.urlEncode("中文"));
+        KLog.d("tag","解码url [NoWrap 略去所有的换行符  NoPadding 略去编码字符串最后的“=”]" +  EncodeUtils.urlDecode(EncodeUtils.urlEncode("中文")));
+
+
+
+    }
+
+
+    //运用递归的方式
+    public boolean deleteFile(File file){
+
+        if(file == null){
+            return false;
+        }
+
+        if(!file.exists()){
+            return false;
+        }
+
+        if(!file.isDirectory()){
+            return false;
+        }
+
+
+        File[] files = file.listFiles();
+        if(files != null && file.length() != 0){
+            for(File file1 : files){
+                if(file1.isFile()){
+                    file.delete();
+                }else if(file1.isDirectory()){
+                    deleteFile(file1);
+                }
+            }
+        }
+
+
+        return true;
+    }
 
 
     @Override
@@ -124,7 +203,7 @@ public class SplashActivity extends BaseActivity {
     @Override
     public void initData() {
 
-        KLog.e("tag","SplashActivity ----  initData");
+//        KLog.e("tag","SplashActivity ----  initData");
 
 
         if(isHuaWei()){

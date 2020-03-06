@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.media.Image;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
@@ -60,6 +62,7 @@ import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragmentV2;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
 import com.qmkj.niaogebiji.module.fragment.SchoolFragment;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -143,6 +146,21 @@ public class HomeActivityV2 extends BaseActivity {
     @BindView(R.id.red_point)
     FrameLayout red_point;
 
+    @BindView(R.id.index_dynamic)
+    LinearLayout index_dynamic;
+
+
+    @BindView(R.id.index_dynamic_icon)
+    ImageView index_dynamic_icon;
+
+    @BindView(R.id.index_dynamic_text)
+    TextView index_dynamic_text;
+
+
+
+
+
+
 
     String [] string = new String[]{"这里是学院。我们根据知识脉络精心梳理了营销知识树WIKI，欢迎大家查阅\n" +
             "此外，专业认证测试与课程帮助你更好的提生自己~",
@@ -188,9 +206,34 @@ public class HomeActivityV2 extends BaseActivity {
 
         initFragment();
 
+        getRecommendTool();
+
     }
 
+    private ToolBean mToolBean;
+    private void getRecommendTool() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getRecommendTool(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<ToolBean>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<ToolBean> response) {
+                        mToolBean = response.getReturn_data();
+                        //temp空对象 表示没有
+                        if(null != mToolBean){
+                            index_dynamic.setVisibility(View.VISIBLE);
+                            ImageUtil.loadToolDefault(HomeActivityV2.this,mToolBean.getTab_icon(),index_dynamic_icon);
+                            index_dynamic_text.setText(mToolBean.getTitle());
 
+                        }else{
+                            index_dynamic.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
 
 
     private JPushBean mJPushBean;
@@ -199,7 +242,6 @@ public class HomeActivityV2 extends BaseActivity {
     //下面是app从关闭杀死到启动首页 - 走这里）
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        KLog.e("tag","HomeActivity2  onCreate");
         super.onCreate(savedInstanceState);
         if(null != getIntent().getExtras()){
             mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
@@ -460,7 +502,7 @@ public class HomeActivityV2 extends BaseActivity {
 
 
     @OnClick({R.id.index_first,//干货
-            R.id.index_flash,//动态获取
+            R.id.index_dynamic,//动态获取
             R.id.index_tool,//学院
             R.id.index_circle,//圈子
             R.id.index_my
@@ -490,7 +532,7 @@ public class HomeActivityV2 extends BaseActivity {
                 }
 
                 break;
-            case R.id.index_flash:
+            case R.id.index_dynamic:
 //                MobclickAgentUtils.onEvent(UmengEvent.news_tab_2_0_0);
 //                hideImageStatus();
 //
@@ -503,8 +545,9 @@ public class HomeActivityV2 extends BaseActivity {
 
                 //底部弹出Activity
 
-                UIHelper.toCooperationActivity(this,"");
-
+                if(null != mToolBean){
+                    UIHelper.toCooperationActivity(this,mToolBean.getUrl());
+                }
 
                 break;
             case R.id.index_tool:
@@ -709,7 +752,7 @@ public class HomeActivityV2 extends BaseActivity {
                                 apkUrl = mVersionBean.getList().get(0).getUrl();
                                 note = mVersionBean.getList().get(0).getUpdate_desc();
                                 forceUpdat = mVersionBean.getList().get(0).getForce_update_flag();
-                                KLog.d("tag","手机的VersionCode " + AppUtils.getAppVersionCode() + "");
+//                                KLog.d("tag","手机的VersionCode " + AppUtils.getAppVersionCode() + "");
 
                                 //当前的版本小于 后台返回的版本提示更新
                                 if(!TextUtils.isEmpty(serverVersionCode)){

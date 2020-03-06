@@ -11,7 +11,71 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <include layout="@layout/common_title_layout"/>
+        <RelativeLayout
+            android:id="@+id/rl_common_title"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/status_bar_height"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_height="44dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/icon_back"
+                android:layout_centerVertical="true"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="取消"
+                android:textColor="@color/text_first_color"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:visibility="visible" />
+
+
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:maxLength="20"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="18sp"
+                android:textColor="@color/text_news_title_color"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+
+            <TextView
+                android:id="@+id/submit"
+                android:text="完成"
+                android:textSize="16dp"
+                android:textColor="@color/text_first_color"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:background="@drawable/bg_corners_6_yellow"
+                android:visibility="visible" />
+
+
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
@@ -133,7 +197,7 @@
                         android:text=""
                         android:gravity="right|center"
                         android:hint="请填写职位全称"
-                        android:textColorHint="@android:color/holo_red_light"
+                        android:textColorHint="#AAAEB3"
                         android:textColor="@color/setting_text_default"
                         android:textSize="16sp"
                         />
@@ -147,6 +211,7 @@
 
 
                 <View
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:background="@color/divider_line"/>
@@ -171,7 +236,10 @@
                         android:id="@+id/profession_ohter_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="装修"
+                        android:text=""
+                        android:gravity="right"
+                        android:hint="请填写目前从事（必填）"
+                        android:textColorHint="#AAAEB3"
                         android:textColor="@color/setting_text_default"
                         android:textSize="16sp"
                         />
@@ -185,6 +253,7 @@
 
 
                 <View
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:background="@color/divider_line"/>
@@ -222,8 +291,8 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
-                            android:hint="请填写公司全称"
-                            android:textColorHint="@android:color/holo_red_light"
+                            android:hint="请填写公司全称（必填）"
+                            android:textColorHint="#AAAEB3"
                             android:singleLine="true"
                             android:gravity="center|right"
                             android:textColor="@color/setting_text_default"
@@ -238,45 +307,7 @@
                     </LinearLayout>
 
 
-                    <LinearLayout
-                        android:visibility="gone"
-                        android:id="@+id/company_name_old"
-                        android:layout_width="match_parent"
-                        android:layout_height="62dp"
-                        android:gravity="center_vertical"
-                        android:background="@color/white">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center|left"
-                            android:text="前公司"
-                            android:textColor="@color/text_news_title_color"
-                            android:textSize="16dp" />
-
-                        <Space
-                            android:layout_width="10dp"
-                            android:layout_height="match_parent" />
-
-                        <TextView
-                            android:id="@+id/company_name_old_text"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="match_parent"
-                            android:text="上海宽娱互动网络有限公司"
-                            android:singleLine="true"
-                            android:gravity="center|right"
-                            android:hint=""
-                            android:textColor="@color/setting_text_default"
-                            android:textSize="16sp"
-                            />
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@mipmap/icon_my_right" />
-
-                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
@@ -286,6 +317,46 @@
                 </LinearLayout>
 
 
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/company_name_old"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:gravity="center_vertical"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|left"
+                        android:text="前公司"
+                        android:textColor="@color/text_news_title_color"
+                        android:textSize="16dp" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/company_name_old_text"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text=""
+                        android:singleLine="true"
+                        android:gravity="center|right"
+                        android:textColorHint="#AAAEB3"
+                        android:hint="请填写前公司全称（必填）"
+                        android:textColor="@color/setting_text_default"
+                        android:textSize="16sp"
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/icon_my_right" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:visibility="visible"
@@ -319,10 +390,11 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
-                            android:text="产品经理"
+                            android:text=""
+                            android:textColorHint="#AAAEB3"
                             android:singleLine="true"
                             android:gravity="center|right"
-                            android:hint=""
+                            android:hint="请填写职位全称（必填）"
                             android:textColor="@color/setting_text_default"
                             android:textSize="16sp"
                             />
@@ -360,10 +432,11 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
-                            android:text="产品经理"
+                            android:text=""
                             android:singleLine="true"
                             android:gravity="center|right"
-                            android:hint=""
+                            android:hint="请填写前职位全称（必填）"
+                            android:textColorHint="#AAAEB3"
                             android:textColor="@color/setting_text_default"
                             android:textSize="16sp"
                             />
@@ -414,10 +487,11 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
-                            android:text="上海大学"
+                            android:text=""
+                            android:textColorHint="#AAAEB3"
                             android:singleLine="true"
                             android:gravity="center|right"
-                            android:hint=""
+                            android:hint="请填写学校全称（必填）"
                             android:textColor="@color/setting_text_default"
                             android:textSize="16sp"
                             />
@@ -525,154 +599,10 @@
                 android:textSize="16dp" />
 
 
-            <TextView
-                android:id="@+id/submit"
-                android:text="完成"
-                android:textSize="17dp"
-                android:textColor="@color/text_first_color"
-                android:gravity="center"
-                android:layout_alignParentRight="true"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/bg_corners_6_selector"
-                android:visibility="visible" />
-
 
 
         </LinearLayout>
 
-
-        <LinearLayout
-            android:id="@+id/part2"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:orientation="vertical">
-
-
-
-            <LinearLayout
-                android:id="@+id/change_resetData"
-                android:layout_width="match_parent"
-                android:layout_height="62dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="重置个性化数据"
-                    android:textColor="@color/text_news_title_color"
-                    android:textSize="16dp" />
-
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/icon_my_right" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/divider_line"/>
-
-
-            <RelativeLayout
-                android:id="@+id/push_ll"
-                android:visibility="visible"
-                android:layout_width="match_parent"
-                android:layout_height="62dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="接受推送消息"
-                    android:textColor="@color/text_news_title_color"
-                    android:textSize="16dp" />
-
-
-                <ImageView
-                    android:id="@+id/open_push"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="53dp"
-                    android:layout_height="36dp"
-                    android:src="@mipmap/icon_push_open" />
-
-                <TextView
-                    android:id="@+id/push_tx"
-                    android:layout_toLeftOf="@+id/open_push"
-                    android:layout_marginRight="4dp"
-                    android:layout_centerVertical="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="已开启"
-                    android:textColor="@color/setting_text_default"
-                    android:textSize="11sp"
-                    />
-
-
-            </RelativeLayout>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/divider_line"/>
-
-            <LinearLayout
-                android:id="@+id/change_cache"
-                android:layout_width="match_parent"
-                android:layout_height="62dp"
-                android:gravity="center_vertical"
-                android:background="@color/white">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center|left"
-                    android:text="清除缓存"
-                    android:textColor="@color/text_news_title_color"
-                    android:textSize="16dp" />
-
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent" />
-
-                <TextView
-                    android:id="@+id/clean_text"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:layout_height="wrap_content"
-                    android:text="当前缓存20M"
-                    android:textColor="@color/setting_text_default"
-                    android:textSize="16sp"
-                    />
-
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/icon_my_right" />
-
-            </LinearLayout>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/divider_line"/>
-
-        </LinearLayout>
 
 
     </LinearLayout>

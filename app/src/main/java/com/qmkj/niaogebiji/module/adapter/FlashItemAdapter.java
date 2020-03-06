@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -33,6 +34,8 @@ import com.socks.library.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
 
 /**
  * @author zhouliang
@@ -234,4 +237,6 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             }
         }
     }
+
+
 }

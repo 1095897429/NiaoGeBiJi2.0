@@ -81,7 +81,7 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
         if(!TextUtils.isEmpty(item.getFollow_num())){
             long count = Long.parseLong(item.getFollow_num());
             if(count < 10000 ){
-                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人 关注");
+                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人关注");
             }else{
                 double temp = count  ;
                 //1.将数字转换成以万为单位的数字
@@ -89,7 +89,7 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                 BigDecimal b = new BigDecimal(num);
                 //2.转换后的数字四舍五入保留小数点后一位;
                 double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                helper.setText(R.id.top_focus_num,f1 + " w" + "人 关注");
+                helper.setText(R.id.top_focus_num,f1 + " w" + "人关注");
             }
         }
 

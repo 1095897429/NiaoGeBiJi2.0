@@ -520,13 +520,13 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     }
 
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onUpdateCircleRecommendEvent(UpdateCircleRecommendEvent event){
-//        if(null != this){
-//            KLog.d("tag"," 重新获取  圈子中 话题  数据源 ");
-//            recommendBlogList();
-//        }
-//    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateCircleRecommendEvent(UpdateCircleRecommendEvent event){
+        if(null != this){
+            KLog.d("tag"," 重新获取  圈子中 话题  数据源 ");
+            recommendBlogList();
+        }
+    }
 
 
 

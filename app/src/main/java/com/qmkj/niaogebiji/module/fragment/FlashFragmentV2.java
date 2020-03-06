@@ -117,6 +117,9 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
     }
 
 
+
+
+
     @BindView(R.id.loading_dialog)
     LinearLayout loading_dialog;
 

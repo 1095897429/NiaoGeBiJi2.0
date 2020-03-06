@@ -37,6 +37,46 @@ public class TempMsgBean extends BaseBean {
     //是否评论
     int blog_is_comment ;
 
+    //转发的pid
+    String pid;
+
+    //文章
+    private String article_img;
+    private String article_title;
+    private String article_id;
+
+
+    public String getArticle_img() {
+        return article_img;
+    }
+
+    public void setArticle_img(String article_img) {
+        this.article_img = article_img;
+    }
+
+    public String getArticle_title() {
+        return article_title;
+    }
+
+    public void setArticle_title(String article_title) {
+        this.article_title = article_title;
+    }
+
+    public String getArticle_id() {
+        return article_id;
+    }
+
+    public void setArticle_id(String article_id) {
+        this.article_id = article_id;
+    }
+
+    public String getPid() {
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
+    }
 
     public int getBlog_type() {
         return blog_type;

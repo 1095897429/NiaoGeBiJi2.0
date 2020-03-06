@@ -15,7 +15,6 @@ import com.qmkj.niaogebiji.module.activity.CategoryListActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivity;
 import com.qmkj.niaogebiji.module.activity.CircleMakeActivityV2;
 import com.qmkj.niaogebiji.module.activity.CircleMakeAddLinkActivity;
-import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivityV2;
 import com.qmkj.niaogebiji.module.activity.CooperationActivity;
 import com.qmkj.niaogebiji.module.activity.DataInfomationActivity;
@@ -26,7 +25,7 @@ import com.qmkj.niaogebiji.module.activity.FeatherCatListActivity;
 import com.qmkj.niaogebiji.module.activity.FeatherListActivity;
 import com.qmkj.niaogebiji.module.activity.FeatherListDetailActivity;
 import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
-import com.qmkj.niaogebiji.module.activity.HomeActivity;
+import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.activity.InviteActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
 import com.qmkj.niaogebiji.module.activity.MessageDetailActivity;
@@ -38,7 +37,6 @@ import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.NewsThingDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputV2Activity;
-import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivityV2;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.SecretActivity;
@@ -53,7 +51,6 @@ import com.qmkj.niaogebiji.module.activity.ToolSearchActivity;
 import com.qmkj.niaogebiji.module.activity.TopicDetailActivityV2;
 import com.qmkj.niaogebiji.module.activity.TopicListActivity;
 import com.qmkj.niaogebiji.module.activity.TopSelectActivity;
-import com.qmkj.niaogebiji.module.activity.TopicDetailActivity;
 import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
@@ -72,10 +69,10 @@ import com.qmkj.niaogebiji.module.activity.WelcomeActivity;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ExchageDetailBean;
 import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
-import com.qmkj.niaogebiji.module.bean.TopicAllBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 
 import java.util.ArrayList;
@@ -90,7 +87,7 @@ public class UIHelper {
 
     /** 打开主界面 */
     public static void toHomeActivity(Context ctx, int type) {
-        Intent intent = new Intent(ctx, HomeActivity.class);
+        Intent intent = new Intent(ctx, HomeActivityV2.class);
         Bundle bundle = new Bundle();
         bundle.putInt("type",type);
         intent.putExtras(bundle);
@@ -211,11 +208,22 @@ public class UIHelper {
     }
 
 
-    /** 打开圈子发布界面  -- 用第二种*/
+    /** 打开圈子发布界面  -- 两个参数的*/
     public static void toCircleMakeActivityV2(Context ctx, TopicBean topicBean) {
         Intent intent = new Intent(ctx, CircleMakeActivityV2.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("topicBean",topicBean);
+        intent.putExtras(bundle);
+        ctx.startActivity(intent);
+    }
+
+
+    /** 打开圈子发布界面  -- 三个参数的，从文章处过来的*/
+    public static void toCircleMakeActivityV2(Context ctx, TopicBean topicBean, NewsDetailBean mNewsDetailBean) {
+        Intent intent = new Intent(ctx, CircleMakeActivityV2.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("topicBean",topicBean);
+        bundle.putSerializable("articleBean",mNewsDetailBean);
         intent.putExtras(bundle);
         ctx.startActivity(intent);
     }

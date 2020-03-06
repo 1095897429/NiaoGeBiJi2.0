@@ -53,10 +53,12 @@ import com.qmkj.niaogebiji.common.utils.PicPathHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CirclePicItemAdapter;
 import com.qmkj.niaogebiji.module.bean.MulMediaFile;
+import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.SendEvent;
 import com.qmkj.niaogebiji.module.widget.GlideLoader;
+import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.xzh.imagepicker.ImagePicker;
 import com.xzh.imagepicker.bean.MediaFile;
@@ -86,6 +88,12 @@ import butterknife.OnClick;
  *  1.纯文本  + (话题) -- 可发送
  *  2.纯文本 + 图片 -- 可发送
  *  3.纯文本 + link(有效 isUrlOk) -- 可发送
+ *  4.村文本 + 文章 -- 可发送
+ *
+ *
+ *  保存帖子逻辑：
+ *  1.只有点击圈子处的发送才显示 上次保存文稿【从文章处来不用显示】
+ *
  */
 public class CircleMakeActivityV2 extends BaseActivity {
 
@@ -139,6 +147,18 @@ public class CircleMakeActivityV2 extends BaseActivity {
     @BindView(R.id.topic)
     ImageView topic;
 
+    //文章详情页过来的文章
+    @BindView(R.id.acticle_part)
+    LinearLayout acticle_part;
+
+    @BindView(R.id.acticle_img)
+    ImageView acticle_img;
+
+    @BindView(R.id.acticle_title)
+    TextView acticle_title;
+
+
+
 
     //适配器
     CirclePicItemAdapter mCirclePicItemAdapter;
@@ -165,6 +185,11 @@ public class CircleMakeActivityV2 extends BaseActivity {
     //临时拍照 图片路径集合
     private ArrayList<MediaFile> pathList = new ArrayList<>();
 
+    //文章id
+    private String articleId;
+    private String articleTitle;
+    private String articleImg;
+
     //发送的数据
     private TempMsgBean mTempMsgBean;
 
@@ -188,28 +213,15 @@ public class CircleMakeActivityV2 extends BaseActivity {
         return true;
     }
 
-    @Override
-    public void initData() {
-        
-        mTempMsgBean = getTempMsg();
-        //上次是保存草稿的
-        if(null != mTempMsgBean){
-            showSaveConetentEnter();
-        }else{
-            removeTempMsg();
-            KeyboardUtils.showSoftInput(mEditText);
-        }
-
-    }
 
     private TopicBean mTopicBean;
+
+    //从哪里跳过来的
+    private NewsDetailBean mNewsDetailBean;
 
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
-
-
-
 
         boolean isTopicIconClick = SPUtils.getInstance().getBoolean("isTopicIconClick",false);
         if(!isTopicIconClick){
@@ -220,6 +232,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
         //放在这里让话题布局不显示 -- 赋值话题id
         if(getIntent().getExtras() != null){
             mTopicBean = (TopicBean) getIntent().getExtras().getSerializable("topicBean");
+            mNewsDetailBean = (NewsDetailBean) getIntent().getExtras().getSerializable("articleBean");
             if(null != mTopicBean){
                 topicId = mTopicBean.getId() + "";
                 select_topic_text.setText(mTopicBean.getTitle());
@@ -262,6 +275,38 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 });
 
         initLayout();
+
+
+
+        //TODO 3.6 从文章过来 [设置下方按钮不可点击]
+        if(null != mNewsDetailBean){
+            articleId = mNewsDetailBean.getAid();
+            articleTitle = mNewsDetailBean.getTitle();
+            articleImg = mNewsDetailBean.getPic();
+
+            make.setImageResource(R.mipmap.icon_pic_make_false);
+            link.setImageResource(R.mipmap.icon_link_false);
+            make.setEnabled(false);
+            link.setEnabled(false);
+
+            acticle_part.setVisibility(View.VISIBLE);
+            acticle_title.setText(mNewsDetailBean.getTitle());
+            ImageUtil.loadByDefaultHead(this,mNewsDetailBean.getPic(),acticle_img);
+
+            return;
+        }
+
+
+
+        //TODO 3.6 从文章过来 [不显示上次保存的文稿]
+        mTempMsgBean = getTempMsg();
+        //上次是保存草稿的
+        if(null != mTempMsgBean){
+            showSaveConetentEnter();
+        }else{
+            removeTempMsg();
+            KeyboardUtils.showSoftInput(mEditText);
+        }
     }
 
 
@@ -287,12 +332,18 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 R.id.to_delete_link,
                 R.id.make,
                 R.id.part2222,
-                R.id.ll_topic
+                R.id.ll_topic,
+                R.id.acticle_part
     })
     public void clicks(View view){
         KeyboardUtils.hideSoftInput(mEditText);
 
         switch (view.getId()){
+            case R.id.acticle_part:
+                if(!TextUtils.isEmpty(articleId)){
+                    UIHelper.toNewsDetailActivity(this,articleId);
+                }
+                break;
             case R.id.topic_first:
                 SPUtils.getInstance().put("isTopicIconClick",true);
                 topic_first.setVisibility(View.GONE);
@@ -359,39 +410,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 }
 
 
+                sendToService();
 
-                //设置发送数据
-                sendData();
-
-                //① 在这里设置进度条的最大进度
-                List<String>  tempList = new ArrayList<>();
-                tempList.clear();
-
-                if(null != mediaFiles && !mediaFiles.isEmpty()){
-                    for (MediaFile fileBean  : mediaFiles) {
-                        tempList.add(fileBean.getPath());
-                    }
-                }
-
-                if(null != pathList && !pathList.isEmpty()){
-                    for (MediaFile fileBean  : pathList) {
-                        tempList.add(fileBean.getPath());
-                    }
-                }
-
-                if(!tempList.isEmpty()){
-                    BaseActivity.maxSendProgress = tempList.size() * 100;
-                }else{
-                    BaseActivity.maxSendProgress = 100;
-                }
-
-
-//                toSendBlog(mTempMsgBean);
-
-
-                toSendBlogByService(mTempMsgBean);
-
-                sendPicToQiuNiu();
 
 
                 break;
@@ -399,9 +419,10 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 if(StringUtil.isFastClick()){
                     return;
                 }
-                //如果有正文 有外链 有图片
+                //如果有正文 有外链 有图片 文章对象
                 if(!TextUtils.isEmpty(mString) || !TextUtils.isEmpty(linkTitle)
-                    || !mediaFiles.isEmpty() || !pathList.isEmpty()){
+                    || !mediaFiles.isEmpty() || !pathList.isEmpty()
+                    || null != mNewsDetailBean){
                     showSaveConetentExit();
                     return;
                 }
@@ -411,6 +432,41 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 break;
             default:
         }
+    }
+
+    private void sendToService() {
+        //设置发送数据
+        sendData();
+
+        //① 在这里设置进度条的最大进度
+        List<String>  tempList = new ArrayList<>();
+        tempList.clear();
+
+        if(null != mediaFiles && !mediaFiles.isEmpty()){
+            for (MediaFile fileBean  : mediaFiles) {
+                tempList.add(fileBean.getPath());
+            }
+        }
+
+        if(null != pathList && !pathList.isEmpty()){
+            for (MediaFile fileBean  : pathList) {
+                tempList.add(fileBean.getPath());
+            }
+        }
+
+        if(!tempList.isEmpty()){
+            BaseActivity.maxSendProgress = tempList.size() * 100;
+        }else{
+            BaseActivity.maxSendProgress = 100;
+        }
+
+
+//    toSendBlog(mTempMsgBean);
+
+
+        toSendBlogByService(mTempMsgBean);
+
+        sendPicToQiuNiu();
     }
 
 
@@ -773,6 +829,13 @@ public class CircleMakeActivityV2 extends BaseActivity {
             mTempMsgBean.setImgPath2(null);
         }
 
+
+        if(null != mNewsDetailBean){
+            mTempMsgBean.setArticle_id(mNewsDetailBean.getAid());
+            mTempMsgBean.setArticle_title(mNewsDetailBean.getTitle());
+            mTempMsgBean.setArticle_img(mNewsDetailBean.getPic());
+        }
+
         saveTempMsg(mTempMsgBean);
     }
 
@@ -799,6 +862,11 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
         mTempMsgBean.setTopicName(topicName);
         mTempMsgBean.setTopicId(topicId);
+
+
+        mTempMsgBean.setArticle_id(articleId);
+        mTempMsgBean.setArticle_title(articleTitle);
+        mTempMsgBean.setArticle_img(articleImg);
     }
 
     @Override
@@ -867,8 +935,26 @@ public class CircleMakeActivityV2 extends BaseActivity {
             }
 
             if(!TextUtils.isEmpty(mTempMsgBean.getTopicId())){
+                topicId = mTempMsgBean.getTopicId();
+                topicName = mTempMsgBean.getTopicName();
                 ll_topic.setVisibility(View.VISIBLE);
                 select_topic_text.setText("#" + mTempMsgBean.getTopicName());
+            }
+
+
+            if(!TextUtils.isEmpty(mTempMsgBean.getArticle_id())){
+                articleId = mTempMsgBean.getArticle_id();
+                articleTitle = mTempMsgBean.getArticle_title();
+                articleImg = mTempMsgBean.getArticle_img();
+
+                acticle_part.setVisibility(View.VISIBLE);
+                acticle_title.setText(mTempMsgBean.getArticle_title());
+                ImageUtil.loadByDefaultHead(this,mTempMsgBean.getArticle_img(),acticle_img);
+
+                make.setImageResource(R.mipmap.icon_pic_make_false);
+                link.setImageResource(R.mipmap.icon_link_false);
+                make.setEnabled(false);
+                link.setEnabled(false);
             }
         }
     }

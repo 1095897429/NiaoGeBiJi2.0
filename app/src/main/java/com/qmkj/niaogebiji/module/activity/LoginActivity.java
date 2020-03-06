@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -38,17 +39,26 @@ import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.SecretAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.net.base.BaseObserver;
+import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
+import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.MessageVipBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.bean.SyBean;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
+import com.qmkj.niaogebiji.module.event.LoginSyEvent;
 import com.qmkj.niaogebiji.module.widget.ConfigUtils;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.constants.Build;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -63,6 +73,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.udesk.UdeskSDKManager;
 import cn.udesk.config.UdeskConfig;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import udesk.core.UdeskConst;
 
 /**
@@ -153,28 +165,8 @@ public class LoginActivity extends BaseActivity {
                     if (!isAgree) {
                         showSecretDialog(this);
                     } else {
-
-                        loading_view.setVisibility(View.VISIBLE);
-
                         MobclickAgentUtils.onEvent(UmengEvent.wxlogin_phone_2_0_0);
-                        //TODO 2020.2.7 闪验的接入，闪验SDK预取号（可缩短拉起授权页时间）
-                        OneKeyLoginManager.getInstance().getPhoneInfo((code, result) -> {
-                            //预取号回调 code为1022:成功；其他：失败
-                            if(1022 == code){
-                                KLog.e("tag", "预取号： code ==" + code + "   result==" + result);
-                                loading_view.setVisibility(View.GONE);
-                                //1自定义运营商授权页界面
-                                OneKeyLoginManager.getInstance().setAuthThemeConfig(ConfigUtils.getUiConfig(LoginActivity.this,
-                                        "", loginType));
-                                openLoginActivity();
-
-                            }else{
-                                loading_view.setVisibility(View.GONE);
-                                UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
-                            }
-
-                        });
-
+                        UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
                     }
 
                 });
@@ -209,8 +201,11 @@ public class LoginActivity extends BaseActivity {
                     return;
                 } else if (1000 == code) {
                     KLog.e("tag",  "用户点击登录获取token成功： _code==" + code + "   _result==" + result);
-                    //TODO 调用后台接口传递token，去验证，成功后去主界面
 
+                    SyBean javaBean = JSON.parseObject(result, SyBean.class);
+                    String syToken =  javaBean.getToken();
+                    //TODO 调用后台接口传递token，去验证，成功后去主界面
+                    WechatBindAccountViaCode(syToken);
 
                 } else {
                     KLog.e("tag",  "用户点击登录获取token失败： _code==" + code + "   _result==" + result);
@@ -218,6 +213,44 @@ public class LoginActivity extends BaseActivity {
             }
         });
     }
+
+
+    private String wechat_token;
+    private String phone = "";
+    private void WechatBindAccountViaCode(String syToken) {
+        Map<String,String> map = new HashMap<>();
+        map.put("wechat_token",wechat_token);
+        map.put("mobile",phone);
+        map.put("verify_code","");
+        map.put("sy_token",syToken);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().WechatBindAccountViaCode(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse< RegisterLoginBean.UserInfo> response) {
+                        RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                        UIHelper.toHomeActivity(LoginActivity.this,0);
+                        //保存一个对象
+                        StringUtil.setUserInfoBean(mUserInfo);
+                        SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                        finish();
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        ToastUtils.setGravity(Gravity.CENTER,0,0);
+                        ToastUtils.showShort(errorMes);
+                        ToastUtils.setGravity(Gravity.BOTTOM,0,0);
+                    }
+
+                });
+    }
+
+
+
 
     private void initEvent() {
         SpannableString spannableString = new SpannableString(getResources().getString(R.string.login_text));
@@ -364,6 +397,37 @@ public class LoginActivity extends BaseActivity {
     public void onLoginGoodEvent(LoginGoodEvent event) {
         if (this != null) {
             this.finish();
+        }
+    }
+
+
+    //TODO 3.5 微信登录新用户，展示闪验自定义界面(传递token)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginSyEvent(LoginSyEvent event) {
+        if (this != null) {
+
+            wechat_token = event.getWxToken();
+
+            loading_view.setVisibility(View.VISIBLE);
+
+            //TODO 2020.2.7 闪验的接入，闪验SDK预取号（可缩短拉起授权页时间）
+            OneKeyLoginManager.getInstance().getPhoneInfo((code, result) -> {
+                //预取号回调 code为1022:成功；其他：失败
+                KLog.e("tag", "预取号： code ==" + code + "   result==" + result);
+                if(1022 == code){
+                    loading_view.setVisibility(View.GONE);
+                    //1自定义运营商授权页界面
+                    OneKeyLoginManager.getInstance().setAuthThemeConfig(ConfigUtils.getUiConfig(LoginActivity.this,
+                            wechat_token, loginType));
+                    openLoginActivity();
+
+                }else{
+                    loading_view.setVisibility(View.GONE);
+                    UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                }
+
+            });
+
         }
     }
 

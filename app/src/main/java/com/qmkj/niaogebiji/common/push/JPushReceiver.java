@@ -15,6 +15,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivity;
+import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.SplashActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
@@ -60,8 +61,8 @@ public class JPushReceiver extends JPushMessageReceiver {
                 Log.e("tag", "      the app process is alive     ");
 
                 Intent mainIntent;
-                if(StringUtil.isExsitMianActivity(context,HomeActivity.class)){
-                    mainIntent= new Intent(context, HomeActivity.class);
+                if(StringUtil.isExsitMianActivity(context, HomeActivityV2.class)){
+                    mainIntent= new Intent(context, HomeActivityV2.class);
                 }else{
                     mainIntent = new Intent(context, SplashActivity.class);
                 }
@@ -96,7 +97,7 @@ public class JPushReceiver extends JPushMessageReceiver {
     }
 
     private void sendBroadToHome(JPushBean javaBean) {
-        Intent msgIntent = new Intent(HomeActivity.MESSAGE_RECEIVED_ACTION);
+        Intent msgIntent = new Intent(HomeActivityV2.MESSAGE_RECEIVED_ACTION);
         Bundle bundle = new Bundle();
         bundle.putSerializable("jpushbean",javaBean);
         msgIntent.putExtras(bundle);
@@ -112,9 +113,9 @@ public class JPushReceiver extends JPushMessageReceiver {
             if("1".equals(jump_type)){
                 KLog.e("tag"," 个人中心");
                 //个人中心 - ok
-                i =  new Intent(context, HomeActivity.class);
+                i =  new Intent(context, HomeActivityV2.class);
                 Bundle bundle = new Bundle();
-                bundle.putInt("type",HomeActivity.JPUSH_TO_My);
+                bundle.putInt("type",HomeActivityV2.JPUSH_TO_My);
                 i.putExtras(bundle);
             }else if("20".equals(jump_type)){
                 KLog.e("tag"," 文章");
@@ -123,9 +124,9 @@ public class JPushReceiver extends JPushMessageReceiver {
                 i.putExtra("newsId",jump_info);
             }else if("31".equals(jump_type)){
                 KLog.e("tag"," 快讯");
-                i = new Intent(context,HomeActivity.class);
+                i = new Intent(context,HomeActivityV2.class);
                 Bundle bundle = new Bundle();
-                bundle.putInt("type",HomeActivity.JPUSH_TO_FLASH);
+                bundle.putInt("type",HomeActivityV2.JPUSH_TO_FLASH);
                 i.putExtras(bundle);
             }else if("50".equals(jump_type)){
                 KLog.e("tag"," 动态");
@@ -150,7 +151,7 @@ public class JPushReceiver extends JPushMessageReceiver {
             }else{
                 //没有额外数据的情况，跳转首页
                 KLog.e("tag"," 主界面");
-                i = new Intent(context,HomeActivity.class);
+                i = new Intent(context,HomeActivityV2.class);
             }
 
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
@@ -242,16 +243,16 @@ public class JPushReceiver extends JPushMessageReceiver {
 
     //send msg to MainActivity
     private void processCustomMessage(Context context, CustomMessage customMessage) {
-        if (HomeActivity.isForeground) {
+        if (HomeActivityV2.isForeground) {
             String message = customMessage.message;
             String extras = customMessage.extra;
-            Intent msgIntent = new Intent(HomeActivity.MESSAGE_RECEIVED_ACTION);
-            msgIntent.putExtra(HomeActivity.KEY_MESSAGE, message);
+            Intent msgIntent = new Intent(HomeActivityV2.MESSAGE_RECEIVED_ACTION);
+            msgIntent.putExtra(HomeActivityV2.KEY_MESSAGE, message);
             if (!ExampleUtil.isEmpty(extras)) {
                 try {
                     JSONObject extraJson = new JSONObject(extras);
                     if (extraJson.length() > 0) {
-                        msgIntent.putExtra(HomeActivity.KEY_EXTRAS, extras);
+                        msgIntent.putExtra(HomeActivityV2.KEY_EXTRAS, extras);
                     }
                 } catch (JSONException e) {
 

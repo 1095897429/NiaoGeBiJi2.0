@@ -63,7 +63,7 @@ public class ConfigUtils {
         RelativeLayout view_dialog = (RelativeLayout) inflater.inflate(R.layout.shanyan_demo_dialog_layout, null);
         RelativeLayout.LayoutParams mLayoutParamsLoading = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         view_dialog.setLayoutParams(mLayoutParamsLoading);
-        view_dialog.setVisibility(View.VISIBLE);
+        view_dialog.setVisibility(View.GONE);
 
         //其他方式登录
         TextView otherTV = new TextView(context);

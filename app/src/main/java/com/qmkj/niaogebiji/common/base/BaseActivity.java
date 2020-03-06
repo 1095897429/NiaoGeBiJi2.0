@@ -357,9 +357,6 @@ public abstract class BaseActivity extends AppCompatActivity  {
     public void toSendBlog(TempMsgBean tempMsgBean){
         mTempMsgBean = tempMsgBean;
 
-        //正在发送中...
-        sendStatus = BaseActivity.isSending;
-
         toRetrunBack();
 
         //启动服务
@@ -819,7 +816,6 @@ public abstract class BaseActivity extends AppCompatActivity  {
                 //重新恢复状态
                 isAnimPause = false;
 
-                sendStatus = isSending;
             }
 
             @Override

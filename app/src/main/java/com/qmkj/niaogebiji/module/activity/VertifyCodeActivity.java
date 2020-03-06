@@ -96,6 +96,9 @@ public class VertifyCodeActivity extends BaseActivity {
 
     private String wechat_token = "";
 
+    //闪验token，这里是空值，不走闪验的都是""
+    private String sy_token = "";
+
     //输入验证码的次数
     private int doCount;
     //重新发送次数
@@ -186,6 +189,7 @@ public class VertifyCodeActivity extends BaseActivity {
         map.put("wechat_token",wechat_token);
         map.put("mobile",phone);
         map.put("verify_code",inputContent);
+        map.put("sy_token",sy_token);
         String result = RetrofitHelper.commonParam(map);
         RetrofitHelper.getApiService().WechatBindAccountViaCode(result)
                 .subscribeOn(Schedulers.newThread())

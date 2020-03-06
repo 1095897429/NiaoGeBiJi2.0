@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -258,7 +260,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             TextView com_num = helper.getView(R.id.comment);
             TextView zan_num = helper.getView(R.id.zan_num);
             ImageView imageView =  helper.getView( R.id.image_circle_priase);
-            zanCommentChange(com_num,zan_num,imageView,item.getLike_num(),item.getIs_like(),item.getComment_num());
+            zanCommentChange(com_num,zan_num,imageView,item.getLike_num()
+                    ,item.getIs_like(),item.getComment_num());
 
 
 
@@ -794,8 +797,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
 
-    private void zanCommentChange(TextView com_text,TextView zan_num, ImageView zan_img,
-                                  String good_num, int is_good,String com_num) {
+    private void zanCommentChange(TextView com_text, TextView zan_num, ImageView zan_img,
+                                  String good_num, int is_good, String com_num) {
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),"fonts/DIN-Medium.otf");
         zan_num.setTypeface(typeface);
         com_text.setTypeface(typeface);
@@ -817,8 +820,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             zan_img.setImageResource(R.mipmap.icon_flash_priase_28);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
+
             zan_img.setImageResource(R.mipmap.icon_flash_priase_select_28);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
+
         }
 
 
@@ -838,7 +843,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
 
-    private void likeBlog(CircleBean circleBean,int position) {
+    private void likeBlog(CircleBean circleBean, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("blog_id",circleBean.getId());
         int like = 0;
@@ -861,13 +866,16 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                         if(islike == 0){
                             circleBean.setIs_like(1);
                             circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) + 1) + "");
+
                         }else{
                             circleBean.setIs_like(0);
                             circleBean.setLike_num((Integer.parseInt(circleBean.getLike_num()) - 1) + "");
-                        }
-//                        notifyItemChanged(position);
 
-                        notifyDataSetChanged();
+
+                        }
+                        notifyItemChanged(position);
+
+//                        notifyDataSetChanged();
 
 
                     }

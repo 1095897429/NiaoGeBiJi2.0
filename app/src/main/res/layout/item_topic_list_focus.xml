@@ -14,7 +14,6 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="centerCrop"
-        android:background="@color/bg_color"
         app:round_as_circle="false"
         app:round_corner="12dp" />
 
@@ -80,7 +79,7 @@
         android:textColor="#818386"
         android:visibility="gone"
         android:textSize="14sp"
-        android:text="取消关注"
+        android:text="已关注"
         android:background="@drawable/bg_corners_8_gray"
         android:layout_width="70dp"
         android:layout_height="34dp" />

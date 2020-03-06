@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -45,6 +46,8 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.tab.TabLayout;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
@@ -118,8 +121,8 @@ public class UserInfoV2Activity extends BaseActivity {
     @BindView(R.id.iv_text)
     TextView iv_text;
 
-    @BindView(R.id.sender_tag)
-    TextView sender_tag;
+    @BindView(R.id.name_author_tag)
+    TextView name_author_tag;
 
     @BindView(R.id.sender_name)
     TextView sender_name;
@@ -187,6 +190,10 @@ public class UserInfoV2Activity extends BaseActivity {
 
     @BindView(R.id.author_type)
     ImageView author_type;
+
+    @BindView(R.id.name_vertify)
+    TextView name_vertify;
+
 
 //    @BindView(R.id.id_auther)
 //    ImageView id_auther;
@@ -763,7 +770,7 @@ public class UserInfoV2Activity extends BaseActivity {
             iv_text.setVisibility(View.VISIBLE);
 
             //TODO 伪代码
-//            if(没有认证显示去认证){
+//            if(没有认证显示去认证){ ok
 //                显示：立即完善信息，建立人脉
 //                点击：编辑名片信息
 //            }else{
@@ -784,32 +791,49 @@ public class UserInfoV2Activity extends BaseActivity {
 //              }
 
 
-            //职业认证
-            if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
-//                Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
-//                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-//                sender_tag.setCompoundDrawables(null,null,drawable,null);
-                sender_tag.setVisibility(View.VISIBLE);
-                sender_not_verticity.setVisibility(View.GONE);
-                sender_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()+" ") +
-                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
-
-//                CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
-//                SpannableString spanString2 = new SpannableString("icon");
-//                spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                sender_tag.append(spanString2);
-
-            }else{
-                sender_tag.setVisibility(View.GONE);
-                sender_not_verticity.setText("立即职业认证，建立人脉");
-                sender_not_verticity.setVisibility(View.VISIBLE);
-                sender_not_verticity.setOnClickListener((v)->{
+            if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
+                    TextUtils.isEmpty(mUserInfo.getPosition()) ){
+                name_vertify.setVisibility(View.VISIBLE);
+                //下划线
+                name_vertify.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                //抗锯齿
+                name_vertify.getPaint().setAntiAlias(true);
+                name_vertify.setOnClickListener(v -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
                     if(StringUtil.isFastClick()){
                         return;
                     }
-                    posCertInit();
+                    UIHelper.toUserInfoModifyActivity(this);
                 });
+            }else{
+                //认证是否通过 -- 这里不用改(不用显示用户名在认证的情况下)
+                if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
+                    name_author_tag.setVisibility(View.VISIBLE);
+                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+
+                    //居中对齐imageSpan
+                    CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+                    SpannableString spanString2 = new SpannableString("icon");
+                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    name_author_tag.append(spanString2);
+
+                }else{
+                    name_author_tag.setVisibility(View.VISIBLE);
+                    sender_not_verticity.setVisibility(View.VISIBLE);
+                    //下划线
+                    sender_not_verticity.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                    //抗锯齿
+                    sender_not_verticity.getPaint().setAntiAlias(true);
+                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+
+                    sender_not_verticity.setOnClickListener(v -> ToastUtils.showShort("去认证h5界面"));
+
+                }
             }
+
+
         }else{
 
             //TODO 伪代码
@@ -827,38 +851,37 @@ public class UserInfoV2Activity extends BaseActivity {
 //                显示：分享图层
 //            }
 
-            if(null != temp){
-                if(!StringUtil.checkNull((temp.getCompany_name()))
-                        && !StringUtil.checkNull((temp.getPosition()))){
-                    sender_not_verticity.setText("未认证");
-                    sender_tag.setVisibility(View.GONE);
-                    sender_not_verticity.setVisibility(View.VISIBLE);
-                }else{
-                    sender_tag.setVisibility(View.VISIBLE);
-                    sender_not_verticity.setVisibility(View.GONE);
-                    sender_tag.setText((StringUtil.checkNull((temp.getCompany_name()))?temp.getCompany_name() + " ":"") +
-                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
-                }
 
 
-                //是否认证通过
-                if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
-//                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
-//                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-//                    sender_tag.setCompoundDrawables(null,null,drawable,null);
-
-                    //居中对齐imageSpan
-//                    CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
-//                    SpannableString spanString2 = new SpannableString("icon");
-//                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                    sender_tag.append(spanString2);
-                }else{
-                    sender_tag.setCompoundDrawables(null,null,null,null);
-                }
-
-
-
-            }
+//            if(null != temp){
+//                if(!StringUtil.checkNull((temp.getCompany_name()))
+//                        && !StringUtil.checkNull((temp.getPosition()))){
+//                    sender_not_verticity.setText("未认证");
+//                    sender_tag.setVisibility(View.GONE);
+//                    sender_not_verticity.setVisibility(View.VISIBLE);
+//                }else{
+//                    sender_tag.setVisibility(View.VISIBLE);
+//                    sender_not_verticity.setVisibility(View.GONE);
+//                    sender_tag.setText((StringUtil.checkNull((temp.getCompany_name()))?temp.getCompany_name() + " ":"") +
+//                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+//                }
+//
+//
+//                //是否认证通过
+//                if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+////                    Drawable drawable = mContext.getResources().getDrawable(R.mipmap.icon_authen_company);
+////                    drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+////                    sender_tag.setCompoundDrawables(null,null,drawable,null);
+//
+//                    //居中对齐imageSpan
+////                    CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+////                    SpannableString spanString2 = new SpannableString("icon");
+////                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+////                    sender_tag.append(spanString2);
+//                }else{
+//                    sender_tag.setCompoundDrawables(null,null,null,null);
+//                }
+//            }
 
             //别人
             showStateByFollow(temp.getFollow_status());

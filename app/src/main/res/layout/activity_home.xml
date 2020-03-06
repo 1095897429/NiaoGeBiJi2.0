@@ -86,7 +86,7 @@
 
                     <LinearLayout
                         android:id="@+id/index_flash"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:gravity="center"
@@ -115,16 +115,17 @@
                         android:orientation="vertical"
                         android:layout_height="match_parent">
 
+                        <!--   android:src="@mipmap/icon_index_00" 快讯 -->
                         <ImageView
                             android:id="@+id/index_dynamic_icon"
-                            android:src="@mipmap/icon_index_00"
+
                             android:layout_width="28dp"
                             android:layout_height="28dp" />
 
                         <TextView
                             android:id="@+id/index_dynamic_text"
                             style="@style/index_text"
-                            android:text="快讯" />
+                            android:text="" />
 
                     </LinearLayout>
 

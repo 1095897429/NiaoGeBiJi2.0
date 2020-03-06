@@ -109,6 +109,46 @@ public class ModifyUserInfoActivity extends BaseActivity {
             }else{
                 et_input.setHint("请输入公司名称");
             }
+        }else if("company_old".equals(type)){
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
+            tv_title.setText("前公司");
+
+            if(!TextUtils.isEmpty(content)){
+                et_input.setText(content);
+                setStatus(true);
+            }else{
+                et_input.setHint("请输入前公司名称");
+            }
+        }else if("profession_old".equals(type)){
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
+            tv_title.setText("前职位");
+
+            if(!TextUtils.isEmpty(content)){
+                et_input.setText(content);
+                setStatus(true);
+            }else{
+                et_input.setHint("请输入前职位名称");
+            }
+        }else if("profession_other".equals(type)){
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
+            tv_title.setText("目前从事");
+
+            if(!TextUtils.isEmpty(content)){
+                et_input.setText(content);
+                setStatus(true);
+            }else{
+                et_input.setHint("请输入目前从事名称");
+            }
+        }else if("school_name".equals(type)){
+            et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
+            tv_title.setText("学校");
+
+            if(!TextUtils.isEmpty(content)){
+                et_input.setText(content);
+                setStatus(true);
+            }else{
+                et_input.setHint("请输入学校名称");
+            }
         }
 
 
@@ -196,8 +236,36 @@ public class ModifyUserInfoActivity extends BaseActivity {
                     mPro_summary = et_input.getText().toString().trim();
                 }else if("company".equals(type)){
                     mComany = et_input.getText().toString().trim();
+                }else if("company_old".equals(type)){
+                    mComanyOld = et_input.getText().toString().trim();
+                }else if("profession_old".equals(type)){
+                    mPositionOld = et_input.getText().toString().trim();
+                }else if("profession_other".equals(type)){
+                    mPositionOther = et_input.getText().toString().trim();
+                }else if("school_name".equals(type)){
+                    mSchool = et_input.getText().toString().trim();
                 }
-                alterinfo();
+
+
+
+
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("nickname",mNickname);
+                bundle.putString("profession",mPosition);
+                bundle.putString("profile",mPro_summary);
+                bundle.putString("company",mComany);
+                bundle.putString("company_old",mComanyOld);
+                bundle.putString("profession_old",mPositionOld);
+                bundle.putString("profession_other",mPositionOther);
+                bundle.putString("school_name",mSchool);
+                intent.putExtras(bundle);
+                setResult(RESULT_OK,intent);
+
+                finish();
+
+
+//                alterinfo();
                 break;
             default:
         }
@@ -205,6 +273,10 @@ public class ModifyUserInfoActivity extends BaseActivity {
 
 
     /** --------------------------------- 修改用户信息  ---------------------------------*/
+    String mSchool = "";
+    String mPositionOther = "";
+    String mPositionOld = "";
+    String mComanyOld = "";
     String mComany = "";
     String mNickname = "";
     String mName = "";

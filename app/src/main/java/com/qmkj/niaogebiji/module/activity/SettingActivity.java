@@ -246,12 +246,12 @@ public class SettingActivity extends BaseActivity {
             case R.id.profile_info:
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_profile_2_0_0);
 
-                UIHelper.toModifyUserInfo(this,"profile",mPro_summary);
+//                UIHelper.toModifyUserInfo(this,"profile",mPro_summary);
                 break;
             case R.id.change_nickname:
                 MobclickAgentUtils.onEvent(UmengEvent._setting_nickname_2_0_0);
 
-                UIHelper.toModifyUserInfo(this,"nickname",mNickname);
+//                UIHelper.toModifyUserInfo(this,"nickname",mNickname);
                 break;
             case R.id.change_resetData:
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_reset_2_0_0);

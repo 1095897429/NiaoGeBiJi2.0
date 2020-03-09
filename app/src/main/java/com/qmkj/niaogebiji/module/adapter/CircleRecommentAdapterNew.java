@@ -131,6 +131,42 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     private  Rect firstAndLastRect1;
     HorizontalSpacesDecoration spacesDecoration1;
 
+
+    private void setTextOrigin(TextView msg, String content,String blog_id){
+        msg.setText(content);
+
+        msg.post(() -> {
+            KLog.d("tag"," msg.getLineCount() " +  msg.getLineCount());
+            if(content.length() > 140 && msg.getLineCount() > 5){
+                msg.setLines(5);
+                final int lineEndIndex ;
+                String text = content;
+                if(msg.getLayout() != null){
+                    lineEndIndex= msg.getLayout().getLineEnd(4);
+                    text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+                }
+
+                SpannableString spannableString = new SpannableString(text);
+                ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+                spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+                NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        UIHelper.toCommentDetailActivity(mContext,blog_id);
+                    }
+                };
+                spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                msg.setMovementMethod(LinkMovementMethod.getInstance());
+                msg.setText(spannableString);
+
+            }else{
+                msg.setLines(msg.getLineCount());
+            }
+
+        });
+    }
+
     @Override
     protected void convert(BaseViewHolder helper, CircleBean item) {
 
@@ -140,6 +176,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
         TextView msg = helper.getView(R.id.content);
+
 
         if(item.getPcLinks() !=  null && !item.getPcLinks().isEmpty()){
             //TODO 2.26 判断是否添加回复xxx的骚操作
@@ -159,12 +196,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 if(!TextUtils.isEmpty(item.getComment_nickname())){
                     getCircleReply(msg,item);
                 }else{
-                    msg.setText(item.getBlog());
+                    setTextOrigin(msg,item.getBlog(),item.getId());
                 }
             }else{
-                msg.setText(item.getBlog());
+                setTextOrigin(msg,item.getBlog(),item.getId());
             }
         }
+
 
 
         if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
@@ -302,12 +340,14 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     if(!TextUtils.isEmpty(item.getP_blog().getComment_nickname())){
                         getTransCircleReply(trans_msg,item.getP_blog());
                     }else{
-                        trans_msg.setText(item.getP_blog().getBlog());
+                        setTextOrigin(trans_msg,item.getP_blog().getBlog(),item.getId());
                     }
                 }else{
-                    trans_msg.setText(item.getP_blog().getBlog());
+                    setTextOrigin(trans_msg,item.getP_blog().getBlog(),item.getId());
                 }
             }
+
+
 
 
 

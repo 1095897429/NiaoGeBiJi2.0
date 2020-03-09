@@ -1,11 +1,14 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -26,6 +29,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
+import com.qmkj.niaogebiji.module.adapter.TopicFocusSearchAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
 import com.qmkj.niaogebiji.module.bean.TopicAllBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
@@ -104,8 +108,9 @@ public class TopicListActivity extends BaseActivity {
 
 
     List<TopicBean> list =  new ArrayList<>();
-    TopicFocusAdapter mTopicFocusAdapter;
+    TopicFocusSearchAdapter mTopicFocusSearchAdapter;
     String typename;
+
 
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
@@ -115,8 +120,8 @@ public class TopicListActivity extends BaseActivity {
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mTopicFocusAdapter = new TopicFocusAdapter(list);
-        mRecyclerView.setAdapter(mTopicFocusAdapter);
+        mTopicFocusSearchAdapter = new TopicFocusSearchAdapter(list);
+        mRecyclerView.setAdapter(mTopicFocusSearchAdapter);
         //禁用change动画
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -237,7 +242,11 @@ public class TopicListActivity extends BaseActivity {
         if(mSearchTopicList != null && !mSearchTopicList.isEmpty()){
            mRecyclerView.setVisibility(View.VISIBLE);
            ll_empty.setVisibility(View.GONE);
-           mTopicFocusAdapter.setNewData(mSearchTopicList);
+           mTopicFocusSearchAdapter.setNewData(mSearchTopicList);
+
+            //已为加载更多无更多数据
+            mTopicFocusSearchAdapter.loadMoreComplete();
+            mTopicFocusSearchAdapter.loadMoreEnd();
         }else{
             ll_empty.setVisibility(View.VISIBLE);
             ll_empty.findViewById(R.id.iv_empty).setBackgroundResource(R.mipmap.icon_empty_comment);
@@ -280,7 +289,7 @@ public class TopicListActivity extends BaseActivity {
                 goods_pager.setCurrentItem(arg0);
             }
             if (currentItem != arg0) {
-                changeTextColor(arg0);
+                changeTextColor2(arg0);
                 changeTextLocation(arg0);
             }
             currentItem = arg0;
@@ -360,7 +369,7 @@ public class TopicListActivity extends BaseActivity {
             toolsTextViews[i] = textView;
             views[i] = view;
         }
-        changeTextColor(0);
+        changeTextColor2(0);
     }
 
 
@@ -389,24 +398,87 @@ public class TopicListActivity extends BaseActivity {
         views[id].findViewById(R.id.left_icon).setVisibility(View.VISIBLE);
         views[id].setBackgroundResource(android.R.color.white);
         toolsTextViews[id].setTextColor(getResources().getColor(R.color.text_first_color));
+
     }
+
+
+    //TODO 3.9 点击的item有圆角
+    private void changeTextColor2(int id) {
+        boolean isok = (id != views.length-1) ? true : false;
+        KLog.d("tag","当前的索引是 " + id + " 是否有下个索引 " + isok + " 下个索引是 " + (id + 1));
+
+        boolean isPre =  (id != 0) ? true : false;
+
+        for (int i = 0; i < toolsTextViews.length; i++) {
+            if (i != id) {
+                views[i].findViewById(R.id.left_icon).setVisibility(View.GONE);
+                views[i].setBackgroundResource(R.color.bg_color);
+                toolsTextViews[i].setTextColor(getResources().getColor(R.color.text_second_color));
+            }
+        }
+
+
+        views[id].findViewById(R.id.left_icon).setVisibility(View.VISIBLE);
+        views[id].setBackgroundResource(R.color.white);
+        toolsTextViews[id].setTextColor(getResources().getColor(R.color.text_first_color));
+
+
+        if(isok){
+            views[id + 1].findViewById(R.id.left_icon).setVisibility(View.GONE);
+            views[id + 1].setBackgroundResource(R.drawable.bg_corners_12_right);
+            toolsTextViews[id + 1].setTextColor(getResources().getColor(R.color.text_second_color));
+        }
+
+        if(isPre){
+            if(id - 1 == 0){
+                views[id - 1].findViewById(R.id.left_icon).setVisibility(View.GONE);
+                views[id - 1].setBackgroundResource(R.drawable.bg_corners_12_right_bottom);
+                toolsTextViews[id - 1].setTextColor(getResources().getColor(R.color.text_second_color));
+            }else{
+                views[id - 1].findViewById(R.id.left_icon).setVisibility(View.GONE);
+                views[id - 1].setBackgroundResource(R.drawable.bg_corners_12_bottom);
+                toolsTextViews[id - 1].setTextColor(getResources().getColor(R.color.text_second_color));
+            }
+        }
+
+    }
+
 
 
 
     @OnClick({
             R.id.iv_back,
-            R.id.search_part
+            R.id.search_part,
+            R.id.search_cancle
     })
     public void clicks(View view) {
-        if (StringUtil.isFastClick()) {
-            return;
-        }
+
         switch (view.getId()) {
             case R.id.search_part:
+                ll_auto_results.setVisibility(View.GONE);
+                ll_manual_result.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+                ll_empty.setVisibility(View.GONE);
 
+                //设置Edittext获取焦点并弹出软键盘
+                search_first.setFocusable(true);
+                search_first.setFocusableInTouchMode(true);
+                search_first.requestFocus();
+
+                //显示软键盘
+                //如果上面的代码没有弹出软键盘 可以使用下面另一种方式
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                 imm.showSoftInput(search_first, 0);
                 break;
             case R.id.iv_back:
                 finish();
+                break;
+            case R.id.search_cancle:
+                //清空数据
+                ll_auto_results.setVisibility(View.VISIBLE);
+                ll_manual_result.setVisibility(View.GONE);
+                search_first.setText("");
+                KeyboardUtils.hideSoftInput(search_first);
                 break;
             default:
         }
@@ -430,10 +502,18 @@ public class TopicListActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchBackEvent(SearchCleanEvent event) {
         if(null != this){
-            ll_auto_results.setVisibility(View.VISIBLE);
-            ll_manual_result.setVisibility(View.GONE);
+            clicks(findViewById(R.id.search_cancle));
         }
     }
 
 
+    @Override
+    public void onBackPressed() {
+
+        if(ll_manual_result.getVisibility() == View.VISIBLE){
+            clicks(findViewById(R.id.search_cancle));
+        }else{
+            super.onBackPressed();
+        }
+    }
 }

@@ -46,6 +46,18 @@ public class TalkCircleAlertDialog {
         this.myPosition = myPosition;
     }
 
+
+    //文章的二级评论是显示转发到圈子的
+
+    public void setCheckBoxNoShow() {
+        mCheckBox.setVisibility(View.GONE);
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+        listentext2.setText("/" + num);
+    }
+
     /** 回调接口 开始 */
 
     public OnDialogItemClickListener mOnDialogItemClickListener;

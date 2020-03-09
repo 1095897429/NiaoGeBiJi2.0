@@ -68,6 +68,12 @@ public class TalkAlertDialog {
         mOnIsToCircleLister = onIsToCircleLister;
     }
 
+
+    public void setNum(int num) {
+        this.num = num;
+        listentext2.setText("/" + num);
+    }
+
     /** 回调接口 结束 */
 
     public TalkAlertDialog(Context context){

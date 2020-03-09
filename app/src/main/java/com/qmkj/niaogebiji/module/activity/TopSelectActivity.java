@@ -279,7 +279,7 @@ public class TopSelectActivity extends BaseActivity {
                 goods_pager.setCurrentItem(arg0);
             }
             if (currentItem != arg0) {
-                changeTextColor(arg0);
+                changeTextColor2(arg0);
                 changeTextLocation(arg0);
             }
             currentItem = arg0;
@@ -359,7 +359,7 @@ public class TopSelectActivity extends BaseActivity {
             toolsTextViews[i] = textView;
             views[i] = view;
         }
-        changeTextColor(0);
+        changeTextColor2(0);
     }
 
 
@@ -389,6 +389,50 @@ public class TopSelectActivity extends BaseActivity {
         views[id].setBackgroundResource(android.R.color.white);
         toolsTextViews[id].setTextColor(getResources().getColor(R.color.text_first_color));
     }
+
+
+    //TODO 3.9 点击的item有圆角
+    private void changeTextColor2(int id) {
+        boolean isok = (id != views.length-1) ? true : false;
+        KLog.d("tag","当前的索引是 " + id + " 是否有下个索引 " + isok + " 下个索引是 " + (id + 1));
+
+        boolean isPre =  (id != 0) ? true : false;
+
+        for (int i = 0; i < toolsTextViews.length; i++) {
+            if (i != id) {
+                views[i].findViewById(R.id.left_icon).setVisibility(View.GONE);
+                views[i].setBackgroundResource(R.color.bg_color);
+                toolsTextViews[i].setTextColor(getResources().getColor(R.color.text_second_color));
+            }
+        }
+
+
+        views[id].findViewById(R.id.left_icon).setVisibility(View.VISIBLE);
+        views[id].setBackgroundResource(R.color.white);
+        toolsTextViews[id].setTextColor(getResources().getColor(R.color.text_first_color));
+
+
+        if(isok){
+            views[id + 1].findViewById(R.id.left_icon).setVisibility(View.GONE);
+            views[id + 1].setBackgroundResource(R.drawable.bg_corners_12_right);
+            toolsTextViews[id + 1].setTextColor(getResources().getColor(R.color.text_second_color));
+        }
+
+        if(isPre){
+            if(id - 1 == 0){
+                views[id - 1].findViewById(R.id.left_icon).setVisibility(View.GONE);
+                views[id - 1].setBackgroundResource(R.drawable.bg_corners_12_right_bottom);
+                toolsTextViews[id - 1].setTextColor(getResources().getColor(R.color.text_second_color));
+            }else{
+                views[id - 1].findViewById(R.id.left_icon).setVisibility(View.GONE);
+                views[id - 1].setBackgroundResource(R.drawable.bg_corners_12_bottom);
+                toolsTextViews[id - 1].setTextColor(getResources().getColor(R.color.text_second_color));
+            }
+        }
+
+    }
+
+
 
 
 

@@ -3,7 +3,6 @@ package com.qmkj.niaogebiji.module.adapter;
 import android.app.Activity;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,9 +18,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
-import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
-import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
@@ -44,9 +41,9 @@ import io.reactivex.schedulers.Schedulers;
  * 描述:在话题列表中 --- 话题关注适配器
  * 关注 参照作者
  */
-public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
+public class TopicFocusSearchAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolder> {
 
-    public TopicFocusAdapter(@Nullable List<TopicBean> data) {
+    public TopicFocusSearchAdapter(@Nullable List<TopicBean> data) {
         super(R.layout.item_topic_list_focus,data);
     }
 
@@ -57,6 +54,9 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
         chineseTv.setText("#" + item.getTitle());
+
+        //TODO 3.9 话题列表 搜索中隐藏 关注人数
+        helper.setVisible(R.id.top_focus_num,false);
 
         //头像
         if(!TextUtils.isEmpty(item.getIcon())){
@@ -92,7 +92,7 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                 helper.setText(R.id.top_focus_num,f1 + " w" + "人关注");
             }
         }else{
-            helper.setText(R.id.top_focus_num,    "0人关注");
+            helper.setText(R.id.top_focus_num,   0 + "人关注");
         }
 
         //是否关注 注：1-关注，0-取消关注

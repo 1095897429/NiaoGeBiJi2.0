@@ -14,7 +14,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -23,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,10 +72,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -169,7 +176,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
     private String mString;
     //编辑字数限制
-    private int num = 140;
+    private int num = 500;
     public  int pic_num = 9;
 
     //话题
@@ -219,6 +226,132 @@ public class CircleMakeActivityV2 extends BaseActivity {
     //从哪里跳过来的
     private NewsDetailBean mNewsDetailBean;
 
+
+
+
+    TextWatcher mTextWatcher = new TextWatcher() {
+
+        private String temp;
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            temp = s.toString().trim();
+            mString = temp;
+            KLog.d("tag", "accept: " + s.toString());
+
+
+            //判断emoji输入的
+            if(count - before >= 1){
+                CharSequence input = s.subSequence(start + before, start + count);
+                if(isEmoji(input.toString())){
+                    Toast.makeText(mContext,"不支持emoji表情",Toast.LENGTH_SHORT).show();
+                    listentext.setText((temp.length() + 2) + "");
+                }else{
+                    if (!TextUtils.isEmpty(temp)) {
+                        String limitSubstring = getLimitSubstring(temp);
+                        if (!TextUtils.isEmpty(limitSubstring)) {
+
+                            if (!limitSubstring.equals(temp)) {
+                                Toast.makeText(CircleMakeActivityV2.this,"字数已超过限制", Toast.LENGTH_SHORT).show();
+                                mEditText.setText(limitSubstring);
+                                mEditText.setSelection(limitSubstring.length());
+                            }
+
+                            //如果是网址  并且url无效，同样的不给点击
+                            if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
+                                return;
+                            }
+
+                            setSendStatus(true);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+
+    private boolean isEmojiCharacter(char codePoint) {
+        return !((codePoint == 0x0) ||
+                (codePoint == 0x9) ||
+                (codePoint == 0xA) ||
+                (codePoint == 0xD) ||
+                ((codePoint >= 0x20) && (codePoint <= 0xD7FF)) ||
+                ((codePoint >= 0xE000) && (codePoint <= 0xFFFD)) ||
+                ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF)));
+    }
+
+
+    public  boolean isHasEmoji(CharSequence source) {
+        Pattern emoji = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
+                Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        //过滤emoji
+        Matcher emojiMatcher = emoji.matcher(source);
+        if (emojiMatcher.find()) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isEmoji(String input){
+        Pattern p = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\ud83e\udc00-\ud83e\udfff]" +
+                "|[\u2100-\u32ff]|[\u0030-\u007f][\u20d0-\u20ff]|[\u0080-\u00ff]");
+        Matcher m = p.matcher(input);
+        return m.find();
+    }
+
+
+    private String getLimitSubstring(String inputStr) {
+
+        int orignLen = inputStr.length();
+        float resultLen = 0f;
+        String temp ;
+
+        //正常的逻辑
+        for (int i = 0; i < orignLen; i++) {
+            temp = inputStr.substring(i,i + 1);
+            try {
+                // 3 bytes to indicate chinese word,1 byte to indicate english word,in utf-8 encode
+                if (temp.getBytes("utf-8").length == 3) {
+                    resultLen += 1;
+                }else if(temp.getBytes("utf-8").length == 1){
+                    resultLen += 0.5;
+                }
+
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            if(resultLen > num){
+                listentext.setTextColor(Color.parseColor("#FFFF5040"));
+            }else{
+                listentext.setTextColor(Color.parseColor("#818386"));
+            }
+
+            // Math.round()方法表示的是“四舍五入”的计算
+            listentext.setText(Math.round(resultLen) + "");
+
+            if (resultLen > num) {
+                return inputStr.substring(0,i);
+            }
+        }
+        return inputStr;
+    }
+
+
+
     @SuppressLint("CheckResult")
     @Override
     protected void initView() {
@@ -243,36 +376,36 @@ public class CircleMakeActivityV2 extends BaseActivity {
             }
         }
 
+        mEditText.addTextChangedListener(mTextWatcher);
 
-        RxTextView
-                .textChanges(mEditText)
-                .subscribe(charSequence -> {
-                    //英文单词占1个字符  表情占2个字符 中文占1个字符
-                    //目前用上面的方案的
+//        RxTextView
+//                .textChanges(mEditText)
+//                .subscribe(charSequence -> {
+//                    //英文单词占1个字符  表情占2个字符 中文占1个字符
+//                    //trim()是去掉首尾空格
+//                    mString = charSequence.toString().trim();
 //                    KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );
-                    //trim()是去掉首尾空格
-                    mString = charSequence.toString().trim();
-                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
-                        //如果是网址  并且url无效，同样的不给点击
-//                        KLog.d("tag","长度是 " + link_title.getText().toString());
-                        if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
-                            return;
-                        }
-
-                        setSendStatus(true);
-
-                        if(mString.length() > num){
-                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
-                        }else{
-                            listentext.setTextColor(Color.parseColor("#818386"));
-                        }
-
-                    }else{
-                        setSendStatus(false);
-                    }
-
-                    listentext.setText(mString.length() + "");
-                });
+//                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
+//                        //如果是网址  并且url无效，同样的不给点击
+////                        KLog.d("tag","长度是 " + link_title.getText().toString());
+//                        if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
+//                            return;
+//                        }
+//
+//                        setSendStatus(true);
+//
+//                        if(mString.length() > num){
+//                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
+//                        }else{
+//                            listentext.setTextColor(Color.parseColor("#818386"));
+//                        }
+//
+//                    }else{
+//                        setSendStatus(false);
+//                    }
+//
+//                    listentext.setText(mString.length() + "");
+//                });
 
         initLayout();
 
@@ -405,7 +538,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
 
                 if(mString.length() > num){
-                    ToastUtils.showShort("内容最多输入140字");
+                    ToastUtils.showShort("内容最多输入500字");
                     return;
                 }
 
@@ -912,6 +1045,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
                                 isUrlOk = true;
                             }
                             Message message = Message.obtain();
+                            message.obj = status;
                             mHandler.sendMessage(message);
                         }
 

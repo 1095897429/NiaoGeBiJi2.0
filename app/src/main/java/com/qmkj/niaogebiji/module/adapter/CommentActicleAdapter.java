@@ -35,8 +35,11 @@ import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -117,9 +120,20 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
             ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
         }
         //评论正文
+        TextView comment_text = helper.getView(R.id.comment_text);
         if(!TextUtils.isEmpty(item.getMessage())){
-            helper.setText(R.id.comment_text,item.getMessage());
+            comment_text.setText(item.getMessage());
         }
+
+        comment_text.post(() -> {
+            KLog.e("tag","comment_text.getLineCount() " + comment_text.getLineCount());
+            if(comment_text.getLineCount() > 5){//判断行数大于多少时改变
+                int lineEndIndex = comment_text.getLayout().getLineEnd(4); //设置第4行打省略号
+                String text = comment_text.getText().subSequence(0, lineEndIndex-4) +"...";
+                comment_text.setText(text);
+            }
+        });
+
 
 
         //点赞数

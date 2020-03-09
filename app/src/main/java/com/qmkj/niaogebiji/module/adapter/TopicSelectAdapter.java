@@ -43,7 +43,12 @@ public class TopicSelectAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
         TextView chineseTv = helper.getView(R.id.top_title);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
-        chineseTv.setText(item.getTitle());
+        chineseTv.setText("#" + item.getTitle());
+
+
+        TextView selectView = helper.getView(R.id.select);
+        TextPaint paint1 = selectView.getPaint();
+        paint1.setFakeBoldText(true);
 
         //头像
         if(!TextUtils.isEmpty(item.getIcon())){
@@ -54,7 +59,7 @@ public class TopicSelectAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
         if(!TextUtils.isEmpty(item.getFollow_num())){
             long count = Long.parseLong(item.getFollow_num());
             if(count < 10000 ){
-                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人 关注");
+                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人关注");
             }else{
                 double temp = count  ;
                 //1.将数字转换成以万为单位的数字
@@ -64,18 +69,20 @@ public class TopicSelectAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
                 double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
                 helper.setText(R.id.top_focus_num,f1 + " w" + "人 关注");
             }
+        }else{
+            helper.setText(R.id.top_focus_num,    " 0 人关注");
         }
 
         //是否选择 注：1-选择，0-未选择
-        if(0 == item.getIs_select()){
-            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_yellow);
-            helper.setVisible(R.id.focus,true);
-            helper.setVisible(R.id.focus_aleady,false);
-        }else{
-            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_gray);
-            helper.setVisible(R.id.focus,false);
-            helper.setVisible(R.id.focus_aleady,true);
-        }
+//        if(0 == item.getIs_select()){
+//            helper.setBackgroundRes(R.id.select,R.drawable.bg_corners_8_yellow);
+//            helper.setVisible(R.id.focus,true);
+//            helper.setVisible(R.id.focus_aleady,false);
+//        }else{
+//            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_gray);
+//            helper.setVisible(R.id.focus,false);
+//            helper.setVisible(R.id.focus_aleady,true);
+//        }
 
 
         //选择

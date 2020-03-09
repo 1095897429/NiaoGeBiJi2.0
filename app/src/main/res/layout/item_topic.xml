@@ -14,7 +14,6 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="centerCrop"
-        android:background="@color/bg_color"
         app:round_as_circle="false"
         app:round_corner="12dp" />
 
@@ -32,7 +31,7 @@
         <TextView
             android:id="@+id/top_title"
             android:text="#找资源"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -44,7 +43,7 @@
         <TextView
             android:id="@+id/top_focus_num"
             android:text="1.1w人 关注"
-            android:textSize="13sp"
+            android:textSize="11sp"
             android:textColor="@color/text_second_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -79,11 +78,11 @@
         android:id="@+id/focus_aleady"
         android:textColor="#818386"
         android:visibility="gone"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:text="取消关注"
         android:background="@drawable/bg_corners_8_gray"
-        android:layout_width="70dp"
-        android:layout_height="34dp" />
+        android:layout_width="64dp"
+        android:layout_height="32dp" />
 
 
     <TextView
@@ -92,16 +91,13 @@
         android:layout_marginRight="16dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:textSize="14sp"
+        android:textSize="13sp"
+        android:gravity="center"
         android:visibility="visible"
         android:text="选择"
-        android:paddingLeft="21dp"
-        android:paddingRight="21dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:background="@drawable/bg_corners_8_yellow"
-        android:layout_width="70dp"
-        android:layout_height="34dp" />
+        android:background="@drawable/bg_corners_8_gray"
+        android:layout_width="64dp"
+        android:layout_height="32dp" />
     
 
     <View

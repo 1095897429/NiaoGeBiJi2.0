@@ -47,6 +47,13 @@ public class ShowCommentDialog {
         this.myPosition = myPosition;
     }
 
+
+    //设置最大的输入数
+    public void setNum(int num) {
+        this.num = num;
+        listentext2.setText("/" + num);
+    }
+
     /** 是否转发到圈子 回调接口 */
     public OnIsToCircleLister mOnIsToCircleLister;
 
@@ -149,7 +156,7 @@ public class ShowCommentDialog {
 
     private String mString;
     //编辑字数限制
-    private int num = 140;
+    private int num = 500;
 
     private void setEvent() {
 

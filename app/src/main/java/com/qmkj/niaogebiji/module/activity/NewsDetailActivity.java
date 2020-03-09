@@ -1722,6 +1722,7 @@ public class NewsDetailActivity extends BaseActivity {
     private void showTalkDialog(int position,String from,String replyWho) {
         final TalkAlertDialog talkAlertDialog = new TalkAlertDialog(this).builder();
         talkAlertDialog.setIsneedtotrans(true);
+        talkAlertDialog.setNum(500);
         //单次保存草稿
         if(!TextUtils.isEmpty(saveContent)){
             talkAlertDialog.setCaoGao(saveContent);
@@ -1804,7 +1805,8 @@ public class NewsDetailActivity extends BaseActivity {
                     isSecondComment = false;
                     oneComment = mCommentAdapter.getData().get(position);
                     KLog.d("tag","点击此评论的id 为  " + oneComment.getCid());
-                    showTalkDialogFirstComment(position, oneComment);
+//                    showTalkDialogFirstComment(position, oneComment);
+                    showTalkDialogSecondComment(position,oneComment);
                     break;
                 case R.id.ll_has_second_comment:
                     isSecondComment = false;
@@ -1842,6 +1844,8 @@ public class NewsDetailActivity extends BaseActivity {
     /** --------------------------------- 二级评论弹框 ---------------------------------*/
     private void showTalkDialogSecondComment(int position,CommentBean.FirstComment beanNew) {
         final TalkCircleAlertDialog talkAlertDialog = new TalkCircleAlertDialog(this).builder();
+        talkAlertDialog.setNum(140);
+        talkAlertDialog.setCheckBoxNoShow();
         talkAlertDialog.setMyPosition(position);
         talkAlertDialog.setHint(beanNew.getUsername());
         talkAlertDialog.setTalkLisenter((position1, words) -> {
@@ -2163,11 +2167,6 @@ public class NewsDetailActivity extends BaseActivity {
                             article_title = mNewsDetailBean.getTitle();
                             article_image = mNewsDetailBean.getPic();
                             blog = content;
-                            //字数判断 不能大于140个汉字
-                            if(content.length() > 140){
-                                ToastUtils.showShort("您评论的字数过多");
-                                return;
-                            }
                             createBlog();
                         }
                     }

@@ -377,7 +377,7 @@ public class UIHelper {
 
     /** 打开个人信息界面 */
     public static void toUserInfoActivity(Context ctx,String uid) {
-        Intent intent = new Intent(ctx, UserInfoActivity.class);
+        Intent intent = new Intent(ctx, UserInfoV2Activity.class);
         intent.putExtra("uid",uid);
         ctx.startActivity(intent);
     }

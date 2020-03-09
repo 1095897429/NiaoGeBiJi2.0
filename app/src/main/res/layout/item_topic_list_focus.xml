@@ -31,19 +31,18 @@
         <TextView
             android:id="@+id/top_title"
             android:text="#找资源"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
 
         <TextView
             android:id="@+id/top_focus_num"
             android:text=""
-            android:textSize="13sp"
+            android:layout_marginTop="8dp"
+            android:visibility="visible"
+            android:textSize="11sp"
             android:textColor="@color/text_second_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -60,13 +59,10 @@
         android:textSize="14sp"
         android:visibility="visible"
         android:text="关注"
-        android:paddingLeft="21dp"
-        android:paddingRight="21dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:gravity="center"
         android:background="@drawable/bg_corners_8_yellow"
-        android:layout_width="70dp"
-        android:layout_height="34dp" />
+        android:layout_width="64dp"
+        android:layout_height="32dp" />
 
 
 
@@ -81,8 +77,8 @@
         android:textSize="14sp"
         android:text="已关注"
         android:background="@drawable/bg_corners_8_gray"
-        android:layout_width="70dp"
-        android:layout_height="34dp" />
+        android:layout_width="64dp"
+        android:layout_height="32dp" />
 
 
 

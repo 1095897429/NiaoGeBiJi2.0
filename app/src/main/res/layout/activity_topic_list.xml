@@ -7,94 +7,116 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_marginRight="16dp"
+        android:id="@+id/ll_auto_results"
+        android:visibility="visible"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/icon_back"
-            android:layout_centerVertical="true"
-            android:visibility="visible" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/search_part"
-            android:layout_height="40dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_corners_8_gray"
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_marginLeft="9dp"
-                android:src="@mipmap/icon_sousou"
-                android:layout_gravity="center|left"
-                android:layout_width="14dp"
-                android:layout_height="14dp" />
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/icon_back"
+                android:layout_centerVertical="true"
+                android:visibility="visible" />
 
             <Space
                 android:layout_width="10dp"
                 android:layout_height="match_parent" />
 
-            <com.qmkj.niaogebiji.module.widget.ClearableEditText
-                android:id="@+id/search_first"
-                android:layout_width="match_parent"
-                android:background="@null"
-                android:hint="获取数据源"
-                android:imeOptions="actionSearch"
-                android:singleLine="true"
-                android:textSize="13sp"
-                android:textColor="#AAAEB3"
-                android:layout_gravity="center|left"
-                android:layout_height="match_parent" />
+            <LinearLayout
+                android:id="@+id/search_part"
+                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_corners_8_gray"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_marginLeft="9dp"
+                    android:src="@mipmap/icon_sousou"
+                    android:layout_gravity="center|left"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent" />
+
+                <com.qmkj.niaogebiji.module.widget.ClearableEditText
+                    android:layout_width="match_parent"
+                    android:background="@null"
+                    android:visibility="gone"
+                    android:hint="获取数据源"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
+                    android:textSize="13sp"
+                    android:textColor="#AAAEB3"
+                    android:layout_gravity="center|left"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/first_search"
+                    android:layout_width="wrap_content"
+                    android:text="获取数据源"
+                    android:gravity="center|left"
+                    android:textSize="13sp"
+                    android:clickable="false"
+                    android:textColor="#AAAEB3"
+                    android:layout_gravity="center|left"
+                    android:layout_height="wrap_content" />
+
+
+
+            </LinearLayout>
+
+
 
         </LinearLayout>
 
+        <LinearLayout
 
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:id="@+id/ll_auto_results"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" >
-
-        <ScrollView
-            android:background="@color/bg_color"
-            android:id="@+id/tools_scrlllview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:fadingEdge="none"
-            android:scrollbars="none" >
+            android:orientation="horizontal" >
 
-            <LinearLayout
-                android:id="@+id/tools"
+            <ScrollView
+                android:background="@color/bg_color"
+                android:id="@+id/tools_scrlllview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="vertical" />
-        </ScrollView>
+                android:layout_weight="3"
+                android:fadingEdge="none"
+                android:scrollbars="none" >
 
-        <fr.castorflex.android.verticalviewpager.VerticalViewPager
-            android:id="@+id/goods_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+                <LinearLayout
+                    android:id="@+id/tools"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical" />
+            </ScrollView>
+
+            <fr.castorflex.android.verticalviewpager.VerticalViewPager
+                android:id="@+id/goods_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </LinearLayout>
+
 
 
     <LinearLayout
@@ -103,6 +125,69 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_corners_8_gray"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_marginLeft="9dp"
+                    android:src="@mipmap/icon_sousou"
+                    android:layout_gravity="center|left"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent" />
+
+                <com.qmkj.niaogebiji.module.widget.ClearableEditText
+                    android:id="@+id/search_first"
+                    android:layout_width="match_parent"
+                    android:background="@null"
+                    android:hint="获取数据源"
+                    android:focusable="true"
+                    android:imeOptions="actionSearch"
+                    android:cursorVisible="true"
+                    android:focusableInTouchMode="true"
+                    android:singleLine="true"
+                    android:textSize="13sp"
+                    android:textColor="#AAAEB3"
+                    android:layout_gravity="center|left"
+                    android:layout_height="match_parent" />
+
+
+
+            </LinearLayout>
+
+
+
+            <TextView
+                android:id="@+id/search_cancle"
+                android:textSize="16sp"
+                android:text="取消"
+                android:layout_marginLeft="12dp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
 
         <include layout="@layout/common_norefresh"/>
 

@@ -179,7 +179,6 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
         RetrofitHelper.getApiService().recommendBlogList(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
                     @Override
                     public void onSuccess(HttpResponse<List<CircleBean>> response) {
@@ -283,7 +282,9 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                 //获取类型
                 type = StringUtil.getCircleType(temp);
                 //检查links同时添加原创文本
-                StringUtil.addLinksData(temp);
+                if(temp != null && !TextUtils.isEmpty(temp.getBlog())){
+                    StringUtil.addLinksData(temp);
+                }
 
                if(type == CircleRecommentAdapterNew.ZF_TEXT ||
                     type == CircleRecommentAdapterNew.ZF_PIC ||

@@ -703,6 +703,8 @@ public class HomeActivityV2 extends BaseActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
         unbindService(mServiceConnectionSend);
+
+        unbindService(mServiceConnection);
     }
 
     public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";

@@ -941,6 +941,7 @@ public class CommentDetailActivityV2 extends BaseActivity {
     private String mWords;
     private void ToBlogDialog(String blog_id, String replyWho) {
         final ShowCommentDialog talkAlertDialog = new ShowCommentDialog(this).builder();
+        talkAlertDialog.setNum(500);
         if(!TextUtils.isEmpty(replyWho)){
             talkAlertDialog.setHint(replyWho);
         }
@@ -1381,13 +1382,14 @@ public class CommentDetailActivityV2 extends BaseActivity {
 
 
 
-    /** --------------------------------- 一级评论弹框 ---------------------------------*/
 
     private String mmWords;
     private void showBlogCommentDialog(int position, CommentCircleBean beanNew) {
         final ShowCommentDialog showCommentDialog = new ShowCommentDialog(this).builder();
         showCommentDialog.setHint(beanNew.getUser_info().getName());
         showCommentDialog.setMyPosition(position);
+        //设置最大数还是140
+        showCommentDialog.setNum(140);
         //获取输入的文字
         showCommentDialog.setWriteWordLisenter((myPositon, words) -> mmWords = words);
 

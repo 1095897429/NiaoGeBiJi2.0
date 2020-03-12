@@ -19,6 +19,17 @@ public class MessageBean extends BaseBean {
     //快讯索引
     private String flash_id;
 
+    //显示 头条 icon  top = 1 显示
+    private String top;
+
+
+    public String getTop() {
+        return top;
+    }
+
+    public void setTop(String top) {
+        this.top = top;
+    }
 
     public MessageBean(String text, String time, String myTitle, String flash_id) {
         this.text = text;

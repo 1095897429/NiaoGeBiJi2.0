@@ -18,6 +18,7 @@ import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -37,6 +38,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.SPUtils;
@@ -50,6 +52,7 @@ import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.HeadAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.service.SendService;
+import com.qmkj.niaogebiji.common.utils.BitmapUtils;
 import com.qmkj.niaogebiji.common.utils.FileHelper;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
@@ -75,6 +78,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -238,6 +242,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
         }
 
+        //count 添加字符的长度
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             temp = s.toString().trim();
@@ -249,27 +254,15 @@ public class CircleMakeActivityV2 extends BaseActivity {
             if(count - before >= 1){
                 CharSequence input = s.subSequence(start + before, start + count);
                 if(isEmoji(input.toString())){
-                    Toast.makeText(mContext,"不支持emoji表情",Toast.LENGTH_SHORT).show();
-                    listentext.setText((temp.length() + 2) + "");
+
+//                    Toast.makeText(mContext,"不支持emoji表情",Toast.LENGTH_SHORT).show();
+                    String rsu = listentext.getText().toString();
+
+                    listentext.setText((Integer.parseInt(rsu)+ count) + "");
+                    KLog.d("tag","listentext.getText() "+ listentext.getText());
                 }else{
-                    if (!TextUtils.isEmpty(temp)) {
-                        String limitSubstring = getLimitSubstring(temp);
-                        if (!TextUtils.isEmpty(limitSubstring)) {
-
-                            if (!limitSubstring.equals(temp)) {
-                                Toast.makeText(CircleMakeActivityV2.this,"字数已超过限制", Toast.LENGTH_SHORT).show();
-                                mEditText.setText(limitSubstring);
-                                mEditText.setSelection(limitSubstring.length());
-                            }
-
-                            //如果是网址  并且url无效，同样的不给点击
-                            if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
-                                return;
-                            }
-
-                            setSendStatus(true);
-
-                        }
+                    if (!TextUtils.isEmpty(input)) {
+                        String limitSubstring = getLimitSubstring(input.toString());
                     }
                 }
             }
@@ -277,9 +270,47 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
+            if (!TextUtils.isEmpty(temp)) {
+                String limitSubstring = getLimitSubstring(temp);
+                if (!TextUtils.isEmpty(limitSubstring)) {
+                    if (!limitSubstring.equals(temp)) {
+                        Toast.makeText(CircleMakeActivityV2.this,"字数已超过限制", Toast.LENGTH_SHORT).show();
+                        mEditText.setText(limitSubstring);
+                        mEditText.setSelection(limitSubstring.length());
+                    }
 
+                    //如果是网址  并且url无效，同样的不给点击
+                    if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
+                        return;
+                    }
+
+                    setSendStatus(true);
+
+                }
+
+
+
+//                String text = temp;
+//
+//                Pattern p = Pattern.compile("[0-9]*");
+//                Matcher m = p.matcher(text);
+//                if(m.matches() ){
+//                    KLog.d("tag","输入的是数字");
+//                }
+//                p=Pattern.compile("[a-zA-Z]");
+//                m=p.matcher(text);
+//                if(m.matches()){
+//                    KLog.d("tag","输入的是字母");
+//                }
+//                p=Pattern.compile("[\u4e00-\u9fa5]");
+//                m=p.matcher(text);
+//                if(m.matches()){
+//                    KLog.d("tag","输入的是汉字");
+//                }
+            }
         }
     };
+
 
 
     private boolean isEmojiCharacter(char codePoint) {
@@ -312,6 +343,83 @@ public class CircleMakeActivityV2 extends BaseActivity {
     }
 
 
+    /**
+     * 字符串换成UTF-8
+     *
+     * @param str
+     * @return
+     */
+    public static String stringToUtf8(String str) {
+        String result = null;
+        try {
+            result = URLEncoder.encode(str, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private String getLimitSubstring222(String inputStr) {
+
+        int orignLen = inputStr.length();
+        float resultLen = 0f;
+        String temp ;
+
+
+        //正常的逻辑
+        for (int i = 0; i < orignLen; i++) {
+
+//            char codePoint = inputStr.charAt(i);
+//
+//            if(isEmojiCharacter(codePoint)){
+//                resultLen += 2;
+//                // Math.round()方法表示的是“四舍五入”的计算
+//                listentext.setText(Math.round(resultLen) + "");
+//                continue;
+//            }
+
+
+            temp = inputStr.substring(i,i + 1);
+            KLog.d("tag","字符是 " + temp);
+
+
+
+            try {
+                byte[] bytes = temp.getBytes();
+                temp = new String(bytes);
+                KLog.d("tag","字符1是 " + temp);
+
+
+                // 3 bytes to indicate chinese word,1 byte to indicate english word,in utf-8 encode
+                if (temp.getBytes("utf-8").length == 3) {
+                    resultLen += 1;
+                }else if(temp.getBytes("utf-8").length == 1){
+                    resultLen += 0.5;
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+
+            if(resultLen > num){
+                listentext.setTextColor(Color.parseColor("#FFFF5040"));
+            }else{
+                listentext.setTextColor(Color.parseColor("#818386"));
+            }
+
+            // Math.round()方法表示的是“四舍五入”的计算
+            listentext.setText(Math.round(resultLen) + "");
+
+            if (resultLen > num) {
+                return inputStr.substring(0,i);
+            }
+        }
+        return inputStr;
+    }
+
+
     private String getLimitSubstring(String inputStr) {
 
         int orignLen = inputStr.length();
@@ -328,7 +436,6 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 }else if(temp.getBytes("utf-8").length == 1){
                     resultLen += 0.5;
                 }
-
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -350,6 +457,44 @@ public class CircleMakeActivityV2 extends BaseActivity {
         return inputStr;
     }
 
+
+    public  void getCounts(String string) {
+        int count_abc=0, count_num=0, count_oth=0;
+        char[] chars = string.toCharArray();
+        //判断每个字符
+        for(int i = 0; i < chars.length; i++){
+            if((chars[i] >= 65 && chars[i] <= 90) || (chars[i] >= 97 && chars[i] <=122)){
+                count_abc++;
+            }else if(chars[i] >= 48 && chars[i] <= 57){
+                count_num++;
+            }else{
+                count_oth++;
+            }
+        }
+
+        int length = count_abc + count_num;
+
+        //1/2 = 0(1个数字) = 2 - 0 = 2      2/2 = 1(2个数字) = 3-1 = 2
+        length = length / 2;
+
+        int result = (mString.length() - length);
+        KLog.d("tag","长度 " + result);
+
+        listentext.setText(result + "");
+
+        if(result > num){
+            listentext.setTextColor(Color.parseColor("#FFFF5040"));
+            setSendStatus(false);
+        }else{
+            listentext.setTextColor(Color.parseColor("#818386"));
+            setSendStatus(true);
+        }
+
+
+        System.out.println("字母有：" + count_abc + "个");
+        System.out.println("数字有：" + count_num + "个");
+        System.out.println("其他的有：" + count_oth + "个");
+    }
 
 
     @SuppressLint("CheckResult")
@@ -376,36 +521,37 @@ public class CircleMakeActivityV2 extends BaseActivity {
             }
         }
 
-        mEditText.addTextChangedListener(mTextWatcher);
+//        mEditText.addTextChangedListener(mTextWatcher);
 
-//        RxTextView
-//                .textChanges(mEditText)
-//                .subscribe(charSequence -> {
-//                    //英文单词占1个字符  表情占2个字符 中文占1个字符
-//                    //trim()是去掉首尾空格
-//                    mString = charSequence.toString().trim();
-//                    KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );
-//                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
-//                        //如果是网址  并且url无效，同样的不给点击
-////                        KLog.d("tag","长度是 " + link_title.getText().toString());
-//                        if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
-//                            return;
-//                        }
-//
-//                        setSendStatus(true);
-//
-//                        if(mString.length() > num){
-//                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
-//                        }else{
-//                            listentext.setTextColor(Color.parseColor("#818386"));
-//                        }
-//
-//                    }else{
-//                        setSendStatus(false);
-//                    }
-//
-//                    listentext.setText(mString.length() + "");
-//                });
+
+        RxTextView
+                .textChanges(mEditText)
+                .subscribe(charSequence -> {
+                    //英文单词占1个字符  表情占2个字符 中文占1个字符
+                    //trim()是去掉首尾空格
+                    mString = charSequence.toString().trim();
+                    KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );
+
+                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
+
+                        //① 判断输入字数
+                        getCounts(mString);
+
+                        //如果是网址  并且url无效，同样的不给点击 【如果在此情况下 输入过多的文本就有问题了】
+                        //解决是 -- 先判断字数，在判断
+                        if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
+                            setSendStatus(false);
+                            return;
+                        }
+
+                    }else{
+                        setSendStatus(false);
+                        //手动赋值
+                        listentext.setText("0");
+                    }
+
+
+                });
 
         initLayout();
 
@@ -481,9 +627,9 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 SPUtils.getInstance().put("isTopicIconClick",true);
                 topic_first.setVisibility(View.GONE);
                 break;
-            case R.id.ll_topic:
-                UIHelper.toTopicDetailActivity(this,topicId);
-                break;
+//            case R.id.ll_topic:
+//                UIHelper.toTopicDetailActivity(this,topicId);
+//                break;
             case R.id.topic_delete:
 
                 ll_topic.setVisibility(View.GONE);
@@ -491,7 +637,12 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 topicName = "";
                 break;
             case R.id.topic:
-                UIHelper.toTopicSelectivity(this);
+            case R.id.ll_topic:
+
+                UIHelper.toTopicSelectivity(this,topicId);
+                //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+
                 break;
 
             case R.id.part2222:
@@ -537,15 +688,9 @@ public class CircleMakeActivityV2 extends BaseActivity {
 //                }
 
 
-                if(mString.length() > num){
-                    ToastUtils.showShort("内容最多输入500字");
-                    return;
-                }
 
 
                 sendToService();
-
-
 
                 break;
             case R.id.cancel:
@@ -562,6 +707,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
                 saveTempMsg(null);
                 finish();
+                //参数一：Activity1进入动画，参数二：Activity2退出动画
+                overridePendingTransition(R.anim.activity_alpha_enter, R.anim.activity_exit_bottom);
                 break;
             default:
         }
@@ -593,8 +740,14 @@ public class CircleMakeActivityV2 extends BaseActivity {
             BaseActivity.maxSendProgress = 100;
         }
 
+//        if(!tempList.isEmpty()){
+//            for (int i = 0; i < tempList.size(); i++) {
+//
+//                //获取每个图片的大小
+//                BitmapUtils.compressImageUpload(tempList.get(i));
+//            }
+//        }
 
-//    toSendBlog(mTempMsgBean);
 
 
         toSendBlogByService(mTempMsgBean);
@@ -901,7 +1054,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
             topicName = data.getExtras().getString("topicName");
             topicId = data.getExtras().getString("topicId");
 
-            select_topic_text.setText("#" + topicName + "  " +  topicId );
+//            select_topic_text.setText("#" + topicName + "  " +  topicId );
+              select_topic_text.setText("#" + topicName);
         }
     }
 

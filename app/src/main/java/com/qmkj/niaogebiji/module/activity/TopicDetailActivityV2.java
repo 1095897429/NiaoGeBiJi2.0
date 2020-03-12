@@ -19,10 +19,12 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -150,6 +152,7 @@ public class TopicDetailActivityV2 extends BaseActivity {
 
     }
 
+    //默认是 热度优先
     private void getListByTopicId() {
         Map<String,String> map = new HashMap<>();
         map.put("page",page + "");
@@ -215,7 +218,9 @@ public class TopicDetailActivityV2 extends BaseActivity {
                 //获取类型
                 type = StringUtil.getCircleType(temp);
                 //检查links同时添加原创文本
-                StringUtil.addLinksData(temp);
+                if(temp != null && !TextUtils.isEmpty(temp.getBlog())){
+                    StringUtil.addLinksData(temp);
+                }
 
                 if(type == CircleRecommentAdapterNew.ZF_TEXT ||
                         type == CircleRecommentAdapterNew.ZF_PIC ||
@@ -291,8 +296,8 @@ public class TopicDetailActivityV2 extends BaseActivity {
         //关注数 x>=10000，展示1w+
         if(!TextUtils.isEmpty(bean.getFollow_num())){
             long count = Long.parseLong(bean.getFollow_num());
-            if(count < 10000 ){
-                focus_num.setText(bean.getFollow_num() + "人 关注");
+            if(count < 100000 ){
+                focus_num.setText(bean.getFollow_num() + "人关注");
             }else{
                 double temp = count  ;
                 //1.将数字转换成以万为单位的数字
@@ -300,7 +305,7 @@ public class TopicDetailActivityV2 extends BaseActivity {
                 BigDecimal b = new BigDecimal(num);
                 //2.转换后的数字四舍五入保留小数点后一位;
                 double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                focus_num.setText(f1 + " w" + "人 关注");
+                focus_num.setText(f1 + " w+" + "人关注");
             }
         }
 
@@ -326,7 +331,7 @@ public class TopicDetailActivityV2 extends BaseActivity {
             if(!mTopicBean.isIs_follow()){
                 followTopic(0,mTopicBean.getId() + "");
             }else{
-                unfollowTopic(0,mTopicBean.getId() + "");
+                showCancelFocusDialog(0,mTopicBean.getId());
             }
         });
 
@@ -336,6 +341,18 @@ public class TopicDetailActivityV2 extends BaseActivity {
             StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
         });
     }
+
+
+
+    public void showCancelFocusDialog(int position, long topic_id){
+        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(mContext).builder();
+        iosAlertDialog.setPositiveButton("取消关注", v -> {
+            unfollowTopic(position,topic_id + "");
+        }).setNegativeButton("再想想", v -> {}).setMsg("取消关注?").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
 
 
     private void initLayout() {
@@ -424,6 +441,7 @@ public class TopicDetailActivityV2 extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","关注成功，改变状态");
+                        ToastUtils.showShort("关注成功");
                         mTopicBean.setIs_follow(true);
                         alreadFocus.setVisibility(View.VISIBLE);
                         part_small_already_focus.setVisibility(View.VISIBLE);

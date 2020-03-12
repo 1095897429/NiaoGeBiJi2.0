@@ -70,7 +70,7 @@ public class StarBar extends View {
     }
 
     /**
-     * 设置显示的星星的分数
+     * 设置显示的星星的分数 -- 总距离 / 5 == 每个星星的距离
      *
      * @param mark
      */
@@ -80,7 +80,10 @@ public class StarBar extends View {
             //ceil 想上取整
 //            starMark = (int)Math.ceil(mark);
             //floor向下取整
-            starMark = (float) Math.floor(mark);
+//            starMark = (float) Math.floor(mark);
+
+            //向上取整
+            starMark = (float) Math.round(mark);
 //            KLog.d("tag","整数的值为 " + starMark);
         }else {
             starMark = Math.round(mark * 10) * 1.0f / 10;
@@ -130,6 +133,7 @@ public class StarBar extends View {
         if (starFillBitmap == null || starEmptyDrawable == null) {
             return;
         }
+        //绘制暗星星
         for (int i = 0;i < starCount;i++) {
             starEmptyDrawable.setBounds((starDistance + starSize) * i, 0, (starDistance + starSize) * i + starSize, starSize);
             starEmptyDrawable.draw(canvas);

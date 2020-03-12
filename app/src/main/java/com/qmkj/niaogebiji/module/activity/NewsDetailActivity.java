@@ -38,6 +38,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.ActiclePointDialog;
@@ -192,6 +193,7 @@ public class NewsDetailActivity extends BaseActivity {
     @BindView(R.id.comment_ll)
     LinearLayout comment_ll;
 
+    //综合评分
     @BindView(R.id.starBar)
     StarBar starBar;
 
@@ -359,9 +361,21 @@ public class NewsDetailActivity extends BaseActivity {
                 break;
             case R.id.head_icon1111:
             case R.id.head_data:
-                KLog.d("tag","h5 去作者详情页");
-                String link =  StringUtil.getLink("authordetail/" + mNewsDetailBean.getAuthor_id());
-                UIHelper.toWebViewActivity(mContext,link);
+//                KLog.d("tag","h5 去作者详情页");
+//                String link =  StringUtil.getLink("authordetail/" + mNewsDetailBean.getAuthor_id());
+//                UIHelper.toWebViewActivity(mContext,link);
+
+
+
+                //判断是否关联作者，如果关联，则调到用户界面 author_uid ，没有，调到作者详情页 authoid
+                KLog.d("tag","author_uid " + mNewsDetailBean.getAuthor_uid());
+                if(mNewsDetailBean.getAuthor_uid().equals("0")){
+                    UIHelper.toAuthorDetailActivity(mContext,mNewsDetailBean.getAuthor_id());
+                }else{
+                    UIHelper.toUserInfoV2Activity(mContext,mNewsDetailBean.getAuthor_uid());
+
+                }
+
                 break;
             case R.id.iv_right:
                 MobclickAgentUtils.onEvent(UmengEvent.index_detail_upsharebtn_2_0_0);
@@ -484,12 +498,28 @@ public class NewsDetailActivity extends BaseActivity {
     String dl_link_code;
     private void commonLogic() {
 
-        //新增作者等级
+        //新增作者等级 -- 目前后台还没添加type字段
 //        if(专栏作者){
 //            显示：author_type 1
 //        }else (新手作者){
 //            显示：author_type 2
 //        }
+
+
+        //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
+        if("1".equals(mNewsDetailBean.getAuthor_type())){
+            author_type.setVisibility(View.GONE);
+        }else if("2".equals(mNewsDetailBean.getAuthor_type())){
+            author_type.setVisibility(View.VISIBLE);
+            author_type.setImageResource(R.mipmap.hot_author_newuser);
+        }else if("3".equals(mNewsDetailBean.getAuthor_type())){
+            author_type.setVisibility(View.VISIBLE);
+            author_type.setImageResource(R.mipmap.hot_author_new);
+        }else if("4".equals(mNewsDetailBean.getAuthor_type())){
+            author_type.setVisibility(View.VISIBLE);
+            author_type.setImageResource(R.mipmap.hot_author_professor);
+        }
+
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
 
@@ -1207,20 +1237,29 @@ public class NewsDetailActivity extends BaseActivity {
         RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
         if(null != userInfo){
             String myPoint = userInfo.getPoint();
-            String needPoint = mNewsDetailBean.getPointnum();
+            String needPoint = mNewsDetailBean.getDl_point();
+            KLog.d("tag","myPoint " + myPoint + " needPoint " + needPoint);
 
-            if(!TextUtils.isEmpty(myPoint) && !TextUtils.isEmpty(needPoint)){
-                int mPoint = Integer.parseInt(myPoint);
-                int nPoint = Integer.parseInt(needPoint);
-                if(mPoint < nPoint){
-                    //表明我的积分不够
-                    showDownNotEnoughDialog();
-                }else{
-                    toPayPoint();
-                }
+            int result = myPoint.compareTo(needPoint);
+            if(result < 0){
+                //表明我的积分不够
+                showDownNotEnoughDialog();
             }else{
                 toPayPoint();
             }
+
+//            if(!TextUtils.isEmpty(myPoint) && !TextUtils.isEmpty(needPoint)){
+//                int mPoint = Integer.parseInt(myPoint);
+//                int nPoint = Integer.parseInt(needPoint);
+//                if(mPoint <= nPoint){
+//                    //表明我的积分不够
+//                    showDownNotEnoughDialog();
+//                }else{
+//                    toPayPoint();U
+//                }
+//            }else{
+//                toPayPoint();
+//            }
 
 
         }
@@ -1238,6 +1277,35 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
 
+
+    private void getUserInfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+                        RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                        if(null != mUserInfo){
+                            StringUtil.setUserInfoBean(mUserInfo);
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
+                        }
+                    }
+                });
+
+    }
+
+
+
     private void toPayPoint() {
         Map<String,String> map = new HashMap<>();
         map.put("aid",newsId);
@@ -1252,6 +1320,8 @@ public class NewsDetailActivity extends BaseActivity {
                         //成功后台给数据，我渲染界面
                         mNewsDetailBean.setIs_dl("1");
                         showDownOkDialog();
+
+                        getUserInfo();
 
                     }
 
@@ -1285,7 +1355,7 @@ public class NewsDetailActivity extends BaseActivity {
                             //后台可能返回list为0
                             mFirstComments = mTempCommentBean.getList();
                             if(1 == page){
-                                if(!mFirstComments.isEmpty()){
+                                if(!mFirstComments.isEmpty() && mFirstComments.size() > 0){
                                     setData2(mFirstComments);
                                     mCommentAdapter.setNewData(allFirstList);
                                     //如果第一次返回的数据不满10条，则显示无更多数据
@@ -1786,7 +1856,8 @@ public class NewsDetailActivity extends BaseActivity {
 
             oneComment = mCommentAdapter.getData().get(position);
             KLog.d("tag","点击此评论的id 为  " + oneComment.getCid());
-            showTalkDialogFirstComment(position, oneComment);
+            showTalkDialogSecondComment(position,oneComment);
+//            showTalkDialogFirstComment(position, oneComment);
         });
 
         mCommentAdapter.setOnLoadMoreListener(() -> {
@@ -2086,8 +2157,10 @@ public class NewsDetailActivity extends BaseActivity {
             }
         });
 
-        //头像跳转
-        head_second_icon.setOnClickListener(v -> UIHelper.toUserInfoActivity(NewsDetailActivity.this,superiorComment.getUid()));
+        //评论区头像跳转
+        head_second_icon.setOnClickListener(v -> {
+            UIHelper.toUserInfoActivity(NewsDetailActivity.this,superiorComment.getUid());
+        });
 
 
         mCommentSecondAdapter.setOnLoadMoreListener(() -> {

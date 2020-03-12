@@ -247,7 +247,7 @@ public class StringUtil {
     }
 
 
-    /**  转发到圈子 朋友圈 朋友 复制链接*/
+    /**  转发到圈子 朋友圈 朋友 复制链接 -- 数据来源于mNewsDetailBean */
     public static void showShareDialog(Activity activity, NewsDetailBean mNewsDetailBean) {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(activity).builder();
         alertDialog.setSharelinkView();

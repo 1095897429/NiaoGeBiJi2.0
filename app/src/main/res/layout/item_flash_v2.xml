@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:id="@+id/sticky_header"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="68dp"
         android:layout_height="40.5dp"
         android:background="@drawable/bg_corners_3_yellow"

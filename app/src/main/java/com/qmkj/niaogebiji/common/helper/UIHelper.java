@@ -537,8 +537,9 @@ public class UIHelper {
 
 
     /** 打开话题界面 -- 从发布圈子处点击进入*/
-    public static void toTopicSelectivity(Activity ctx) {
+    public static void toTopicSelectivity(Activity ctx,String topicId) {
         Intent intent = new Intent(ctx, TopSelectActivity.class);
+        intent.putExtra("topicId", topicId);
         ctx.startActivityForResult(intent,CircleMakeActivity.REQUEST_SELECT_TOPIC_CODE);
     }
 

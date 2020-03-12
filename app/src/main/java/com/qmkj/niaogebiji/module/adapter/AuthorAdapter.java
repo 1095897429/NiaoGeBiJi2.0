@@ -42,7 +42,7 @@ import io.reactivex.schedulers.Schedulers;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-13
- * 描述:
+ * 描述: 作者列表 + 收藏列表 共用
  */
 public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewHolder> {
     public AuthorAdapter(@Nullable List<AuthorBean.Author> data) {
@@ -136,8 +136,19 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
 //            UIHelper.toWebViewActivity(mContext,link);
 
-            //测试数据 作者 id = 3854
-            UIHelper.toAuthorDetailActivity(mContext,mAuthor.getId());
+            //判断是否关联作者，如果关联，则调到用户界面 author_uid ，没有，调到作者详情页 authoid
+            KLog.d("tag","author_uid " + mAuthor.getUid());
+            if(mAuthor.getUid().equals("0")){
+                //测试数据 作者 id = 3854
+                UIHelper.toAuthorDetailActivity(mContext,mAuthor.getId());
+            }else{
+                UIHelper.toUserInfoV2Activity(mContext,mAuthor.getUid());
+
+            }
+
+
+
+
         });
 
     }

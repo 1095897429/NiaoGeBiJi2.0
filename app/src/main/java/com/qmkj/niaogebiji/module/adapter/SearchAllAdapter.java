@@ -218,7 +218,10 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 for (int i = 0; i < circleBeans.size(); i++) {
                     temp = circleBeans.get(i);
                     type = StringUtil.getCircleType(temp);
-                    temp = StringUtil.addLinksData(temp);
+                    if(temp != null && !TextUtils.isEmpty(temp.getBlog())){
+                        temp = StringUtil.addLinksData(temp);
+                    }
+
                     //如果判断有空数据，则遍历下一个数据
                     if(100 == type){
                         continue;

@@ -192,7 +192,7 @@ public class TestResultFailActivity extends BaseActivity {
                 case 2:
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
-                    StringUtil.copyLink(mSchoolTest.getTitle() + "\n" +  mSchoolTest.getShare_url());
+                    StringUtil.copyLink(mSchoolTest.getShare_title() + "\n" +  mSchoolTest.getShare_url());
 
                     break;
                 default:
@@ -210,12 +210,14 @@ public class TestResultFailActivity extends BaseActivity {
             bean.setBitmap(bitmap);
             bean.setImg(mSchoolTest.getIcon());
             bean.setLink(mSchoolTest.getShare_url());
-            bean.setTitle("测一测：" + mSchoolTest.getTitle());
-            bean.setContent(mins + "看看你能否成为合格的"  + mSchoolTest.getTitle());
+            bean.setContent(mSchoolTest.getShare_content());
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
+                bean.setTitle(mSchoolTest.getMoments_share_title());
             }else{
                 bean.setShareType("weixin_link");
+                bean.setTitle(mSchoolTest.getShare_title());
+
             }
             StringUtil.shareWxByWeb(TestResultFailActivity.this,bean);
 

@@ -21,7 +21,7 @@
     <LinearLayout
         android:id="@+id/part2"
         android:layout_toRightOf="@+id/one_img_imgs"
-        android:layout_toLeftOf="@+id/focus_aleady"
+        android:layout_toLeftOf="@+id/select"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
@@ -32,6 +32,8 @@
             android:id="@+id/top_title"
             android:text="#找资源"
             android:textSize="17sp"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -50,39 +52,6 @@
 
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/focus"
-        android:textColor="@color/text_news_title_color"
-        android:layout_marginRight="16dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:textSize="14sp"
-        android:visibility="gone"
-        android:text="关注"
-        android:paddingLeft="21dp"
-        android:paddingRight="21dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:background="@drawable/bg_corners_8_yellow"
-        android:layout_width="70dp"
-        android:layout_height="34dp" />
-
-
-
-    <TextView
-        android:layout_marginRight="16dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:id="@+id/focus_aleady"
-        android:textColor="#818386"
-        android:visibility="gone"
-        android:textSize="13sp"
-        android:text="取消关注"
-        android:background="@drawable/bg_corners_8_gray"
-        android:layout_width="64dp"
-        android:layout_height="32dp" />
 
 
     <TextView

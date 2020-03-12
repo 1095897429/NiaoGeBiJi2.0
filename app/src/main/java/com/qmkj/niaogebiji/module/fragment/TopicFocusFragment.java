@@ -20,10 +20,14 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
+import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -194,4 +198,17 @@ public class TopicFocusFragment extends BaseLazyFragment {
             lottieAnimationView.cancelAnimation();
         }
     }
+
+
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+    //记录点击的item的position,用于更新某条数据
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateRecommendTopicFocusListEvent(UpdateRecommendTopicFocusListEvent event){
+//       getTopicListByCate();
+    }
+
 }

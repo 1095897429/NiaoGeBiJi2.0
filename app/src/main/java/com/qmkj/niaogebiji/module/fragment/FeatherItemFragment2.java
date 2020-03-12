@@ -130,7 +130,7 @@ public class FeatherItemFragment2 extends BaseLazyFragment {
                     UIHelper.toExchangeDetailActivity2(getActivity(),null,"income",mInComeDetail.getId());
                 }else if("6".equals(mInComeDetail.getRelated_type()) && "2".equals(mInComeDetail.getOpe_type())){
                     String aid = mInComeDetail.getRelated_id();
-                    UIHelper.toNewsThingDetailActivity(getActivity(),aid);
+                    UIHelper.toDataInfoActivity(getActivity(),aid);
                 }
 
             }

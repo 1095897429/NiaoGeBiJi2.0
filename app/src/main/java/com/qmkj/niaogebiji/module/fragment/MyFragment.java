@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -18,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,8 +29,12 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
@@ -338,6 +346,13 @@ public class MyFragment extends BaseLazyFragment {
                             getBadgeList();
                         }
                     }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
+                        }
+                    }
                 });
 
     }
@@ -416,7 +431,7 @@ public class MyFragment extends BaseLazyFragment {
                 if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
                     name_author_tag.setVisibility(View.VISIBLE);
                     name_vertify.setVisibility(View.GONE);
-                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) + " " +
                             (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
                     //居中对齐imageSpan
@@ -434,10 +449,14 @@ public class MyFragment extends BaseLazyFragment {
                     //抗锯齿
                     name_vertify_no.getPaint().setAntiAlias(true);
                     name_vertify.setVisibility(View.GONE);
-                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
+                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) + " " +
                             (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
-                    name_vertify_no.setOnClickListener(v -> ToastUtils.showShort("去认证h5界面"));
+                    name_vertify_no.setOnClickListener(v ->{
+                        ToastUtils.showShort("去认证h5界面");
+                        String rul = "http://192.168.14.41:8080/certificatecenter";
+                        UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),rul);
+                    });
 
                 }
             }
@@ -453,6 +472,10 @@ public class MyFragment extends BaseLazyFragment {
             }
 
             ImageUtil.loadByDefaultHead(mContext,mUserInfo.getAvatar() + scaleSize,head_icon);
+
+//            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.bg_flash);
+//            Bitmap res = ImageUtils.addTextWatermark(bitmap,"靓仔",16,getResources().getColor(R.color.text_first_color),10,10);
+//            head_icon.setImageBitmap(res);
 
             //个人中心消息通知：1-有新消息，0-无新消息
             if("1".equals(mUserInfo.getIs_red())){

@@ -423,7 +423,7 @@ public class LoginActivity extends BaseActivity {
 
                 }else{
                     loading_view.setVisibility(View.GONE);
-                    UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+                    UIHelper.toPhoneInputActivity(LoginActivity.this, wechat_token, loginType);
                 }
 
             });

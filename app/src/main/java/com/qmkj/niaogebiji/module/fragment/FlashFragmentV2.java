@@ -307,8 +307,8 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                                 //旧展示
 //                                header_textview.setText( mBuilltinBeans.get(0).getDay_dec() + "" + mBuilltinBeans.get(0).getShow_time());
 
-                                header_textview.setText(TimeUtils.millis2String(Long.parseLong(mBuilltinBeans.get(0).getCreated_at())* 1000L,"MM月dd日"));
-                                String temp = TimeUtils.millis2String(Long.parseLong(mBuilltinBeans.get(0).getCreated_at())* 1000L,"yyyy-MM-dd HH:mm:ss");
+                                header_textview.setText(TimeUtils.millis2String(Long.parseLong(mBuilltinBeans.get(0).getPub_time())* 1000L,"MM月dd日"));
+                                String temp = TimeUtils.millis2String(Long.parseLong(mBuilltinBeans.get(0).getPub_time())* 1000L,"yyyy-MM-dd HH:mm:ss");
                                 String string = TimeUtils.getChineseWeek(temp);
 
 //                                boolean isToday = TimeUtils.isToday(temp);
@@ -360,7 +360,7 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                     FlashBulltinBean.BuilltinBean temmp = mFlashItemAdapter.getData().get(firstItemPosition);
                     if(null != temmp){
                         if(header_textview.getText().toString()
-                                .equals(TimeUtils.millis2String(Long.parseLong(temmp.getCreated_at())* 1000L,"MM月dd日"))){
+                                .equals(TimeUtils.millis2String(Long.parseLong(temmp.getPub_time())* 1000L,"MM月dd日"))){
                               //旧的展示
 //                            header_textview.setText(temmp.getDay_dec() + "" + temmp.getShow_time());
 
@@ -373,8 +373,8 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                         }else{
 //                            header_textview.setText( temmp.getShow_time());
 
-                            header_textview.setText(TimeUtils.millis2String(Long.parseLong(temmp.getCreated_at())* 1000L,"MM月dd日"));
-                            String temp = TimeUtils.millis2String(Long.parseLong(temmp.getCreated_at())* 1000L,"yyyy-MM-dd HH:mm:ss");
+                            header_textview.setText(TimeUtils.millis2String(Long.parseLong(temmp.getPub_time())* 1000L,"MM月dd日"));
+                            String temp = TimeUtils.millis2String(Long.parseLong(temmp.getPub_time())* 1000L,"yyyy-MM-dd HH:mm:ss");
                             String string = TimeUtils.getChineseWeek(temp);
                             header_textview_weekend.setText(string);
                         }
@@ -441,7 +441,7 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
 
 
     /** --------------------------------- 快讯分享  ---------------------------------*/
-    //分享时的bean数据
+    //分享时的bean数据 -- 来自后台
     private FlashBulltinBean mFlashBulltinBeanShare;
     private FlashBulltinBean.BuilltinBean mBuilltinBean;
 
@@ -771,9 +771,9 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
     //跳转到固定的位置
     public void toFixLoaction(String flashid) {
         int mPosition = 0;
-        if (!mBuilltinBeans.isEmpty()) {
-            for (int i = 0; i < mBuilltinBeans.size(); i++) {
-                if (mBuilltinBeans.get(i).getId().equals(flashid)) {
+        if (mFlashItemAdapter != null) {
+            for (int i = 0; i < mFlashItemAdapter.getData().size(); i++) {
+                if (mFlashItemAdapter.getData().get(i).getId().equals(flashid)) {
                     mPosition = i;
                     break;
                 }

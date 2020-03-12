@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
@@ -298,6 +299,7 @@ public class TopicDetailActivity extends BaseActivity {
                 //检查links同时添加原创文本
                 StringUtil.addLinksData(temp);
 
+
                 if(type == CircleRecommentAdapterNew.ZF_TEXT ||
                         type == CircleRecommentAdapterNew.ZF_PIC ||
                         type == CircleRecommentAdapterNew.ZF_ACTICLE ||
@@ -554,6 +556,7 @@ public class TopicDetailActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","关注成功，改变状态");
+                        ToastUtils.showShort("关注成功");
                         mTopicBean.setIs_follow(true);
                         alreadFocus.setVisibility(View.VISIBLE);
                         part_small_already_focus.setVisibility(View.VISIBLE);

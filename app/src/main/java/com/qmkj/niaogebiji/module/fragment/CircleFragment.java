@@ -143,9 +143,6 @@ public class CircleFragment extends BaseLazyFragment {
     FrameLayout red_point_2;
 
 
-
-
-
     //Fragment 集合
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<String> mTitls = new ArrayList<>();

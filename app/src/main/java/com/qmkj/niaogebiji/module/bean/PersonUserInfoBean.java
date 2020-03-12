@@ -38,6 +38,68 @@ public class PersonUserInfoBean extends BaseBean {
         //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
         private String auth_idno_status;
 
+
+        //TODO 3.10 新增的
+        private String nickname;
+
+
+    //分享数据
+    private String share_url;
+    private String share_title;
+    private String share_content;
+    private String share_icon;
+    //朋友圈分享内容
+    private String moments_share_title;
+
+
+    public String getShare_url() {
+        return share_url;
+    }
+
+    public void setShare_url(String share_url) {
+        this.share_url = share_url;
+    }
+
+    public String getShare_title() {
+        return share_title;
+    }
+
+    public void setShare_title(String share_title) {
+        this.share_title = share_title;
+    }
+
+    public String getShare_content() {
+        return share_content;
+    }
+
+    public void setShare_content(String share_content) {
+        this.share_content = share_content;
+    }
+
+    public String getShare_icon() {
+        return share_icon;
+    }
+
+    public void setShare_icon(String share_icon) {
+        this.share_icon = share_icon;
+    }
+
+    public String getMoments_share_title() {
+        return moments_share_title;
+    }
+
+    public void setMoments_share_title(String moments_share_title) {
+        this.moments_share_title = moments_share_title;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public String getAuth_idno_status() {
         return auth_idno_status;
     }

@@ -128,6 +128,10 @@ public class SplashActivity extends BaseActivity {
 
 
 
+        String s = "ABC";
+        KLog.d("tag","截取的字符串是【利用fastSubstring】 " +  s.substring(1));
+
+
     }
 
 

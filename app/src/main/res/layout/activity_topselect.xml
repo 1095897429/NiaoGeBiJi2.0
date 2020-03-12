@@ -2,41 +2,64 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:paddingTop="@dimen/status_bar_height"
-    android:background="@color/white"
+    android:background="#99000000"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_marginRight="16dp"
+        android:id="@+id/ll_auto_results"
+        android:background="@drawable/bg_corners_16_white"
+        android:visibility="visible"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/icon_back"
-            android:layout_centerVertical="true"
-            android:visibility="visible" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
-            android:id="@+id/search_part"
-            android:layout_height="40dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_corners_8_gray"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_marginLeft="9dp"
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/icon_back"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:visibility="visible" />
+
+            <TextView
+                android:text="选择话题"
+                android:textSize="17sp"
+                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:background="@color/divider_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <LinearLayout
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/search_part"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:background="@drawable/bg_corners_10_gray"
+            android:orientation="horizontal">
+
+            <ImageView
                 android:src="@mipmap/icon_sousou"
                 android:layout_gravity="center|left"
                 android:layout_width="14dp"
@@ -46,63 +69,126 @@
                 android:layout_width="10dp"
                 android:layout_height="match_parent" />
 
-            <com.qmkj.niaogebiji.module.widget.ClearableEditText
-                android:id="@+id/search_first"
-                android:layout_width="match_parent"
-                android:background="@null"
-                android:hint="获取数据源"
-                android:imeOptions="actionSearch"
-                android:singleLine="true"
+            <TextView
+                android:id="@+id/first_search"
+                android:layout_width="wrap_content"
+                android:text="搜索主题"
+                android:gravity="center|left"
                 android:textSize="13sp"
+                android:clickable="false"
                 android:textColor="#AAAEB3"
                 android:layout_gravity="center|left"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <ScrollView
+                android:background="@color/bg_color"
+                android:id="@+id/tools_scrlllview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:fadingEdge="none"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:id="@+id/tools"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical" />
+            </ScrollView>
+
+            <fr.castorflex.android.verticalviewpager.VerticalViewPager
+                android:id="@+id/goods_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:paddingTop="10dp"
+        android:id="@+id/ll_manual_result"
+        android:visibility="gone"
+        android:background="@drawable/bg_corners_16_white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_corners_8_gray"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_marginLeft="9dp"
+                    android:src="@mipmap/icon_sousou"
+                    android:layout_gravity="center|left"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent" />
+
+                <com.qmkj.niaogebiji.module.widget.ClearableEditText
+                    android:id="@+id/search_first"
+                    android:layout_width="match_parent"
+                    android:background="@null"
+                    android:hint="获取数据源"
+                    android:focusable="true"
+                    android:imeOptions="actionSearch"
+                    android:cursorVisible="true"
+                    android:focusableInTouchMode="true"
+                    android:singleLine="true"
+                    android:textSize="13sp"
+                    android:textColor="#AAAEB3"
+                    android:layout_gravity="center|left"
+                    android:layout_height="match_parent" />
+
+
+
+            </LinearLayout>
+
+
+
+            <TextView
+                android:id="@+id/search_cancle"
+                android:textSize="16sp"
+                android:text="取消"
+                android:layout_marginLeft="12dp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
 
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:id="@+id/ll_auto_results"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" >
-
-        <ScrollView
-            android:background="@color/bg_color"
-            android:id="@+id/tools_scrlllview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:fadingEdge="none"
-            android:scrollbars="none" >
-
-            <LinearLayout
-                android:id="@+id/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="vertical" />
-        </ScrollView>
-
-        <fr.castorflex.android.verticalviewpager.VerticalViewPager
-            android:id="@+id/goods_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/ll_manual_result"
-        android:visibility="gone"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <include layout="@layout/common_norefresh"/>
 

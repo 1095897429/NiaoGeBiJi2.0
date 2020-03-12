@@ -41,6 +41,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
@@ -172,6 +173,13 @@ public class WebViewActivityWithLayout extends WebViewAllActivity {
                         RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
                         if(null != mUserInfo){
                             StringUtil.setUserInfoBean(mUserInfo);
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
                         }
                     }
                 });

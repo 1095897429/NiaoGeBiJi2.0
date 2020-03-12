@@ -76,9 +76,13 @@ public class AboutUsActivity extends BaseActivity {
     private static final long MIN_CLICK_INTERVAL = 600;
     private long mLastClickTime;
 
+    RegisterLoginBean.UserInfo mRegisterLoginBean;
+
     @Override
     protected void initView() {
         tv_title.setText("关于我们");
+
+        mRegisterLoginBean =  StringUtil.getUserInfoBean();
 
         version_code.setText(AppUtils.getAppVersionName() + "");
         tv_title.setOnClickListener(view -> {
@@ -168,8 +172,14 @@ public class AboutUsActivity extends BaseActivity {
                 ToastUtils.showShort("已复制到剪贴板！请打开微信粘贴搜索   并直接打开微信");
                 break;
             case R.id.rl_version_code:
-                checkupd();
-                MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
+//                checkupd();
+//                MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
+
+
+
+                copy(mRegisterLoginBean.getAccess_token());
+
+                ToastUtils.showShort("已复制到剪贴板");
                 break;
             case R.id.iv_back:
                 finish();

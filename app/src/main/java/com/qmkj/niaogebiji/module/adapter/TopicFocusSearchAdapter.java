@@ -9,9 +9,11 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -80,7 +82,7 @@ public class TopicFocusSearchAdapter extends BaseQuickAdapter<TopicBean, BaseVie
         //关注数 x>=10000，展示1w+
         if(!TextUtils.isEmpty(item.getFollow_num())){
             long count = Long.parseLong(item.getFollow_num());
-            if(count < 10000 ){
+            if(count < 100000 ){
                 helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人关注");
             }else{
                 double temp = count  ;
@@ -127,12 +129,22 @@ public class TopicFocusSearchAdapter extends BaseQuickAdapter<TopicBean, BaseVie
             if(!bean.isIs_follow()){
                 followTopic(mPosition,bean.getId() + "");
             }else{
-                unfollowTopic(mPosition,bean.getId() + "");
+                showCancelFocusDialog(mPosition,bean.getId());
             }
 
         });
 
     }
+
+
+    public void showCancelFocusDialog(int position, long topic_id){
+        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(mContext).builder();
+        iosAlertDialog.setPositiveButton("取消关注", v -> {
+            unfollowTopic(position,topic_id + "");
+        }).setNegativeButton("再想想", v -> {}).setMsg("取消关注?").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
 
     private void followTopic(int mPosition,String topic_id) {
         Map<String,String> map = new HashMap<>();
@@ -146,6 +158,7 @@ public class TopicFocusSearchAdapter extends BaseQuickAdapter<TopicBean, BaseVie
                     @Override
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","关注成功，改变状态");
+                        ToastUtils.showShort("关注成功");
                         mData.get(mPosition).setIs_follow(true);
                         notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());

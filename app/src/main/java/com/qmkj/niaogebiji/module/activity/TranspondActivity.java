@@ -219,7 +219,7 @@ public class TranspondActivity extends BaseActivity {
                 topicName = "";
                 break;
             case R.id.topic:
-                UIHelper.toTopicSelectivity(this);
+                UIHelper.toTopicSelectivity(this,topicId);
                 break;
 
             case R.id.acticle_part:

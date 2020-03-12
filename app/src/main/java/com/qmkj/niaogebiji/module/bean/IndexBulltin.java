@@ -35,6 +35,19 @@ public class IndexBulltin  extends BaseBean {
         private String good_num;
         private String created_at;
         private String updated_at;
+
+        //显示 头条 icon  top = 1 显示
+        private String top;
+
+
+        public String getTop() {
+            return top;
+        }
+
+        public void setTop(String top) {
+            this.top = top;
+        }
+
         public void setId(String id) {
             this.id = id;
         }

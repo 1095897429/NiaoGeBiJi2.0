@@ -53,6 +53,8 @@ public class IndexFocusBean extends BaseBean {
         private String follow_count;
         private String memo;
         private int is_follow;
+
+
         public void setId(String id) {
             this.id = id;
         }

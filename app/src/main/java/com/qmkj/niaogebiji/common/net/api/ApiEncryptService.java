@@ -827,4 +827,12 @@ public interface ApiEncryptService{
     @FormUrlEncoded
     @POST("app/tool/getRecommendTool")
     Observable<HttpResponse<ToolBean>> getRecommendTool(@Field("params") String param);
+
+    /* 2020.3.11  首页 推荐作者列表*/
+//    @FormUrlEncoded
+//    @POST("app/item/recommendAuthorList")
+//    Observable<HttpResponse<AuthorBean>> recommendAuthorList(@Field("params") String param);
+
+
+
 }

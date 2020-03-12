@@ -142,6 +142,12 @@ public class UserArticleFragment extends BaseLazyFragment {
                 .subscribe(new BaseObserver<HttpResponse<AuthorArticleBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<AuthorArticleBean> response) {
+
+                        if(null != smartRefreshLayout){
+                            mIsRefreshing = false;
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         AuthorArticleBean bean = response.getReturn_data();
                         if(bean != null){
                             List<RecommendBean.Article_list> mList= bean.getList();

@@ -73,6 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -171,7 +172,7 @@ public class AuthorDetailActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
+        mExecutorService = Executors.newFixedThreadPool(2);
     }
 
 
@@ -498,7 +499,6 @@ public class AuthorDetailActivity extends BaseActivity {
             case R.id.iv_back:
                 finish();
                 break;
-            //分享参考学院答题 / 用户中心
             case R.id.iv_right_1:
                 showShareDialog();
                 break;
@@ -524,7 +524,7 @@ public class AuthorDetailActivity extends BaseActivity {
     private void showShareDialog() {
 
         //TODO 伪代码
-//        if(数据来自后台){
+//        if(数据来自后台){ ok
 //            显示： 标题 + 文本 + 图片 + （link）
 //        }
 
@@ -549,7 +549,7 @@ public class AuthorDetailActivity extends BaseActivity {
                 case 2:
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
-//                    StringUtil.copyLink(mSchoolTest.getTitle() + "\n" +  mSchoolTest.getShare_url());
+                    StringUtil.copyLink(mAuthorDetail.getShare_title() + "\n" +  mAuthorDetail.getShare_url());
                     break;
                 default:
             }
@@ -564,10 +564,10 @@ public class AuthorDetailActivity extends BaseActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             bean.setBitmap(bitmap);
-//            bean.setImg(mSchoolTest.getIcon());
-//            bean.setLink(mSchoolTest.getShare_url());
-//            bean.setTitle("我通过了" + mSchoolTest.getTitle());
-//            bean.setContent(conteent);
+            bean.setImg(mAuthorDetail.getShare_pic());
+            bean.setLink(mAuthorDetail.getShare_url());
+            bean.setTitle(mAuthorDetail.getShare_title());
+            bean.setContent(mAuthorDetail.getShare_summary());
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
             }else{

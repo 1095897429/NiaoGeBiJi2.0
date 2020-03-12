@@ -9,10 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -59,7 +61,7 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
         TextView chineseTv = helper.getView(R.id.topic_titile);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
-        chineseTv.setText(item.getTitle());
+        chineseTv.setText("#" + item.getTitle());
 
         //图片
         if(TextUtils.isEmpty(item.getIcon())){
@@ -106,28 +108,34 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
 
         //是否选择 注：true-关注
         if(!item.isIs_follow()){
-            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_yellow);
+            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_12_40_white);
             helper.setVisible(R.id.focus,true);
             helper.setVisible(R.id.focus_aleady,false);
         }else{
-            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_8_gray);
+            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_12_40_white);
             helper.setVisible(R.id.focus,false);
             helper.setVisible(R.id.focus_aleady,true);
         }
 
 
-        //选择
         helper.getView(R.id.focus).setOnClickListener(view ->{
 
-            if(!item.isIs_follow()){
-                followTopic(helper.getAdapterPosition(),item.getId() + "");
-            }else{
-                unfollowTopic(helper.getAdapterPosition(),item.getId() + "");
-            }
-
-
+            followTopic(helper.getAdapterPosition(),item.getId() + "");
         });
 
+        helper.getView(R.id.focus_aleady).setOnClickListener(view ->{
+            showCancelFocusDialog(helper.getAdapterPosition(),item.getId());
+        });
+
+    }
+
+
+    public void showCancelFocusDialog(int position, long topic_id){
+        final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(mContext).builder();
+        iosAlertDialog.setPositiveButton("取消关注", v -> {
+            unfollowTopic(position,topic_id + "");
+        }).setNegativeButton("再想想", v -> {}).setMsg("取消关注?").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
     }
 
 
@@ -144,11 +152,13 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
                     @Override
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","关注成功，改变状态");
+                        ToastUtils.showShort("关注成功");
                         mData.get(mPosition).setIs_follow(true);
                         notifyItemChanged(mPosition);
 
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+                        //不刷新自己
+//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override
@@ -174,7 +184,7 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
                         mData.get(mPosition).setIs_follow(false);
                         notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
                     }
 
                     @Override

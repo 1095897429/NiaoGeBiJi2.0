@@ -12,7 +12,7 @@
         android:id="@+id/part1111"
         android:visibility="visible"
         android:layout_width="match_parent"
-        android:background="@color/bg_color"
+        android:background="@color/white"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 

@@ -386,9 +386,11 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
                             photoView.setMaxScale(2.5f);
                             //点击事件，返回
                             photoView.setOnClickListener(v -> {
-                                photoView.disenable();
+//                                photoView.disenable();
                                 KLog.d("tag","单击");
                             });
+
+
                         }
                     }
                 });

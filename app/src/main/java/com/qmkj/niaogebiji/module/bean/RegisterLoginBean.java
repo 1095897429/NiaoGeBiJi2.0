@@ -88,6 +88,7 @@ public class RegisterLoginBean extends BaseBean {
         private String invite_url;
 
 
+
         private String per_profession;
         private String per_career;
         private String vip_start_date;

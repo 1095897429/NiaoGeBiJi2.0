@@ -52,7 +52,7 @@
 金山云跻身2018年全球十大IaaS服务商
 金山云跻身2018年全球十大IaaS服务商
 金山云跻身2018年全球十大IaaS服务商"
-        android:textColor="#242629"
+        android:textColor="@color/text_second_color"
         android:textSize="13sp"
         />
 

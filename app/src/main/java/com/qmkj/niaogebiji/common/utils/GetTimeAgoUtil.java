@@ -88,4 +88,35 @@ public class GetTimeAgoUtil {
             return data;
         }
     }
+
+
+    public static String getTimeAgoByAppFlash(long time) {
+        if (time < 1000000000000L) {
+            // if timestamp given in seconds, convert to millis
+            time *= 1000;
+        }
+
+        long now = System.currentTimeMillis();
+        if (time > now || time <= 0) {
+            return "未知时间";
+        }
+
+        //时间戳相减
+        final long diff = now - time;
+        //小于1分钟
+        if (diff < MINUTE_MILLIS) {
+            return "刚刚";
+        } else if (diff < 2 * MINUTE_MILLIS) {
+            return "1分钟前";
+        } else if (diff < 60 * MINUTE_MILLIS) {
+            return diff / MINUTE_MILLIS + "分钟前";
+        } else if (diff < 24 * HOUR_MILLIS) {
+            return diff / HOUR_MILLIS + "小时前";
+        } else  if (diff < 72 * HOUR_MILLIS) {
+            return (diff / DAY_MILLIS) + "天前";
+        } else {
+            String data =  TimeUtils.millis2String(time,"yyyy/MM/dd");
+            return data;
+        }
+    }
 }

@@ -88,18 +88,18 @@ public class HotAuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseVi
 
 
 //        //影响数 x>=100000，展示10w+
-        if(!TextUtils.isEmpty(item.getHit_count())){
-            long count = Long.parseLong(item.getHit_count());
+        if(!TextUtils.isEmpty(item.getHit_count_weekly())){
+            long count = Long.parseLong(item.getHit_count_weekly());
             if(count < 100000 ){
-                helper.setText(R.id.effect_num,"影响力 " + item.getHit_count());
+                helper.setText(R.id.effect_num,"影响力 " + item.getHit_count_weekly());
             }else{
                 double temp = count  ;
                 //1.将数字转换成以万为单位的数字
-                double num = temp / 100000;
+                double num = temp / 10000;
                 BigDecimal b = new BigDecimal(num);
                 //2.转换后的数字四舍五入保留小数点后一位;
                 double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                helper.setText(R.id.effect_num,"影响力 " + f1 + " w");
+                helper.setText(R.id.effect_num,"影响力 " + f1 + " w+");
             }
         }
 

@@ -30,6 +30,9 @@ public class AuthorBean extends BaseBean {
         private String article_count;
         private String hit_count;
 
+        //周榜的影响力
+        private String hit_count_weekly;
+
         //1是已关注  0 是未关注
         private int is_follow;
 
@@ -41,9 +44,27 @@ public class AuthorBean extends BaseBean {
         private String published_at;
         private String pic;
 
+        public String getHit_count_weekly() {
+            return hit_count_weekly;
+        }
+
+        public void setHit_count_weekly(String hit_count_weekly) {
+            this.hit_count_weekly = hit_count_weekly;
+        }
 
         //作者类型
         private String type;
+
+        //作者对应的uid 为0 表示没有关联用户
+        private String uid;
+
+        public String getUid() {
+            return uid;
+        }
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
 
         public Author() {
         }

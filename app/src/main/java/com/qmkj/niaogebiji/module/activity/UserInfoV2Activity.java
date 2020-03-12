@@ -436,21 +436,24 @@ public class UserInfoV2Activity extends BaseActivity {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position){
                 case 0:
-                    mExecutorService.submit(() -> {
-//                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
-                        mHandler.sendEmptyMessage(0x111);
-                    });
+//                    mExecutorService.submit(() -> {
+////                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
+//
+//                    });
+                    mHandler.sendEmptyMessage(0x111);
                     break;
                 case 1:
-                    mExecutorService.submit(() -> {
+//                    mExecutorService.submit(() -> {
 //                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
-                        mHandler.sendEmptyMessage(0x112);
-                    });
+
+//                    });
+
+                    mHandler.sendEmptyMessage(0x112);
                     break;
                 case 2:
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
-//                    StringUtil.copyLink(mSchoolTest.getTitle() + "\n" +  mSchoolTest.getShare_url());
+                    StringUtil.copyLink(temp.getShare_title() + "\n" +  temp.getShare_url());
                     break;
                 default:
             }
@@ -465,16 +468,19 @@ public class UserInfoV2Activity extends BaseActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             bean.setBitmap(bitmap);
-//            bean.setImg(mSchoolTest.getIcon());
-//            bean.setLink(mSchoolTest.getShare_url());
-//            bean.setTitle("我通过了" + mSchoolTest.getTitle());
-//            bean.setContent(conteent);
+            bean.setImg(temp.getShare_icon());
+            bean.setLink(temp.getShare_url());
+            bean.setContent(temp.getShare_content());
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
+                bean.setTitle(temp.getMoments_share_title());
             }else{
                 bean.setShareType("weixin_link");
+                bean.setTitle(temp.getShare_title());
+
             }
             StringUtil.shareWxByWeb(UserInfoV2Activity.this,bean);
+
 
         }
     };
@@ -620,6 +626,7 @@ public class UserInfoV2Activity extends BaseActivity {
                 });
     }
 
+    //后台返回的数据
     private  PersonUserInfoBean temp;
     private void getUserInfoV2() {
         Map<String,String> map = new HashMap<>();
@@ -720,9 +727,6 @@ public class UserInfoV2Activity extends BaseActivity {
 
             }
 
-
-
-
             //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
             if("1".equals(bean.getType())){
                 author_type.setVisibility(View.GONE);
@@ -745,7 +749,7 @@ public class UserInfoV2Activity extends BaseActivity {
 //                显示：已实名状态
 //            }
 
-        sender_name.setText(temp.getName());
+        sender_name.setText(temp.getNickname());
         //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
         if("1".equals(temp.getAuth_idno_status())){
             CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_auther_shenfen,2);
@@ -761,7 +765,6 @@ public class UserInfoV2Activity extends BaseActivity {
             SpannableString spanString2 = new SpannableString("  icon");
             spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             sender_name.append(spanString2);
-
         }
 
 
@@ -774,7 +777,7 @@ public class UserInfoV2Activity extends BaseActivity {
 //                显示：立即完善信息，建立人脉
 //                点击：编辑名片信息
 //            }else{
-//               if( 认证没通过){
+//               if( 认证没通过){ ok
 //                   显示：公司 + 职位 + 立即职业认证
 //                   点击：认证中心
 //               }else{
@@ -791,8 +794,8 @@ public class UserInfoV2Activity extends BaseActivity {
 //              }
 
 
-            if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
-                    TextUtils.isEmpty(mUserInfo.getPosition()) ){
+            if(TextUtils.isEmpty(temp.getCompany_name()) &&
+                    TextUtils.isEmpty(temp.getPosition()) ){
                 name_vertify.setVisibility(View.VISIBLE);
                 //下划线
                 name_vertify.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
@@ -807,17 +810,10 @@ public class UserInfoV2Activity extends BaseActivity {
                 });
             }else{
                 //认证是否通过 -- 这里不用改(不用显示用户名在认证的情况下)
-                if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
+                if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
                     name_author_tag.setVisibility(View.VISIBLE);
-                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
-                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
-
-                    //居中对齐imageSpan
-                    CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
-                    SpannableString spanString2 = new SpannableString("icon");
-                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    name_author_tag.append(spanString2);
-
+                    name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
                 }else{
                     name_author_tag.setVisibility(View.VISIBLE);
                     sender_not_verticity.setVisibility(View.VISIBLE);
@@ -825,8 +821,8 @@ public class UserInfoV2Activity extends BaseActivity {
                     sender_not_verticity.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
                     //抗锯齿
                     sender_not_verticity.getPaint().setAntiAlias(true);
-                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) +
-                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+                    name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
 
                     sender_not_verticity.setOnClickListener(v -> ToastUtils.showShort("去认证h5界面"));
 
@@ -837,19 +833,32 @@ public class UserInfoV2Activity extends BaseActivity {
         }else{
 
             //TODO 伪代码
-//            if(没完善司职信息 company + position){
+//            if(没完善司职信息 company + position){ ok
 //                显示：TA还未完善信息
 //            }else{
 //                if(认证通过){
+//                    显示：职业认证 图片
 //                    显示：已职业认证 + 公司 + 职位
 //                }else{
-//                    显示：未职业认证
+//
+//                    显示：已职业认证 + 公司 + 职位
 //                }
 //            }
 
 //            if(别人){ ok
 //                显示：分享图层
 //            }
+
+
+            if(TextUtils.isEmpty(temp.getCompany_name()) &&
+                    TextUtils.isEmpty(temp.getPosition()) ){
+                name_author_tag.setVisibility(View.VISIBLE);
+                name_author_tag.setText("TA还没有完善信息");
+            }else{
+                name_author_tag.setVisibility(View.VISIBLE);
+                name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+            }
 
 
 

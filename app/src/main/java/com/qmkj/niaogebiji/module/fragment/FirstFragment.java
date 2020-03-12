@@ -34,6 +34,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -248,7 +249,9 @@ public class FirstFragment extends BaseLazyFragment {
 
                     @Override
                     public void onHintError(String return_code, String errorMes) {
-
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
+                        }
                     }
                 });
 

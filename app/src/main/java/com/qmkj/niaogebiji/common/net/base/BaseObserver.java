@@ -36,10 +36,11 @@ public abstract class BaseObserver<T extends HttpResponse> extends DisposableObs
             onSuccess(response);
         }else{
             //TODO 2020.1.13 账号登录问题，去登录界面
+            // -- 修改把下面代码隐藏了 3.11放到用户请求处,测试发现在进入用户信息界面，uid不正确，会提示账号不存在，紧接着跳转到login，显然不正确！！
             //您当前未登录，先去登录吧！    1008 账号不存在
-            if("2003".equals(response.getReturn_code()) || "1008".equals(response.getReturn_code())){
-                UIHelper.toLoginActivity(BaseApp.getApplication());
-            }
+//            if("2003".equals(response.getReturn_code()) || "1008".equals(response.getReturn_code())){
+//                UIHelper.toLoginActivity(BaseApp.getApplication());
+//            }
 
             onHintError(response.getReturn_code(),response.getReturn_msg());
         }

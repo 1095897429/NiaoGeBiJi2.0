@@ -90,7 +90,7 @@ public class ExchangeAllListActivity extends BaseActivity {
                 UIHelper.toExchangeDetailActivity2(ExchangeAllListActivity.this,null,"income",mInComeDetail.getId());
             }else if("6".equals(mInComeDetail.getRelated_type()) && "2".equals(mInComeDetail.getOpe_type())){
                 String aid = mInComeDetail.getRelated_id();
-                UIHelper.toNewsThingDetailActivity(ExchangeAllListActivity.this,aid);
+                UIHelper.toDataInfoActivity(ExchangeAllListActivity.this,aid);
             }
 
         });

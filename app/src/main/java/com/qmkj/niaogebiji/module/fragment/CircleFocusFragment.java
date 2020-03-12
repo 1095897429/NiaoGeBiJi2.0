@@ -225,7 +225,9 @@ public class CircleFocusFragment extends BaseLazyFragment {
                 //获取类型
                 type = StringUtil.getCircleType(temp);
                 //检查links同时添加原创文本
-                StringUtil.addLinksData(temp);
+                if(temp != null && !TextUtils.isEmpty(temp.getBlog())){
+                    StringUtil.addLinksData(temp);
+                }
 
                 if(type == CircleRecommentAdapterNew.ZF_TEXT ||
                         type == CircleRecommentAdapterNew.ZF_PIC ||

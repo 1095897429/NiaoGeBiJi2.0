@@ -81,6 +81,28 @@ public class NewsDetailBean extends BaseBean {
 
     private String my_add_point;
 
+    //作者类型
+    private String author_type;
+
+    //作者对应的uid 为0 表示没有关联用户
+    private String author_uid;
+
+
+    public String getAuthor_type() {
+        return author_type;
+    }
+
+    public void setAuthor_type(String author_type) {
+        this.author_type = author_type;
+    }
+
+    public String getAuthor_uid() {
+        return author_uid;
+    }
+
+    public void setAuthor_uid(String author_uid) {
+        this.author_uid = author_uid;
+    }
 
     public String getMy_add_point() {
         return my_add_point;

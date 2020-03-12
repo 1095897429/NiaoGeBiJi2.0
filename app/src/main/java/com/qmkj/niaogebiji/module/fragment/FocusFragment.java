@@ -26,6 +26,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
+import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
@@ -164,7 +165,16 @@ public class FocusFragment extends BaseLazyFragment {
 
             //TODO 2.19 原生
             String id =  mAuther_lists.get(position).getId();
-            UIHelper.toAuthorDetailActivity(getActivity(),id);
+            String uid =  mAuther_lists.get(position).getUid();
+//            UIHelper.toAuthorDetailActivity(getActivity(),id);
+
+
+            //TODO 3.11 新增uid字段
+            if("0".equals(uid)){
+                UIHelper.toAuthorDetailActivity(getActivity(),id);
+            }else{
+                UIHelper.toUserInfoV2Activity(getActivity(),uid);
+            }
 
 //            UIHelper.toWebViewActivity(getActivity(), StringUtil.getLink("authordetail/" + mAuther_lists.get(position).getId()));
         });
@@ -259,7 +269,7 @@ public class FocusFragment extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
 
                         hideWaitingDialog();
-
+                        //包含文章 + 推荐作者两部分
                         IndexFocusBean mIndexFocusBean = response.getReturn_data();
                         if(null != mIndexFocusBean){
                             mIsRefreshing = false;

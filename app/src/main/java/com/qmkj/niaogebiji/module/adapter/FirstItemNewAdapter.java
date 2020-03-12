@@ -7,6 +7,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -174,15 +175,19 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
                 IndexBulltin indexBulltin = item.getIndexBulltin();
 
+                //每次清空一下
+                list.clear();
+
                 for (IndexBulltin.Bulletn_list temp:indexBulltin.getBulletn_list()) {
                     String time = "";
                     //发布时间
                     if(StringUtil.checkNull(temp.getPub_time())){
-                        time =  GetTimeAgoUtil.getTimeAgoByApp(Long.parseLong(temp.getPub_time()) * 1000L);
+                        time =  GetTimeAgoUtil.getTimeAgoByAppFlash(Long.parseLong(temp.getPub_time()) * 1000L);
                     }
                     mMessageBean = new MessageBean(temp.getContent(),time,temp.getTitle(),temp.getId());
+                    mMessageBean.setTop(temp.getTop());
                     list.add(mMessageBean);
-                    mTimmmHashMap.put(temp.getTitle(),mMessageBean);
+                    mTimmmHashMap.put(temp.getTitle() + temp.getId(),mMessageBean);
                 }
 
                 startFlipping(mContext,vp,list);
@@ -245,6 +250,16 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
             TextView content_tv =  v.findViewById(R.id.home_news_text);
             TextView title_tv = v.findViewById(R.id.title);
             TextView time_tv = v.findViewById(R.id.one_img_time);
+            ImageView dingzhi = v.findViewById(R.id.dingzhi);
+
+
+            //头条 || 顶置
+            if("1".equals(info.getTop())){
+                dingzhi.setVisibility(View.VISIBLE);
+            }else{
+                dingzhi.setVisibility(View.GONE);
+            }
+
 
             content_tv.setOnClickListener(v1 -> {
                 //TODO 12.18晚修改
@@ -252,7 +267,8 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 EventBus.getDefault().post(new FlashSpecificEvent((String) v1.getTag()));
             });
             content_tv.setTag(info.getFlash_id());
-            TextPaint paint = content_tv.getPaint();
+
+            TextPaint paint = title_tv.getPaint();
             paint.setFakeBoldText(true);
             content_tv.setText(info.getText());
 
@@ -271,8 +287,8 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 final TextView textView = currentView.findViewById(R.id.home_news_text);
                 final TextView title_tv = currentView.findViewById(R.id.title);
                 final TextView time_tv = currentView.findViewById(R.id.one_img_time);
-//                KLog.d("tag","文本的标题是 " + title_tv.getText().toString());
-                MessageBean temp = mTimmmHashMap.get(title_tv.getText().toString());
+//                KLog.d("tag","文本的内容是 " + textView.getText().toString());
+                MessageBean temp = mTimmmHashMap.get(title_tv.getText().toString() + textView.getTag());
                 if(null != temp){
                     textView.setText(temp.getText());
                     title_tv.setText(temp.getMyTitle());

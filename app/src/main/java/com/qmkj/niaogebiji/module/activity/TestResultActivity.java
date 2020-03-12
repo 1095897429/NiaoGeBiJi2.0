@@ -185,7 +185,7 @@ public class TestResultActivity extends BaseActivity {
                 case 2:
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
-                    StringUtil.copyLink(mSchoolTest.getTitle() + "\n" +  mSchoolTest.getShare_url());
+                    StringUtil.copyLink(mSchoolTest.getShare_title() + "\n" +  mSchoolTest.getShare_url());
                     break;
                 default:
             }
@@ -202,21 +202,14 @@ public class TestResultActivity extends BaseActivity {
             bean.setBitmap(bitmap);
             bean.setImg(mSchoolTest.getIcon());
             bean.setLink(mSchoolTest.getShare_url());
-//            bean.setTitle(hege + mSchoolTest.getTitle());
-//            bean.setContent(test_grade.getText().toString() + "分" + "通过鸟哥笔记认证"  + mSchoolTest.getTitle() + "测试，你也来试试");
-            String mygrade = test_grade.getText().toString();
-            if(!TextUtils.isEmpty(mygrade) && mygrade.equals("100")){
-                mygrade = "100";
-                bean.setTitle("我满分通过了" + mSchoolTest.getTitle());
-            }else{
-                bean.setTitle("我通过了" + mSchoolTest.getTitle());
-            }
-
-            bean.setContent(mygrade + "分" + "通过鸟哥笔记" + mSchoolTest.getTitle() + ",你也来试试");
+            bean.setContent(mSchoolTest.getShare_content());
             if(msg.what == 0x111){
                 bean.setShareType("circle_link");
+                bean.setTitle(mSchoolTest.getMoments_share_title());
             }else{
                 bean.setShareType("weixin_link");
+                bean.setTitle(mSchoolTest.getShare_title());
+
             }
             StringUtil.shareWxByWeb(TestResultActivity.this,bean);
 

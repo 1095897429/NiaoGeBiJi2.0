@@ -21,7 +21,7 @@
     <LinearLayout
         android:id="@+id/part2"
         android:layout_toRightOf="@+id/one_img_imgs"
-        android:layout_toLeftOf="@+id/focus_aleady"
+        android:layout_toLeftOf="@+id/right_part"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
@@ -30,8 +30,9 @@
 
         <TextView
             android:id="@+id/top_title"
-            android:text="#找资源"
+            android:text="#找资源找资源找资源找资源找资源找资找资源找资源找资源找资源找资源找资源源找资源"
             android:textSize="17sp"
+            android:maxLines="2"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -39,7 +40,7 @@
 
         <TextView
             android:id="@+id/top_focus_num"
-            android:text=""
+            android:text="dddd"
             android:layout_marginTop="8dp"
             android:visibility="visible"
             android:textSize="11sp"
@@ -50,35 +51,44 @@
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/focus"
-        android:textColor="@color/text_news_title_color"
+
+    <LinearLayout
+        android:id="@+id/right_part"
         android:layout_marginRight="16dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:textSize="14sp"
-        android:visibility="visible"
-        android:text="关注"
-        android:gravity="center"
-        android:background="@drawable/bg_corners_8_yellow"
-        android:layout_width="64dp"
-        android:layout_height="32dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/focus"
+            android:textColor="@color/text_news_title_color"
+            android:textSize="14sp"
+            android:visibility="visible"
+            android:text="关注"
+            android:gravity="center"
+            android:background="@drawable/bg_corners_8_yellow"
+            android:layout_width="64dp"
+            android:layout_height="32dp" />
 
 
 
-    <TextView
-        android:layout_marginRight="16dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:id="@+id/focus_aleady"
-        android:textColor="#818386"
-        android:visibility="gone"
-        android:textSize="14sp"
-        android:text="已关注"
-        android:background="@drawable/bg_corners_8_gray"
-        android:layout_width="64dp"
-        android:layout_height="32dp" />
+        <TextView
+            android:gravity="center"
+            android:id="@+id/focus_aleady"
+            android:textColor="#818386"
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:text="已关注"
+            android:background="@drawable/bg_corners_8_gray"
+            android:layout_width="64dp"
+            android:layout_height="32dp" />
+
+    </LinearLayout>
+
+
 
 
 

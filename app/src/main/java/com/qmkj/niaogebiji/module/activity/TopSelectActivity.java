@@ -1,11 +1,14 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -103,19 +106,24 @@ public class TopSelectActivity extends BaseActivity {
 
 
     List<TopicBean> list =  new ArrayList<>();
-    TopicFocusAdapter mTopicFocusAdapter;
+    TopicSelectAdapter mTopicSelectAdapter;
     String typename;
 
     //布局管理器
     LinearLayoutManager mLinearLayoutManager;
+
+    //选中的话题id
+    private String topicId;
+
+
 
     private void initLayout() {
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mTopicFocusAdapter = new TopicFocusAdapter(list);
-        mRecyclerView.setAdapter(mTopicFocusAdapter);
+        mTopicSelectAdapter = new TopicSelectAdapter(list);
+        mRecyclerView.setAdapter(mTopicSelectAdapter);
         //禁用change动画
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
@@ -125,7 +133,7 @@ public class TopSelectActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_topic_list;
+        return R.layout.activity_topselect;
     }
 
     @Override
@@ -135,6 +143,10 @@ public class TopSelectActivity extends BaseActivity {
 
     @Override
     public void initFirstData() {
+
+
+        topicId = getIntent().getStringExtra("topicId");
+
         getTopicCate();
     }
 
@@ -236,7 +248,7 @@ public class TopSelectActivity extends BaseActivity {
         if(mSearchTopicList != null && !mSearchTopicList.isEmpty()){
             mRecyclerView.setVisibility(View.VISIBLE);
             ll_empty.setVisibility(View.GONE);
-            mTopicFocusAdapter.setNewData(mSearchTopicList);
+            mTopicSelectAdapter.setNewData(mSearchTopicList);
         }else{
             ll_empty.setVisibility(View.VISIBLE);
             ll_empty.findViewById(R.id.iv_empty).setBackgroundResource(R.mipmap.icon_empty_comment);
@@ -256,7 +268,7 @@ public class TopSelectActivity extends BaseActivity {
         mFragmentList.clear();
         for (int i = 0; i < toolsList.length; i++) {
             TopicSelectFragment fragment1 = TopicSelectFragment.getInstance(toolsList[i],
-                    mTopicBeanList.get(i).getId() + "");
+                    mTopicBeanList.get(i).getId() + "",topicId);
             mFragmentList.add(fragment1);
             mTitls.add(toolsList[i]);
         }
@@ -438,7 +450,8 @@ public class TopSelectActivity extends BaseActivity {
 
     @OnClick({
             R.id.iv_back,
-            R.id.search_part
+            R.id.search_part,
+            R.id.search_cancle
     })
     public void clicks(View view) {
         if (StringUtil.isFastClick()) {
@@ -447,13 +460,39 @@ public class TopSelectActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.search_part:
 
+                ll_auto_results.setVisibility(View.GONE);
+                ll_manual_result.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+                ll_empty.setVisibility(View.GONE);
+
+                //设置Edittext获取焦点并弹出软键盘
+                search_first.setFocusable(true);
+                search_first.setFocusableInTouchMode(true);
+                search_first.requestFocus();
+
+                //显示软键盘
+                //如果上面的代码没有弹出软键盘 可以使用下面另一种方式
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(search_first, 0);
+
                 break;
             case R.id.iv_back:
                 finish();
+                //参数一：Activity1进入动画，参数二：Activity2退出动画
+                overridePendingTransition(R.anim.activity_alpha_enter, R.anim.activity_exit_bottom);
+                break;
+            case R.id.search_cancle:
+                //清空数据
+                ll_auto_results.setVisibility(View.VISIBLE);
+                ll_manual_result.setVisibility(View.GONE);
+                search_first.setText("");
+                KeyboardUtils.hideSoftInput(search_first);
                 break;
             default:
         }
     }
+
+
 
 
     /** 选中的话题 */
@@ -476,6 +515,17 @@ public class TopSelectActivity extends BaseActivity {
         if(null != this){
             ll_auto_results.setVisibility(View.VISIBLE);
             ll_manual_result.setVisibility(View.GONE);
+        }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        if(ll_manual_result.getVisibility() == View.VISIBLE){
+            clicks(findViewById(R.id.search_cancle));
+        }else{
+            super.onBackPressed();
         }
     }
 

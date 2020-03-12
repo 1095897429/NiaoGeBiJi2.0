@@ -57,6 +57,7 @@
         <LinearLayout
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:paddingBottom="16dp"
                 android:layout_marginTop="-69dp"
                 android:id="@+id/part2222"
                 android:paddingTop="24dp"
@@ -65,7 +66,7 @@
                 android:gravity="center_horizontal"
                 android:background="@drawable/bg_corners_12"
                 android:layout_width="match_parent"
-                android:layout_height="217dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
@@ -82,7 +83,12 @@
 
                 <TextView
                     android:id="@+id/test_des"
-                    android:text=" 鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧~"
+                    android:text=" 鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧~
+鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧
+鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧
+鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧
+鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧
+鸟哥笔记营销圈认证，深耕10年经验专业ASO大拿出题，还等什么，试试你的水平吧"
                     android:textSize="13sp"
                     android:gravity="center_horizontal"
                     android:textColor="@color/text_second_color"
@@ -95,7 +101,7 @@
 
                 <TextView
                     android:id="@+id/test_count"
-                    android:text=""
+                    android:text="0人已测"
                     android:textSize="13sp"
                     android:textColor="@color/text_second_color"
                     android:layout_width="wrap_content"

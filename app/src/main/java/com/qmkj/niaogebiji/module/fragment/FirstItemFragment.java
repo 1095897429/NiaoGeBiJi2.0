@@ -408,6 +408,11 @@ public class FirstItemFragment extends BaseLazyFragment {
                         }
                         setIndexBulltinData();
                     }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        setIndexBulltinData();
+                    }
                 });
     }
 
@@ -437,7 +442,7 @@ public class FirstItemFragment extends BaseLazyFragment {
                 mIsRefreshing = true;
                 mAllList.clear();
                 page = 1;
-                recommendlist();
+                getIndexBulltin();
                 //更懂你
                 isPersonal();
 

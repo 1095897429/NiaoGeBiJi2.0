@@ -8,7 +8,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
+import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -34,6 +37,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -112,6 +116,19 @@ public class WXEntryActivity extends  Activity implements IWXAPIEventHandler {
                     if(Constant.isActicleShare){
                         EventBus.getDefault().post(new ActicleShareEvent("文章分享"));
                     }
+
+
+                    //可以判断当前的类名 -- 获取倒数第二个栈内容
+                    List<Activity> list =  ActivityUtils.getActivityList();
+                    if(list != null && list.size() >2){
+                        Activity temp = list.get(list.size() - 2);
+                        KLog.d("tag","上个界面名称是 " + temp.getClass().getSimpleName());
+
+                        if("CommentDetailActivityV2".equals(temp.getClass().getSimpleName())){
+                            ToastUtils.showShort("分享成功");
+                        }
+                    }
+
 
                 }
 

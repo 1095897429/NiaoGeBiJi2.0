@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:background="@color/bg_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,7 +16,7 @@
             android:orientation="vertical">
 
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/part1111"
                 android:paddingTop="@dimen/status_bar_height"
                 android:background="@mipmap/icon_login_big"
@@ -32,8 +33,18 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp" />
 
+                <TextView
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:text="新用户登录 即可免费领取"
+                    android:textSize="13sp"
+                    android:textColor="#867C64"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            </LinearLayout>
+
+            </RelativeLayout>
 
 
             <LinearLayout
@@ -73,7 +84,7 @@
 
                 <LinearLayout
                     android:id="@+id/phoneLogin"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:background="@drawable/bg_corners_12_gray"
                     android:layout_width="match_parent"
                     android:gravity="center"

@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.RewardAlertDialog;
@@ -597,6 +598,13 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
                             if("0".equals(mUserInfo.getSigned_today())){
                                 toSign();
                             }
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
                         }
                     }
 

@@ -15,6 +15,9 @@ import com.xzh.imagepicker.adapter.ImageFoldersAdapter;
 import com.xzh.imagepicker.bean.MediaFolder;
 import com.xzh.imagepicker.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -37,6 +40,16 @@ public class FolderPopupWindow extends PopupWindow {
         View view = LayoutInflater.from(mContext).inflate(R.layout.window_image_folders, null);
         mRecyclerView = view.findViewById(R.id.rv_main_imageFolders);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
+        //调整下展示顺序
+        Collections.sort(mMediaFolderList, new Comparator<MediaFolder>() {
+            @Override
+            public int compare(MediaFolder o1, MediaFolder o2) {
+                int i = o2.getMediaFileList().size() - o1.getMediaFileList().size();
+                return i;
+            }
+        });
+
         mImageFoldersAdapter = new ImageFoldersAdapter(mContext, mMediaFolderList, DEFAULT_IMAGE_FOLDER_SELECT);
         mRecyclerView.setAdapter(mImageFoldersAdapter);
         initPopupWindow(view);

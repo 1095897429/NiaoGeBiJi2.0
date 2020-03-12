@@ -1,6 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,12 +47,14 @@ public class TopicSelectFragment extends BaseLazyFragment {
 
     String typename;
     String chainId;
+    String selectTopicId;
 
-    public static TopicSelectFragment getInstance(String chainName,String chainId) {
+    public static TopicSelectFragment getInstance(String chainName,String chainId,String selectTopicId) {
         TopicSelectFragment newsItemFragment = new TopicSelectFragment();
         Bundle args = new Bundle();
         args.putString("typename", chainName);
         args.putString("chainId", chainId);
+        args.putString("selectTopicId", selectTopicId);
         newsItemFragment.setArguments(args);
         return newsItemFragment;
     }
@@ -65,6 +68,7 @@ public class TopicSelectFragment extends BaseLazyFragment {
     protected void initView() {
         typename = getArguments().getString("typename");
         chainId = getArguments().getString("chainId");
+        selectTopicId = getArguments().getString("selectTopicId");
         tex.setText(typename);
         initLayout();
 
@@ -105,6 +109,17 @@ public class TopicSelectFragment extends BaseLazyFragment {
                         hideWaitingDialog();
                         mTopicBeanList = response.getReturn_data();
                         if(null != mTopicBeanList && !mTopicBeanList.isEmpty()){
+
+                            if(!TextUtils.isEmpty(selectTopicId)){
+                                for (TopicBean bean : mTopicBeanList) {
+                                    if(selectTopicId.equals(bean.getId() + "")){
+                                        bean.setIs_select(1);
+                                        break;
+                                    }
+                                }
+                            }
+
+
                             mTopicSelectAdapter.setNewData(mTopicBeanList);
                         }else{
                             mRecyclerView.setVisibility(View.GONE);

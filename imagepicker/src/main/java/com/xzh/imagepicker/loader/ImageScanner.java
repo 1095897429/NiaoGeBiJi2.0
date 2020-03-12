@@ -17,6 +17,7 @@ public class ImageScanner extends AbsMediaScanner<MediaFile> {
         super(context);
     }
 
+    //扫描的Uri -- 图片
     @Override
     protected Uri getScanUri() {
         return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
@@ -25,7 +26,9 @@ public class ImageScanner extends AbsMediaScanner<MediaFile> {
     @Override
     protected String[] getProjection() {
         return new String[]{
+                MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.SIZE,
                 MediaStore.Images.Media.MIME_TYPE,
                 MediaStore.Images.Media.BUCKET_ID,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
@@ -33,19 +36,23 @@ public class ImageScanner extends AbsMediaScanner<MediaFile> {
         };
     }
 
+    //新增了一种jpg 向下 -- ok
     @Override
     protected String getSelection() {
-        return MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?" + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
+        return MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?" + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
     }
 
+
+    //新增了一种jpg 向上 -- ok
     @Override
     protected String[] getSelectionArgs() {
-        return new String[]{"image/jpeg", "image/png", "image/gif"};
+        return new String[]{"image/jpeg", "image/jpg","image/png", "image/gif"};
     }
+
 
     @Override
     protected String getOrder() {
-        return MediaStore.Images.Media.DATE_TAKEN + " desc";
+        return MediaStore.Images.Media.DATE_ADDED + " desc";
     }
 
 

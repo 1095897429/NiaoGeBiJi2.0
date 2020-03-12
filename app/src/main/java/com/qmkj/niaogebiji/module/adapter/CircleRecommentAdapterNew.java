@@ -1,14 +1,19 @@
 package com.qmkj.niaogebiji.module.adapter;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -17,6 +22,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -30,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -132,51 +139,220 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     HorizontalSpacesDecoration spacesDecoration1;
 
 
-    private void setTextOrigin(TextView msg, String content,String blog_id){
-        msg.setText(content);
 
-        msg.post(() -> {
-            KLog.d("tag"," msg.getLineCount() " +  msg.getLineCount());
-            if(content.length() > 140 && msg.getLineCount() > 5){
-                msg.setLines(5);
-                final int lineEndIndex ;
-                String text = content;
-                if(msg.getLayout() != null){
-                    lineEndIndex= msg.getLayout().getLineEnd(4);
-                    text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+
+    private void setTextLine(TextView msg, String content, CircleBean item){
+        //获取文字的总宽度
+        float text_with = msg.getPaint().measureText(content);
+        //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
+        int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+        //总长度除了textview长度，得到行数
+        float lines_float = text_with/tv_width;
+        //向上取整
+        int lines = (int)Math.ceil(lines_float);
+        item.setLines(lines);
+        if(lines > 5) {
+            KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
+
+            int perSize = (int) (content.length() / (lines * 1.0f));
+            KLog.d("tag","每行显示的字数是 " + perSize);
+
+            item.setPerSize(perSize);
+        }else{
+            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
+        }
+
+        if(content.length() > 140){
+            item.setLines(5);
+        }else{
+            item.setLines(lines);
+        }
+    }
+
+    private void setTextOrigin(TextView msg, String content,CircleBean circleBean){
+
+        //这里获取到绘制过程中的textview行数
+        int lineCount = circleBean.getLines();
+        //此处根据你想设置的最大行数进行判断
+        if (lineCount >= 5) {
+            //4是索引 5是行数
+//            msg.setLines(5);
+//            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";
+
+//            if(msg.getLayout() != null){
+//                int lineEndIndex = msg.getLayout().getLineEnd(4); //设置第4行打省略号
+//                KLog.d("tag","lineEndIndex " + lineEndIndex);
+//            }
+
+
+            //取出第一行 0
+            //取出第五行 4
+            int width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+            Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+            float spacingMultiplier = 1;
+            float spacingAddition = 0;
+            boolean includePadding = false;
+
+            StaticLayout myStaticLayout = new StaticLayout(content, msg.getPaint(), width, alignment, spacingMultiplier, spacingAddition, includePadding);
+
+            String firstLineText =  content.substring(0,myStaticLayout.getLineEnd(4));
+            KLog.d("tag", "text1111  " + firstLineText);
+
+
+            String text = firstLineText.substring(0,firstLineText.length() - 5) + "...全文";
+
+
+            KLog.d("tag", "text  " + text);
+            SpannableString spannableString = new SpannableString(text);
+            spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+                @Override
+                public void onClick(View widget) {
+                    UIHelper.toCommentDetailActivity(mContext,circleBean.getId());
                 }
+            };
+            spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            msg.setText(spannableString);
+            msg.setMovementMethod(LinkMovementMethod.getInstance());
+        }else{
+//            msg.setLines(lineCount);
+            msg.setText(content);
+        }
 
-                SpannableString spannableString = new SpannableString(text);
-                ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
-                spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
-                NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
-                    @Override
-                    public void onClick(View widget) {
-                        UIHelper.toCommentDetailActivity(mContext,blog_id);
-                    }
-                };
-                spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                msg.setMovementMethod(LinkMovementMethod.getInstance());
-                msg.setText(spannableString);
+//        //获取文字的总宽度
+//        float text_with = msg.getPaint().measureText(content);
+//        //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
+//        int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+//        //总长度除了textview长度，得到行数
+//        float lines_float = text_with/tv_width;
+//        //向上取整
+//        int lines = (int)Math.ceil(lines_float);
 
-            }else{
-                msg.setLines(msg.getLineCount());
-            }
+//        if(lines > 5){
+//            KLog.d("tag","行数大于5行  " + " 行数是 " + lines);
+            //起过5行，取设置行数，收缩
+//            msg.setMaxLines(5);
+//            msg.setLines(5);
+//            final int lineEndIndex ;
+//            String text = content;
+//            if(msg.getLayout() != null){
+//                lineEndIndex= msg.getLayout().getLineEnd(4);
+//                text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+//            }
+//
+//            String text = content.substring(0, 140) +"...全文";
+//
+//            SpannableString spannableString = new SpannableString(text);
+//            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//            spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//            NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    UIHelper.toCommentDetailActivity(mContext,blog_id);
+//                }
+//            };
+//            spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            msg.setMovementMethod(LinkMovementMethod.getInstance());
+//            msg.setText(spannableString);
+//        } else{
+//            msg.setMaxLines(lines);
+//            msg.setLines(lines);
+//            KLog.d("tag","行数小于5行   " +  " 行数是 " + lines);
+//        }
 
-        });
+
+//        msg.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                int lineCount = msg.getLineCount();
+//                if(content.length() > 140 && lineCount > 5){
+//                   KLog.d("tag","行数大于5行");
+//                   msg.setLines(5);
+//                    final int lineEndIndex ;
+//                    String text = content;
+//                    if(msg.getLayout() != null){
+//                        lineEndIndex= msg.getLayout().getLineEnd(4);
+//                        text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+//                    }
+//
+//                    SpannableString spannableString = new SpannableString(text);
+//                    ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//                    spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//                    NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+//                        @Override
+//                        public void onClick(View widget) {
+//                            UIHelper.toCommentDetailActivity(mContext,blog_id);
+//                        }
+//                    };
+//                    spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    msg.setMovementMethod(LinkMovementMethod.getInstance());
+//                    msg.setText(spannableString);
+//                }else{
+//                    KLog.d("tag","行数小于5行");
+//                    msg.setLines(lineCount);
+//                }
+//                msg.getViewTreeObserver().removeOnPreDrawListener(this);
+//                return true;
+//            }
+//        });
+
+
+//        msg.post(() -> {
+//            KLog.d("tag"," msg.getLineCount() " +  msg.getLineCount());
+//            if(content.length() > 140 && msg.getLineCount() > 5){
+//                msg.setLines(5);
+//                final int lineEndIndex ;
+//                String text = content;
+//                if(msg.getLayout() != null){
+//                    lineEndIndex= msg.getLayout().getLineEnd(4);
+//                    text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+//                }
+//
+//                SpannableString spannableString = new SpannableString(text);
+//                ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//                spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//                NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+//                    @Override
+//                    public void onClick(View widget) {
+//                        UIHelper.toCommentDetailActivity(mContext,blog_id);
+//                    }
+//                };
+//                spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                msg.setMovementMethod(LinkMovementMethod.getInstance());
+//                msg.setText(spannableString);
+//
+//            }else{
+//                msg.setLines(msg.getLineCount());
+//            }
+//
+//        });
     }
 
     @Override
     protected void convert(BaseViewHolder helper, CircleBean item) {
 
+
         getCircleType(helper,item);
 
         getIconType(helper,item);
 
+        if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
+            //设置数据
+            if(list != null && !list.isEmpty()){
+                initFocusLayout(helper);
+                return;
+            }
+        }
+
 
         TextView msg = helper.getView(R.id.content);
 
+        setTextLine(msg,item.getBlog(),item);
 
         if(item.getPcLinks() !=  null && !item.getPcLinks().isEmpty()){
             //TODO 2.26 判断是否添加回复xxx的骚操作
@@ -196,22 +372,18 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 if(!TextUtils.isEmpty(item.getComment_nickname())){
                     getCircleReply(msg,item);
                 }else{
-                    setTextOrigin(msg,item.getBlog(),item.getId());
+                    setTextOrigin(msg,item.getBlog(),item);
+//                    msg.setText(item.getBlog());
                 }
             }else{
-                setTextOrigin(msg,item.getBlog(),item.getId());
+                setTextOrigin(msg,item.getBlog(),item);
+//                msg.setText(item.getBlog());
             }
         }
 
 
 
-        if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
-            //设置数据
-            if(list != null && !list.isEmpty()){
-                initFocusLayout(helper);
-                return;
-            }
-        }
+
 
         //话题
         if(item.getTopic_info() != null && !TextUtils.isEmpty(item.getTopic_info().getTitle())){
@@ -340,10 +512,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     if(!TextUtils.isEmpty(item.getP_blog().getComment_nickname())){
                         getTransCircleReply(trans_msg,item.getP_blog());
                     }else{
-                        setTextOrigin(trans_msg,item.getP_blog().getBlog(),item.getId());
+                        setTextOrigin(trans_msg,item.getP_blog().getBlog(),item);
                     }
                 }else{
-                    setTextOrigin(trans_msg,item.getP_blog().getBlog(),item.getId());
+                    setTextOrigin(trans_msg,item.getP_blog().getBlog(),item);
                 }
             }
 
@@ -941,19 +1113,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     ShareBean bean1 = new ShareBean();
                     bean1.setShareType("circle_link");
                     bean1.setLink(item.getShare_url());
-                    String name1 = "";
-                    if( null != item.getUser_info()){
-                        name1 = item.getUser_info().getName();
-                    }
-                    bean1.setTitle("分享一条" + name1 + "的营销圈动态");
-                    bean1.setContent(item.getBlog());
-                    String img = "";
-                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
-                        img  = item.getImages().get(0);
-                    }else if(item.getUser_info() != null){
-                        img = item.getUser_info().getAvatar();
-                    }
-                    bean1.setImg(img);
+                    bean1.setTitle(item.getMoments_share_title());
+                    bean1.setImg(item.getShare_icon());
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -965,19 +1126,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     ShareBean bean = new ShareBean();
                     bean.setShareType("weixin_link");
                     bean.setLink(item.getShare_url());
-                    String name = "";
-                    if( null != item.getUser_info()){
-                        name = item.getUser_info().getName();
-                    }
-                    bean.setTitle("分享一条" + name + "的营销圈动态");
-                    bean.setContent(item.getBlog());
-                    String img2 = "";
-                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
-                        img2  = item.getImages().get(0);
-                    }else if(item.getUser_info() != null){
-                        img2 = item.getUser_info().getAvatar();
-                    }
-                    bean.setImg(img2);
+                    bean.setTitle(item.getShare_title());
+                    bean.setContent(item.getShare_content());
+                    bean.setImg(item.getShare_icon());
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 4:

@@ -18,6 +18,7 @@ import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.ThingDownAlertDialog;
 import com.qmkj.niaogebiji.common.dialog.ThingDownNotEnoughAlertDialog;
@@ -181,7 +182,7 @@ public class DataInfomationActivity extends BaseActivity {
 
 
     private void showDownDialog() {
-        if(null !=mNewsDetailBean){
+        if(null != mNewsDetailBean){
             String point = mNewsDetailBean.getDl_point();
             final ThingDownAlertDialog iosAlertDialog = new ThingDownAlertDialog(this).builder();
             iosAlertDialog.setPositiveButton("确认", v -> {
@@ -194,12 +195,12 @@ public class DataInfomationActivity extends BaseActivity {
     }
 
     private void compareData() {
-
         RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
         if(null != userInfo){
             String myPoint = userInfo.getPoint();
-            myPoint = "40";
-            String needPoint = mNewsDetailBean.getPointnum();
+
+            String needPoint = mNewsDetailBean.getDl_point();
+            KLog.d("tag","myPoint " + myPoint + " needPoint " + needPoint);
 
             int result = myPoint.compareTo(needPoint);
             if(result < 0){
@@ -226,9 +227,39 @@ public class DataInfomationActivity extends BaseActivity {
                         bottom_no_buy_part.setVisibility(View.GONE);
                         bottom_releady_buy_part.setVisibility(View.VISIBLE);
                         showDownOkDialog();
+                        getUserInfo();
                     }
                 });
     }
+
+
+    private void getUserInfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+                        RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                        if(null != mUserInfo){
+                            StringUtil.setUserInfoBean(mUserInfo);
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
+                        }
+                    }
+                });
+
+    }
+
+
 
 
     private void showDownOkDialog() {
@@ -254,7 +285,7 @@ public class DataInfomationActivity extends BaseActivity {
     private void showDownNotEnoughDialog() {
         final ThingDownNotEnoughAlertDialog iosAlertDialog = new ThingDownNotEnoughAlertDialog(this).builder();
         iosAlertDialog.setPositiveButton("赚羽毛", v -> {
-
+            UIHelper.toFeatherctivity(this);
         }).setNegativeButton("再想想", v -> {
 
         }).setMsg("您的羽毛余额不足哦").setCanceledOnTouchOutside(false);

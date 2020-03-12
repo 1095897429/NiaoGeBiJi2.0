@@ -971,6 +971,7 @@ public class CommentDetailActivity extends BaseActivity {
 
             // 检查links同时添加原创文本
             mCircleBean  =  StringUtil.addLinksData(mCircleBean);
+
             // 对有links的原创文本进行富文本
             StringUtil.getIconLinkShow(mCircleBean,this,content);
             //发帖人
@@ -1344,19 +1345,8 @@ public class CommentDetailActivity extends BaseActivity {
                     ShareBean bean1 = new ShareBean();
                     bean1.setShareType("circle_link");
                     bean1.setLink(item.getShare_url());
-                    String name1 = "";
-                    if( null != item.getUser_info()){
-                        name1 = item.getUser_info().getName();
-                    }
-                    bean1.setTitle("分享一条" + name1 + "的营销圈动态");
-                    bean1.setContent(item.getBlog());
-                    String img = "";
-                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
-                        img  = item.getImages().get(0);
-                    }else if(item.getUser_info() != null){
-                        img = item.getUser_info().getAvatar();
-                    }
-                    bean1.setImg(img);
+                    bean1.setTitle(item.getMoments_share_title());
+                    bean1.setImg(item.getShare_icon());
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -1364,19 +1354,9 @@ public class CommentDetailActivity extends BaseActivity {
                     ShareBean bean = new ShareBean();
                     bean.setShareType("weixin_link");
                     bean.setLink(item.getShare_url());
-                    String name = "";
-                    if( null != item.getUser_info()){
-                        name = item.getUser_info().getName();
-                    }
-                    bean.setTitle("分享一条" + name + "的营销圈动态");
-                    bean.setContent(item.getBlog());
-                    String img2 = "";
-                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
-                        img2  = item.getImages().get(0);
-                    }else if(item.getUser_info() != null){
-                        img2 = item.getUser_info().getAvatar();
-                    }
-                    bean.setImg(img2);
+                    bean.setTitle(item.getShare_title());
+                    bean.setContent(item.getShare_content());
+                    bean.setImg(item.getShare_icon());
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 4:

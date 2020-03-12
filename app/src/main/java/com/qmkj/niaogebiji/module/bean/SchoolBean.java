@@ -105,6 +105,47 @@ public class SchoolBean extends BaseBean {
         //自己加的分数 -- 用于测试完判断
         private String myScore;
 
+
+        //分享数据
+        private String share_title;
+        private String share_content;
+        private String share_icon;
+        //朋友圈分享内容
+        private String moments_share_title;
+
+
+        public String getShare_title() {
+            return share_title;
+        }
+
+        public void setShare_title(String share_title) {
+            this.share_title = share_title;
+        }
+
+        public String getShare_content() {
+            return share_content;
+        }
+
+        public void setShare_content(String share_content) {
+            this.share_content = share_content;
+        }
+
+        public String getShare_icon() {
+            return share_icon;
+        }
+
+        public void setShare_icon(String share_icon) {
+            this.share_icon = share_icon;
+        }
+
+        public String getMoments_share_title() {
+            return moments_share_title;
+        }
+
+        public void setMoments_share_title(String moments_share_title) {
+            this.moments_share_title = moments_share_title;
+        }
+
         public String getMyScore() {
             return myScore;
         }

@@ -173,17 +173,16 @@ public class ModifyUserInfoActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().length() > 500){
-                    Log.d("tag","输入的字数过多");
-                }
 
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
                 if("nickname".equals(type)){
-                    //英文单词占1个字符  表情占2个字符 中文占1个字符
-                    if(s.toString().length() > 8){
-                        ToastUtils.showShort("昵称过长");
-                        return;
-                    }
+                    getCounts(s.toString(),8);
+                }else{
+                    getCounts(s.toString(),20);
                 }
 
                 if(s.toString().length() == 0){
@@ -197,13 +196,50 @@ public class ModifyUserInfoActivity extends BaseActivity {
                     submit.setTextColor(Color.parseColor("#242629"));
                 }
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
         });
     }
+
+
+    private String mString;
+    private int num = 20 ;
+    public  void getCounts(String string,int maxNum) {
+        mString = string.trim();
+        int count_abc=0, count_num=0, count_oth=0;
+        char[] chars = string.toCharArray();
+        //判断每个字符
+        for(int i = 0; i < chars.length; i++){
+            if((chars[i] >= 65 && chars[i] <= 90) || (chars[i] >= 97 && chars[i] <=122)){
+                count_abc++;
+            }else if(chars[i] >= 48 && chars[i] <= 57){
+                count_num++;
+            }else{
+                count_oth++;
+            }
+        }
+
+        int length = count_abc + count_num;
+
+        //1/2 = 0(1个数字) = 2 - 0 = 2      2/2 = 1(2个数字) = 3-1 = 2
+        length = length / 2;
+
+        int result = (mString.length() - length);
+        KLog.d("tag","长度 " + result);
+
+
+        if(result > num){
+            setStatus(false);
+        }else{
+            setStatus(true);
+        }
+
+
+        System.out.println("字母有：" + count_abc + "个");
+        System.out.println("数字有：" + count_num + "个");
+        System.out.println("其他的有：" + count_oth + "个");
+    }
+
+
+
 
     //TODO 2.17 为了编辑文本中有文字时，发布可用
     private void setStatus(boolean isEnable) {

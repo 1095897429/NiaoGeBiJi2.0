@@ -18,6 +18,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.adapter.HotNewsAdapter;
+import com.qmkj.niaogebiji.module.adapter.HotNewsAdapterV2;
 import com.qmkj.niaogebiji.module.bean.ActicleAllBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -61,7 +62,7 @@ public class HotNewsFragment extends BaseLazyFragment {
 
     private int page = 1;
     //适配器 -- 需手动排序
-    HotNewsAdapter mHotNewsAdapter;
+    HotNewsAdapterV2 mHotNewsAdapter;
     //组合集合
     List<MultiNewsBean> mAllList = new ArrayList<>();
     //布局管理器
@@ -225,7 +226,7 @@ public class HotNewsFragment extends BaseLazyFragment {
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
-        mHotNewsAdapter = new HotNewsAdapter(mAllList);
+        mHotNewsAdapter = new HotNewsAdapterV2(mAllList);
         mRecyclerView.setAdapter(mHotNewsAdapter);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);

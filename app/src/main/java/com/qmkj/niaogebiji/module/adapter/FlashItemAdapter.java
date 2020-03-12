@@ -67,7 +67,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         helper.addOnClickListener(R.id.part2222).addOnClickListener(R.id.part3333);
 
 
-        //旧的隐藏
+        //旧的隐藏 -- 让第一个item的布局不显示
         if(helper.getAdapterPosition() == 0){
             helper.setVisible(R.id.sticky_header,true);
         }else{
@@ -79,6 +79,9 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             }
         }
 
+
+        //标题
+        helper.setText(R.id.title,mBean.getTitle());
 
 
         //showTime --几月几号 目前后台返回的是 12/25 的形式
@@ -206,10 +209,10 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             helper.setText(R.id.time, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"HH:mm"));
         }
 
-        //拿到它的createTime -- 显示日期 -- 再显示星期
-        if(!TextUtils.isEmpty(mBean.getCreated_at())){
-            String temp = TimeUtils.millis2String(Long.parseLong(mBean.getCreated_at())* 1000L,"yyyy-MM-dd HH:mm:ss");
-            helper.setText(R.id.header_textview, TimeUtils.millis2String(Long.parseLong(mBean.getCreated_at())* 1000L,"MM月dd日"));
+        //拿到它的publiceTime -- 显示日期 -- 再显示星期
+        if(!TextUtils.isEmpty(mBean.getPub_time())){
+            String temp = TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"yyyy-MM-dd HH:mm:ss");
+            helper.setText(R.id.header_textview, TimeUtils.millis2String(Long.parseLong(mBean.getPub_time())* 1000L,"MM月dd日"));
 //            KLog.e("tag","创建时间 " +  temp);
 
             String string = TimeUtils.getChineseWeek(temp);

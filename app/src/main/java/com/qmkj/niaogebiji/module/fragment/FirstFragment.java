@@ -382,7 +382,11 @@ public class FirstFragment extends BaseLazyFragment {
                 //外链
                 String link = temp.getUrl();
                 if(!TextUtils.isEmpty(link)){
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),link,"");
+
+//                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),link,"");
+
+                    UIHelper.toCooperationActivity(getActivity(),link);
+
                 }
             }else if("1".equals(temp.getType())){
                 //小程序

@@ -3,8 +3,16 @@ package com.qmkj.niaogebiji.module.adapter;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -35,6 +45,7 @@ import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.FirstItemBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -63,8 +74,108 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
     private Limit2ReplyAdapter mLimit2ReplyAdapter;
     private List<CommentBean.FirstComment> mLimitComments;
 
+    private void setTextLine(TextView msg, String content, CommentBean.FirstComment item){
+        //获取文字的总宽度
+        float text_with = msg.getPaint().measureText(content);
+        //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
+        int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+        //总长度除了textview长度，得到行数
+        float lines_float = text_with/tv_width;
+        //向上取整
+        int lines = (int)Math.ceil(lines_float);
+        item.setLines(lines);
+        KLog.d("tag","文本的长度是 " + content.length());
+        if(content.length() > 140 && lines > 5) {
+            KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
+
+            int perSize = (int) (content.length() / (lines * 1.0f));
+            KLog.d("tag","每行显示的字数是 " + perSize);
+
+        }else{
+            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
+        }
+
+        if(content.length() > 140){
+            item.setLines(5);
+        }else{
+            item.setLines(lines);
+        }
+    }
+
+    private void setTextOrigin(TextView msg, String content,CommentBean.FirstComment circleBean,int position){
+
+        //这里获取到绘制过程中的textview行数
+        int lineCount = circleBean.getLines();
+        //此处根据你想设置的最大行数进行判断
+        if (content.length() > 140 && lineCount >= 5) {
+            //4是索引 5是行数
+//            msg.setLines(5);
+//            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";
+
+//            if(msg.getLayout() != null){
+//                int lineEndIndex = msg.getLayout().getLineEnd(4); //设置第4行打省略号
+//                KLog.d("tag","lineEndIndex " + lineEndIndex);
+//            }
+
+
+            //取出第一行 0
+            //取出第五行 4
+            int width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2 + 32 + 8 );
+            Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+            float spacingMultiplier = 1;
+            float spacingAddition = 0;
+            boolean includePadding = false;
+
+            StaticLayout myStaticLayout = new StaticLayout(content, msg.getPaint(), width, alignment, spacingMultiplier, spacingAddition, includePadding);
+
+            String firstLineText =  content.substring(0,myStaticLayout.getLineEnd(4));
+            KLog.d("tag", "text1111  " + firstLineText);
+
+
+            //减 3 意味着 ...占一个字数
+            String text = firstLineText.substring(0,firstLineText.length() - 3) + "...全文";
+//            String text = firstLineText;
+
+
+            KLog.d("tag", "text  " + text);
+            SpannableString spannableString = new SpannableString(text);
+            spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+                @Override
+                public void onClick(View widget) {
+                    if(null != mToShowActicleDialogListener){
+                        mToShowActicleDialogListener.func(circleBean,position);
+                    }
+                }
+            };
+            spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            msg.setText(spannableString);
+            msg.setMovementMethod(LinkMovementMethod.getInstance());
+        }else{
+            msg.setText(content);
+        }
+
+    }
+
+
+
     @Override
     protected void convert(BaseViewHolder helper,CommentBean.FirstComment item) {
+
+        //评论正文
+        TextView comment_text = helper.getView(R.id.comment_text);
+
+        setTextLine(comment_text,item.getMessage(),item);
+
+        if(!TextUtils.isEmpty(item.getMessage())){
+            comment_text.setText(item.getMessage());
+            setTextOrigin(comment_text,item.getMessage(),item,helper.getAdapterPosition());
+        }
+
+
+
+
         //设置子View点击事件
         helper.addOnClickListener(R.id.comment_delete)
                 .addOnClickListener(R.id.ll_has_second_comment)
@@ -119,20 +230,7 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         if(!TextUtils.isEmpty(item.getAvatar())){
             ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
         }
-        //评论正文
-        TextView comment_text = helper.getView(R.id.comment_text);
-        if(!TextUtils.isEmpty(item.getMessage())){
-            comment_text.setText(item.getMessage());
-        }
 
-        comment_text.post(() -> {
-            KLog.e("tag","comment_text.getLineCount() " + comment_text.getLineCount());
-            if(comment_text.getLineCount() > 5){//判断行数大于多少时改变
-                int lineEndIndex = comment_text.getLayout().getLineEnd(4); //设置第4行打省略号
-                String text = comment_text.getText().subSequence(0, lineEndIndex-4) +"...";
-                comment_text.setText(text);
-            }
-        });
 
 
 

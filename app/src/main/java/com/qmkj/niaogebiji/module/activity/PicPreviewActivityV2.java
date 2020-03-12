@@ -28,6 +28,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.ImageBrowseAdapter;
@@ -121,7 +122,9 @@ public class PicPreviewActivityV2 extends BaseActivity {
         showData();
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     private void loadData(){
         Intent intent = getIntent();
@@ -134,7 +137,7 @@ public class PicPreviewActivityV2 extends BaseActivity {
             //封装新的对象
             for (int i = 0; i < imageList.size(); i++) {
                 mPicBean = new PicBean();
-                mPicBean.setScalePic(imageList.get(i) + scaleSize);
+                mPicBean.setScalePic(imageList.get(i) + Constant.scaleSize);
                 mPicBean.setPic(imageList.get(i));
                 imagePicList.add(mPicBean);
             }

@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -27,7 +28,9 @@ public class FirstAuthorAdapter extends BaseQuickAdapter<IndexFocusBean.Auther_l
     }
 
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     @Override
     protected void convert(BaseViewHolder helper, IndexFocusBean.Auther_list item) {
@@ -35,7 +38,7 @@ public class FirstAuthorAdapter extends BaseQuickAdapter<IndexFocusBean.Auther_l
         //设置子View点击事件
         helper.addOnClickListener(R.id.focus).addOnClickListener(R.id.focus_aleady);
 
-        ImageUtil.load(mContext,item.getImg() + scaleSize,helper.getView(R.id.head_icon));
+        ImageUtil.load(mContext,item.getImg() + Constant.scaleSize,helper.getView(R.id.head_icon));
 
         helper.setText(R.id.name,item.getName());
 

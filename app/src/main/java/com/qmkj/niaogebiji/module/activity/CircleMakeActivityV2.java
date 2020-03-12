@@ -7,10 +7,12 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -45,6 +47,7 @@ import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.nanchen.compresshelper.CompressHelper;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -75,6 +78,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -86,6 +90,10 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import id.zelory.compressor.Compressor;
+import top.zibin.luban.CompressionPredicate;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 /**
  * @author zhouliang
@@ -168,7 +176,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
     @BindView(R.id.acticle_title)
     TextView acticle_title;
 
-
+    @BindView(R.id.title_tv)
+    TextView title_tv;
 
 
     //适配器
@@ -227,7 +236,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
     private TopicBean mTopicBean;
 
-    //从哪里跳过来的
+    //从哪里跳过来的 -- 文章详情页时 有值
     private NewsDetailBean mNewsDetailBean;
 
 
@@ -530,7 +539,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
                     //英文单词占1个字符  表情占2个字符 中文占1个字符
                     //trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
-                    KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );
+//                    KLog.d("tag", "accept: " + charSequence.toString() + " 字符长度 " + charSequence.length() );
 
                     if(!TextUtils.isEmpty(mString) && mString.length() != 0){
 
@@ -572,6 +581,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
             acticle_title.setText(mNewsDetailBean.getTitle());
             ImageUtil.loadByDefaultHead(this,mNewsDetailBean.getPic(),acticle_img);
 
+            title_tv.setText("转发干货");
+            mEditText.setText("转发干货");
             return;
         }
 
@@ -740,19 +751,64 @@ public class CircleMakeActivityV2 extends BaseActivity {
             BaseActivity.maxSendProgress = 100;
         }
 
-//        if(!tempList.isEmpty()){
-//            for (int i = 0; i < tempList.size(); i++) {
+        if(!tempList.isEmpty()){
+            for (int i = 0; i < tempList.size(); i++) {
+                //获取每个图片的大小
+//                String filename = tempList.get(i).substring(tempList.get(i).lastIndexOf("/") + 1);
+//                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/laopai/";
+//                String filePath = baseDir + "";
+//                File dir = new File(baseDir);
+//                if (!dir.exists()) {
+//                    dir.mkdir();
+//                }
+
+//                Luban.with(this)
+//                        .load(tempList.get(i))
+//                        // 忽略不压缩图片的大小
+//                        .ignoreBy(100 )
+//                        // 设置压缩后文件存储位置
+//                        .setTargetDir(filePath)
+//                        .filter(new CompressionPredicate() {
+//                            @Override
+//                            public boolean apply(String path) {
+//                                return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
+//                            }
+//                        })
+//                        .setCompressListener(new OnCompressListener() {
+//                            @Override
+//                            public void onStart() {
+//                                // TODO 压缩开始前调用，可以在方法内启动 loading UI
+//                            }
 //
-//                //获取每个图片的大小
-//                BitmapUtils.compressImageUpload(tempList.get(i));
-//            }
-//        }
+//                            @Override
+//                            public void onSuccess(File file) {
+//                                // TODO 压缩成功后调用，返回压缩后的图片文件
+//                                KLog.d("tag","压缩成功");
+//                            }
+//
+//                            @Override
+//                            public void onError(Throwable e) {
+//                                // TODO 当压缩过程出现问题时调用
+//                                KLog.d("tag",e.getMessage());
+//                            }
+//                        }).launch();
 
 
 
-        toSendBlogByService(mTempMsgBean);
 
-        sendPicToQiuNiu();
+                BitmapUtils.compressImageUpload(tempList.get(i));
+
+
+            }
+        }
+
+
+
+
+
+//        toSendBlogByService(mTempMsgBean);
+//
+//        sendPicToQiuNiu();
     }
 
 
@@ -1230,6 +1286,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
             }
 
 
+            //保存的是文章
             if(!TextUtils.isEmpty(mTempMsgBean.getArticle_id())){
                 articleId = mTempMsgBean.getArticle_id();
                 articleTitle = mTempMsgBean.getArticle_title();
@@ -1243,6 +1300,8 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 link.setImageResource(R.mipmap.icon_link_false);
                 make.setEnabled(false);
                 link.setEnabled(false);
+
+                title_tv.setText("转发干货");
             }
         }
     }

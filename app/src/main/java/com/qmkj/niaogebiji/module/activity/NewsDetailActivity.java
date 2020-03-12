@@ -469,6 +469,32 @@ public class NewsDetailActivity extends BaseActivity {
     }
 
 
+    //detail 中的字段  或者 评论区的字段 -- 待确认
+    private void remarkNum(String commentNum){
+        //点评数
+        if(!TextUtils.isEmpty(commentNum)){
+            int size = Integer.parseInt(commentNum);
+
+            if(size == 0){
+                comment.setVisibility(View.VISIBLE);
+                rl_msg.setVisibility(View.GONE);
+            }else {
+                comment_num.setTypeface(typeface);
+                if(size > 99){
+                    comment_num.setText(99 + "+");
+                }else{
+                    comment_num.setText(size + "");
+                }
+                comment.setVisibility(View.GONE);
+                rl_msg.setVisibility(View.VISIBLE);
+            }
+
+            //总的评论数
+            comment_num_all.setText("评论");
+        }
+    }
+
+
     /** --------------------------------- 明细  ---------------------------------*/
     private void detail() {
         Map<String,String> map = new HashMap<>();
@@ -496,6 +522,7 @@ public class NewsDetailActivity extends BaseActivity {
     String summary;
     String dataLink;
     String dl_link_code;
+    Typeface typeface;
     private void commonLogic() {
 
         //新增作者等级 -- 目前后台还没添加type字段
@@ -520,22 +547,9 @@ public class NewsDetailActivity extends BaseActivity {
             author_type.setImageResource(R.mipmap.hot_author_professor);
         }
 
+       typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
 
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");
-
-        //点评数
-        if(!TextUtils.isEmpty(mNewsDetailBean.getCommentnum())){
-            int size = Integer.parseInt(mNewsDetailBean.getCommentnum());
-            if(size > 99){
-                comment_num.setText(99 + "+");
-            }else{
-                comment_num.setText(size + "");
-            }
-            comment_num.setTypeface(typeface);
-
-            //总的评论数
-            comment_num_all.setText("评论 " + mNewsDetailBean.getCommentnum());
-        }
+        remarkNum(mNewsDetailBean.getCommentnum());
 
         StringUtil.setPublishTime(tv_tag1111,mNewsDetailBean.getPublished_at());
 
@@ -1364,8 +1378,8 @@ public class NewsDetailActivity extends BaseActivity {
                                     }
                                     ll_empty.setVisibility(View.GONE);
 
-                                    comment.setVisibility(View.GONE);
-                                    rl_msg.setVisibility(View.VISIBLE);
+
+                                    remarkNum(mFirstComments.size() + "");
 
                                 }else{
                                     ll_empty.setVisibility(View.VISIBLE);

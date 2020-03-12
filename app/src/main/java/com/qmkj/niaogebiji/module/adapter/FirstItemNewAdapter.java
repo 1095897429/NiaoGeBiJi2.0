@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
@@ -74,7 +75,9 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
     ArrayList<MessageBean> list = new ArrayList<>();
     private Typeface typeface;
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
@@ -104,7 +107,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
 
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
                 }
 
                 break;
@@ -134,9 +137,9 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
 
                 if(!TextUtils.isEmpty(bean3.getPic())){
-                    ImageUtil.load(mContext,bean3.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
-                    ImageUtil.load(mContext,bean3.getPic2() + scaleSize,helper.getView(R.id.two_img_imgs));
-                    ImageUtil.load(mContext,bean3.getPic3() + scaleSize,helper.getView(R.id.three_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic2() + Constant.scaleSize,helper.getView(R.id.two_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic3() + Constant.scaleSize,helper.getView(R.id.three_img_imgs));
                 }
 
                 break;
@@ -152,7 +155,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 }
 
                 if(!TextUtils.isEmpty(beanLong.getPic())){
-                    ImageUtil.load(mContext,beanLong.getPic() + scaleSize,helper.getView(R.id.long_img_imgs));
+                    ImageUtil.load(mContext,beanLong.getPic() + Constant.scaleSize,helper.getView(R.id.long_img_imgs));
                 }
 
                 int act_state3= beanLong.getAct_state();
@@ -201,7 +204,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 FristActionBean t = item.getFristActionBean();
 
                 if(t.getActivity() != null && !TextUtils.isEmpty(t.getActivity().getPic())){
-                    ImageUtil.load(mContext,t.getActivity().getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,t.getActivity().getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
 
                 }
 

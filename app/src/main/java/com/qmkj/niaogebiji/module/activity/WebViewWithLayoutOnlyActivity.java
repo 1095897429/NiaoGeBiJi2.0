@@ -1,26 +1,37 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.alibaba.fastjson.JSON;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.bean.MessageCooperationBean;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import butterknife.BindView;
 
@@ -67,6 +78,13 @@ public class WebViewWithLayoutOnlyActivity extends BaseActivity {
     @BindView(R.id.webview)
     WebView webview;
 
+    @BindView(R.id.tv_title)
+    TextView tv_title;
+
+    @BindView(R.id.iv_back)
+    ImageView iv_back;
+
+
 
     @Override
     protected int getLayoutId() {
@@ -81,7 +99,14 @@ public class WebViewWithLayoutOnlyActivity extends BaseActivity {
 
         showWaitingDialog();
 
-        rl_common_title.setVisibility(View.GONE);
+        rl_common_title.setVisibility(View.VISIBLE);
+
+        iv_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
 
         link = getIntent().getStringExtra("link");
@@ -122,8 +147,45 @@ public class WebViewWithLayoutOnlyActivity extends BaseActivity {
             }
         });
 
+        webview.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                tv_title.setText(title);
+            }
+        });
+
         webview.loadUrl(link);
+
+        //js交互 -- 给js调用app的方法，xnNative是协调的对象
+        webview.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
+
     }
+
+
+    @SuppressLint("JavascriptInterface")
+    public class AndroidtoJs extends Object {
+        //通用方法
+        @JavascriptInterface
+        public void sendMessage(String param) {
+            KLog.d("tag","param " + param);
+            if(!TextUtils.isEmpty(param)){
+                try {
+                    JSONObject b= new JSONObject(param);
+                    String result = b.optString("type");
+                    if("toSubmitInfo".equals(result)){
+                        //去编辑界面
+                        UIHelper.toUserInfoModifyActivity(WebViewWithLayoutOnlyActivity.this);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
 
     @Override
     protected void initView() {

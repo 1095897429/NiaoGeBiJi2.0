@@ -151,7 +151,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //向上取整
         int lines = (int)Math.ceil(lines_float);
         item.setLines(lines);
-        if(lines > 5) {
+        KLog.d("tag","文本的长度是 " + content.length());
+        if(content.length() > 140 && lines > 5) {
             KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
 
             int perSize = (int) (content.length() / (lines * 1.0f));
@@ -174,7 +175,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //这里获取到绘制过程中的textview行数
         int lineCount = circleBean.getLines();
         //此处根据你想设置的最大行数进行判断
-        if (lineCount >= 5) {
+        if (content.length() > 140 && lineCount >= 5) {
             //4是索引 5是行数
 //            msg.setLines(5);
 //            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";
@@ -199,7 +200,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             KLog.d("tag", "text1111  " + firstLineText);
 
 
-            String text = firstLineText.substring(0,firstLineText.length() - 5) + "...全文";
+            //减 3 意味着 ...占一个字数
+            String text = firstLineText.substring(0,firstLineText.length() - 3) + "...全文";
+//            String text = firstLineText;
 
 
             KLog.d("tag", "text  " + text);

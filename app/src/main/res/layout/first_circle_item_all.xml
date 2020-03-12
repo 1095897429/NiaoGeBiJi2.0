@@ -160,6 +160,7 @@
             android:ellipsize="end"
             android:lineSpacingExtra="2dp"
             android:text=""
+            android:textIsSelectable="true"
             android:textColor="@color/text_first_color"
             android:textSize="16sp" />
 

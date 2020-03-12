@@ -63,4 +63,8 @@ public class Constant {
 
     public static final String ADVICE = "http://p.qiao.baidu.com/cps/chat?siteId=13189166&userId=10076563&cp=www.niaogebiji.com&cr=androidapp&cw=androidapp";
 
+
+
+    public static final String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 }

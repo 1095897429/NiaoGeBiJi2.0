@@ -13,6 +13,7 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
@@ -54,7 +55,9 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
 
     FirstAuthorAdapter mFirstAuthorAdapter;
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
         switch (helper.getItemViewType()){
@@ -70,7 +73,7 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
                 }
 
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
                 }
 
                 break;

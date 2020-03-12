@@ -287,4 +287,12 @@ dependencies {
 
 
     implementation 'com.jakewharton:disklrucache:2.0.2'
+
+
+    implementation 'top.zibin:Luban:1.1.8'
+
+    implementation 'id.zelory:compressor:3.0.0'
+
+    implementation 'com.github.nanchen2251:CompressHelper:1.0.5'
+
 }

@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -44,13 +45,15 @@ public class SchoolBookAdapter extends BaseQuickAdapter<SchoolBean.SchoolBook, B
         super(R.layout.school_book_item_1,data);
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     @Override
     protected void convert(BaseViewHolder helper,SchoolBean.SchoolBook item) {
         //Argument must not be null -- 控件不对
         if(!TextUtils.isEmpty(item.getImage_url())){
-            ImageUtil.load(mContext,item.getImage_url() + scaleSize,helper.getView(R.id.img_1));
+            ImageUtil.load(mContext,item.getImage_url() + Constant.scaleSize,helper.getView(R.id.img_1));
         }
 
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Bold.otf");

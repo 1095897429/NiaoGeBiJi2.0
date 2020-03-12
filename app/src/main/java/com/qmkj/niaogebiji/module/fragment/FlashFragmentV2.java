@@ -741,10 +741,10 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                         FlashOkBean tem = response.getReturn_data();
                         if("1".equals(tem.getIs_award())){
                             ToastUtils.setGravity(Gravity.CENTER,0,0);
-                            ToastUtils.showShort("快讯分享成功，给与5羽毛奖励");
+                            ToastUtils.showShort("分享成功，获得5羽毛");
                         }else{
                             ToastUtils.setGravity(Gravity.CENTER,0,0);
-                            ToastUtils.showShort("快讯分享成功");
+                            ToastUtils.showShort("分享成功");
                         }
                     }
                 });

@@ -1,11 +1,15 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Size;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -13,6 +17,7 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -20,8 +25,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.widget.PopupWindowCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +39,7 @@ import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.android.material.snackbar.Snackbar;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -57,6 +65,7 @@ import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
+import com.qmkj.niaogebiji.module.widget.AndroidBug5497Workaround;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.socks.library.KLog;
@@ -99,6 +108,12 @@ public class CooperationActivity extends BaseActivity {
     @BindView(R.id.ll_tool)
     LinearLayout ll_tool;
 
+    @BindView(R.id.rl_title)
+    RelativeLayout rl_title;
+
+    @BindView(R.id.rl_all)
+    RelativeLayout rl_all;
+
 
 
     @BindView(R.id.space_view)
@@ -110,7 +125,11 @@ public class CooperationActivity extends BaseActivity {
     @Override
     public void initFirstData() {
 
+        AndroidBug5497Workaround.assistActivity(this);
+
         toollist();
+
+        initLayout();
 
         url  = getIntent().getStringExtra("url");
 
@@ -198,23 +217,42 @@ public class CooperationActivity extends BaseActivity {
                 space_view.setVisibility(View.GONE);
             break;
             case R.id.icon_tool:
-
-//                CircleBean item = new CircleBean();
-//                showPopupWindow(item);
-//                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
-
-//                showToolDialog(mLists);
-
-                initLayout();
-
-
-                space_view.setVisibility(View.VISIBLE);
+                //初始化列表布局
 
                 ll_tool.setVisibility(View.VISIBLE);
-                //添加动画
-                Animation animation = AnimationUtils.loadAnimation(this, R.anim.enter_anim_from_top);
-                ll_tool.setAnimation(animation);
 
+
+                ObjectAnimator translationY =  ObjectAnimator.ofFloat(ll_tool,"translationY",
+                        -SizeUtils.dp2px(height + 44),0 );
+                AnimatorSet animatorSet = new AnimatorSet();  //组合动画
+                animatorSet.playTogether(translationY); //设置动画
+                animatorSet.setInterpolator(new LinearInterpolator());
+                animatorSet.setDuration(150);  //设置动画时间
+                animatorSet.start(); //启动
+                space_view.setVisibility(View.VISIBLE);
+
+                //动画的监听
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        KLog.d("tag","动画开始");
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        KLog.d("tag","动画结束");
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                        KLog.d("tag","动画取消");
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+                        KLog.d("tag","动画重复");
+                    }
+                });
 
                 break;
             case R.id.icon_cooperate_close:
@@ -234,42 +272,6 @@ public class CooperationActivity extends BaseActivity {
             default:
         }
     }
-
-    private void showPopupWindow(CircleBean circleBean) {
-        //加载布局
-        View inflate = LayoutInflater.from(mContext).inflate(R.layout.popupwindow_cooperate, null);
-        PopupWindow mPopupWindow = new PopupWindow(inflate);
-        TextView report = inflate.findViewById(R.id.report);
-        TextView share = inflate.findViewById(R.id.share);
-        //必须设置宽和高
-        mPopupWindow.setWidth(SizeUtils.dp2px(134f));
-        mPopupWindow.setHeight(SizeUtils.dp2px(88f));
-
-
-
-
-        //点击其他地方隐藏,false为无反应
-        mPopupWindow.setFocusable(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //以view的左下角为原点，xoff为正表示向x轴正方向偏移像素
-//            mPopupWindow.showAsDropDown(this.getWindow().getDecorView(), ScreenUtils.getScreenWidth() -SizeUtils.dp2px(16f * 2 + 64f + 134f), SizeUtils.dp2px(0f));
-            mPopupWindow.showAsDropDown(findViewById(R.id.rl_title),0,-SizeUtils.dp2px(44 + 25), Gravity.TOP);
-        }
-
-        mPopupWindow.setAnimationStyle(R.style.PopAnimation);
-
-
-        //对popupWindow进行显示
-        mPopupWindow.update();
-        //消失时将透明度设置回来
-        mPopupWindow.setOnDismissListener(() -> {
-            if (null != mContext) {
-                StringUtil.setBackgroundAlpha((Activity) mContext, 1f);
-            }
-        });
-
-    }
-
 
 
 
@@ -345,14 +347,35 @@ public class CooperationActivity extends BaseActivity {
                     public void onSuccess(HttpResponse<List<ToolBean>> response) {
                         KLog.d("tag","response " + response.getReturn_code());
                         mLists = response.getReturn_data();
-//                        setData();
+                        setData();
                     }
                 });
     }
 
+
+    int height;
     private void setData() {
         if(!mLists.isEmpty()){
+//            mLists = mLists.subList(0,9);
+
             mCooperateToolAdapter.setNewData(mLists);
+            //动态测量下布局的高度 大于12个意味着有第四行(3行 * 高度 + 半行)
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) rl_tools.getLayoutParams();
+
+            if(mLists.size() > 12){
+                height = 3 * SizeUtils.dp2px(72 + 6) + SizeUtils.dp2px(72 + 6) / 2;
+            }else{
+                int per = mLists.size() / 4;
+                int per11 = mLists.size() % 4;
+                if(per11 > 0){
+                    height = (per + 1) * SizeUtils.dp2px(72 + 6);
+                }else{
+                    height = per * SizeUtils.dp2px(72 + 6);
+                }
+            }
+
+            lp.height = height;
+            rl_tools.setLayoutParams(lp);
         }
     }
 
@@ -443,9 +466,8 @@ public class CooperationActivity extends BaseActivity {
                     bean1.setShareType("circle_link");
                     bean1.setLink(bean.getLink());
                     bean1.setImg(bean.getImg());
-
-                    bean1.setTitle("【找合作】" + bean.getTitle());
-                    bean1.setContent("【分类】" + bean.getSubTitle());
+                    bean1.setTitle(bean.getTitle());
+                    bean1.setContent(bean.getSubTitle());
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -456,13 +478,13 @@ public class CooperationActivity extends BaseActivity {
                     bean1.setLink(bean.getLink());
                     bean1.setImg(bean.getImg());
 
-                    bean1.setTitle("【找合作】" + bean.getTitle());
-                    bean1.setContent("【分类】" + bean.getSubTitle());
+                    bean1.setTitle( bean.getTitle());
+                    bean1.setContent( bean.getSubTitle());
 
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 2:
-                    String result = "【寻求合作】" + "\n" + bean.getTitle() + "\n" + bean.getLink();
+                    String result = bean.getTitle() + "\n" + bean.getLink();
                     StringUtil.copyLink(result);
                     break;
                 default:

@@ -34,6 +34,11 @@ import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.EncryptUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.IntentUtils;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.PhoneUtils;
+import com.blankj.utilcode.util.ProcessUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
@@ -131,7 +136,34 @@ public class SplashActivity extends BaseActivity {
         String s = "ABC";
         KLog.d("tag","截取的字符串是【利用fastSubstring】 " +  s.substring(1));
 
+        LogUtils.json("tag","LogUtils的json " + " 我是LogUtils的json");
+        LogUtils.eTag("tag","LogUtils的json " + " 我是LogUtils的json");
 
+
+        KLog.d("tag","网络是否连接 " +  NetworkUtils.isConnected());
+        NetworkUtils.isAvailableAsync(data -> KLog.d("tag","网络是否可用 " + data ));
+        KLog.d("tag","移动数据是否打开 " +  NetworkUtils.getMobileDataEnabled());
+        KLog.d("tag","wifi数据是否(可用)打开 " +  NetworkUtils.getWifiEnabled());
+        KLog.d("tag","wifi数据是否链接 " +  NetworkUtils.isWifiConnected());
+        KLog.d("tag","使用的是否是 移动数据 " +  NetworkUtils.isMobileData());
+        KLog.d("tag","移动数据是否打开 " +  NetworkUtils.getMobileDataEnabled());
+        KLog.d("tag","移动数据的运营商 " +  NetworkUtils.getNetworkOperatorName());
+
+        KLog.d("tag","网络的类型 " +  NetworkUtils.getNetworkType());
+        KLog.d("tag","ip地址(不使用 ipV4) " +  NetworkUtils.getIPAddress(false));
+        KLog.d("tag","ip地址(使用 ipV4) " +  NetworkUtils.getIPAddress(true));
+
+        KLog.d("tag","ip地址(wifi) " +  NetworkUtils.getIpAddressByWifi());
+        KLog.d("tag","广播ip地址() " +  NetworkUtils.getBroadcastIpAddress());
+
+        KLog.d("tag","设置是否是手机 " +  PhoneUtils.isPhone());
+//        KLog.d("tag","IMIE " +  PhoneUtils.getIMEI());
+//        KLog.d("tag","IMSI " +  PhoneUtils.getIMSI());
+        KLog.d("tag","SIM卡是否准备好 " +  PhoneUtils.isSimCardReady());
+        KLog.d("tag","SIM卡运营商 " +  PhoneUtils.getSimOperatorName());
+//        KLog.d("tag","手机状态信息 " +  PhoneUtils.getPhoneStatus());
+
+        KLog.d("tag","获取当前线程包名 " +  ProcessUtils.getForegroundProcessName());
     }
 
 

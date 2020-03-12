@@ -248,6 +248,17 @@ public class TopSelectActivity extends BaseActivity {
         if(mSearchTopicList != null && !mSearchTopicList.isEmpty()){
             mRecyclerView.setVisibility(View.VISIBLE);
             ll_empty.setVisibility(View.GONE);
+
+            //如果之前选中了，判断一下
+            if(!TextUtils.isEmpty(topicId)){
+                for (TopicBean bean : mSearchTopicList) {
+                    if(topicId.equals(bean.getId() + "")){
+                        bean.setIs_select(1);
+                        break;
+                    }
+                }
+            }
+
             mTopicSelectAdapter.setNewData(mSearchTopicList);
         }else{
             ll_empty.setVisibility(View.VISIBLE);

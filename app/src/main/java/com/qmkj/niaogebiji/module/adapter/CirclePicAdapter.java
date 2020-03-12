@@ -12,6 +12,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -42,7 +43,8 @@ public class CirclePicAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
         super(R.layout.item_circle_pic,data);
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
 
 
     @Override
@@ -72,7 +74,7 @@ public class CirclePicAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
         helper.getView(R.id.count).setLayoutParams(lp);
 
 
-        ImageUtil.loadByCache(mContext,item + scaleSize,helper.getView(R.id.pic));
+        ImageUtil.loadByCache(mContext,item + Constant.scaleSize,helper.getView(R.id.pic));
 
         TextView textView  =  helper.getView(R.id.count);
         if(2 == helper.getAdapterPosition()){

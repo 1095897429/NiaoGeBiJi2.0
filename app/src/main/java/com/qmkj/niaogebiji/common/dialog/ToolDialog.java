@@ -131,6 +131,7 @@ public class ToolDialog {
         dialog.setCanceledOnTouchOutside(false);
         // 调整dialog背景大小
         Window dialogWindow = dialog.getWindow();
+        dialogWindow.setWindowAnimations(R.anim.enter_anim_from_top);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.width = (int) (display.getWidth() * 1.0f);
         lp.height = SizeUtils.dp2px(430);

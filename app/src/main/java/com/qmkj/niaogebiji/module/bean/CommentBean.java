@@ -45,6 +45,17 @@ public class CommentBean extends BaseBean {
         //职位认证状态：1-已通过，0-未通过
         private String auth_status;
 
+        //每个textview的行数
+        private int lines;
+
+        public int getLines() {
+            return lines;
+        }
+
+        public void setLines(int lines) {
+            this.lines = lines;
+        }
+
         public String getAuth_status() {
             return auth_status;
         }

@@ -161,13 +161,17 @@ public class LoginActivity extends BaseActivity {
 
                     loginType = "phone";
 
-                    boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
-                    if (!isAgree) {
-                        showSecretDialog(this);
-                    } else {
-                        MobclickAgentUtils.onEvent(UmengEvent.wxlogin_phone_2_0_0);
-                        UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
-                    }
+//                    boolean isAgree = SPUtils.getInstance().getBoolean("isAgree");
+//                    if (!isAgree) {
+//                        showSecretDialog(this);
+//                    } else {
+//                        MobclickAgentUtils.onEvent(UmengEvent.wxlogin_phone_2_0_0);
+//                        UIHelper.toPhoneInputActivity(LoginActivity.this, "", loginType);
+//                    }
+
+                    OneKeyLoginManager.getInstance().setAuthThemeConfig(ConfigUtils.getUiConfig(LoginActivity.this,
+                            wechat_token, loginType));
+                    openLoginActivity();
 
                 });
     }

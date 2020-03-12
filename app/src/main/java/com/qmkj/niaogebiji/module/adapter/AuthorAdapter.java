@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -49,7 +50,9 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
         super(R.layout.author_item,data);
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     @Override
     protected void convert(BaseViewHolder helper, AuthorBean.Author item) {
@@ -96,7 +99,7 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
         //图片
         if(!TextUtils.isEmpty(item.getImg())){
-            ImageUtil.loadByDefaultHead(mContext,item.getImg() + scaleSize,helper.getView(R.id.head_icon));
+            ImageUtil.loadByDefaultHead(mContext,item.getImg() + Constant.scaleSize,helper.getView(R.id.head_icon));
 
         }
 

@@ -77,9 +77,11 @@ public class ConfigUtils {
 
         //线 需加上标题栏的高度
         View view = new View(context);
+        view.setVisibility(View.GONE);
         view.setBackgroundColor(context.getResources().getColor(R.color.divider_line));
         RelativeLayout.LayoutParams mLayoutParams3 = new RelativeLayout.LayoutParams(SizeUtils.dp2px(327.5f), AbScreenUtils.dp2px(context, 0.5f));
-        mLayoutParams3.setMargins(0, SizeUtils.dp2px(212 + 25), 0, 0);
+//        mLayoutParams3.setMargins(0, SizeUtils.dp2px(212 + 25), 0, 0);
+        mLayoutParams3.setMargins(0, SizeUtils.dp2px(270), 0, 0);
         mLayoutParams3.addRule(RelativeLayout.CENTER_HORIZONTAL);
         view.setLayoutParams(mLayoutParams3);
 
@@ -87,8 +89,10 @@ public class ConfigUtils {
         //切换手机号布局
         LayoutInflater inflater0 = LayoutInflater.from(context);
         RelativeLayout relativeLayout0 = (RelativeLayout) inflater0.inflate(R.layout.shanyan_demo_change_phone, null);
+        relativeLayout0.setVisibility(View.GONE);
         RelativeLayout.LayoutParams layoutParams0 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams0.setMargins(0, SizeUtils.dp2px(212 + 25 + 122), 0, 0);
+//        layoutParams0.setMargins(0, SizeUtils.dp2px(212 + 25 + 122), 0, 0);
+        layoutParams0.setMargins(0, 300, 0, 0);
         layoutParams0.addRule(RelativeLayout.CENTER_HORIZONTAL);
         relativeLayout0.setLayoutParams(layoutParams0);
 
@@ -113,8 +117,12 @@ public class ConfigUtils {
         RelativeLayout relativeLayout = (RelativeLayout) inflater1.inflate(R.layout.shanyan_demo_other_login_item, null);
         RelativeLayout.LayoutParams layoutParamsOther = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         layoutParamsOther.addRule(RelativeLayout.CENTER_HORIZONTAL);
-//        layoutParamsOther.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         relativeLayout.setLayoutParams(layoutParamsOther);
+        TextView back = relativeLayout.findViewById(R.id.changePhone);
+        back.setOnClickListener(v -> {
+            KLog.d("tag","切换手机号");
+            UIHelper.toPhoneInputActivity(context,wechat_token,loginType);
+        });
         otherLogin(context,relativeLayout);
 
 
@@ -146,7 +154,7 @@ public class ConfigUtils {
 
                 //授权页号码栏：
                 .setNumberColor(0xff333333)  //设置手机号码字体颜色
-                .setNumFieldOffsetY(200)    //设置号码栏相对于标题栏下边缘y偏移
+                .setNumFieldOffsetY(190)    //设置号码栏相对于标题栏下边缘y偏移
                 .setNumberSize(28)
                 .setNumFieldWidth(200)
 
@@ -154,7 +162,7 @@ public class ConfigUtils {
                 .setLogBtnText("本机号码一键登录")  //设置登录按钮文字
                 .setLogBtnTextColor(context.getResources().getColor(R.color.text_first_color))   //设置登录按钮文字颜色
                 .setLogBtnImgPath(logBtnImgPath)   //设置登录按钮图片
-                .setLogBtnOffsetY(275)   //设置登录按钮相对于标题栏下边缘y偏移
+                .setLogBtnOffsetY(255)   //设置登录按钮相对于标题栏下边缘y偏移
                 .setLogBtnTextSize(17)
                 .setLogBtnWidth(200)
                 .setLogBtnHeight(56)
@@ -193,9 +201,9 @@ public class ConfigUtils {
                 })
                 .addCustomView(relativeLayout, false, false, null)
                 //标题栏下划线，可以不写
-                .addCustomView(view, false, false, null)
+                .addCustomView(view, false, true, null)
                 //切换手机号
-                .addCustomView(relativeLayout0, false, false, null)
+                .addCustomView(relativeLayout0, false, true, null)
                 //设置loading样式
                 .setLoadingView(view_dialog)//设置自定义loading布局
 

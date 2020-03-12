@@ -17,6 +17,7 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -132,28 +133,30 @@ public class CircleSearchAdapter extends BaseMultiItemQuickAdapter<MultiCircleNe
 
 
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     private void setImageStatus(BaseViewHolder helper,List<String> imgs) {
         int size = imgs.size();
         if(size < 3){
             if(1 == size){
-                ImageUtil.load(mContext,imgs.get(0) + scaleSize,helper.getView(R.id.one_img_imgs));
+                ImageUtil.load(mContext,imgs.get(0) + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
                 helper.setVisible(R.id.one_img_imgs,true);
                 helper.setVisible(R.id.two_img_imgs,false);
                 helper.setVisible(R.id.three_img_imgs,false);
             }
             if(2 == size){
-                ImageUtil.load(mContext,imgs.get(0) + scaleSize,helper.getView(R.id.one_img_imgs));
-                ImageUtil.load(mContext,imgs.get(1) + scaleSize,helper.getView(R.id.two_img_imgs));
+                ImageUtil.load(mContext,imgs.get(0) + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                ImageUtil.load(mContext,imgs.get(1) + Constant.scaleSize,helper.getView(R.id.two_img_imgs));
                 helper.setVisible(R.id.one_img_imgs,true);
                 helper.setVisible(R.id.two_img_imgs,true);
                 helper.setVisible(R.id.three_img_imgs,false);
             }
         }else{
-            ImageUtil.load(mContext,imgs.get(0) + scaleSize,helper.getView(R.id.one_img_imgs));
-            ImageUtil.load(mContext,imgs.get(1) + scaleSize,helper.getView(R.id.two_img_imgs));
-            ImageUtil.load(mContext,imgs.get(2) + scaleSize,helper.getView(R.id.three_img_imgs));
+            ImageUtil.load(mContext,imgs.get(0) + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+            ImageUtil.load(mContext,imgs.get(1) + Constant.scaleSize,helper.getView(R.id.two_img_imgs));
+            ImageUtil.load(mContext,imgs.get(2) + Constant.scaleSize,helper.getView(R.id.three_img_imgs));
             helper.setVisible(R.id.one_img_imgs,true);
             helper.setVisible(R.id.two_img_imgs,true);
             helper.setVisible(R.id.three_img_imgs,true);

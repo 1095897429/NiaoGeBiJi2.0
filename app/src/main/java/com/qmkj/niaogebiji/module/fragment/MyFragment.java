@@ -357,7 +357,7 @@ public class MyFragment extends BaseLazyFragment {
 
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
 
     private void setUserInfo() {
         if(null != mUserInfo){
@@ -454,8 +454,9 @@ public class MyFragment extends BaseLazyFragment {
 
                     name_vertify_no.setOnClickListener(v ->{
                         ToastUtils.showShort("去认证h5界面");
-                        String rul = "http://192.168.14.41:8080/certificatecenter";
-                        UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),rul);
+//                        String rul = "http://192.168.14.41:8080/certificatecenter";
+
+                        UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),StringUtil.getLink("certificatecenter"));
                     });
 
                 }
@@ -471,7 +472,7 @@ public class MyFragment extends BaseLazyFragment {
                 toVip.setVisibility(View.VISIBLE);
             }
 
-            ImageUtil.loadByDefaultHead(mContext,mUserInfo.getAvatar() + scaleSize,head_icon);
+            ImageUtil.loadByDefaultHead(mContext,mUserInfo.getAvatar() + Constant.scaleSize,head_icon);
 
 //            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.bg_flash);
 //            Bitmap res = ImageUtils.addTextWatermark(bitmap,"靓仔",16,getResources().getColor(R.color.text_first_color),10,10);
@@ -576,7 +577,12 @@ public class MyFragment extends BaseLazyFragment {
                     UIHelper.toFeatherctivity(getActivity());
                     break;
                 case 5:
-                    ToastUtils.showShort("去认证界面");
+//                    ToastUtils.showShort("去认证h5界面");
+//                    String rul = "http://192.168.14.41:8080/certificatecenter";
+//                    UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),rul);
+
+                    UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),StringUtil.getLink("certificatecenter"));
+
                     break;
                 case 6:
                     MobclickAgentUtils.onEvent(UmengEvent.i_invite_2_0_0);

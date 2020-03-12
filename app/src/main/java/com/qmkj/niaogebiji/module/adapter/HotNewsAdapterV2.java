@@ -11,6 +11,7 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -43,7 +44,9 @@ public class HotNewsAdapterV2 extends BaseMultiItemQuickAdapter<MultiNewsBean, B
         addItemType(LONG_IMG_TYPE,R.layout.hot_news_item_long);
     }
 
-    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/thumbnail/300x";
+//    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
 
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
@@ -105,20 +108,20 @@ public class HotNewsAdapterV2 extends BaseMultiItemQuickAdapter<MultiNewsBean, B
         switch (helper.getItemViewType()) {
             case RIGHT_IMG_TYPE:
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
                 }
                 break;
             case THREE_IMG_TYPE:
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.one_img_imgs));
-                    ImageUtil.load(mContext,bean.getPic2() + scaleSize,helper.getView(R.id.two_img_imgs));
-                    ImageUtil.load(mContext,bean.getPic3() + scaleSize,helper.getView(R.id.three_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic2() + Constant.scaleSize,helper.getView(R.id.two_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic3() + Constant.scaleSize,helper.getView(R.id.three_img_imgs));
                 }
 
                 break;
             case LONG_IMG_TYPE:
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + scaleSize,helper.getView(R.id.long_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.long_img_imgs));
                 }
                 break;
                 default:

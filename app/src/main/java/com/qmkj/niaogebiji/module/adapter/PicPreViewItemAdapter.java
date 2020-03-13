@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -139,25 +140,16 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
 
     }
 
-    private void diskCache(String url){
-        String key=hashKeyFormUrl(url);
-        try {
-            DiskLruCache.Editor editor= mDiskLruCache.edit(key);
-            if(editor!=null){
-                OutputStream outputStream=editor.newOutputStream(0);
-                if(downloadUrlToStream(url,outputStream,0)){
-                    editor.commit();
-                }else{
-                    editor.abort();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     Bitmap temp;
-    private boolean downloadUrlToStream(String urlString, OutputStream outputStream,int position) {
+
+    //下载文件的长度
+    private int contentLength;
+    //当前进度
+    private int progress;
+    //之前的进度
+    private int oldProgress;
+
+    private boolean downloadUrlToStream(String urlString, OutputStream outputStream, int position,final ProgressBar progressBar, final TextView pic_look) {
         HttpURLConnection urlConnection = null;
         BufferedOutputStream out = null;
         BufferedInputStream in = null;
@@ -167,17 +159,38 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
 
             temp = BitmapFactory.decodeStream(in);
 
+            contentLength = urlConnection.getContentLength();
+
             in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
             out = new BufferedOutputStream(outputStream, 8 * 1024);
-            int b;
-            while ((b = in.read()) != -1) {
-                out.write(b);
-            }
 
+            int count = 0;
+            byte [] bytes = new byte[8* 1024];
+            int len;
+            while ((len = in.read(bytes)) != -1) {
+                out.write(bytes,0,len);
+//                count += len;
+//                progress = (int) (count * 100L / contentLength);
+//                //如果进度与之前进度相等，这不更新，如果更新太频繁，造成界面卡顿
+//                if(oldProgress != progress){
+//                    progressBar.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            progressBar.setProgress(progress);
+//                            pic_look.setText(progress + "%");
+//                        }
+//                    });
+//                }
+//                oldProgress = progress;
+            }
             return true;
         } catch (final IOException e) {
             e.printStackTrace();
         } finally {
+
+//            progressBar.setVisibility(View.GONE);
+//            progressBar.setProgress(0);
+//            pic_look.setVisibility(View.GONE);
 
             if(temp != null ){
                 BitmapCache.getInstance().addBitmapToMemoryCache(hashKeyFormUrl(urlString),temp);
@@ -230,12 +243,21 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
     @Override
     protected void convert(BaseViewHolder helper, PicBean item) {
 
+
+//        KLog.d("tag","展示的图片缩略路径是 " + item.getScalePic());
+//        KLog.d("tag","展示的图片原始路径是 " + item.getPic());
+
+
         final PhotoView photoView = helper.getView(R.id.photoView);
         final SubsamplingScaleImageView scaleImageView = helper.getView(R.id.sub_imageview);
         final TextView pic_look = helper.getView(R.id.pic_look);
+        final ProgressBar progressBar = helper.getView(R.id.progressBar);
 
 
         pic_look.setOnClickListener(v -> mExecutorService.submit(() -> {
+
+//            progressBar.setVisibility(View.VISIBLE);
+
             //图片的路径 -- 转移 -- 创建Editor
             String imgUrl = item.getPic();
             String key = hashKeyFormUrl(imgUrl);
@@ -243,7 +265,7 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
                 DiskLruCache.Editor editor = mDiskLruCache.edit(key);
                 if (editor != null) {
                     OutputStream outputStream = editor.newOutputStream(0);
-                     if (downloadUrlToStream(imgUrl, outputStream,helper.getAdapterPosition())) {
+                     if (downloadUrlToStream(imgUrl, outputStream,helper.getAdapterPosition(),progressBar,pic_look)) {
                         editor.commit();
                     } else {
                         editor.abort();
@@ -289,6 +311,7 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
                 mRequestManager.load(item.getScalePic())
                         .dontAnimate()
                         .dontTransform()
+                        .placeholder(R.mipmap.img_loading)
                         .into(new SimpleTarget<Drawable>() {
                             @SuppressLint("CheckResult")
                             @Override
@@ -301,6 +324,7 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
                                     scaleImageView.setVisibility(View.VISIBLE);
                                     scaleImageView.setMaxScale(10.0F);
                                     mRequestManager.load(item.getScalePic() )
+                                            .placeholder(R.mipmap.img_loading)
                                             .downloadOnly(new SimpleTarget<File>() {
                                                 @Override
                                                 public void onResourceReady(@NonNull File resource, @Nullable Transition<? super File> transition) {

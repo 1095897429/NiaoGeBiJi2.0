@@ -63,6 +63,7 @@ public class ModifyUserInfoActivity extends BaseActivity {
         return R.layout.activity_modify_userinfo;
     }
 
+
     @Override
     protected void initView() {
 
@@ -73,81 +74,66 @@ public class ModifyUserInfoActivity extends BaseActivity {
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
 
             tv_title.setText("昵称");
+            et_input.setHint("请输入昵称");
+
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入昵称");
             }
-
         }else if("profession".equals(type)){
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("职业");
-
+            et_input.setHint("请输入职业");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入职业");
             }
         }else if("profile".equals(type)){
             tv_title.setText("简介");
-
+            et_input.setHint("请输入简介");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入简介");
             }
         }else if("company".equals(type)){
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("公司");
-
+            et_input.setHint("请输入公司名称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入公司名称");
             }
         }else if("company_old".equals(type)){
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("前公司");
-
+            et_input.setHint("请输入前公司名称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入前公司名称");
             }
         }else if("profession_old".equals(type)){
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("前职位");
-
+            et_input.setHint("请输入前职位名称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入前职位名称");
             }
         }else if("profession_other".equals(type)){
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("目前从事");
-
+            et_input.setHint("请输入目前从事名称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入目前从事名称");
             }
         }else if("school_name".equals(type)){
             et_input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
             tv_title.setText("学校");
-
+            et_input.setHint("请输入学校名称");
             if(!TextUtils.isEmpty(content)){
                 et_input.setText(content);
                 setStatus(true);
-            }else{
-                et_input.setHint("请输入学校名称");
             }
         }
 

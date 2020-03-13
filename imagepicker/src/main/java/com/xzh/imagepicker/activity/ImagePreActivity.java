@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.xzh.imagepicker.R;
 import com.xzh.imagepicker.adapter.ImagePreThumbAdapter;
 import com.xzh.imagepicker.adapter.ImagePreViewAdapter;
@@ -25,6 +26,7 @@ import com.xzh.imagepicker.manager.SelectionManager;
 import com.xzh.imagepicker.utils.DataUtil;
 import com.xzh.imagepicker.view.HackyViewPager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,6 +158,16 @@ public class ImagePreActivity extends AppCompatActivity {
         mLlPreSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO 获取图片路径
+                String path = mMediaFileList.get(mViewPager.getCurrentItem()).getPath();
+                File file = new File(path);
+                long size = file.length();
+                Log.e("tag","文件的大小 " + size);
+                if (size > 20 * 1024 * 1024) {
+                    ToastUtils.showShort("选择的图片不能超过20M");
+                    return;
+                }
+
                 boolean addSuccess = SelectionManager.getInstance().addImageToSelectList(mMediaFileList.get(mViewPager.getCurrentItem()));
                 if (addSuccess) {
                     MediaFile mediaFile = mMediaFileList.get(mViewPager.getCurrentItem());

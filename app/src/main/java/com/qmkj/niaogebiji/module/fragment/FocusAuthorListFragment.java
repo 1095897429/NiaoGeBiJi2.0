@@ -22,6 +22,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.event.UpdateCollctionListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -30,6 +31,8 @@ import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +68,10 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
         return actionItemFragment;
     }
 
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -277,4 +284,16 @@ public class FocusAuthorListFragment extends BaseLazyFragment {
     }
 
 
-}
+    /** 点击关注，取关回调此方法 */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateCollctionListEvent(UpdateCollctionListEvent event) {
+        //更新某条数据 在集合中找到
+        if (null != this) {
+            myFollowList();
+        }
+    }
+
+
+
+
+    }

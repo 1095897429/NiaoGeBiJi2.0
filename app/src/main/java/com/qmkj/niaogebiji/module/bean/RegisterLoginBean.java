@@ -103,6 +103,17 @@ public class RegisterLoginBean extends BaseBean {
         //职位状态：1-在职，2-离职，3-自由职业，4-学生
         private String position_status;
 
+        //是否为作者：0-否，1-是
+        private String is_author;
+
+        public String getIs_author() {
+            return is_author;
+        }
+
+        public void setIs_author(String is_author) {
+            this.is_author = is_author;
+        }
+
         public String getPosition_status() {
             return position_status;
         }

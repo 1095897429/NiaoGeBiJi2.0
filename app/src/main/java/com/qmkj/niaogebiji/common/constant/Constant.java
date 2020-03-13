@@ -67,4 +67,33 @@ public class Constant {
 
     public static final String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
 
+
+//    public static final String scaleSize_big_20 = "?auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -50,6 +50,7 @@ import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
 import com.qmkj.niaogebiji.module.bean.NewsItemBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.event.ShowTopAuthorEvent;
 import com.qmkj.niaogebiji.module.event.ShowTopTitleEvent;
@@ -595,6 +596,9 @@ public class AuthorDetailActivity extends BaseActivity {
     }
 
 
+    private String uid;
+
+
 
     private void followAuthor() {
         Map<String,String> map = new HashMap<>();
@@ -617,11 +621,13 @@ public class AuthorDetailActivity extends BaseActivity {
                             part_small_already_focus.setVisibility(View.GONE);
                         }else{
                             mAuthorDetail.setIs_follow(1);
-
                             focus.setVisibility(View.GONE);
                             part_small_focus.setVisibility(View.GONE);
                             focus_aleady.setVisibility(View.VISIBLE);
                             part_small_already_focus.setVisibility(View.VISIBLE);
+
+                            ToastUtils.showShort("关注成功，关注作者的文章已加入关注列表");
+
                         }
 
                         //带有authorId的事件 -- 没有调用接口时，手动的判断可以

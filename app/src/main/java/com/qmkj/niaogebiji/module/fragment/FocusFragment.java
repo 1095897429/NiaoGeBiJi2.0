@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
+import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -25,12 +29,14 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
@@ -158,6 +164,7 @@ public class FocusFragment extends BaseLazyFragment {
 
     }
 
+
     private void initEvent() {
         mFocusAdapter.setAuthorCancleListener(position -> showCancelFocusDialog(position));
 
@@ -165,7 +172,7 @@ public class FocusFragment extends BaseLazyFragment {
 
             //TODO 2.19 原生
             String id =  mAuther_lists.get(position).getId();
-            String uid =  mAuther_lists.get(position).getUid();
+            uid =  mAuther_lists.get(position).getUid();
 //            UIHelper.toAuthorDetailActivity(getActivity(),id);
 
 
@@ -223,7 +230,6 @@ public class FocusFragment extends BaseLazyFragment {
                 mFocusAdapter.loadMoreEnd();
             }
          },mRecyclerView);
-
 
     }
 
@@ -468,10 +474,108 @@ public class FocusFragment extends BaseLazyFragment {
             iosAlertDialog.show();
         }else{
             focus_type = "1";
-            followAuthor();
+
+
+
+
+
+            //TODO  判断是否关联作者，如果关联，走关注流程 0未关注
+            uid =  mAuthor.getUid();
+            KLog.d("tag","author_uid " + uid);
+            if(uid.equals("0")){
+                followAuthor();
+            }else{
+                RegisterLoginBean.UserInfo user = StringUtil.getUserInfoBean();
+                if(TextUtils.isEmpty(user.getCompany_name()) &&
+                        TextUtils.isEmpty(user.getPosition()) ){
+                    showProfessionAuthenNo();
+                    return;
+                }
+
+                //认证过了直接去打招呼界面
+                if("1".equals(user.getAuth_email_status()) || "1".equals(user.getAuth_card_status())){
+                    UIHelper.toHelloMakeActivity(getActivity());
+                    (getActivity()).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                }else{
+                    showProfessionAuthen();
+                }
+            }
         }
 
     }
+
+
+    //下方的方法从单独的activity 移动到这里
+    public void showProfessionAuthenNo(){
+        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(getActivity()).builder();
+        iosAlertDialog.setTitle("完善信息后，被关注几率将提升100%");
+        iosAlertDialog.setPositiveButton("让大佬注意你，立即完善", v -> {
+            UIHelper.toUserInfoModifyActivity(getActivity());
+        }).setNegativeButton("下次再说", v -> {
+            //TODO 这里不能用getActivty调用，不然去Activity 了
+            Intent intent = new Intent(getActivity(), HelloMakeActivity.class);
+            startActivityForResult(intent,100);
+            (getActivity()).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+        }).setMsg("你还未完善信息！").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    public void showProfessionAuthen(){
+        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(getActivity()).builder();
+        iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
+            //和外面的认证一样
+
+            UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(), StringUtil.getLink("certificatecenter"));
+
+        }).setNegativeButton("下次再说", v -> {
+
+            Intent intent = new Intent(getActivity(), HelloMakeActivity.class);
+            startActivityForResult(intent,100);
+
+            (getActivity()).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+        }).setMsg("你还未职业认证！").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 100){
+            if(data != null){
+                message = data.getExtras().getString("message");
+                KLog.d("tqg","接收到的文字是 " + message);
+            }
+        }
+
+        followUser();
+    }
+
+    //打招呼返回的字段
+    private String message = "";
+    private String uid;
+    private void followUser() {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",uid);
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        //同时刷新下方的文章
+                        mAllList.clear();
+                        page = 1;
+                        getIndexArticle();
+                    }
+                });
+    }
+
 
     private void followAuthor() {
         Map<String,String> map = new HashMap<>();

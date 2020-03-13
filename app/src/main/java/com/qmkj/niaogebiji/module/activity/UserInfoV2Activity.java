@@ -323,6 +323,15 @@ public class UserInfoV2Activity extends BaseActivity {
                 break;
             case R.id.noFocus:
             case R.id.focus:
+
+                //TODO 3.14 未完善信息，弹框去完善信息(下次再说  去掉打招呼) ，如果完善了，走打招呼流程 【所有关注的地方都需要改】
+                if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
+                        TextUtils.isEmpty(mUserInfo.getPosition()) ){
+                    showProfessionAuthenNo();
+                    return;
+                }
+
+
                 //认证过了直接去打招呼界面
                 if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
                     UIHelper.toHelloMakeActivity(this);
@@ -396,21 +405,6 @@ public class UserInfoV2Activity extends BaseActivity {
                         medal_count.setText(temp.getFans_count() + "");
                     }
                 });
-    }
-
-
-
-
-    public void showProfessionAuthen(){
-        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(this).builder();
-        iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
-            //和外面的认证一样
-            posCertInit();
-        }).setNegativeButton("下次再说", v -> {
-            UIHelper.toHelloMakeActivity(this);
-            overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
-        }).setMsg("你还未职业认证！").setCanceledOnTouchOutside(false);
-        iosAlertDialog.show();
     }
 
 
@@ -824,7 +818,11 @@ public class UserInfoV2Activity extends BaseActivity {
                     name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
                             (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
 
-                    sender_not_verticity.setOnClickListener(v -> ToastUtils.showShort("去认证h5界面"));
+                    sender_not_verticity.setOnClickListener(v -> {
+//                        ToastUtils.showShort("去认证h5界面");
+                        UIHelper.toWebViewWithLayoutOnlyActivity(this,StringUtil.getLink("certificatecenter"));
+
+                    });
 
                 }
             }

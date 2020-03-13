@@ -5,15 +5,18 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -39,9 +42,17 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.PhoneUtils;
 import com.blankj.utilcode.util.ProcessUtils;
+import com.blankj.utilcode.util.SDCardUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.SnackbarUtils;
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
 import com.chuanglan.shanyan_sdk.listener.GetPhoneInfoListener;
 import com.huawei.android.hms.agent.HMSAgent;
@@ -61,6 +72,8 @@ import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.socks.library.KLog;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,6 +177,77 @@ public class SplashActivity extends BaseActivity {
 //        KLog.d("tag","手机状态信息 " +  PhoneUtils.getPhoneStatus());
 
         KLog.d("tag","获取当前线程包名 " +  ProcessUtils.getForegroundProcessName());
+
+        KLog.d("tag","屏幕的宽度 " +  ScreenUtils.getScreenWidth());
+        KLog.d("tag","屏幕的高度 " +  ScreenUtils.getScreenHeight());
+        KLog.d("tag","当前屏幕方向是否是竖屏 " +  ScreenUtils.isPortrait());
+
+        Bitmap bitmap = ScreenUtils.screenShot(this);
+        Bitmap bitmap1 = ScreenUtils.screenShot(this,true);
+        KLog.d("tag","屏幕的截屏对象是否为null " + bitmap  + " bitmap1 " + bitmap1);
+        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/laopai/";
+        String filePath = baseDir + "zl_jieping.jpg";
+        File dir = new File(baseDir);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File f = new File(filePath);
+        try {
+            f.createNewFile();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        boolean isSave = ImageUtils.save(bitmap,f, Bitmap.CompressFormat.JPEG);
+        KLog.d("tag","屏幕的截屏是否成功 " + isSave );
+
+        KLog.d("tag","是否锁屏 " + ScreenUtils.isScreenLock() );
+
+
+        KLog.d("tag","SD卡是否可用 " + SDCardUtils.isSDCardEnableByEnvironment());
+        KLog.d("tag","SD卡的存储目录 " + SDCardUtils.getSDCardPathByEnvironment());
+
+
+        KLog.d("tag","dp2px 1dp =  " + SizeUtils.dp2px(1)  + "px" );
+
+
+        String is = "";
+        String is2 = " ";
+        KLog.d("tag","字符串是否为null 或者 长度为0 " + StringUtils.isEmpty(is) );
+        KLog.d("tag","字符串是否为null 或者 为空格 " + StringUtils.isTrimEmpty(is2) );
+        String is3 = "ab";
+        String is4 = "AB";
+        KLog.d("tag","AB ab 字符串忽略大小写 " + StringUtils.equalsIgnoreCase(is3,is4) );
+        String is5 = "我爱中国";
+        KLog.d("tag","字符串反转 一个正序 一个倒叙 " + StringUtils.reverse(is5) );
+        KLog.d("tag","用半角字符显示 " + StringUtils.toDBC(is5) );
+        KLog.d("tag","用全角字符显示 " + StringUtils.toSBC(is5) );
+
+        long time = TimeUtils.getNowMills();
+        String sTime = " 2020-03-12 21:48:14";
+        KLog.d("tag","系统的毫秒数 " + time);
+        KLog.d("tag","当前时间戳的字符串格式 " + TimeUtils.getNowString());
+        KLog.d("tag","当前日期 " + TimeUtils.getNowDate());
+        KLog.d("tag","时间戳转字符串 【利用时间戳 创建 Date 对象，在利用DateFormat 去 format 日期 】 " + TimeUtils.millis2String(time));
+
+        KLog.d("tag","字符串转 时间戳 " + TimeUtils.string2Millis(sTime));
+        KLog.d("tag","字符串转 Date类型 " + TimeUtils.string2Date(sTime));
+
+        KLog.d("tag","是不是今天 【00:00 -- 00:00 + 86400000 判断时间戳是否在这个范围内】 " +  TimeUtils.isToday("1584022716018"));
+
+        KLog.d("tag","是否是闰年 【能被4整除并且不能被100整除 或者 能被400整除】" + TimeUtils.isLeapYear(time));
+
+        KLog.d("tag","时间戳对应的星期 " + TimeUtils.getChineseWeek(time));
+
+        KLog.d("tag","生肖  " + TimeUtils.getChineseZodiac(time));
+
+
+        KLog.d("tag","CUP的数量  " + Runtime.getRuntime().availableProcessors());
+
+        KLog.d("tag","线程池 ExecutorSercvice  " + "的创建方式有两种 1.一种是工厂方法 Executors.newFixedThreadPool  2.一种是直接创建 new ThreadPoolExecutor" );
+
+
+
     }
 
 

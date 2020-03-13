@@ -203,11 +203,11 @@ public class MyFragment extends BaseLazyFragment {
     protected void initView() {
 
 
-        getRecommendMallList();
+//        getRecommendMallList();
 
         initVertical();
 
-        getUserInfo();
+//        getUserInfo();
 
         initLayout();
         getData();
@@ -289,6 +289,7 @@ public class MyFragment extends BaseLazyFragment {
             mUserInfo = StringUtil.getUserInfoBean();
             if(null != mUserInfo){
                 getUserInfo();
+                getRecommendMallList();
             }
         }
     }
@@ -299,6 +300,7 @@ public class MyFragment extends BaseLazyFragment {
         mUserInfo = StringUtil.getUserInfoBean();
         if(null != mUserInfo){
             getUserInfo();
+            getRecommendMallList();
         }
     }
 
@@ -408,6 +410,17 @@ public class MyFragment extends BaseLazyFragment {
 //            }
 
 
+
+            KLog.d("tag","author_uid " + mUserInfo.getUid());
+            if("1".equals(mUserInfo.getIs_author())){
+                //关联
+                part_ll_acticle.setVisibility(View.VISIBLE);
+            }
+
+
+
+
+
             if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
                     TextUtils.isEmpty(mUserInfo.getPosition()) ){
                 name_vertify.setVisibility(View.VISIBLE);
@@ -453,10 +466,10 @@ public class MyFragment extends BaseLazyFragment {
                             (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
                     name_vertify_no.setOnClickListener(v ->{
-                        ToastUtils.showShort("去认证h5界面");
+//                        ToastUtils.showShort("去认证h5界面");
 //                        String rul = "http://192.168.14.41:8080/certificatecenter";
 
-                        UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),StringUtil.getLink("certificatecenter"));
+                        UIHelper.toWebViewAllActivity(getActivity(),StringUtil.getLink("certificatecenter"),"");
                     });
 
                 }

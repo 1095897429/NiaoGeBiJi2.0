@@ -182,8 +182,7 @@ dependencies {
     implementation 'com.github.zhaokaiqiang.klog:library:1.6.0'
     //微信
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
-    //工具类
-    implementation 'com.blankj:utilcodex:1.24.7'
+
 
     //rxjava2
     implementation 'io.reactivex.rxjava2:rxjava:2.0.8'

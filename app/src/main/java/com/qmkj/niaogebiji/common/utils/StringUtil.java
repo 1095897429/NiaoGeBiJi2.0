@@ -52,6 +52,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseBean;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
@@ -129,6 +130,7 @@ public class StringUtil {
     public static RegisterLoginBean.UserInfo getUserInfoBean() {
         synchronized (sInstanceSync) {
             if (userInfoBean == null) {
+                //存到sp中是json字符串
                 String string = SPUtils.getInstance().getString(Constant.USER_INFO);
                 if (!TextUtils.isEmpty(string)) {
                     Gson gson = new Gson();
@@ -599,11 +601,16 @@ public class StringUtil {
     }
 
 
+    //http://apph5.niaogebiji.com/articledetail/25797?src=app&iv=V0i5jf4DotpExl4e
+    //判断字符串是否为URL
     public static CircleBean addLinksData(CircleBean temp) {
         StringBuilder sb = new StringBuilder();
         ArrayList<String> pcLinks = new ArrayList<>();
         //在文本的基础上，再检查一下有无link
-        String regex = "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
+//        String regex = "((http|https|ftp|ftps):\\/\\/)?([a-zA-Z0-9-]+\\.){1,5}(com|cn|net|org|hk|tw)((\\/(\\w|-)+(\\.([a-zA-Z]+))?)+)?(\\/)?(\\??([\\.%:a-zA-Z0-9_-]+=[#\\.%:a-zA-Z0-9_-]+(&amp;)?)+)?";
+
+        String regex = "(((https|http)?://)?([a-z0-9]+[.])|(www.))"
+                + "\\w+[.|\\/]([a-z0-9]{0,})?[[.]([a-z0-9]{0,})]+((/[\\S&&[^,;\u4E00-\u9FA5]]+)+)?([.][a-z0-9]{0,}+|/?)";//设置正则表达式
         Matcher matcher = Pattern.compile(regex).matcher(temp.getBlog());
         while (matcher.find()) {
             int start = matcher.start();
@@ -629,8 +636,8 @@ public class StringUtil {
         while (matcher.find()){
             int start =  matcher.start();
             int end = matcher.end();
-//            KLog.d("tag","start " + start + " end " + end);
-//            KLog.d("tag"," matcher.group() " +  matcher.group());
+            KLog.d("tag","start " + start + " end " + end);
+            KLog.d("tag"," matcher.group() " +  matcher.group());
             sb.append(start).append(":").append(end).append(":");
             pcLinks.add(matcher.group());
         }
@@ -891,5 +898,40 @@ public class StringUtil {
         }
         return flag;
     }
+
+
+
+    public static int getCounts(String string) {
+        int count_abc=0, count_num=0, count_oth=0;
+        char[] chars = string.toCharArray();
+        //判断每个字符
+        for(int i = 0; i < chars.length; i++){
+            if((chars[i] >= 65 && chars[i] <= 90) || (chars[i] >= 97 && chars[i] <=122)){
+                count_abc++;
+            }else if(chars[i] >= 48 && chars[i] <= 57){
+                count_num++;
+            }else{
+                count_oth++;
+            }
+        }
+
+        int length = count_abc + count_num;
+
+        //1/2 = 0(1个数字) = 2 - 0 = 2      2/2 = 1(2个数字) = 3-1 = 2
+        length = length / 2;
+
+        int result = (string.length() - length);
+        KLog.d("tag","长度 " + result);
+
+
+        System.out.println("字母有：" + count_abc + "个");
+        System.out.println("数字有：" + count_num + "个");
+        System.out.println("其他的有：" + count_oth + "个");
+
+        return result;
+    }
+
+
+
 
 }

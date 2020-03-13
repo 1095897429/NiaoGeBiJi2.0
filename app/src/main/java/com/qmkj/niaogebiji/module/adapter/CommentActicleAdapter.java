@@ -74,6 +74,10 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
     private Limit2ReplyAdapter mLimit2ReplyAdapter;
     private List<CommentBean.FirstComment> mLimitComments;
 
+
+
+
+
     private void setTextLine(TextView msg, String content, CommentBean.FirstComment item){
         //获取文字的总宽度
         float text_with = msg.getPaint().measureText(content);
@@ -84,18 +88,18 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         //向上取整
         int lines = (int)Math.ceil(lines_float);
         item.setLines(lines);
-        KLog.d("tag","文本的长度是 " + content.length());
-        if(content.length() > 140 && lines > 5) {
+        KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
+        if(StringUtil.getCounts(content) > 140 && lines > 5) {
             KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
 
-            int perSize = (int) (content.length() / (lines * 1.0f));
+            int perSize = (int) (StringUtil.getCounts(content) / (lines * 1.0f));
             KLog.d("tag","每行显示的字数是 " + perSize);
 
         }else{
             KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
         }
 
-        if(content.length() > 140){
+        if(StringUtil.getCounts(content)> 140){
             item.setLines(5);
         }else{
             item.setLines(lines);
@@ -107,7 +111,7 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         //这里获取到绘制过程中的textview行数
         int lineCount = circleBean.getLines();
         //此处根据你想设置的最大行数进行判断
-        if (content.length() > 140 && lineCount >= 5) {
+        if (StringUtil.getCounts(content) > 140 && lineCount >= 5) {
             //4是索引 5是行数
 //            msg.setLines(5);
 //            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";

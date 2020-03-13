@@ -71,6 +71,7 @@ import com.qiniu.android.storage.UploadOptions;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -79,6 +80,7 @@ import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.service.SendService;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
@@ -1512,6 +1514,39 @@ public abstract class BaseActivity extends AppCompatActivity  {
         adapter.setEmptyView(emptyView);
         ((TextView)emptyView.findViewById(R.id.tv_empty)).setText("成为第一个评论者");
     }
+
+
+
+    //下方的方法从单独的activity 移动到这里
+    public void showProfessionAuthenNo(){
+        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(this).builder();
+        iosAlertDialog.setTitle("完善信息后，被关注几率将提升100%");
+        iosAlertDialog.setPositiveButton("让大佬注意你，立即完善", v -> {
+            UIHelper.toUserInfoModifyActivity(this);
+        }).setNegativeButton("下次再说", v -> {
+            UIHelper.toHelloMakeActivity(this);
+            overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+        }).setMsg("你还未完善信息！").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    public void showProfessionAuthen(){
+        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(this).builder();
+        iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
+            //和外面的认证一样
+
+            UIHelper.toWebViewWithLayoutOnlyActivity(this, StringUtil.getLink("certificatecenter"));
+
+        }).setNegativeButton("下次再说", v -> {
+            UIHelper.toHelloMakeActivity(this);
+            overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+        }).setMsg("你还未职业认证！").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+
 
 
 }

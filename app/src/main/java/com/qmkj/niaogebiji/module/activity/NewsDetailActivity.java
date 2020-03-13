@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -32,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -80,6 +82,7 @@ import com.qmkj.niaogebiji.module.bean.TestOkBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
+import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -854,14 +857,75 @@ public class NewsDetailActivity extends BaseActivity {
                 iosAlertDialog.show();
             }else if("0".equals(mNewsDetailBean.getIs_follow_author())){
                 MobclickAgentUtils.onEvent(UmengEvent.index_detail_follow_2_0_0);
-
-                name = "";
                 focus_type = "1";
-                followAuthor(focus_type);
+
+
+                //TODO  判断是否关联作者，如果关联，走关注流程 0未关注
+                uid = mNewsDetailBean.getAuthor_uid();
+                KLog.d("tag","author_uid " + uid);
+                if(uid.equals("0")){
+                    followAuthor(focus_type);
+                }else{
+                    RegisterLoginBean.UserInfo user = StringUtil.getUserInfoBean();
+                    if(TextUtils.isEmpty(user.getCompany_name()) &&
+                            TextUtils.isEmpty(user.getPosition()) ){
+                        showProfessionAuthenNo();
+                        return;
+                    }
+
+                    //认证过了直接去打招呼界面
+                    if("1".equals(user.getAuth_email_status()) || "1".equals(user.getAuth_card_status())){
+                        UIHelper.toHelloMakeActivity(this);
+                        overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                    }else{
+                        showProfessionAuthen();
+                    }
+                }
             }
 
         }
     }
+
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 100){
+            if(data != null){
+                message = data.getExtras().getString("message");
+                KLog.d("tqg","接收到的文字是 " + message);
+            }
+        }
+
+        followUser();
+    }
+
+    //打招呼返回的字段
+    private String message = "";
+    private String uid;
+    private void followUser() {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",uid);
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        mNewsDetailBean.setIs_follow_author("1");
+                        changeFocusStatus(mNewsDetailBean.getIs_follow_author());
+                    }
+                });
+    }
+
+
+
 
     private void followAuthor(String focus_type) {
         Map<String,String> map = new HashMap<>();
@@ -880,7 +944,7 @@ public class NewsDetailActivity extends BaseActivity {
                             mNewsDetailBean.setIs_follow_author("0");
                             changeFocusStatus(mNewsDetailBean.getIs_follow_author());
                         }else{
-                            ToastUtils.showShort("关注成功");
+                            ToastUtils.showShort("关注成功，关注作者的文章已加入关注列表");
                             mNewsDetailBean.setIs_follow_author("1");
                             changeFocusStatus(mNewsDetailBean.getIs_follow_author());
                         }

@@ -97,7 +97,7 @@ public class TranspondActivity extends BaseActivity {
     private String mString;
     private int textLength;
     //编辑字数限制
-    private int num = 140;
+    private int num = 500;
 
 
     private CircleBean mCircleBean;
@@ -106,6 +106,56 @@ public class TranspondActivity extends BaseActivity {
     protected int getLayoutId() {
         return R.layout.activity_transpond;
     }
+
+    public  void getCounts(String string) {
+        int count_abc=0, count_num=0, count_oth=0;
+        char[] chars = string.toCharArray();
+        //判断每个字符
+        for(int i = 0; i < chars.length; i++){
+            if((chars[i] >= 65 && chars[i] <= 90) || (chars[i] >= 97 && chars[i] <=122)){
+                count_abc++;
+            }else if(chars[i] >= 48 && chars[i] <= 57){
+                count_num++;
+            }else{
+                count_oth++;
+            }
+        }
+
+        int length = count_abc + count_num;
+
+        //1/2 = 0(1个数字) = 2 - 0 = 2      2/2 = 1(2个数字) = 3-1 = 2
+        length = length / 2;
+
+        int result = (mString.length() - length);
+        KLog.d("tag","长度 " + result);
+
+        listentext.setText(result + "");
+
+        if(result > num){
+            listentext.setTextColor(Color.parseColor("#FFFF5040"));
+            setSendStatus(false);
+        }else{
+            listentext.setTextColor(Color.parseColor("#818386"));
+            setSendStatus(true);
+        }
+
+
+        System.out.println("字母有：" + count_abc + "个");
+        System.out.println("数字有：" + count_num + "个");
+        System.out.println("其他的有：" + count_oth + "个");
+    }
+
+
+    private void setSendStatus(boolean sendStatus){
+        if(sendStatus){
+            send.setEnabled(true);
+            send.setTextColor(getResources().getColor(R.color.text_first_color));
+        }else{
+            send.setEnabled(false);
+            send.setTextColor(Color.parseColor("#CC818386"));
+        }
+    }
+
 
 
     @SuppressLint("CheckResult")
@@ -121,24 +171,35 @@ public class TranspondActivity extends BaseActivity {
                     KLog.d("tag", "accept: " + charSequence.toString() );
                     //　trim()是去掉首尾空格
                     mString = charSequence.toString().trim();
-                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
-                        send.setEnabled(true);
-                        send.setTextColor(getResources().getColor(R.color.text_first_color));
-                        //设置光标在最后
-                        mEditText.setSelection(charSequence.toString().length());
 
-                        if(mString.length() > num){
-                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
-                        }else{
-                            listentext.setTextColor(Color.parseColor("#818386"));
-                        }
+//                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
+//                        send.setEnabled(true);
+//                        send.setTextColor(getResources().getColor(R.color.text_first_color));
+//                        //设置光标在最后
+//                        mEditText.setSelection(charSequence.toString().length());
+//
+//                        if(mString.length() > num){
+//                            listentext.setTextColor(Color.parseColor("#FFFF5040"));
+//                        }else{
+//                            listentext.setTextColor(Color.parseColor("#818386"));
+//                        }
+//
+//                    }else{
+//                        send.setEnabled(false);
+//                        send.setTextColor(Color.parseColor("#CC818386"));
+//                    }
+
+
+                    if(!TextUtils.isEmpty(mString) && mString.length() != 0){
+                        //① 判断输入字数
+                        getCounts(mString);
 
                     }else{
-                        send.setEnabled(false);
-                        send.setTextColor(Color.parseColor("#CC818386"));
+                        setSendStatus(false);
+                        //手动赋值
+                        listentext.setText("0");
                     }
 
-                    listentext.setText(mString.length() + "");
                 });
 
         RxCompoundButton.checkedChanges(mCheckbox).subscribe(new Consumer<Boolean>() {

@@ -751,8 +751,10 @@ public class CircleMakeActivityV2 extends BaseActivity {
             BaseActivity.maxSendProgress = 100;
         }
 
-        if(!tempList.isEmpty()){
-            for (int i = 0; i < tempList.size(); i++) {
+
+
+//        if(!tempList.isEmpty()){
+//            for (int i = 0; i < tempList.size(); i++) {
                 //获取每个图片的大小
 //                String filename = tempList.get(i).substring(tempList.get(i).lastIndexOf("/") + 1);
 //                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/laopai/";
@@ -796,19 +798,19 @@ public class CircleMakeActivityV2 extends BaseActivity {
 
 
 
-                BitmapUtils.compressImageUpload(tempList.get(i));
-
-
-            }
-        }
-
-
-
-
-
-//        toSendBlogByService(mTempMsgBean);
+//                BitmapUtils.compressImageUpload(tempList.get(i));
 //
-//        sendPicToQiuNiu();
+//
+//            }
+//        }
+
+
+
+
+
+        toSendBlogByService(mTempMsgBean);
+
+        sendPicToQiuNiu();
     }
 
 

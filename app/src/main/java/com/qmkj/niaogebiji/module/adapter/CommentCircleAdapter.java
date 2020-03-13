@@ -2,7 +2,14 @@ package com.qmkj.niaogebiji.module.adapter;
 
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.StaticLayout;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
@@ -30,11 +39,13 @@ import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.BlogPriaseEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +80,210 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
 
     private Limit2ReplyCircleAdapter mLimit2ReplyCircleAdapter;
     private List<CommentCircleBean> mLimitComments;
+
+
+
+
+
+
+    private void setTextLine(TextView msg, String content, CommentCircleBean item){
+        //获取文字的总宽度
+        float text_with = msg.getPaint().measureText(content);
+        //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
+        int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+        //总长度除了textview长度，得到行数
+        float lines_float = text_with/tv_width;
+        //向上取整
+        int lines = (int)Math.ceil(lines_float);
+        item.setLines(lines);
+        KLog.d("tag","文本的长度是 " + content.length());
+        if(content.length() > 140 && lines > 5) {
+            KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
+
+            int perSize = (int) (content.length() / (lines * 1.0f));
+            KLog.d("tag","每行显示的字数是 " + perSize);
+
+            item.setPerSize(perSize);
+        }else{
+            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
+        }
+
+        if(content.length() > 140){
+            item.setLines(5);
+        }else{
+            item.setLines(lines);
+        }
+    }
+
+    private void setTextOrigin(TextView msg, String content,CommentCircleBean circleBean,int position){
+
+        //这里获取到绘制过程中的textview行数
+        int lineCount = circleBean.getLines();
+        //此处根据你想设置的最大行数进行判断
+        if (content.length() > 140 && lineCount >= 5) {
+            //4是索引 5是行数
+//            msg.setLines(5);
+//            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";
+
+//            if(msg.getLayout() != null){
+//                int lineEndIndex = msg.getLayout().getLineEnd(4); //设置第4行打省略号
+//                KLog.d("tag","lineEndIndex " + lineEndIndex);
+//            }
+
+
+            //取出第一行 0
+            //取出第五行 4
+            int width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2 + 32 + 8 );
+            Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+            float spacingMultiplier = 1;
+            float spacingAddition = 0;
+            boolean includePadding = false;
+
+            StaticLayout myStaticLayout = new StaticLayout(content, msg.getPaint(), width, alignment, spacingMultiplier, spacingAddition, includePadding);
+
+            String firstLineText =  content.substring(0,myStaticLayout.getLineEnd(4));
+            KLog.d("tag", "text1111  " + firstLineText);
+
+
+            //减 3 意味着 ...占一个字数
+            String text = firstLineText.substring(0,firstLineText.length() - 3) + "...全文";
+//            String text = firstLineText;
+
+
+            KLog.d("tag", "text  " + text);
+            SpannableString spannableString = new SpannableString(text);
+            spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+                @Override
+                public void onClick(View widget) {
+                    if(null != mToShowDialogListener){
+                        mToShowDialogListener.func(circleBean,position);
+                    }
+
+                }
+            };
+            spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            msg.setText(spannableString);
+            msg.setMovementMethod(LinkMovementMethod.getInstance());
+        }else{
+//            msg.setLines(lineCount);
+            msg.setText(content);
+        }
+
+
+//        //获取文字的总宽度
+//        float text_with = msg.getPaint().measureText(content);
+//        //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
+//        int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+//        //总长度除了textview长度，得到行数
+//        float lines_float = text_with/tv_width;
+//        //向上取整
+//        int lines = (int)Math.ceil(lines_float);
+
+//        if(lines > 5){
+//            KLog.d("tag","行数大于5行  " + " 行数是 " + lines);
+        //起过5行，取设置行数，收缩
+//            msg.setMaxLines(5);
+//            msg.setLines(5);
+//            final int lineEndIndex ;
+//            String text = content;
+//            if(msg.getLayout() != null){
+//                lineEndIndex= msg.getLayout().getLineEnd(4);
+//                text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+//            }
+//
+//            String text = content.substring(0, 140) +"...全文";
+//
+//            SpannableString spannableString = new SpannableString(text);
+//            ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//            spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//            NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+//                @Override
+//                public void onClick(View widget) {
+//                    UIHelper.toCommentDetailActivity(mContext,blog_id);
+//                }
+//            };
+//            spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            msg.setMovementMethod(LinkMovementMethod.getInstance());
+//            msg.setText(spannableString);
+//        } else{
+//            msg.setMaxLines(lines);
+//            msg.setLines(lines);
+//            KLog.d("tag","行数小于5行   " +  " 行数是 " + lines);
+//        }
+
+
+//        msg.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                int lineCount = msg.getLineCount();
+//                if(content.length() > 140 && lineCount > 5){
+//                   KLog.d("tag","行数大于5行");
+//                   msg.setLines(5);
+//                    final int lineEndIndex ;
+//                    String text = content;
+//                    if(msg.getLayout() != null){
+//                        lineEndIndex= msg.getLayout().getLineEnd(4);
+//                        text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+//                    }
+//
+//                    SpannableString spannableString = new SpannableString(text);
+//                    ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//                    spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//                    NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+//                        @Override
+//                        public void onClick(View widget) {
+//                            UIHelper.toCommentDetailActivity(mContext,blog_id);
+//                        }
+//                    };
+//                    spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    msg.setMovementMethod(LinkMovementMethod.getInstance());
+//                    msg.setText(spannableString);
+//                }else{
+//                    KLog.d("tag","行数小于5行");
+//                    msg.setLines(lineCount);
+//                }
+//                msg.getViewTreeObserver().removeOnPreDrawListener(this);
+//                return true;
+//            }
+//        });
+
+
+//        msg.post(() -> {
+//            KLog.d("tag"," msg.getLineCount() " +  msg.getLineCount());
+//            if(content.length() > 140 && msg.getLineCount() > 5){
+//                msg.setLines(5);
+//                final int lineEndIndex ;
+//                String text = content;
+//                if(msg.getLayout() != null){
+//                    lineEndIndex= msg.getLayout().getLineEnd(4);
+//                    text = msg.getText().subSequence(0, lineEndIndex-4) +"...全文";
+//                }
+//
+//                SpannableString spannableString = new SpannableString(text);
+//                ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
+//                spannableString.setSpan(fCs2,   text.length() - 3,   text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//
+//                NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+//                    @Override
+//                    public void onClick(View widget) {
+//                        UIHelper.toCommentDetailActivity(mContext,blog_id);
+//                    }
+//                };
+//                spannableString.setSpan(clickableSpan, text.length() - 3,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                msg.setMovementMethod(LinkMovementMethod.getInstance());
+//                msg.setText(spannableString);
+//
+//            }else{
+//                msg.setLines(msg.getLineCount());
+//            }
+//
+//        });
+    }
+
 
 
     @Override
@@ -165,7 +380,13 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         ImageUtil.load(mContext,userInfo.getAvatar(),helper.getView(R.id.head_icon));
 
         //评论文本
-        helper.setText(R.id.comment_text,item.getComment());
+//      helper.setText(R.id.comment_text,item.getComment());
+
+        TextView msg = helper.getView(R.id.comment_text);
+
+        setTextLine(msg,item.getComment(),item);
+
+        setTextOrigin(msg,item.getComment(),item,helper.getAdapterPosition());
 
         //发布时间
         if(StringUtil.checkNull(item.getCreated_at())){
@@ -174,7 +395,6 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         }else{
             helper.setText(R.id.time,"");
         }
-
 
         //点赞数
         TextView zan_num = helper.getView(R.id.zan_num);

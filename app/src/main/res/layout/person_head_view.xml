@@ -271,35 +271,34 @@
     android:visibility="gone"
     android:id="@+id/rl_author"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <RelativeLayout
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:paddingBottom="16dp"
         android:layout_width="match_parent"
-        android:layout_height="115dp">
+        android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_centerVertical="true"
             android:id="@+id/head_author_icon"
+            android:layout_marginTop="25dp"
             android:layout_width="59dp"
             android:layout_height="59dp" />
 
 
         <LinearLayout
-            android:layout_alignTop="@+id/head_author_icon"
+            android:layout_marginTop="25dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="30dp"
-            android:layout_toRightOf="@+id/head_author_icon"
+            android:layout_marginRight="20dp"
             android:layout_toLeftOf="@+id/part1111_3"
-            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/head_author_icon"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_marginTop="2dp"
                 android:gravity="center|left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -331,10 +330,12 @@
 
             <TextView
                 android:id="@+id/author_desc"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="2dp"
-                android:text="这里是三节课联合创始人老黄的专栏，介绍完了。"
+                android:text="这里是三节课联合创始人老黄的专栏，介绍完了。
+这里是三节课联合创始人老黄的专栏这里是三节课联合创始人老黄的专栏
+"
                 android:textColor="@color/text_second_color"
                 android:textSize="13sp" />
 
@@ -342,12 +343,13 @@
 
 
         <LinearLayout
+            android:layout_marginTop="46dp"
             android:gravity="center"
+            android:visibility="visible"
             android:layout_alignParentRight="true"
             android:id="@+id/part1111_3"
-            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView

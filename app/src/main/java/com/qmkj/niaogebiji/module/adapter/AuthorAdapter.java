@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
+import android.app.Activity;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
@@ -8,12 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.listener.ToActivityFocusListener;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -24,6 +27,8 @@ import com.qmkj.niaogebiji.module.activity.AuthorListActivity;
 import com.qmkj.niaogebiji.module.bean.ActionBean;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.UpdateCollctionListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
@@ -60,6 +65,9 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
         TextView chineseTv = helper.getView(R.id.author_name);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
+
+
+        uid = item.getUid();
 
         helper.setText(R.id.author_name,item.getName());
 
@@ -176,9 +184,20 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
             iosAlertDialog.show();
         }else{
             focus_type = "1";
-            followAuthor(position);
+
+            //TODO  判断是否关联作者，如果关联，走关注流程 0未关注
+            KLog.d("tag","author_uid " + uid);
+            if(uid.equals("0")){
+                followAuthor(position);
+            }else {
+                if(null != mToActivityFocusListener){
+                    mToActivityFocusListener.toAFocus(position);
+                }
+            }
         }
     }
+
+    private String uid;
 
 
 
@@ -199,10 +218,20 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
                     public void onSuccess(HttpResponse<IndexFocusBean> response) {
                         if(1 == mAuthor.getIs_follow()){
                             mAuthor.setIs_follow(0);
+
+
+                            if("MyCollectionListActivity".equals(mContext.getClass().getSimpleName())){
+                                EventBus.getDefault().post(new UpdateCollctionListEvent());
+                            }
+
                         }else{
                             mAuthor.setIs_follow(1);
+                            ToastUtils.showShort("关注成功");
+
                         }
+
                         notifyItemChanged(position);
+
 
                         //TODO 11.14 统一发送事件，更新主界面
                         EventBus.getDefault().post(new UpdateHomeListEvent());
@@ -213,5 +242,12 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
 
 
+
+
+    private ToActivityFocusListener mToActivityFocusListener;
+
+    public void setToActivityFocusListener(ToActivityFocusListener toActivityFocusListener) {
+        mToActivityFocusListener = toActivityFocusListener;
+    }
 }
 

@@ -1,8 +1,13 @@
 package com.qmkj.niaogebiji.module.activity;
 
+import android.content.Intent;
+import android.os.Build;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -10,12 +15,16 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
+import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.listener.ToActivityFocusListener;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -170,11 +179,70 @@ public class AuthorListActivity extends BaseActivity {
 //        });
 
 
-        //关注事件
-//        mAuthorAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-//            showCancelFocusDialog(position);
-//        });
+        //关注事件 -- 获取uid
+        mAuthorAdapter.setToActivityFocusListener(position -> {
+
+            mPosition = position;
+            uid = mAuthorAdapter.getData().get(position).getUid();
+
+            RegisterLoginBean.UserInfo user = StringUtil.getUserInfoBean();
+            if(TextUtils.isEmpty(user.getCompany_name()) &&
+                    TextUtils.isEmpty(user.getPosition()) ){
+                showProfessionAuthenNo();
+                return;
+            }
+
+            //认证过了直接去打招呼界面
+            if("1".equals(user.getAuth_email_status()) || "1".equals(user.getAuth_card_status())){
+                UIHelper.toHelloMakeActivity(AuthorListActivity.this);
+                overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+            }else{
+                showProfessionAuthen();
+            }
+        });
     }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 100){
+            if(data != null){
+                message = data.getExtras().getString("message");
+                KLog.d("tqg","接收到的文字是 " + message);
+            }
+        }
+
+        followUser();
+    }
+
+    //打招呼返回的字段
+    private String message = "";
+    private String uid;
+    private int mPosition;
+    private void followUser() {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",uid);
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+
+                        mAuthorAdapter.notifyItemChanged(mPosition);
+                    }
+                });
+    }
+
+
+
+
 
 
     private void initSamrtLayout() {

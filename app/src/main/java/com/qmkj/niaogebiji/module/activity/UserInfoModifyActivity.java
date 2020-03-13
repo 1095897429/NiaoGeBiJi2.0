@@ -94,8 +94,6 @@ public class UserInfoModifyActivity extends BaseActivity {
     @BindView(R.id.profile_info_text)
     TextView profile_info_text;
 
-
-
     @BindView(R.id.profession_status)
     LinearLayout profession_status;
 
@@ -250,7 +248,7 @@ public class UserInfoModifyActivity extends BaseActivity {
 
         hideView();
 
-        if("1".equals(stutus)){
+        if("1".equals(stutus) || TextUtils.isEmpty(stutus)){
             ll_company.setVisibility(View.VISIBLE);
             profession_name_now.setVisibility(View.VISIBLE);
         }else if("2".equals(stutus)){
@@ -586,11 +584,6 @@ public class UserInfoModifyActivity extends BaseActivity {
         }
 
 
-
-
-
-
-
     }
 
 
@@ -649,6 +642,7 @@ public class UserInfoModifyActivity extends BaseActivity {
     //当点击修改图片时，type设置1，然后修改后设置归位
     int type = 0;
 
+    //只是赋值不一样
     private void alterinfo() {
         Map<String,String> map = new HashMap<>();
         if(!TextUtils.isEmpty(mNickname)){
@@ -661,19 +655,31 @@ public class UserInfoModifyActivity extends BaseActivity {
         if("1".equals(mPositionStatus)){
             if(!TextUtils.isEmpty(mCompany)){
                 map.put("company_name",mCompany);
+            }else{
+                ToastUtils.showShort("请输入公司名称");
+                return;
             }
 
             if(!TextUtils.isEmpty(mPosition)){
                 map.put("position",mPosition);
+            }else{
+                ToastUtils.showShort("请输入职位名称");
+                return;
             }
         }else if("2".equals(mPositionStatus)){
             if(!TextUtils.isEmpty(mComanyOld)){
                 //TODO 在源头加，不然每个地方改的地方太多了：显示 前
                 map.put("company_name", "前" + mComanyOld);
+            }else{
+                ToastUtils.showShort("请输入前公司名称");
+                return;
             }
 
             if(!TextUtils.isEmpty(mPositionOld)){
                 map.put("position",mPositionOld);
+            }else{
+                ToastUtils.showShort("请输入前公司名称");
+                return;
             }
 
         }else if("3".equals(mPositionStatus)){
@@ -682,12 +688,18 @@ public class UserInfoModifyActivity extends BaseActivity {
 
             if(!TextUtils.isEmpty(mPositionOther)){
                 map.put("position",mPositionOther);
+            }else{
+                ToastUtils.showShort("请输入自由职业");
+                return;
             }
 
         }else if("4".equals(mPositionStatus)){
 
             if( !TextUtils.isEmpty(mSchool)){
                 map.put("company_name",mSchool);
+            }else{
+                ToastUtils.showShort("请输入学习名称");
+                return;
             }
             map.put("position","学生");
         }

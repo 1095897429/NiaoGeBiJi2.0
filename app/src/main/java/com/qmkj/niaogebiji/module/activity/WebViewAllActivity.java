@@ -604,6 +604,9 @@ public class WebViewAllActivity extends BaseActivity {
                         MessageLinkBean.MessageLink bean = javaBean.getParams();
                         String link =  bean.getLink();
                         UIHelper.toWebViewActivityWithOnStep(WebViewAllActivity.this,link);
+                    }if("toSubmitInfo".equals(result)){
+                        //去编辑界面
+                        UIHelper.toUserInfoModifyActivity(WebViewAllActivity.this);
                     }
 
                 } catch (JSONException e) {

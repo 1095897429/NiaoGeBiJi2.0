@@ -253,13 +253,13 @@ public class SendService extends Service {
 
         if(null != mediaFiles && !mediaFiles.isEmpty()){
             for (MediaFile fileBean  : mediaFiles) {
-                tempList.add(fileBean.getPath());
+                tempList.add(fileBean.getPath() );
             }
         }
 
         if(null != pathList && !pathList.isEmpty()){
             for (MediaFile fileBean  : pathList) {
-                tempList.add(fileBean.getPath());
+                tempList.add(fileBean.getPath() );
             }
         }
 

@@ -151,8 +151,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //向上取整
         int lines = (int)Math.ceil(lines_float);
         item.setLines(lines);
-        KLog.d("tag","文本的长度是 " + content.length());
-        if(content.length() > 140 && lines > 5) {
+        KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
+        if(StringUtil.getCounts(content) > 140  && lines > 5) {
             KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
 
             int perSize = (int) (content.length() / (lines * 1.0f));
@@ -163,7 +163,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
         }
 
-        if(content.length() > 140){
+        if(StringUtil.getCounts(content) > 140){
             item.setLines(5);
         }else{
             item.setLines(lines);
@@ -175,7 +175,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //这里获取到绘制过程中的textview行数
         int lineCount = circleBean.getLines();
         //此处根据你想设置的最大行数进行判断
-        if (content.length() > 140 && lineCount >= 5) {
+        if (StringUtil.getCounts(content) > 140 && lineCount >= 5) {
             //4是索引 5是行数
 //            msg.setLines(5);
 //            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";
@@ -491,6 +491,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 //            }else{
 //                trans_msg.setText(item.getP_blog().getBlog());
 //            }
+            setTextLine(trans_msg,item.getP_blog().getBlog(),item);
 
 
             if(item.getP_blog().getPcLinks() !=  null && !item.getP_blog().getPcLinks().isEmpty()){

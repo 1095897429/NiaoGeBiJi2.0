@@ -127,6 +127,7 @@
                           android:layout_height="50dp">
 
                           <TextView
+                              android:id="@+id/test_title"
                               android:layout_centerVertical="true"
                               android:text="测一测 得徽章 "
                               android:gravity="center"
@@ -175,6 +176,7 @@
                           android:layout_height="50dp">
 
                           <TextView
+                              android:id="@+id/school_title"
                               android:layout_centerVertical="true"
                               android:text="新课上架"
                               android:gravity="center"

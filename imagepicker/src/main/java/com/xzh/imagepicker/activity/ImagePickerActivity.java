@@ -3,8 +3,11 @@ package com.xzh.imagepicker.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -20,6 +23,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.xzh.imagepicker.ImagePicker;
 import com.xzh.imagepicker.R;
 import com.xzh.imagepicker.adapter.ImageFoldersAdapter;
@@ -37,6 +42,7 @@ import com.xzh.imagepicker.utils.DataUtil;
 import com.xzh.imagepicker.utils.PermissionUtil;
 import com.xzh.imagepicker.view.FolderPopupWindow;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -317,11 +323,47 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
         }
     }
 
+
+    public static int getBitmapSize(Bitmap bitmap) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {  //SInce API 19
+            return bitmap.getAllocationByteCount();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) { //Since API 12
+            return bitmap.getByteCount();
+        }
+
+        return bitmap.getRowBytes() * bitmap.getHeight();
+    }
+
     @Override
     public void onMediaCheck(View view, int position) {
         //执行选中/取消操作
         MediaFile mediaFile = mImagePickerAdapter.getMediaFile(position);
         if (mediaFile != null) {
+
+            //获取图片路径
+            String path = mediaFile.getPath();
+            File file = new File(path);
+            long size = file.length();
+            Log.e("tag","文件的大小 " + size);
+            if (size > 20 * 1024 * 1024) {
+                ToastUtils.showShort("选择的图片不能超过20M");
+                return;
+            }
+
+//            //转bitmap
+//            Bitmap bitmap = ImageUtils.getBitmap(path);
+//
+//            if(bitmap != null){
+//                int size = getBitmapSize(bitmap);
+//                Log.e("tag","图片的大小是 " + size + " 是否大于 20971520  (1M = 1024KB)" );
+//                if (size > 20 * 1024 * 1024) {
+//                    ToastUtils.showShort("选择的图片不能超过20M");
+//                    return;
+//                }
+//            }
+
+
             //将数据放到 mSelectImages 集合中
             boolean addSuccess = SelectionManager.getInstance().addImageToSelectList(mediaFile);
             if (addSuccess) {

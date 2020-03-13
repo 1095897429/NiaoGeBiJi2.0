@@ -1,5 +1,6 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.graphics.Paint;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -76,6 +77,15 @@ public class SchoolFragment extends BaseLazyFragment {
 
     @BindView(R.id.search_first)
     TextView search_first;
+
+
+    @BindView(R.id.test_title)
+    TextView test_title;
+
+
+    @BindView(R.id.school_title)
+    TextView school_title;
+
 
 
     SchoolBaiduAdapter mSchoolBaiduAdapter;
@@ -379,7 +389,8 @@ public class SchoolFragment extends BaseLazyFragment {
 
     @Override
     public void initData() {
-
+       test_title.getPaint().setFakeBoldText(true);
+       school_title.getPaint().setFakeBoldText(true);
     }
 
 

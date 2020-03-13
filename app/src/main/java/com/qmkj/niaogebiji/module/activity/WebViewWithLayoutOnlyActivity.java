@@ -42,7 +42,7 @@ import butterknife.BindView;
  * 描述:
  * 1.截取了web中的弹框显示
  */
-public class WebViewWithLayoutOnlyActivity extends BaseActivity {
+public class WebViewWithLayoutOnlyActivity extends WebViewAllActivity {
 
 
     @BindView(R.id.loading_dialog)
@@ -101,9 +101,10 @@ public class WebViewWithLayoutOnlyActivity extends BaseActivity {
 
         rl_common_title.setVisibility(View.VISIBLE);
 
-        iv_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        iv_back.setOnClickListener(v -> {
+            if ( webview.canGoBack()) {
+                webview.goBack();// 返回前一个页面
+            }else{
                 finish();
             }
         });

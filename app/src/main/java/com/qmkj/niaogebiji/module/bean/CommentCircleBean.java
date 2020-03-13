@@ -23,6 +23,28 @@ public class CommentCircleBean extends BaseBean {
     private String comment_class;
     //是否已点赞 1是 0否
     private int is_like;
+
+    //每个textview的行数
+    private int lines;
+    //每行显示的个数
+    private int perSize;
+
+    public int getLines() {
+        return lines;
+    }
+
+    public void setLines(int lines) {
+        this.lines = lines;
+    }
+
+    public int getPerSize() {
+        return perSize;
+    }
+
+    public void setPerSize(int perSize) {
+        this.perSize = perSize;
+    }
+
     private List<CommentCircleBean> comment_comment;
 
     public int getIs_like() {

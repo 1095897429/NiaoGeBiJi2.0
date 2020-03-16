@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -27,13 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -68,7 +65,6 @@ import com.qmkj.niaogebiji.module.adapter.TestLaunchItemAdapter;
 import com.qmkj.niaogebiji.module.bean.ActicleCommentHeadBean;
 import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
@@ -79,10 +75,8 @@ import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
-import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.event.ActicleShareEvent;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
-import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.RefreshActicleCommentEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -132,6 +126,11 @@ import io.reactivex.schedulers.Schedulers;
  * 0.评论的实体叫做CommentBean.FirstComment ，文章叫做NewsDetailBean
  * 1.构建FirstComment类型的临时变量 oneComment ，在每次点击列表item时重新赋值
  * 2.二级评论实体adapter中多实体
+ *
+ *
+ *
+ * 1.转发到圈子 -- 圈子发布页
+ * 2.转发到动态 -- 转发页
  */
 public class NewsDetailActivity extends BaseActivity {
 
@@ -859,7 +858,6 @@ public class NewsDetailActivity extends BaseActivity {
                 MobclickAgentUtils.onEvent(UmengEvent.index_detail_follow_2_0_0);
                 focus_type = "1";
 
-
                 //TODO  判断是否关联作者，如果关联，走关注流程 0未关注
                 uid = mNewsDetailBean.getAuthor_uid();
                 KLog.d("tag","author_uid " + uid);
@@ -1530,7 +1528,7 @@ public class NewsDetailActivity extends BaseActivity {
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
             imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);

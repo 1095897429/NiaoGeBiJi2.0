@@ -921,7 +921,7 @@ public class StringUtil {
         length = length / 2;
 
         int result = (string.length() - length);
-        KLog.d("tag","长度 " + result);
+//        KLog.d("tag","长度 " + result);
 
 
         System.out.println("字母有：" + count_abc + "个");

@@ -59,6 +59,7 @@
     <RelativeLayout
         android:id="@+id/rl_last_topic"
         android:visibility="gone"
+        android:background="@drawable/bg_corners_8_gray"
         android:layout_width="76dp"
         android:layout_height="100dp">
 
@@ -66,7 +67,7 @@
             android:id="@+id/flash_img1_last"
             android:layout_width="76dp"
             android:layout_height="100dp"
-            android:background="@color/bg_color"
+            android:src="@mipmap/bg_poster"
             android:scaleType="fitXY"
             app:round_as_circle="false"
             app:round_corner="8dp" />

@@ -178,7 +178,7 @@
                        </RelativeLayout>
 
                        <RelativeLayout
-                           android:layout_marginLeft="16dp"
+                           android:paddingLeft="8dp"
                            android:layout_width="match_parent"
                            android:layout_height="wrap_content">
 
@@ -216,7 +216,7 @@
 
                            <LinearLayout
                                android:gravity="center"
-                               android:layout_marginLeft="28dp"
+                               android:layout_marginLeft="22dp"
                                android:id="@+id/part_ll_acticle"
                                android:visibility="gone"
                                android:layout_toRightOf="@+id/part1111_1"
@@ -250,7 +250,7 @@
 
                            <LinearLayout
                                android:gravity="center"
-                               android:layout_marginLeft="28dp"
+                               android:layout_marginLeft="22dp"
                                android:id="@+id/part2222_2"
                                android:layout_toRightOf="@+id/part_ll_acticle"
                                android:layout_centerVertical="true"
@@ -284,7 +284,7 @@
                            <LinearLayout
                                android:id="@+id/part3333_3"
                                android:gravity="center"
-                               android:layout_marginLeft="28dp"
+                               android:layout_marginLeft="22dp"
                                android:layout_toRightOf="@+id/part2222_2"
                                android:layout_centerVertical="true"
                                android:layout_width="wrap_content"
@@ -323,7 +323,7 @@
                                android:gravity="center"
                                android:textSize="14sp"
                                android:textColor="#FFBA20"
-                               android:layout_width="79dp"
+                               android:layout_width="70dp"
                                android:layout_height="32dp" />
 
                        </RelativeLayout>

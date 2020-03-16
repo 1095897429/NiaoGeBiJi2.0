@@ -18,9 +18,8 @@
             app:elevation="0dp">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/collapsingLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:scrollbarStyle="insideInset"
                 android:background="@color/bg_color"
                 app:collapsedTitleGravity="center"
@@ -43,16 +42,15 @@
 
                 <!-- 话题信息 -->
                 <RelativeLayout
+                    android:id="@+id/collapsingLayout"
                     android:layout_marginTop="80dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
-
-
 
                         <RelativeLayout
                             android:padding="16dp"
@@ -69,6 +67,7 @@
                                 app:round_corner="8dp" />
 
                             <LinearLayout
+                                android:id="@+id/ll_part2"
                                 android:layout_marginLeft="10dp"
                                 android:layout_toRightOf="@+id/one_img"
                                 android:layout_width="match_parent"
@@ -94,15 +93,15 @@
                                     android:textSize="11sp"
                                     android:lineSpacingExtra="4dp"
                                     android:text="这里是找资源，找合作的话题专区，如果你有需求
-或者经验可以在此话题内发布求助或者观点，大家共同进步"
+或者经验可以在此话题内发布求助或者观点，大家共同进步这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content" />
 
                             </LinearLayout>
 
                             <RelativeLayout
+                                android:layout_below="@+id/ll_part2"
                                 android:layout_alignParentRight="true"
-                                android:layout_alignParentBottom="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content">
 

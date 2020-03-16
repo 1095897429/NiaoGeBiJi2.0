@@ -100,7 +100,7 @@ public class FeatherActivity  extends BaseActivity {
     TextView tv_title;
 
 
-
+    RegisterLoginBean.UserInfo userInfo;
 
     @Override
     protected int getLayoutId() {
@@ -257,13 +257,13 @@ public class FeatherActivity  extends BaseActivity {
 
 
 
-        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
+        userInfo = StringUtil.getUserInfoBean();
         if(null != userInfo && !TextUtils.isEmpty(userInfo.getPoint())){
             //自定义ttf
             Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/DIN-Black.otf");
             my_feather.setTypeface(typeface);
             //羽毛数
-            my_feather.setText(userInfo .getPoint());
+            my_feather.setText(userInfo.getPoint());
         }
 
 
@@ -438,7 +438,7 @@ public class FeatherActivity  extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventBus(FeatherEvent event){
-        my_feather.setText(event.num);
+        my_feather.setText(userInfo.getPoint() + event.num);
     }
 
     private void initSamrtLayout() {

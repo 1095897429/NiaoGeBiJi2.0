@@ -145,9 +145,9 @@
 
                             <ImageView
                                 android:id="@+id/zan_second_img_second"
-                                android:src="@mipmap/icon_flash_priase_28"
-                                android:layout_width="28dp"
-                                android:layout_height="28dp" />
+                                android:src="@mipmap/icon_flash_priase_28v2"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp" />
 
 
                             <TextView

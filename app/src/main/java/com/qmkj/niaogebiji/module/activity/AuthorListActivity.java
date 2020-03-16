@@ -25,6 +25,7 @@ import com.qmkj.niaogebiji.module.adapter.AuthorAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.CompleInfoEvent;
 import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -185,6 +186,7 @@ public class AuthorListActivity extends BaseActivity {
             mPosition = position;
             uid = mAuthorAdapter.getData().get(position).getUid();
 
+            //用户的个人信息
             RegisterLoginBean.UserInfo user = StringUtil.getUserInfoBean();
             if(TextUtils.isEmpty(user.getCompany_name()) &&
                     TextUtils.isEmpty(user.getPosition()) ){
@@ -345,10 +347,7 @@ public class AuthorListActivity extends BaseActivity {
             }
         }
 
-
     }
-
-
 
 
 }

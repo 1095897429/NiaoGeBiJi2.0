@@ -6,6 +6,8 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -21,6 +23,7 @@ import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.constant.Constant;
@@ -33,7 +36,10 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.qmkj.niaogebiji.module.event.ShowTopTopicEvent;
+import com.qmkj.niaogebiji.module.event.UpdapteListTopicEvent;
+import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
@@ -110,6 +116,8 @@ public class TopicDetailActivityV2 extends BaseActivity {
     @BindView(R.id.part_small_already_focus)
     TextView part_small_already_focus;
 
+    @BindView(R.id.collapsingLayout)
+    RelativeLayout collapsingLayout;
 
 
     @BindView(R.id.ll_empty)
@@ -135,8 +143,11 @@ public class TopicDetailActivityV2 extends BaseActivity {
     }
 
 
+    public static int solid_title_height;
     @Override
     public void initFirstData() {
+
+
 
         topicId = getIntent().getStringExtra("topicId");
 
@@ -150,6 +161,13 @@ public class TopicDetailActivityV2 extends BaseActivity {
         getListByTopicId();
 
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        KLog.d("tag","");
     }
 
     //默认是 热度优先
@@ -283,12 +301,6 @@ public class TopicDetailActivityV2 extends BaseActivity {
             ImageUtil.loadByDefaultHead(this,url,one_img);
         }
 
-//        String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
-//        Glide.with(this).load(url)
-//                .apply(bitmapTransform(new BlurTransformation(25)))
-//                .into(bg_img);
-//        ImageUtil.loadByDefaultHead(this,url,one_img);
-
         topic_titile.setText("#" + bean.getTitle());
 
         topic_desc.setText(bean.getDesc());
@@ -339,6 +351,19 @@ public class TopicDetailActivityV2 extends BaseActivity {
             CircleBean item = new CircleBean();
             showPopupWindow(item,send_choose);
             StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
+        });
+
+
+        collapsingLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                solid_title_height = collapsingLayout.getHeight();
+                KLog.d("tag ", "标题的固定高度为 " + (solid_title_height + SizeUtils.dp2px(80)));
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) bg_img.getLayoutParams();
+                lp.height = solid_title_height + SizeUtils.dp2px(80);
+                bg_img.setLayoutParams(lp);
+                collapsingLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
         });
     }
 
@@ -449,6 +474,9 @@ public class TopicDetailActivityV2 extends BaseActivity {
                         part_small_focus.setVisibility(View.GONE);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
 //                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+
+                        //列表中的数据
+                        EventBus.getDefault().post(new UpdapteListTopicEvent());
                     }
 
                     @Override
@@ -478,7 +506,9 @@ public class TopicDetailActivityV2 extends BaseActivity {
                         alreadFocus.setVisibility(View.GONE);
                         part_small_already_focus.setVisibility(View.GONE);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+
+                        //列表中的数据
+                        EventBus.getDefault().post(new UpdapteListTopicEvent());
                     }
 
                     @Override
@@ -579,6 +609,18 @@ public class TopicDetailActivityV2 extends BaseActivity {
         }
     }
 
+
+
+
+    /** --------------------------------- 发布帖子成功 更新 ---------------------------------v*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSendCircleEvent(SendOkCircleEvent event) {
+       if(this != null){
+           mAllList.clear();
+           page = 1;
+           getListByTopicId();
+       }
+    }
 
 
 }

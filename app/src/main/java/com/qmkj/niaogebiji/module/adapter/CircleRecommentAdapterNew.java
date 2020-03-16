@@ -1,9 +1,6 @@
 package com.qmkj.niaogebiji.module.adapter;
 
-import android.animation.Animator;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -13,7 +10,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -22,7 +18,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -35,7 +30,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -55,7 +49,6 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
-import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
@@ -151,8 +144,8 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         //向上取整
         int lines = (int)Math.ceil(lines_float);
         item.setLines(lines);
-        KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
-        if(StringUtil.getCounts(content) > 140  && lines > 5) {
+//        KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
+        if(StringUtil.getCounts(content) > 140  && lines >= 5) {
             KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
 
             int perSize = (int) (content.length() / (lines * 1.0f));
@@ -160,10 +153,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
             item.setPerSize(perSize);
         }else{
-            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
+//            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
         }
 
-        if(StringUtil.getCounts(content) > 140){
+        if(StringUtil.getCounts(content) > 140 && lines >= 5){
             item.setLines(5);
         }else{
             item.setLines(lines);
@@ -197,7 +190,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             StaticLayout myStaticLayout = new StaticLayout(content, msg.getPaint(), width, alignment, spacingMultiplier, spacingAddition, includePadding);
 
             String firstLineText =  content.substring(0,myStaticLayout.getLineEnd(4));
-            KLog.d("tag", "text1111  " + firstLineText);
+//            KLog.d("tag", "text1111  " + firstLineText);
 
 
             //减 3 意味着 ...占一个字数
@@ -205,7 +198,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 //            String text = firstLineText;
 
 
-            KLog.d("tag", "text  " + text);
+//            KLog.d("tag", "text  " + text);
             SpannableString spannableString = new SpannableString(text);
             spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -850,6 +843,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         sb.append("回复 ").append(name).append(":").append(item.getBlog().trim());
 
         int authorNamelength = name.length();
+        KLog.d("tag","sb.toString().trim() " + sb.toString().trim());
         spannableString = new SpannableString(sb.toString().trim());
         ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue));
         //中间有 回复 两个字 + 1个空格
@@ -864,6 +858,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         };
         spannableString.setSpan(clickableSpan, 3, 3 + authorNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         msg.setText(spannableString);
+
         msg.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
@@ -1033,11 +1028,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            zan_img.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
 
-            zan_img.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
 
         }

@@ -44,6 +44,18 @@ public class ExchageDetailBean extends BaseBean {
         private String name;
         private String mobile;
         private String address;
+
+        //提取码
+        private String code;
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
         public void setId(String id) {
             this.id = id;
         }

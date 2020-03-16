@@ -132,9 +132,10 @@
 
                                 <ImageView
                                     android:id="@+id/iamge_priase"
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:src="@mipmap/icon_flash_priase_28" />
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@mipmap/icon_flash_priase_28v2" />
 
                                 <com.airbnb.lottie.LottieAnimationView
                                     android:id="@+id/lottieAnimationView"

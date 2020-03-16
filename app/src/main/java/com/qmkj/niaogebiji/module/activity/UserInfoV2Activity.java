@@ -57,6 +57,7 @@ import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.bean.PersonUserInfoBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
+import com.qmkj.niaogebiji.module.event.CompleInfoEvent;
 import com.qmkj.niaogebiji.module.event.PeopleFocusEvent;
 import com.qmkj.niaogebiji.module.event.ProfessionEvent;
 import com.qmkj.niaogebiji.module.event.ShowSearchEvent;
@@ -96,6 +97,8 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2020-02-15
  * 描述:用户信息版本2
  * 1.实名认证通过展示图标 ，不通过不显示
+ * 1.自己界面：关注我的  我关注的
+ * 2.别人界面不变
  */
 public class UserInfoV2Activity extends BaseActivity {
 
@@ -113,6 +116,20 @@ public class UserInfoV2Activity extends BaseActivity {
 
     @BindView(R.id.iv_right_1)
     ImageView iv_right_1;
+
+    @BindView(R.id.other_view)
+    RelativeLayout other_view;
+
+    @BindView(R.id.self_view)
+    RelativeLayout self_view;
+
+    @BindView(R.id.fans_text)
+    TextView fans_text;
+
+    @BindView(R.id.follow_text)
+    TextView follow_text;
+
+
 
 
     @BindView(R.id.head_icon)
@@ -135,6 +152,14 @@ public class UserInfoV2Activity extends BaseActivity {
 
     @BindView(R.id.ll_badge)
     LinearLayout ll_badge;
+
+    @BindView(R.id.part1111_1)
+    LinearLayout part1111_1;
+
+    @BindView(R.id.part2222_2)
+    LinearLayout part2222_2;
+
+
 
 
     @BindView(R.id.sender_not_verticity)
@@ -243,21 +268,10 @@ public class UserInfoV2Activity extends BaseActivity {
 
 
     private void initUserInfo() {
-        myUid = StringUtil.getMyUid();
 
-        otherUid = getIntent().getStringExtra("uid");
-        KLog.d("tag","用户的uid是 " + otherUid );
-
-        //动态h5跳转过来，uid是不带的，那么肯定是自己
-        if(TextUtils.isEmpty(otherUid)){
-            otherUid = myUid;
-        }
-
-        mUserInfo = StringUtil.getUserInfoBean();
-        iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
-
-        getUserInfoV2();
     }
+
+
 
 
     private void setShowPart(){
@@ -297,19 +311,36 @@ public class UserInfoV2Activity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        myUid = StringUtil.getMyUid();
+
+        otherUid = getIntent().getStringExtra("uid");
+        KLog.d("tag","用户的uid是 " + otherUid );
+
+        //动态h5跳转过来，uid是不带的，那么肯定是自己
+        if(TextUtils.isEmpty(otherUid)){
+            otherUid = myUid;
+        }
+
+        //用户信息
+        mUserInfo = StringUtil.getUserInfoBean();
+        iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
+
+        getUserInfoV2();
     }
 
 
 
     @OnClick(
             {R.id.iv_back,
-            R.id.iv_text,
+            R.id.iv_text,R.id.self_right_2,
             R.id.iv_right,
             R.id.iv_right_1,
             R.id.noFocus,
             R.id.focus,
             R.id.alreadFocus,
-            R.id.already_focus
+            R.id.already_focus,
+            R.id.self_right_1,
 
     })
     public void clicks(View view){
@@ -324,7 +355,8 @@ public class UserInfoV2Activity extends BaseActivity {
             case R.id.noFocus:
             case R.id.focus:
 
-                //TODO 3.14 未完善信息，弹框去完善信息(下次再说  去掉打招呼) ，如果完善了，走打招呼流程 【所有关注的地方都需要改】
+                //TODO 3.14 未完善信息，弹框去完善信息(下次再说  去掉打招呼) ，如果完善了，走打招呼流程 【所有关注的地方都需要改】-- 重新获取
+                mUserInfo = StringUtil.getUserInfoBean();
                 if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
                         TextUtils.isEmpty(mUserInfo.getPosition()) ){
                     showProfessionAuthenNo();
@@ -342,6 +374,7 @@ public class UserInfoV2Activity extends BaseActivity {
                 break;
 
             case R.id.iv_text:
+            case R.id.self_right_2:
                 UIHelper.toUserInfoModifyActivity(this);
                 break;
             case R.id.iv_back:
@@ -353,6 +386,7 @@ public class UserInfoV2Activity extends BaseActivity {
                 setBackgroundAlpha(this, 0.6f);
                 break;
             case R.id.iv_right_1:
+            case R.id.self_right_1:
                 showShareDialog();
                 break;
             default:
@@ -401,8 +435,9 @@ public class UserInfoV2Activity extends BaseActivity {
                         EventBus.getDefault().post(new PeopleFocusEvent(otherUid, 0));
 
                         // - 1
-                        temp.setFans_count(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFans_count() - 1) + "")));
-                        medal_count.setText(temp.getFans_count() + "");
+                        getNum();
+//                        medal_count.setText(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFollow_count() - 1) + "")));
+//                        fans_num.setText(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFans_count() - 1) + "")));
                     }
                 });
     }
@@ -642,6 +677,15 @@ public class UserInfoV2Activity extends BaseActivity {
                 });
     }
 
+    private void setFans_Follow(){
+        String fansi =  StringUtil.formatPeopleNum((temp.getFans_count()) + "");
+        String follow =  StringUtil.formatPeopleNum((temp.getFollow_count()) + "");
+        KLog.d("tag","粉丝数 " + fansi );
+
+        fans_num.setText(fansi);
+        medal_count.setText(follow);
+    }
+
     private void setHeadData() {
         //设置逻辑
         initDifferLogic();
@@ -649,7 +693,16 @@ public class UserInfoV2Activity extends BaseActivity {
         head_icon.setOnClickListener(v -> {
             ArrayList<String> pics = new ArrayList<>();
             pics.add(temp.getAvatar());
-            UIHelper.toPicPreViewActivity(mContext,  pics,0,false);
+            //手动跳转
+            Intent intent = new Intent(mContext, PicPreviewActivityV2.class);
+            Bundle bundle = new Bundle ();
+            bundle.putStringArrayList ("imageList", pics);
+            bundle.putBoolean("fromNet",true);
+            bundle.putInt("index",0);
+            bundle.putString("from","userinfo");
+            bundle.putBoolean("isShowDown",true);
+            intent.putExtras(bundle);
+            mContext.startActivity(intent);
         });
 
 
@@ -657,7 +710,7 @@ public class UserInfoV2Activity extends BaseActivity {
             user_des.setText(temp.getPro_summary());
 
 
-            medal_count.setText(StringUtil.formatPeopleNum(temp.getFans_count() + ""));
+            setFans_Follow();
 
             ImageUtil.loadByDefaultHead(this,temp.getAvatar(),head_icon);
 
@@ -704,7 +757,7 @@ public class UserInfoV2Activity extends BaseActivity {
             author_desc.setText(bean.getSummary());
 
 
-            //影响数
+            //影响数 -- 这里没做判断，除以万即可
             if(!TextUtils.isEmpty(bean.getHit_count())){
                 long count = Long.parseLong(bean.getHit_count());
                 if(count < 10000 ){
@@ -716,7 +769,7 @@ public class UserInfoV2Activity extends BaseActivity {
                     BigDecimal b = new BigDecimal(num);
                     //2.转换后的数字四舍五入保留小数点后一位;
                     double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                    hint_num.setText( f1 + " w");
+                    hint_num.setText( f1 + " w+");
                 }
 
             }
@@ -735,9 +788,6 @@ public class UserInfoV2Activity extends BaseActivity {
 
         //设置下方的选择
         setShowPart();
-
-        fans_num.setText(temp.getFollow_count() + "");
-        medal_count.setText(temp.getFans_count() + "");
 
 //        if(已实名){ ok
 //                显示：已实名状态
@@ -762,9 +812,41 @@ public class UserInfoV2Activity extends BaseActivity {
         }
 
 
+        //TODO 3.16 新增
+        sender_name.setOnClickListener(v -> {
+            //身份认证通过 或者 职业认证通过
+            if("1".equals(temp.getAuth_idno_status()) || ("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status()))){
+                if(myUid.equals(otherUid)){
+                    UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("certificatecenter"),"");
+                }else{
+                    UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("certificatecenterothers/" + otherUid),"");
+                }
+            }
+        });
+
         //自己
         if(myUid.equals(otherUid)){
-            iv_text.setVisibility(View.VISIBLE);
+            self_view.setVisibility(View.VISIBLE);
+
+            fans_text.setText("关注我的");
+            follow_text.setText("我关注的");
+
+            part1111_1.setOnClickListener(v -> {
+                if(StringUtil.isFastClick()){
+                    return;
+                }
+
+                UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("myconcern"),"");
+            });
+
+
+            part2222_2.setOnClickListener(v -> {
+                if(StringUtil.isFastClick()){
+                    return;
+                }
+
+                UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("myconcern"),"");
+            });
 
             //TODO 伪代码
 //            if(没有认证显示去认证){ ok
@@ -787,9 +869,17 @@ public class UserInfoV2Activity extends BaseActivity {
 //                  显示：编辑信息
 //              }
 
+//            if(自己){
+//                点击已认证：去认证中心
+//            }else if(别人){
+//                点击已认证：去/certificatecenterothers/1
+//            }
+
 
             if(TextUtils.isEmpty(temp.getCompany_name()) &&
                     TextUtils.isEmpty(temp.getPosition()) ){
+                name_author_tag.setVisibility(View.GONE);
+                sender_not_verticity.setVisibility(View.GONE);
                 name_vertify.setVisibility(View.VISIBLE);
                 //下划线
                 name_vertify.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
@@ -805,10 +895,12 @@ public class UserInfoV2Activity extends BaseActivity {
             }else{
                 //认证是否通过 -- 这里不用改(不用显示用户名在认证的情况下)
                 if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                    name_vertify.setVisibility(View.GONE);
                     name_author_tag.setVisibility(View.VISIBLE);
                     name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
                             (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
                 }else{
+                    name_vertify.setVisibility(View.GONE);
                     name_author_tag.setVisibility(View.VISIBLE);
                     sender_not_verticity.setVisibility(View.VISIBLE);
                     //下划线
@@ -820,8 +912,9 @@ public class UserInfoV2Activity extends BaseActivity {
 
                     sender_not_verticity.setOnClickListener(v -> {
 //                        ToastUtils.showShort("去认证h5界面");
-                        UIHelper.toWebViewWithLayoutOnlyActivity(this,StringUtil.getLink("certificatecenter"));
 
+
+                        UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("certificatecenter"),"");
                     });
 
                 }
@@ -892,8 +985,7 @@ public class UserInfoV2Activity extends BaseActivity {
 
             //别人
             showStateByFollow(temp.getFollow_status());
-            iv_right.setVisibility(View.VISIBLE);
-            iv_right_1.setVisibility(View.VISIBLE);
+            other_view.setVisibility(View.VISIBLE);
             part3333.setVisibility(View.VISIBLE);
         }
     }
@@ -1081,6 +1173,30 @@ public class UserInfoV2Activity extends BaseActivity {
     }
 
 
+
+    //后台返回的数据
+    private void getNum() {
+        Map<String,String> map = new HashMap<>();
+        map.put("uid",otherUid);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfoV2(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<PersonUserInfoBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
+                        //重新更新temp实例
+                        temp = response.getReturn_data();
+                        if(temp != null){
+                            setFans_Follow();
+                        }
+                    }
+                });
+    }
+
+
     private String message = "";
     private void followUser() {
         Map<String,String> map = new HashMap<>();
@@ -1105,9 +1221,11 @@ public class UserInfoV2Activity extends BaseActivity {
                         EventBus.getDefault().post(new PeopleFocusEvent(otherUid,1));
 
                         //重新设置关注数 + 1
-                        temp.setFans_count(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFans_count() + 1) + "")));
-                        medal_count.setText(temp.getFans_count() + "");
+                        getNum();
 
+
+//                        medal_count.setText(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFollow_count() + 1) + "")));
+//                        fans_num.setText(Integer.parseInt(StringUtil.formatPeopleNum((temp.getFans_count() + 1) + "")));
 
                     }
                 });
@@ -1123,14 +1241,23 @@ public class UserInfoV2Activity extends BaseActivity {
             String statu = event.getData();
             if("1".equals(statu)){
                 part_small_head.setVisibility(View.VISIBLE);
-                part3333.setVisibility(View.GONE);
+//                part3333.setVisibility(View.GONE);
             }else{
                 part_small_head.setVisibility(View.GONE);
-                part3333.setVisibility(View.VISIBLE);
+//                part3333.setVisibility(View.VISIBLE);
             }
         }
     }
 
+
+
+    //完善用户信息
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onCompleInfoEvent(CompleInfoEvent event) {
+//        if (this != null) {
+//            getUserInfoV2();
+//        }
+//    }
 
 
 }

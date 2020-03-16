@@ -244,15 +244,10 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
     protected void convert(BaseViewHolder helper, PicBean item) {
 
 
-//        KLog.d("tag","展示的图片缩略路径是 " + item.getScalePic());
-//        KLog.d("tag","展示的图片原始路径是 " + item.getPic());
-
-
         final PhotoView photoView = helper.getView(R.id.photoView);
         final SubsamplingScaleImageView scaleImageView = helper.getView(R.id.sub_imageview);
         final TextView pic_look = helper.getView(R.id.pic_look);
         final ProgressBar progressBar = helper.getView(R.id.progressBar);
-
 
         pic_look.setOnClickListener(v -> mExecutorService.submit(() -> {
 

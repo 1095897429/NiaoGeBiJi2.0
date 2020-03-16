@@ -155,12 +155,11 @@
             android:layout_marginBottom="8dp"
             android:layout_gravity="center|left"
             android:id="@+id/content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:lineSpacingExtra="2dp"
             android:text=""
-            android:textIsSelectable="true"
             android:textColor="@color/text_first_color"
             android:textSize="16sp" />
 
@@ -574,7 +573,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:src="@mipmap/icon_flash_share"
+                android:src="@mipmap/icon_flash_sharev2"
                 android:layout_width="20dp"
                 android:layout_height="20dp" />
 
@@ -587,7 +586,7 @@
                 android:id="@+id/share"
                 android:text="分享"
                 android:textSize="13sp"
-                android:textColor="#555962"
+                android:textColor="#AAAEB3"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -605,7 +604,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:src="@mipmap/icon_flash_comment"
+                android:src="@mipmap/icon_flash_commentv2"
                 android:layout_width="20dp"
                 android:layout_height="20dp" />
 
@@ -618,7 +617,7 @@
                 android:id="@+id/comment"
                 android:text="评论"
                 android:textSize="13sp"
-                android:textColor="#555962"
+                android:textColor="#AAAEB3"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -643,9 +642,9 @@
                 <ImageView
                     android:visibility="visible"
                     android:id="@+id/image_circle_priase"
-                    android:src="@mipmap/icon_flash_priase_28"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp" />
+                    android:src="@mipmap/icon_flash_priase_28v2"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp" />
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottieAnimationView"
@@ -669,7 +668,7 @@
                 android:id="@+id/zan_num"
                 android:text="99+"
                 android:textSize="13sp"
-                android:textColor="@color/prise_no_select_color"
+                android:textColor="#AAAEB3"
                 android:gravity="center"
                 android:layout_width="25dp"
                 android:layout_height="match_parent" />

@@ -1,10 +1,13 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.SearchEvent;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,12 +16,15 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
+import com.qmkj.niaogebiji.common.dialog.ProfessionAutherDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.adapter.FocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.SearchAllAdapter;
 import com.qmkj.niaogebiji.module.bean.ActiclePeopleBean;
@@ -297,6 +303,8 @@ public class SearchAllFragment extends BaseLazyFragment {
             author.setName(authors.get(i).getAuthor());
             author.setImg(authors.get(i).getPic());
             author.setIs_follow(authors.get(i).getIs_follow());
+            author.setType(authors.get(i).getType());
+            author.setUid(authors.get(i).getUid());
             mT.add(author);
         }
 
@@ -418,7 +426,105 @@ public class SearchAllFragment extends BaseLazyFragment {
 
     }
 
+
+
+    //下方的方法从单独的activity 移动到这里
+    public void showProfessionAuthenNo(){
+        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(getActivity()).builder();
+        iosAlertDialog.setTitle("完善信息后，被关注几率将提升100%");
+        iosAlertDialog.setPositiveButton("让大佬注意你，立即完善", v -> {
+            UIHelper.toUserInfoModifyActivity(getActivity());
+        }).setNegativeButton("下次再说", v -> {
+            //TODO 这里不能用getActivty调用，不然去Activity 了
+            Intent intent = new Intent(getActivity(), HelloMakeActivity.class);
+            startActivityForResult(intent,100);
+            (getActivity()).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+        }).setMsg("你还未完善信息！").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    public void showProfessionAuthen(){
+        final ProfessionAutherDialog iosAlertDialog = new ProfessionAutherDialog(getActivity()).builder();
+        iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
+            //和外面的认证一样
+
+            UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
+        }).setNegativeButton("下次再说", v -> {
+
+            Intent intent = new Intent(getActivity(), HelloMakeActivity.class);
+            startActivityForResult(intent,100);
+
+            (getActivity()).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+        }).setMsg("你还未职业认证！").setCanceledOnTouchOutside(false);
+        iosAlertDialog.show();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 100){
+            if(data != null){
+                message = data.getExtras().getString("message");
+                KLog.d("tqg","接收到的文字是 " + message);
+            }
+        }
+
+        followUser();
+    }
+
+    //打招呼返回的字段
+    private String message = "";
+    private void followUser() {
+        Map<String,String> map = new HashMap<>();
+        map.put("follow_uid",uid);
+        map.put("message",message + "");
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().followUser(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        mSearchAllAdapter.notifyItemChanged(mPosition);
+                    }
+                });
+    }
+
+
+
+
+
+    private int mPosition;
+    private String uid;
     private void initEvent() {
+
+        //关注事件 -- 获取uid
+        mSearchAllAdapter.setToActivityFocusListenerUP((orignPosition, position) -> {
+
+            mPosition = position;
+            List<AuthorBean.Author> te = mSearchAllAdapter.getData().get(orignPosition).getAuthorBeanList();
+            uid = te.get(position).getUid();
+
+            RegisterLoginBean.UserInfo user = StringUtil.getUserInfoBean();
+            if (TextUtils.isEmpty(user.getCompany_name()) &&
+                    TextUtils.isEmpty(user.getPosition())) {
+                SearchAllFragment.this.showProfessionAuthenNo();
+                return;
+            }
+
+            //认证过了直接去打招呼界面
+            if ("1".equals(user.getAuth_email_status()) || "1".equals(user.getAuth_card_status())) {
+                UIHelper.toHelloMakeActivity(SearchAllFragment.this.getActivity());
+                (SearchAllFragment.this.getActivity()).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+            } else {
+                SearchAllFragment.this.showProfessionAuthen();
+            }
+        });
+
 
         mSearchAllAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             switch (view.getId()) {

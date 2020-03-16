@@ -74,13 +74,13 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
 
         }
 
-        //显示红点
-        TopicBean history = DBManager.getInstance().queryTopic(item.getTitle());
-        if(null != history){
+        //显示红点 -- 后台给的是秒时间戳
+        TopicBean history = DBManager.getInstance().queryTopic(item.getId());
+         if(null != history){
           long localTime =  history.getCurrentTime();
           long serverTime = 0;
           if(!TextUtils.isEmpty(item.getUpdated_at())){
-              serverTime = Long.parseLong(item.getUpdated_at());
+              serverTime = Long.parseLong(item.getUpdated_at()) * 1000L;
           }
           if(localTime < serverTime){
               helper.setVisible(R.id.red_point,true);
@@ -95,9 +95,11 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
             if(StringUtil.isFastClick()){
                 return;
             }
-            //记录点击时间，保存在本地
+            //记录点击时间，保存在本地 毫秒时间戳
             if(TextUtils.isEmpty(item.getType())){
-                insertToDb(item.getTitle());
+                insertToDb(item.getId());
+                //及时刷新
+                notifyItemChanged(helper.getAdapterPosition());
                 UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
             }else{
                 if("1".equals(item.getType())){
@@ -111,16 +113,15 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
 
 
 
-    public void insertToDb(String tag){
+    public void insertToDb(long tag){
         TopicBean history = DBManager.getInstance().queryTopic(tag);
         if(null != history){
-            history.setName(tag);
+            history.setId(tag);
             history.setCurrentTime(System.currentTimeMillis());
             DBManager.getInstance().updateTopic(history);
         }else{
             history = new TopicBean();
-            history.setId(DBManager.getInstance().queryTopic().size() + 1);
-            history.setName(tag);
+            history.setId(tag);
             history.setCurrentTime(System.currentTimeMillis());
             DBManager.getInstance().insertTopic(history);
         }

@@ -56,7 +56,9 @@ import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshCooperateEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragmentV2;
@@ -546,6 +548,9 @@ public class HomeActivityV2 extends BaseActivity {
                 //底部弹出Activity
 
                 if(null != mToolBean){
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
                     UIHelper.toCooperationActivity(this,mToolBean.getUrl());
                 }
 
@@ -790,6 +795,16 @@ public class HomeActivityV2 extends BaseActivity {
         }
     }
 
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void totoRefreshCooperateEvent(toRefreshCooperateEvent event){
+        if(this != null){
+            KLog.d("tag","我是HOme界面，请求找合作接口");
+            getRecommendTool();
+        }
+
+    }
 
 
 

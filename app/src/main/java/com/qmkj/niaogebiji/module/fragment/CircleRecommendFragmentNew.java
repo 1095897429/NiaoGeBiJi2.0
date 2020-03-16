@@ -151,6 +151,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                         if(mTopicBeanList != null && !mTopicBeanList.isEmpty()){
                             CircleBean tempBean = new CircleBean();
                             tempBean.setCircleType(CircleRecommentAdapterNew.FOCUS_TOPIC);
+                            //这样有刷新效果，不好，建议遍历
                             teList.add(1,tempBean);
                             //TODO 2.18 在第一次设置的时候，把关注话题set进去
                             mCircleRecommentAdapterNew.setNewData(teList);
@@ -158,6 +159,12 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
                             //通过set传值到adapter中
                             mCircleRecommentAdapterNew.setList(mTopicBeanList);
                         }
+
+                        //TODO 刷新遍历 3.16
+//                        if(mTopicBeanList != null && !mTopicBeanList.isEmpty()){
+//
+//                        }
+
 
                     }
 

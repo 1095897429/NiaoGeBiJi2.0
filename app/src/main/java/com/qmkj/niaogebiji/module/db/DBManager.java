@@ -186,9 +186,9 @@ public class DBManager {
         return list;
     }
 
-    public TopicBean queryTopic(String name){
+    public TopicBean queryTopic(Long topicId){
         TopicBeanDao topicBeanDao = daoSession.getTopicBeanDao();
-        QueryBuilder<TopicBean> qb = topicBeanDao.queryBuilder().where(TopicBeanDao.Properties.Name.eq(name));
+        QueryBuilder<TopicBean> qb = topicBeanDao.queryBuilder().where(TopicBeanDao.Properties.Id.eq(topicId));
         List<TopicBean> list = qb.list();
         if(null != list && !list.isEmpty()){
             return list.get(0);

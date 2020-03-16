@@ -1,6 +1,5 @@
 package com.qmkj.niaogebiji.module.adapter;
 
-import android.app.Activity;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
@@ -8,7 +7,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
@@ -23,10 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.TimeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
@@ -38,19 +34,12 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.bean.AuthorBean;
-import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
-import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
-import com.qmkj.niaogebiji.module.bean.FirstItemBean;
-import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +78,7 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         int lines = (int)Math.ceil(lines_float);
         item.setLines(lines);
         KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
-        if(StringUtil.getCounts(content) > 140 && lines > 5) {
+        if(StringUtil.getCounts(content) > 140 && lines >= 5) {
             KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
 
             int perSize = (int) (StringUtil.getCounts(content) / (lines * 1.0f));
@@ -99,7 +88,7 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
             KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
         }
 
-        if(StringUtil.getCounts(content)> 140){
+        if(StringUtil.getCounts(content)> 140 && lines >= 5){
             item.setLines(5);
         }else{
             item.setLines(lines);
@@ -330,10 +319,10 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
         }
     }

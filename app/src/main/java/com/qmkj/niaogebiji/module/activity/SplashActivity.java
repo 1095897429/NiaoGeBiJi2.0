@@ -247,7 +247,6 @@ public class SplashActivity extends BaseActivity {
         KLog.d("tag","线程池 ExecutorSercvice  " + "的创建方式有两种 1.一种是工厂方法 Executors.newFixedThreadPool  2.一种是直接创建 new ThreadPoolExecutor" );
 
 
-
     }
 
 

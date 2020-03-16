@@ -39,6 +39,7 @@ import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.event.ProDoneEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
+import com.qmkj.niaogebiji.module.event.toRefreshCooperateEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
@@ -446,7 +447,11 @@ public class FirstItemFragment extends BaseLazyFragment {
                 //更懂你
                 isPersonal();
 
+                //早报
                 EventBus.getDefault().post(new toRefreshMoringEvent());
+
+                //刷新主界面是否有找合作底部栏
+                EventBus.getDefault().post(new toRefreshCooperateEvent());
         });
 
         mRecyclerView.setOnTouchListener(

@@ -34,6 +34,7 @@ import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
 import com.qmkj.niaogebiji.module.bean.TopicAllBean;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.SearchCleanEvent;
+import com.qmkj.niaogebiji.module.event.UpdapteListTopicEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
 import com.qmkj.niaogebiji.module.fragment.TopicFocusFragment;
 import com.qmkj.niaogebiji.module.fragment.TopicSelectFragment;
@@ -169,9 +170,15 @@ public class TopicListActivity extends BaseActivity {
                         }
                     }
 
+                    @Override
+                    public void onNetFail(String msg) {
+
+                    }
                 });
     }
 
+
+    private String myTopicKey;
     @Override
     protected void initView() {
         //设置适配器
@@ -192,7 +199,7 @@ public class TopicListActivity extends BaseActivity {
                 KLog.d("tag","搜索内容:" + content);
 
 //                getData();
-
+                myTopicKey = content;
                 searchTopic(content);
 
             }
@@ -516,4 +523,17 @@ public class TopicListActivity extends BaseActivity {
             super.onBackPressed();
         }
     }
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdapteListTopicEvent(UpdapteListTopicEvent event) {
+        if(null != this){
+            searchTopic(myTopicKey);
+        }
+    }
+
+
+
+
 }

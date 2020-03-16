@@ -57,7 +57,7 @@
                                android:layout_height="wrap_content"
                                android:ellipsize="end"
                                android:lineSpacingExtra="2dp"
-                               android:text="小羽毛小羽毛小羽毛小羽毛小羽毛"
+                               android:text=""
                                android:textColor="@color/text_first_color"
                                android:textSize="22sp" />
                            
@@ -168,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
-                    android:text="@string/author_desc"
+                    android:text=""
                     android:textColor="@color/text_second_color"
                     android:textSize="13sp" />
 
@@ -203,6 +203,7 @@
                             android:layout_height="2dp" />
 
                         <TextView
+                            android:id="@+id/fans_text"
                             android:text="关注TA的"
                             android:textSize="11sp"
                             android:textColor="#AAAEB3"
@@ -239,6 +240,7 @@
                             android:layout_height="2dp" />
 
                         <TextView
+                            android:id="@+id/follow_text"
                             android:text="圈子被关注"
                             android:textSize="11sp"
                             android:layout_gravity="left"
@@ -252,6 +254,53 @@
                 </LinearLayout>
 
 
+                <LinearLayout
+                    android:layout_marginTop="16dp"
+                    android:visibility="visible"
+                    android:id="@+id/part3333"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:orientation="vertical">
+
+                    <!-- 未关注 -->
+                    <TextView
+                        android:id="@+id/noFocus"
+                        android:text="关注"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:background="@drawable/bg_corners_8_yellow"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <!-- 已关注 -->
+                    <TextView
+                        android:id="@+id/alreadFocus"
+                        android:text="已关注"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:background="@drawable/bg_corners_8_e358"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <!-- 他屏蔽你 -->
+                    <TextView
+                        android:id="@+id/himcloseme"
+                        android:text="TA屏蔽了你，不能关注"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:enabled="false"
+                        android:background="@drawable/bg_corners_12_selector_yellow"
+                        android:textColor="@color/text_first_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+
+                </LinearLayout>
 
 
 

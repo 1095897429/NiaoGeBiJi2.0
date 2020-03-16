@@ -101,6 +101,8 @@ public class MyFragment extends BaseLazyFragment {
     @BindView(R.id.read_time)
     TextView read_time;
 
+    @BindView(R.id.acticle_count)
+    TextView acticle_count;
 
     @BindView(R.id.medal_count)
     TextView medal_count;
@@ -215,6 +217,7 @@ public class MyFragment extends BaseLazyFragment {
         name.setTypeface(typeface);
         read_time.setTypeface(typeface);
         medal_count.setTypeface(typeface);
+        acticle_count.setTypeface(typeface);
         feather_count.setTypeface(typeface);
     }
 
@@ -403,7 +406,7 @@ public class MyFragment extends BaseLazyFragment {
 //                }
 //            }
 
-//            if(关联作者){
+//            if(关联作者){ ok
 //                显示：发布文章数
 //            }else{
 //                显示：隐藏布局
@@ -415,15 +418,15 @@ public class MyFragment extends BaseLazyFragment {
             if("1".equals(mUserInfo.getIs_author())){
                 //关联
                 part_ll_acticle.setVisibility(View.VISIBLE);
+                acticle_count.setText(mUserInfo.getAuthor_article_num());
             }
-
-
 
 
 
             if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
                     TextUtils.isEmpty(mUserInfo.getPosition()) ){
                 name_vertify.setVisibility(View.VISIBLE);
+                name_vertify_no.setVisibility(View.GONE);
                 name_author_tag.setVisibility(View.GONE);
                 name_vertify.setText("立即完善信息，建立人脉");
                 //下划线
@@ -444,6 +447,7 @@ public class MyFragment extends BaseLazyFragment {
                 if("1".equals(mUserInfo.getAuth_email_status()) || "1".equals(mUserInfo.getAuth_card_status())){
                     name_author_tag.setVisibility(View.VISIBLE);
                     name_vertify.setVisibility(View.GONE);
+                    name_vertify_no.setVisibility(View.GONE);
                     name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) + " " +
                             (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
@@ -469,7 +473,7 @@ public class MyFragment extends BaseLazyFragment {
 //                        ToastUtils.showShort("去认证h5界面");
 //                        String rul = "http://192.168.14.41:8080/certificatecenter";
 
-                        UIHelper.toWebViewAllActivity(getActivity(),StringUtil.getLink("certificatecenter"),"");
+                        UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
                     });
 
                 }
@@ -562,8 +566,9 @@ public class MyFragment extends BaseLazyFragment {
                 case 0:
 
                     MobclickAgentUtils.onEvent(UmengEvent.i_dynamic_2_0_0);
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myactivity"),"");
 
-                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
+//                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
                     break;
                 case 1:
 
@@ -594,7 +599,8 @@ public class MyFragment extends BaseLazyFragment {
 //                    String rul = "http://192.168.14.41:8080/certificatecenter";
 //                    UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),rul);
 
-                    UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),StringUtil.getLink("certificatecenter"));
+                    //这里涉及到返回上层， -- onLayout(重写了方法) -- webviewAll(js交互)
+                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
 
                     break;
                 case 6:

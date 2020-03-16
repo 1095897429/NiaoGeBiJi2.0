@@ -16,6 +16,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.listener.ToActivityFocusListener;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -257,6 +258,16 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
                 recyclerView.setAdapter(mAuthorAdapter);
 
+
+                //关注事件 -- 获取uid
+//                mAuthorAdapter.setToActivityFocusListener(position -> {
+//
+//                   if(mToActivityFocusListenerUP != null){
+//                       //第一个是列表中的位置，第二个是列表的列表的位置
+//                       mToActivityFocusListenerUP.toAFocus(helper.getAdapterPosition(),position);
+//                   }
+//                });
+
                 break;
 
             case  SEACHER_PEOPLE:
@@ -318,6 +329,14 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
 
 
 
+    private ToActivityFocusListenerUP mToActivityFocusListenerUP;
 
+    public void setToActivityFocusListenerUP(ToActivityFocusListenerUP toActivityFocusListenerUP) {
+        mToActivityFocusListenerUP = toActivityFocusListenerUP;
+    }
+
+    public interface ToActivityFocusListenerUP{
+        void toAFocus(int orignPosition,int position);
+    }
 
 }

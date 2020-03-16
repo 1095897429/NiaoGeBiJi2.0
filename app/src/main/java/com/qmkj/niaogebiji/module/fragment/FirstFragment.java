@@ -232,12 +232,12 @@ public class FirstFragment extends BaseLazyFragment {
                         StringUtil.setUserInfoBean(response.getReturn_data());
 
                         //今天是否签到了：1-已签到，0-未签到
-                        //TODO 这个调用在HomeActivity之前，导致还没有请求就获取了值，
-                        if("1".equals(mUserInfo.getSigned_today())){
-                            red_point.setVisibility(View.GONE);
-                        }else{
-                            red_point.setVisibility(View.VISIBLE);
-                        }
+                        //TODO 这个调用在HomeActivity之前，导致还没有请求就获取了值， 3.15号修改，不显示
+//                        if("1".equals(mUserInfo.getSigned_today())){
+//                            red_point.setVisibility(View.GONE);
+//                        }else{
+//                            red_point.setVisibility(View.VISIBLE);
+//                        }
 
                         setVipHidden();
                     }
@@ -688,8 +688,9 @@ public class FirstFragment extends BaseLazyFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void ontoRefreshMoringEvent(toRefreshMoringEvent event){
         if(getUserVisibleHint()){
-            KLog.d("tag","我是First界面，请求早报接口");
+            KLog.d("tag","我是First界面，请求早报接口 和 顶部工具");
             getTopPost();
+            toolindex();
         }
 
     }

@@ -45,7 +45,6 @@ import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import org.greenrobot.eventbus.EventBus;
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +107,7 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
             KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
         }
 
-        if(content.length() > 140){
+        if(content.length() > 140 && lines >= 5){
             item.setLines(5);
         }else{
             item.setLines(lines);
@@ -527,10 +526,10 @@ public class CommentCircleAdapter extends BaseQuickAdapter<CommentCircleBean, Ba
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
         }
     }

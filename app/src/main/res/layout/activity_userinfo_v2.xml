@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -82,26 +83,68 @@
         </LinearLayout>
 
 
-        <ImageView
-            android:id="@+id/iv_right_1"
-            android:layout_toLeftOf="@+id/iv_right"
-            android:layout_marginRight="10dp"
-            android:src="@mipmap/icon_test_detail_share"
-            android:tint="@color/black"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_centerVertical="true"
-            android:visibility="gone" />
 
-
-        <ImageView
-            android:id="@+id/iv_right"
-            android:src="@mipmap/icon_userinfo_other_1"
+        <RelativeLayout
+            android:id="@+id/other_view"
+            android:visibility="gone"
             android:layout_alignParentRight="true"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
             android:layout_centerVertical="true"
-            android:visibility="gone" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_right_1"
+                android:layout_toLeftOf="@+id/iv_right"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/icon_test_detail_share"
+                android:tint="@color/black"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:visibility="visible" />
+
+
+            <ImageView
+                android:id="@+id/iv_right"
+                android:src="@mipmap/icon_userinfo_other_1"
+                android:layout_alignParentRight="true"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:id="@+id/self_view"
+            android:visibility="gone"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/self_right_1"
+                android:layout_toLeftOf="@+id/self_right_2"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/icon_userinfo_self_1"
+                android:tint="@color/black"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:visibility="visible" />
+
+
+            <ImageView
+                android:id="@+id/self_right_2"
+                android:src="@mipmap/icon_userinfo_self_2"
+                android:layout_alignParentRight="true"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:visibility="visible" />
+
+        </RelativeLayout>
 
 
         <TextView
@@ -190,56 +233,57 @@
 
 
 
-    <LinearLayout
-        android:visibility="visible"
-        android:id="@+id/part3333"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <!-- 换了地方 -->
+    <!--<LinearLayout-->
+        <!--android:visibility="visible"-->
+        <!--android:id="@+id/part3333"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="@color/white"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical">-->
 
-        <!-- 未关注 -->
-        <TextView
-            android:layout_margin="16dp"
-            android:id="@+id/noFocus"
-            android:text="关注"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textSize="17sp"
-            android:background="@drawable/bg_corners_12_yellow"
-            android:textColor="@color/text_first_color"
-            android:layout_width="match_parent"
-            android:layout_height="50dp" />
+        <!--&lt;!&ndash; 未关注 &ndash;&gt;-->
+        <!--<TextView-->
+            <!--android:layout_margin="16dp"-->
+            <!--android:id="@+id/noFocus"-->
+            <!--android:text="关注"-->
+            <!--android:visibility="gone"-->
+            <!--android:gravity="center"-->
+            <!--android:textSize="17sp"-->
+            <!--android:background="@drawable/bg_corners_12_yellow"-->
+            <!--android:textColor="@color/text_first_color"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="50dp" />-->
 
-        <!-- 已关注 -->
-        <TextView
-            android:layout_margin="16dp"
-            android:id="@+id/alreadFocus"
-            android:text="已关注"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textSize="17sp"
-            android:background="@drawable/bg_corners_12_gray"
-            android:textColor="@color/text_first_color"
-            android:layout_width="match_parent"
-            android:layout_height="50dp" />
+        <!--&lt;!&ndash; 已关注 &ndash;&gt;-->
+        <!--<TextView-->
+            <!--android:layout_margin="16dp"-->
+            <!--android:id="@+id/alreadFocus"-->
+            <!--android:text="已关注"-->
+            <!--android:visibility="gone"-->
+            <!--android:gravity="center"-->
+            <!--android:textSize="17sp"-->
+            <!--android:background="@drawable/bg_corners_12_gray"-->
+            <!--android:textColor="@color/text_first_color"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="50dp" />-->
 
-        <!-- 他屏蔽你 -->
-        <TextView
-            android:layout_margin="16dp"
-            android:id="@+id/himcloseme"
-            android:text="TA屏蔽了你，不能关注"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textSize="17sp"
-            android:enabled="false"
-            android:background="@drawable/bg_corners_12_selector_yellow"
-            android:textColor="@color/text_first_color"
-            android:layout_width="match_parent"
-            android:layout_height="50dp" />
+        <!--&lt;!&ndash; 他屏蔽你 &ndash;&gt;-->
+        <!--<TextView-->
+            <!--android:layout_margin="16dp"-->
+            <!--android:id="@+id/himcloseme"-->
+            <!--android:text="TA屏蔽了你，不能关注"-->
+            <!--android:visibility="gone"-->
+            <!--android:gravity="center"-->
+            <!--android:textSize="17sp"-->
+            <!--android:enabled="false"-->
+            <!--android:background="@drawable/bg_corners_12_selector_yellow"-->
+            <!--android:textColor="@color/text_first_color"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="50dp" />-->
 
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
 </RelativeLayout>

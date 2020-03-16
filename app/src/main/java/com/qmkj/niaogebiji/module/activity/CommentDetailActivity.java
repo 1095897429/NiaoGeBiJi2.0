@@ -29,7 +29,6 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qmkj.niaogebiji.R;
@@ -629,7 +628,7 @@ public class CommentDetailActivity extends BaseActivity {
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            zan_img.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
             zan_img.setImageResource(R.mipmap.icon_flash_priase_select_28);
@@ -670,7 +669,7 @@ public class CommentDetailActivity extends BaseActivity {
 
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
             imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);

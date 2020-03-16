@@ -106,6 +106,17 @@ public class RegisterLoginBean extends BaseBean {
         //是否为作者：0-否，1-是
         private String is_author;
 
+        //文章发布数
+        private String author_article_num;
+
+        public String getAuthor_article_num() {
+            return author_article_num;
+        }
+
+        public void setAuthor_article_num(String author_article_num) {
+            this.author_article_num = author_article_num;
+        }
+
         public String getIs_author() {
             return is_author;
         }

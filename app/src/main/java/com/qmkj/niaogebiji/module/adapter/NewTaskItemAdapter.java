@@ -10,6 +10,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.module.bean.NewUserTaskBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.socks.library.KLog;
 
 import java.util.List;
 
@@ -46,6 +47,8 @@ public class NewTaskItemAdapter extends BaseQuickAdapter<NewUserTaskBean.NewTask
         Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/DIN-Medium.otf");
         ((TextView)helper.getView(R.id.dotask_text)).setTypeface(typeface);
 
+
+        KLog.d("tag",helper.getAdapterPosition() + "  状态是 " + item.getStatus());
         // 0-去完成，1-去领取(新人见面礼)，2-已领取
         if("0".equals(item.getStatus())){
             helper.setVisible(R.id.donetask,false);

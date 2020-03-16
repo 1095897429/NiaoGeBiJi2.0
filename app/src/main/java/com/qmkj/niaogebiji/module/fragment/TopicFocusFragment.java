@@ -2,6 +2,7 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicSelectAdapter;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
+import com.qmkj.niaogebiji.module.event.UpdapteListTopicEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -63,6 +65,7 @@ public class TopicFocusFragment extends BaseLazyFragment {
         newsItemFragment.setArguments(args);
         return newsItemFragment;
     }
+
 
     @Override
     protected int getLayoutId() {
@@ -131,6 +134,10 @@ public class TopicFocusFragment extends BaseLazyFragment {
                     @Override
                     public void onNetFail(String msg) {
                         hideWaitingDialog();
+                        mRecyclerView.setVisibility(View.GONE);
+                        ll_empty.setVisibility(View.VISIBLE);
+                        ll_empty.findViewById(R.id.iv_empty).setBackgroundResource(R.mipmap.icon_empty_comment);
+                        ((TextView) ll_empty.findViewById(R.id.tv_empty)).setText("没有关注话题~");
                     }
                 });
     }
@@ -205,10 +212,13 @@ public class TopicFocusFragment extends BaseLazyFragment {
         return true;
     }
 
-    //记录点击的item的position,用于更新某条数据
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateRecommendTopicFocusListEvent(UpdateRecommendTopicFocusListEvent event){
-//       getTopicListByCate();
+    public void onUpdapteListTopicEvent(UpdapteListTopicEvent event) {
+        if(null != this){
+            Log.e("tag", "run:--------->当前呈现的类名是: "+ getClass().getSimpleName() + " name " + typename);
+            getTopicListByCate();
+        }
     }
 
 }

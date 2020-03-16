@@ -240,99 +240,6 @@ public class CircleMakeActivityV2 extends BaseActivity {
     private NewsDetailBean mNewsDetailBean;
 
 
-
-
-    TextWatcher mTextWatcher = new TextWatcher() {
-
-        private String temp;
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        //count 添加字符的长度
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            temp = s.toString().trim();
-            mString = temp;
-            KLog.d("tag", "accept: " + s.toString());
-
-
-            //判断emoji输入的
-            if(count - before >= 1){
-                CharSequence input = s.subSequence(start + before, start + count);
-                if(isEmoji(input.toString())){
-
-//                    Toast.makeText(mContext,"不支持emoji表情",Toast.LENGTH_SHORT).show();
-                    String rsu = listentext.getText().toString();
-
-                    listentext.setText((Integer.parseInt(rsu)+ count) + "");
-                    KLog.d("tag","listentext.getText() "+ listentext.getText());
-                }else{
-                    if (!TextUtils.isEmpty(input)) {
-                        String limitSubstring = getLimitSubstring(input.toString());
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (!TextUtils.isEmpty(temp)) {
-                String limitSubstring = getLimitSubstring(temp);
-                if (!TextUtils.isEmpty(limitSubstring)) {
-                    if (!limitSubstring.equals(temp)) {
-                        Toast.makeText(CircleMakeActivityV2.this,"字数已超过限制", Toast.LENGTH_SHORT).show();
-                        mEditText.setText(limitSubstring);
-                        mEditText.setSelection(limitSubstring.length());
-                    }
-
-                    //如果是网址  并且url无效，同样的不给点击
-                    if(!TextUtils.isEmpty(link_title.getText().toString()) && !isUrlOk){
-                        return;
-                    }
-
-                    setSendStatus(true);
-
-                }
-
-
-
-//                String text = temp;
-//
-//                Pattern p = Pattern.compile("[0-9]*");
-//                Matcher m = p.matcher(text);
-//                if(m.matches() ){
-//                    KLog.d("tag","输入的是数字");
-//                }
-//                p=Pattern.compile("[a-zA-Z]");
-//                m=p.matcher(text);
-//                if(m.matches()){
-//                    KLog.d("tag","输入的是字母");
-//                }
-//                p=Pattern.compile("[\u4e00-\u9fa5]");
-//                m=p.matcher(text);
-//                if(m.matches()){
-//                    KLog.d("tag","输入的是汉字");
-//                }
-            }
-        }
-    };
-
-
-
-    private boolean isEmojiCharacter(char codePoint) {
-        return !((codePoint == 0x0) ||
-                (codePoint == 0x9) ||
-                (codePoint == 0xA) ||
-                (codePoint == 0xD) ||
-                ((codePoint >= 0x20) && (codePoint <= 0xD7FF)) ||
-                ((codePoint >= 0xE000) && (codePoint <= 0xFFFD)) ||
-                ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF)));
-    }
-
-
     public  boolean isHasEmoji(CharSequence source) {
         Pattern emoji = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
                 Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
@@ -487,7 +394,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
         length = length / 2;
 
         int result = (mString.length() - length);
-        KLog.d("tag","长度 " + result);
+//        KLog.d("tag","长度 " + result);
 
         listentext.setText(result + "");
 
@@ -522,7 +429,7 @@ public class CircleMakeActivityV2 extends BaseActivity {
             mNewsDetailBean = (NewsDetailBean) getIntent().getExtras().getSerializable("articleBean");
             if(null != mTopicBean){
                 topicId = mTopicBean.getId() + "";
-                select_topic_text.setText(mTopicBean.getTitle());
+                select_topic_text.setText("#" + mTopicBean.getTitle());
                 topic_delete.setVisibility(View.GONE);
                 ll_topic.setVisibility(View.VISIBLE);
                 topic.setEnabled(false);

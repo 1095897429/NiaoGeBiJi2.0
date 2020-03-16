@@ -7,7 +7,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,7 +25,6 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
-import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
@@ -353,10 +351,10 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
         }
     }
@@ -377,10 +375,10 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
         }
     }

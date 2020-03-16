@@ -4,12 +4,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.blankj.utilcode.util.SizeUtils;
+import com.qmkj.niaogebiji.module.activity.TopicDetailActivityV2;
 import com.qmkj.niaogebiji.module.event.ShowTopAuthorEvent;
 import com.qmkj.niaogebiji.module.event.ShowTopTopicEvent;
 import com.socks.library.KLog;
@@ -36,21 +39,29 @@ public class TranslucentBehaviorInTopic extends CoordinatorLayout.Behavior<Relat
         return dependency instanceof TextView;
     }
 
+
     /**
      * 必须要加上  layout_anchor，对方也要layout_collapseMode才能使用
      */
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, RelativeLayout child, View dependency) {
 
+
+
         // 初始化高度
         if (mToolbarHeight == 0) {
             //为了更慢的 -- 减去30是偏移量
-            KLog.d("tag","child.getBottom() " + child.getBottom());
+//            KLog.d("tag","child.getBottom() " + child.getBottom());
+//            KLog.d("tag","SizeUtils.dp2px( 39f) " + SizeUtils.dp2px( 39f));
+//            KLog.d("tag"," TopicDetailActivityV2.solid_title_height " +  TopicDetailActivityV2.solid_title_height);
+//            KLog.d("tag","SizeUtils.dp2px(80) " + SizeUtils.dp2px( 80f));
+//            mToolbarHeight = TopicDetailActivityV2.solid_title_height + SizeUtils.dp2px(80) - SizeUtils.dp2px( 39f);
+//            KLog.d("tag","mToolbarHeight " + mToolbarHeight);
+
+
             mToolbarHeight = SizeUtils.dp2px( 237f - 25 - 39f);
-            KLog.d("tag","mToolbarHeight " + mToolbarHeight);
         }
 
-        KLog.d("tag","dependency.getY() " + dependency.getY());
         //计算toolbar从开始移动到最后的百分比
         float percent = dependency.getY() / mToolbarHeight;
 

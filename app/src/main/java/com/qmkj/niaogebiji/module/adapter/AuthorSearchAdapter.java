@@ -12,6 +12,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.dialog.FocusAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.listener.ToActivityFocusListener;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
@@ -53,6 +54,23 @@ public class AuthorSearchAdapter extends BaseQuickAdapter<AuthorBean.Author, Bas
         paint.setFakeBoldText(true);
 
         helper.setText(R.id.author_name,item.getName());
+
+
+        //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
+        if(TextUtils.isEmpty(item.getType()) || "1".equals(item.getType())){
+            helper.setVisible(R.id.author_type,false);
+        }else if("2".equals(item.getType())){
+            helper.setVisible(R.id.author_type,true);
+            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_newuser);
+        }else if("3".equals(item.getType())){
+            helper.setVisible(R.id.author_type,true);
+            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_new);
+        }else if("4".equals(item.getType())){
+            helper.setVisible(R.id.author_type,true);
+            helper.setImageResource(R.id.author_type,R.mipmap.hot_author_professor);
+        }
+
+
 
         //作者简介
         TextView sumary = helper.getView(R.id.author_tag);
@@ -104,11 +122,24 @@ public class AuthorSearchAdapter extends BaseQuickAdapter<AuthorBean.Author, Bas
             KLog.d("tag","点击的是 position " + helper.getAdapterPosition() );
             String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
             UIHelper.toWebViewActivity(mContext,link);
+
+
+
+            //判断是否关联作者，如果关联，则调到用户界面 author_uid ，没有，调到作者详情页 authoid
+//            KLog.d("tag","author_uid " + mAuthor.getUid());
+//            if(mAuthor.getUid().equals("0")){
+//                //测试数据 作者 id = 3854
+//                UIHelper.toAuthorDetailActivity(mContext,mAuthor.getId());
+//            }else{
+//                UIHelper.toUserInfoV2Activity(mContext,mAuthor.getUid());
+//
+//            }
+
         });
 
     }
 
-
+    private String uid;
     private String focus_type = "1";
     private String author_id;
     private AuthorBean.Author mAuthor;
@@ -129,9 +160,27 @@ public class AuthorSearchAdapter extends BaseQuickAdapter<AuthorBean.Author, Bas
         }else{
             focus_type = "1";
             followAuthor(position);
+            //TODO  判断是否关联作者，如果关联，走关注流程 0未关注
+//            KLog.d("tag","author_uid " + uid);
+//            if(uid.equals("0")){
+//                followAuthor(position);
+//            }else {
+//                if(null != mToActivityFocusListener){
+//                    mToActivityFocusListener.toAFocus(position);
+//                }
+//            }
+
+
         }
     }
 
+
+
+    private ToActivityFocusListener mToActivityFocusListener;
+
+    public void setToActivityFocusListener(ToActivityFocusListener toActivityFocusListener) {
+        mToActivityFocusListener = toActivityFocusListener;
+    }
 
 
 

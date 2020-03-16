@@ -526,7 +526,7 @@ public class FocusFragment extends BaseLazyFragment {
         iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
             //和外面的认证一样
 
-            UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(), StringUtil.getLink("certificatecenter"));
+            UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
 
         }).setNegativeButton("下次再说", v -> {
 

@@ -94,6 +94,7 @@
 
                 <FrameLayout
                     android:id="@+id/red_point"
+                    android:visibility="gone"
                     android:layout_marginTop="2dp"
                     android:layout_marginLeft="18dp"
                     android:layout_centerVertical="true"
@@ -210,8 +211,8 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView

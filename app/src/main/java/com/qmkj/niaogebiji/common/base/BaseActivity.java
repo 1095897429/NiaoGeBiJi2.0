@@ -292,10 +292,6 @@ public abstract class BaseActivity extends AppCompatActivity  {
             hideState();
         },2000);
 
-
-        //发送事件去更新
-        EventBus.getDefault().post(new SendOkCircleEvent());
-
         removeTempMsg();
         cleanData();
 }
@@ -337,7 +333,11 @@ public abstract class BaseActivity extends AppCompatActivity  {
         RxView.clicks(icon_send_cancel)
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
+                    //手动设值其成功，其实是取消的，为了让进入下个界面有用
+                    sendStatus = isSendOk;
                     hideState();
+                    cleanData();
+                    removeTempMsg();
                     HomeActivityV2.mService.cancelRequest();
 
                 });
@@ -1536,8 +1536,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
         iosAlertDialog.setPositiveButton("让大佬注意你，立即认证", v -> {
             //和外面的认证一样
 
-            UIHelper.toWebViewWithLayoutOnlyActivity(this, StringUtil.getLink("certificatecenter"));
-
+            UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("certificatecenter"),"");
         }).setNegativeButton("下次再说", v -> {
             UIHelper.toHelloMakeActivity(this);
             overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);

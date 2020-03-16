@@ -52,10 +52,13 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.NotificationUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
+import com.qmkj.niaogebiji.module.event.CompleInfoEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -738,7 +741,10 @@ public class UserInfoModifyActivity extends BaseActivity {
                         ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                         ToastUtils.showShort("修改成功");
 
-                        finish();
+                        //TODO 发送事件，修改用户信息，这个在关注用户时，完善了信息，用户v2的界面没有及时刷新 -- 可以不用
+                        EventBus.getDefault().post(new CompleInfoEvent());
+
+                        getUserInfo();
 
                         if(1 == type){
                             ImageUtil.load(UserInfoModifyActivity.this,response.getReturn_data().getAvatar(),head_icon);
@@ -747,6 +753,38 @@ public class UserInfoModifyActivity extends BaseActivity {
                     }
                 });
     }
+
+
+
+    //重新获取用户信息
+    private void getUserInfo() {
+        Map<String,String> map = new HashMap<>();
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+
+                        RegisterLoginBean.UserInfo mUserInfo = response.getReturn_data();
+                        if(null != mUserInfo){
+                            StringUtil.setUserInfoBean(mUserInfo);
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onHintError(String return_code, String errorMes) {
+                        if("2003".equals(return_code) || "1008".equals(return_code)){
+                            UIHelper.toLoginActivity(BaseApp.getApplication());
+                        }
+                    }
+                });
+
+    }
+
 
 
 

@@ -44,7 +44,6 @@ import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
 import com.qmkj.niaogebiji.common.dialog.ShareWithLinkDialog;
 import com.qmkj.niaogebiji.common.dialog.ShowCommentDialog;
-import com.qmkj.niaogebiji.common.dialog.TalkCircleAlertDialog;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -1259,7 +1258,7 @@ public class CommentDetailActivityV2 extends BaseActivity {
         }
         //点赞图片
         if("0".equals(is_good + "")){
-            zan_img.setImageResource(R.mipmap.icon_flash_priase_28);
+            zan_img.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
             zan_img.setImageResource(R.mipmap.icon_flash_priase_select_28);
@@ -1300,10 +1299,10 @@ public class CommentDetailActivityV2 extends BaseActivity {
 
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
         }
     }

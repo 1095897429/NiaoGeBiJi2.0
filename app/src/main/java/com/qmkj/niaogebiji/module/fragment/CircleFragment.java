@@ -280,7 +280,6 @@ public class CircleFragment extends BaseLazyFragment {
         mAllList.addAll(list);
 
         if(lastSize > 0){
-            mAllList.addAll(list);
             topicBean = new TopicBean();
             topicBean.setTitle(lastSize + "");
             topicBean.setType("3");

@@ -12,7 +12,7 @@
 
         <ImageView
             android:id="@+id/baidu_icon"
-            android:layout_width="64dp"
+            android:layout_width="54dp"
             android:layout_height="40dp" />
 
         <Space

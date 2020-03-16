@@ -162,7 +162,7 @@ public class TranspondActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-        KeyboardUtils.showSoftInput(mEditText);
+//        KeyboardUtils.showSoftInput(mEditText);
 
         RxTextView
                 .textChanges(mEditText)

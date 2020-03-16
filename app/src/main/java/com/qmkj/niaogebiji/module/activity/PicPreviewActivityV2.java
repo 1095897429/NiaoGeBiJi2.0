@@ -33,6 +33,7 @@ import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.ImageBrowseAdapter;
 import com.qmkj.niaogebiji.module.adapter.PicPreViewItemAdapter;
+import com.qmkj.niaogebiji.module.adapter.PicPreViewItemAdapterByHeadIcon;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.bean.PicBean;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
@@ -80,9 +81,11 @@ public class PicPreviewActivityV2 extends BaseActivity {
     TextView pic_look;
 
 
-
+    //图片预览
     private PicPreViewItemAdapter mImageBrowseAdapter;
 
+    //头像
+    private PicPreViewItemAdapterByHeadIcon mPicPreViewItemAdapter;
 
     private ArrayList<PicBean> imagePicList = new ArrayList<>();
     PicBean mPicBean;
@@ -93,8 +96,10 @@ public class PicPreviewActivityV2 extends BaseActivity {
     private int currentIndex = 0;
     //是否是网络图片
     private boolean fromNet = false;
-
+    //是否展示头部
     private boolean isShowDown;
+    //是否来源于 用户界面
+    private String from;
 
     private ExecutorService mExecutorService;
 
@@ -113,7 +118,6 @@ public class PicPreviewActivityV2 extends BaseActivity {
         //全屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        initLayout();
 
         loadData();
 
@@ -129,30 +133,45 @@ public class PicPreviewActivityV2 extends BaseActivity {
     private void loadData(){
         Intent intent = getIntent();
         if(intent != null){
+            from = intent.getStringExtra("from");
             currentIndex = intent.getIntExtra("index", 0);
             fromNet = intent.getBooleanExtra("fromNet",false);
             isShowDown = intent.getBooleanExtra("isShowDown",true);
             imageList =  intent.getStringArrayListExtra("imageList");
 
-            //封装新的对象
+
+
             for (int i = 0; i < imageList.size(); i++) {
                 mPicBean = new PicBean();
-                mPicBean.setScalePic(imageList.get(i) + Constant.scaleSize);
+                mPicBean.setScalePic(imageList.get(i));
                 mPicBean.setPic(imageList.get(i));
                 imagePicList.add(mPicBean);
             }
 
-            mImageBrowseAdapter.setNewData(imagePicList);
-
-            //移动到具体item
-            recycler.scrollToPosition(currentIndex);
-
-
-            if(!isShowDown){
-                head_part.setVisibility(View.GONE);
+            if("userinfo".equals(from)){
+                //封装新的对象
+                initLayoutByHead();
+                mPicPreViewItemAdapter.setNewData(imagePicList);
             }else{
-                head_part.setVisibility(View.VISIBLE);
+                initLayout();
+                mImageBrowseAdapter.setNewData(imagePicList);
+
+                //移动到具体item
+                recycler.scrollToPosition(currentIndex);
+
+
+                if(!isShowDown){
+                    head_part.setVisibility(View.GONE);
+                }else{
+                    head_part.setVisibility(View.VISIBLE);
+                }
             }
+
+
+
+
+
+
         }
     }
 
@@ -168,6 +187,28 @@ public class PicPreviewActivityV2 extends BaseActivity {
         //设置适配器
         mImageBrowseAdapter = new PicPreViewItemAdapter (imagePicList,this);
         recycler.setAdapter (mImageBrowseAdapter);
+        ((SimpleItemAnimator)recycler.getItemAnimator()).setSupportsChangeAnimations(false);
+        //解决数据加载不完
+        recycler.setNestedScrollingEnabled(true);
+        recycler.setHasFixedSize(true);
+        initEvents();
+
+        //切换时整体移动
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(recycler);
+
+    }
+
+
+    private void initLayoutByHead() {
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        //设置默认垂直布局
+        mLinearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        //设置布局管理器
+        recycler.setLayoutManager(mLinearLayoutManager);
+        //设置适配器
+        mPicPreViewItemAdapter = new PicPreViewItemAdapterByHeadIcon (imagePicList,this);
+        recycler.setAdapter (mPicPreViewItemAdapter);
         ((SimpleItemAnimator)recycler.getItemAnimator()).setSupportsChangeAnimations(false);
         //解决数据加载不完
         recycler.setNestedScrollingEnabled(true);

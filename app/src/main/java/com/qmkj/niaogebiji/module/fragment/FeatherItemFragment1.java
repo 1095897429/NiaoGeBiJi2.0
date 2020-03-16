@@ -152,6 +152,7 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
         initDayRecyler();
 
         getUserInfo();
+        //新手任务
         newUserTasklist();
     }
 
@@ -259,7 +260,7 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
 
                 if(0 == position){
                     if(!mList2.isEmpty()){
-                        getNewPointTaskAward(mList2.get(position).getType());
+                        getNewPointTaskAward(mList2.get(position).getType(),position);
                     }
                 }else if(1 == position){
                     //TODO 10.15 新逻辑，微信分享
@@ -348,7 +349,7 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
 
     String getPoint ;
 
-    private void getNewPointTaskAward(String type) {
+    private void getNewPointTaskAward(String type, int position) {
         Map<String,String> map = new HashMap<>();
         map.put("type",type);
         String result = RetrofitHelper.commonParam(map);
@@ -364,9 +365,16 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
                         NewPointTaskBean te = response.getReturn_data();
                         if(null != te){
                             getPoint = te.getPoint() + "";
-                            mNewTaskAdapter.updateData();
 
+
+//                            getUserInfoToChangeFeahter();
+
+                            //TODO 3.16 手动设置状态
+                            mNewTaskAdapter.getData().get(position).setStatus("2");
+                            mNewTaskAdapter.notifyDataSetChanged();
                             showFeatherNewTaskDialog(getPoint);
+
+                            EventBus.getDefault().post(new FeatherEvent(getPoint));
                         }
 
 
@@ -392,7 +400,10 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
 
         }).setNegativeButton("知道了", v -> {
 
-            getUserInfoToChangeFeahter();
+//            getUserInfoToChangeFeahter();
+
+
+
 
         }).setMsg("+ " + point).setCanceledOnTouchOutside(false);
         iosAlertDialog.setTitle("领取新手奖励完成 ");
@@ -541,6 +552,8 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
                         mUserInfo = response.getReturn_data();
                         if(null != mUserInfo){
+                            StringUtil.setUserInfoBean(mUserInfo);
+                            KLog.d("tag","当前用户积分 " + mUserInfo.getPoint());
                             EventBus.getDefault().post(new FeatherEvent(mUserInfo.getPoint()));
                         }
                     }
@@ -594,6 +607,7 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
                         mUserInfo = response.getReturn_data();
                         if(null != mUserInfo){
+                            StringUtil.setUserInfoBean(mUserInfo);
                             //今天是否签到了：1-已签到，0-未签到
                             if("0".equals(mUserInfo.getSigned_today())){
                                 toSign();

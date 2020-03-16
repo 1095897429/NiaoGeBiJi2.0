@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-12-19
- * 描述:商品兑换结果页（第二个界面）
+ * 描述:商品兑换结果页（第二个界面）-- 兑换详情
  */
 public class ExchangeDetailActivity2 extends BaseActivity {
 
@@ -120,7 +121,13 @@ public class ExchangeDetailActivity2 extends BaseActivity {
                 part1111.setVisibility(View.VISIBLE);
                 txt_title.setText(mDetail.getTitle());
                 ImageUtil.load(this,mDetail.getImg_list(),image11);
-                txt_msg.setText(mDetail.getLink());
+
+                //TODO 3.16 如果提取码不为空，则添加
+                if(!TextUtils.isEmpty(mDetail.getCode())){
+                    txt_msg.setText(mDetail.getLink() + "\n" + "提取码:" + mDetail.getCode());
+                }else{
+                    txt_msg.setText(mDetail.getLink());
+                }
 
             }
         }

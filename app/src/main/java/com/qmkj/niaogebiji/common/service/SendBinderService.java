@@ -26,11 +26,13 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.module.bean.QINiuTokenBean;
 import com.qmkj.niaogebiji.module.bean.TempMsgBean;
+import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.xzh.imagepicker.bean.MediaFile;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -125,7 +127,7 @@ public class SendBinderService extends Service {
     private List<MediaFile> pathList = new ArrayList<>();
     //动态配图，多图链接之间用英文逗号隔开
     private StringBuilder picbycomma = new StringBuilder();
-    //界面传递过来的
+    //界面传递过来的 -- 以字符串分割 本地图片地址
     private String resultPic = "";
     //构建七牛
     private StringBuilder qiniuPic = new StringBuilder();
@@ -207,11 +209,11 @@ public class SendBinderService extends Service {
 
     public void sendRequest(){
         //① 如果没有图片，显示属性动画
-        KLog.d("tag","resultPic " + resultPic);
+//        KLog.d("tag","resultPic " + resultPic);
         if(TextUtils.isEmpty(resultPic)){
             createBlog();
         }else{
-            mExecutorService = Executors.newFixedThreadPool(2);
+            mExecutorService = Executors.newFixedThreadPool(1);
             getUploadToken();
         }
 
@@ -297,13 +299,14 @@ public class SendBinderService extends Service {
 
         //查询并移除第一个元素；
         if(linkedList.size() > 0){
-            data = linkedList.poll();
 
+            data = linkedList.poll();
+            KLog.d("tag","本地存储的路径是 "  + data);
             mExecutorService.submit(() -> {
-                KLog.d("tag","本地存储的路径是 "  + data);
 
                 //手动设值，取消的话不上传到七牛云上
                 if(isRequestCancelled){
+                    isRequestCancelled = false;
                     return;
                 }
 
@@ -313,12 +316,12 @@ public class SendBinderService extends Service {
                         //res包含hash、key等信息，具体字段取决于上传策略的设置
                         if(info.isOK()) {
                             KLog.i("tag", key + " Upload Success");
-                            //恢复默认值
-                            data = "";
+                            //TODO file or data size is zero 是因为下面的语句，让data为null了，当时为啥这样写 ，不用恢复默认值
+//                            data = "";
 
 
                         } else {
-                            KLog.i("tag", key + " Upload Fail");
+                            KLog.i("tag", key + " Upload Fail  " + info.error );
                             //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
                         }
                     }
@@ -339,6 +342,12 @@ public class SendBinderService extends Service {
          */
         @Override
         public void progress(String key, double percent) {
+
+            //手动设值，取消的话不上传到七牛云上
+            if(isRequestCancelled){
+                return;
+            }
+
             KLog.e("tag","percent " + percent);
             intent = new Intent("com.example.communication.RECEIVER");
             intent.putExtra("progress", BaseActivity.currentSendProgress + (int) (percent * 100));
@@ -380,7 +389,7 @@ public class SendBinderService extends Service {
                 case QI_NIU_UPLOAD_OK:
                     uploadTaskCount++;
                     KLog.e("tag", "上传的个数 " + uploadTaskCount + "");
-                    //容器中图片全部上传完成
+                    //容器中图片全部上传完成 ①
                     if (uploadTaskCount == tempList.size()) {
                         if(!TextUtils.isEmpty(qiniuPic.toString())){
                             lashPic =  qiniuPic.substring(0,qiniuPic.length()  - 1);
@@ -422,7 +431,12 @@ public class SendBinderService extends Service {
                 .subscribe(new BaseObserver<HttpResponse>() {
                     @Override
                     public void onSuccess(HttpResponse response) {
+
                         BaseActivity.sendStatus = BaseActivity.isSendOk;
+                        //发送事件去更新 -- 放在service中，之前是放在activity中，有问题
+                        EventBus.getDefault().post(new SendOkCircleEvent());
+
+
                         KLog.e("tag","请求成功 " + response.getReturn_code());
                         //针对有图片特殊处理
                         if(TextUtils.isEmpty(resultPic)){

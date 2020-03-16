@@ -63,8 +63,8 @@ import com.qmkj.niaogebiji.module.bean.ProBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.VipBean;
+import com.qmkj.niaogebiji.module.event.CompleInfoEvent;
 import com.qmkj.niaogebiji.module.event.EditChangeEvent;
-import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebChromeClientJieTu;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
@@ -134,6 +134,21 @@ public class WebViewAllActivity extends BaseActivity {
     private String fromWhere;
 
     private MyWebChromeClientJieTu mMyWebChromeClient;
+
+    @Override
+    protected boolean regEvent() {
+        return true;
+    }
+
+
+    //修改用户信息后，刷新界面
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCompleInfoEvent(CompleInfoEvent event) {
+        if (this != null) {
+            KLog.d("tag","修改用户信息后，刷新界面");
+           webview.reload();
+        }
+    }
 
 
     @Override
@@ -279,7 +294,6 @@ public class WebViewAllActivity extends BaseActivity {
         RetrofitHelper.getApiService().getUserInfo(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
                     @Override
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
@@ -604,9 +618,12 @@ public class WebViewAllActivity extends BaseActivity {
                         MessageLinkBean.MessageLink bean = javaBean.getParams();
                         String link =  bean.getLink();
                         UIHelper.toWebViewActivityWithOnStep(WebViewAllActivity.this,link);
-                    }if("toSubmitInfo".equals(result)){
+                    }else if("toSubmitInfo".equals(result)){
                         //去编辑界面
                         UIHelper.toUserInfoModifyActivity(WebViewAllActivity.this);
+                    }else if("resetAuthInfo".equals(result)){
+                        //重置成功，请求用户信息数据
+                        getUserInfo();
                     }
 
                 } catch (JSONException e) {
@@ -908,7 +925,7 @@ public class WebViewAllActivity extends BaseActivity {
 
         //点赞图片
         if("0".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
             imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);

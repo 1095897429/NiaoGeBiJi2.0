@@ -132,9 +132,8 @@ public class CooperationActivity extends BaseActivity {
         initLayout();
 
         url  = getIntent().getStringExtra("url");
-
+        KLog.d("tag","加载的url " + url);
         showWaitingDialog();
-
 //        String  url = "http://apph5.xy860.com/cooperatehome";
         if(TextUtils.isEmpty(url)){
             url  = "http://apph5.xy860.com/qddp/index";

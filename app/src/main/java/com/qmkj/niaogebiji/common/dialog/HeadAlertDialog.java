@@ -101,7 +101,14 @@ public class HeadAlertDialog {
 
     private void setEvent() {
 
-        cancel.setOnClickListener(view -> dialog.dismiss());
+
+        cancel.setOnClickListener(v -> {
+            if(null != mOnDialogItemClickListener){
+                mOnDialogItemClickListener.func(2);
+                dialog.dismiss();
+            }
+        });
+
         take_pic.setOnClickListener(view -> {
             if(null != mOnDialogItemClickListener){
                 mOnDialogItemClickListener.func(0);

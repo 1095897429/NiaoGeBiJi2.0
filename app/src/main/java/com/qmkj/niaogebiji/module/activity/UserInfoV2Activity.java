@@ -387,6 +387,10 @@ public class UserInfoV2Activity extends BaseActivity {
                 break;
             case R.id.iv_right_1:
             case R.id.self_right_1:
+
+                MobclickAgentUtils.onEvent(UmengEvent.i_inform_share_2_2_0);
+
+
                 showShareDialog();
                 break;
             default:
@@ -470,6 +474,8 @@ public class UserInfoV2Activity extends BaseActivity {
 //
 //                    });
                     mHandler.sendEmptyMessage(0x111);
+                    MobclickAgentUtils.onEvent(UmengEvent.i_inform_share_moments_2_2_0);
+
                     break;
                 case 1:
 //                    mExecutorService.submit(() -> {
@@ -478,8 +484,12 @@ public class UserInfoV2Activity extends BaseActivity {
 //                    });
 
                     mHandler.sendEmptyMessage(0x112);
+                    MobclickAgentUtils.onEvent(UmengEvent.i_inform_share_weixin_2_2_0);
+
                     break;
                 case 2:
+                    MobclickAgentUtils.onEvent(UmengEvent.i_inform_share_copy_2_2_0);
+
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
                     StringUtil.copyLink(temp.getShare_title() + "\n" +  temp.getShare_url());
@@ -751,38 +761,39 @@ public class UserInfoV2Activity extends BaseActivity {
         if(temp.isIs_author() && temp.getAuthor_info() != null){
             isAuthor = true;
             AuthorBean.Author bean = temp.getAuthor_info();
-            rl_author.setVisibility(View.VISIBLE);
-            ImageUtil.loadByDefaultHead(this,bean.getImg(),head_author_icon);
-            author_name.setText(bean.getName());
-            author_desc.setText(bean.getSummary());
+            if(null != bean){
+                rl_author.setVisibility(View.VISIBLE);
+                ImageUtil.loadByDefaultHead(this,bean.getImg(),head_author_icon);
+                author_name.setText(bean.getName());
+                author_desc.setText(bean.getSummary());
 
+                //影响数 -- 这里没做判断，除以万即可
+                if(!TextUtils.isEmpty(bean.getHit_count())){
+                    long count = Long.parseLong(bean.getHit_count());
+                    if(count < 10000 ){
+                        hint_num.setText(bean.getHit_count());
+                    }else{
+                        double temp = count  ;
+                        //1.将数字转换成以万为单位的数字
+                        double num = temp / 10000;
+                        BigDecimal b = new BigDecimal(num);
+                        //2.转换后的数字四舍五入保留小数点后一位;
+                        double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+                        hint_num.setText( f1 + " w+");
+                    }
 
-            //影响数 -- 这里没做判断，除以万即可
-            if(!TextUtils.isEmpty(bean.getHit_count())){
-                long count = Long.parseLong(bean.getHit_count());
-                if(count < 10000 ){
-                    hint_num.setText(bean.getHit_count());
-                }else{
-                    double temp = count  ;
-                    //1.将数字转换成以万为单位的数字
-                    double num = temp / 10000;
-                    BigDecimal b = new BigDecimal(num);
-                    //2.转换后的数字四舍五入保留小数点后一位;
-                    double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                    hint_num.setText( f1 + " w+");
                 }
 
-            }
-
-            //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
-            if("1".equals(bean.getType())){
-                author_type.setVisibility(View.GONE);
-            }else if("2".equals(bean.getType())){
-                author_type.setImageResource(R.mipmap.hot_author_newuser);
-            }else if("3".equals(bean.getType())){
-                author_type.setImageResource(R.mipmap.hot_author_new);
-            }else if("4".equals(bean.getType())){
-                author_type.setImageResource(R.mipmap.hot_author_professor);
+                //作者类型:1-作者（不显示），2-新手作者，3-新锐作者，4-专栏作者',
+                if("1".equals(bean.getType())){
+                    author_type.setVisibility(View.GONE);
+                }else if("2".equals(bean.getType())){
+                    author_type.setImageResource(R.mipmap.hot_author_newuser);
+                }else if("3".equals(bean.getType())){
+                    author_type.setImageResource(R.mipmap.hot_author_new);
+                }else if("4".equals(bean.getType())){
+                    author_type.setImageResource(R.mipmap.hot_author_professor);
+                }
             }
         }
 
@@ -796,7 +807,7 @@ public class UserInfoV2Activity extends BaseActivity {
         sender_name.setText(temp.getNickname());
         //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
         if("1".equals(temp.getAuth_idno_status())){
-            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_auther_shenfen,2);
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_author_shenfen,2);
             SpannableString spanString2 = new SpannableString("  icon");
             spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             sender_name.append(spanString2);
@@ -812,7 +823,7 @@ public class UserInfoV2Activity extends BaseActivity {
         }
 
 
-        //TODO 3.16 新增
+        //TODO 3.16 新增点击跳转逻辑
         sender_name.setOnClickListener(v -> {
             //身份认证通过 或者 职业认证通过
             if("1".equals(temp.getAuth_idno_status()) || ("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status()))){
@@ -821,6 +832,9 @@ public class UserInfoV2Activity extends BaseActivity {
                 }else{
                     UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("certificatecenterothers/" + otherUid),"");
                 }
+
+                MobclickAgentUtils.onEvent(UmengEvent.i_inform_idnoauth_2_2_0);
+                MobclickAgentUtils.onEvent(UmengEvent.i_inform_jobauth_2_2_0);
             }
         });
 
@@ -1147,6 +1161,34 @@ public class UserInfoV2Activity extends BaseActivity {
         mViewPager.setOffscreenPageLimit(mFragmentList.size());
         //设置当前显示标签页为第二页
         mViewPager.setCurrentItem(0);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(0 == position){
+                    //只有一个
+                    if(mChannelBeanList != null && mChannelBeanList.size() == 1){
+                        MobclickAgentUtils.onEvent(UmengEvent.i_inform_quanziflw_tab_2_2_0);
+                    }else{
+                        MobclickAgentUtils.onEvent(UmengEvent.i_inform_articletab_2_2_0);
+                    }
+
+                }else if(1 == position){
+                    MobclickAgentUtils.onEvent(UmengEvent.i_inform_quanziflw_tab_2_2_0);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
 
     }
 

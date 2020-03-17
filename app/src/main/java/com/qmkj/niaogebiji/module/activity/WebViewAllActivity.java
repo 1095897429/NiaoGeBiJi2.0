@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,6 +57,7 @@ import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.MessageAllH5Bean;
+import com.qmkj.niaogebiji.module.bean.MessageCooperationBean;
 import com.qmkj.niaogebiji.module.bean.MessageLinkBean;
 import com.qmkj.niaogebiji.module.bean.MessageUserBean;
 import com.qmkj.niaogebiji.module.bean.MessageVipBean;
@@ -66,6 +69,7 @@ import com.qmkj.niaogebiji.module.bean.VipBean;
 import com.qmkj.niaogebiji.module.event.CompleInfoEvent;
 import com.qmkj.niaogebiji.module.event.EditChangeEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.MyWebChromeClientByCamera;
 import com.qmkj.niaogebiji.module.widget.MyWebChromeClientJieTu;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
@@ -133,7 +137,7 @@ public class WebViewAllActivity extends BaseActivity {
 
     private String fromWhere;
 
-    private MyWebChromeClientJieTu mMyWebChromeClient;
+    private MyWebChromeClientByCamera mMyWebChromeClient;
 
     @Override
     protected boolean regEvent() {
@@ -155,6 +159,23 @@ public class WebViewAllActivity extends BaseActivity {
     protected int getLayoutId() {
         return R.layout.activity_webview_1;
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (int i = 0; i < grantResults.length; ++i) {
+
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                //用户勾选了不再提示，函数返回false
+            }
+        }
+
+
+
+    }
+
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -195,7 +216,7 @@ public class WebViewAllActivity extends BaseActivity {
 
         initSetting();
 
-        mMyWebChromeClient = new MyWebChromeClientJieTu(this,mProgressBar,tv_title);
+        mMyWebChromeClient = new MyWebChromeClientByCamera(this,mProgressBar,tv_title);
 
         //js交互 -- 给js调用app的方法，xnNative是协调的对象
         webview.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
@@ -313,8 +334,8 @@ public class WebViewAllActivity extends BaseActivity {
     }
 
 
-    //TODO 2.19 数据来自后台，h5从后台获取，传递给我们
-    private void showShareVipDialog(RegisterLoginBean.UserInfo item) {
+    //TODO 2.19 数据来自后台，h5从后台获取，传递给我们 -- link + 头像 取用户字段 title + content 取 h5返回
+    private void showShareVipDialog(MessageCooperationBean.CooperationBean item) {
         ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
         alertDialog.setSharelinkView().setTitleGone();
         alertDialog.setCanceledOnTouchOutside(true);
@@ -329,14 +350,8 @@ public class WebViewAllActivity extends BaseActivity {
                     bean1.setLink(mUserInfo.getInvite_url());
                     bean1.setResId(R.mipmap.icon_fenxiang);
 
-                    //TODO 2020.1.19 换成nickname
-                    if(!TextUtils.isEmpty(mUserInfo.getNickname())){
-                        name1 = mUserInfo.getNickname();
-                    }else{
-                        name1 = mUserInfo.getName();
-                    }
-                    bean1.setTitle("你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！");
-                    bean1.setContent("1小时内领取，过时作废！六大权益免费领取，还不快来");
+                    bean1.setTitle(item.getTitle());
+                    bean1.setContent(item.getSubTitle());
                     StringUtil.shareWxByWeb((Activity) mContext,bean1);
                     break;
                 case 1:
@@ -347,34 +362,14 @@ public class WebViewAllActivity extends BaseActivity {
                     bean.setResId(R.mipmap.icon_fenxiang);
                     bean.setShareType("weixin_link");
                     bean.setLink(mUserInfo2.getInvite_url());
-
-//                    if(!TextUtils.isEmpty(mUserInfo2.getName())){
-//                        name1 = mUserInfo2.getName();
-//                    }else{
-//                        name1 = mUserInfo2.getNickname();
-//                    }
-
-                    //TODO 2020.1.19 换成nickname
-                    if(!TextUtils.isEmpty(mUserInfo2.getNickname())){
-                        name1 = mUserInfo2.getNickname();
-                    }else{
-                        name1 = mUserInfo2.getName();
-                    }
-                    bean.setTitle("你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！");
-                    bean.setContent("1小时内领取，过时作废！六大权益免费领取，还不快来");
+                    bean.setTitle(item.getTitle());
+                    bean.setContent(item.getSubTitle());
                     StringUtil.shareWxByWeb((Activity) mContext,bean);
                     break;
                 case 2:
                     RegisterLoginBean.UserInfo mUserInf= StringUtil.getUserInfoBean();
 
-                    if(!TextUtils.isEmpty(mUserInf.getName())){
-                        name1 = mUserInf.getName();
-                    }else{
-                        name1 = mUserInf.getNickname();
-                    }
-
-                    String result = "你的好友" + name1 + "分享给你鸟哥笔记VIP资格，价值88元！";
-                    StringUtil.copyLink(result + "\n" + mUserInf.getInvite_url());
+                    StringUtil.copyLink(item.getTitle() + "\n" + mUserInf.getInvite_url());
                     break;
                 default:
             }
@@ -592,9 +587,15 @@ public class WebViewAllActivity extends BaseActivity {
                         Constant.isReLoad = true;
                         runOnUiThread(() -> getProfession());
                     }else if("shareVip".equals(result)){
-                        //VIP 个人分享
-                        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
-                        showShareVipDialog(userInfo);
+                        //TODO 3.17 VIP 个人分享
+                        MessageCooperationBean javaBean = JSON.parseObject(param, MessageCooperationBean.class);
+                        MessageCooperationBean.CooperationBean bean = javaBean.getParams();
+
+                        if(bean != null){
+                            showShareVipDialog(bean);
+                        }
+
+
                     }else if("toVipMember".equals(result)){
                         String link = StringUtil.getLink("vipmember");
 //                        UIHelper.toWebViewActivityWithOnLayout(WebViewAllActivity.this,link,"vipmember");

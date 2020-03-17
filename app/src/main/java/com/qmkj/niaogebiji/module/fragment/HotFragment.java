@@ -16,9 +16,12 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.tab.TabLayout;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.ChannelBean;
+import com.socks.library.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -195,9 +198,14 @@ public class HotFragment extends BaseLazyFragment {
                 if(0 == position){
                     id_rewen.setChecked(true);
                     id_author.setChecked(false);
+                    MobclickAgentUtils.onEvent(UmengEvent.index_hot_hotweek_2_2_0);
+                    KLog.d("tag","11111");
+
                 }else if(1 == position){
                     id_rewen.setChecked(false);
                     id_author.setChecked(true);
+                    MobclickAgentUtils.onEvent(UmengEvent.index_hot_hotauthor_2_2_0);
+                    KLog.d("tag","22222");
                 }
             }
 

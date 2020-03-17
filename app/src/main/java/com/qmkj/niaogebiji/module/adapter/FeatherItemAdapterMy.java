@@ -11,6 +11,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FeatherProductBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 
@@ -50,6 +52,14 @@ public class FeatherItemAdapterMy extends BaseQuickAdapter<FeatherProductBean.Pr
        //点击事件
         helper.itemView.setOnClickListener(v -> {
 //            ToastUtils.showShort("去明细页");
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+
+            MobclickAgentUtils.onEvent("i_exchange_"+ (helper.getAdapterPosition()  + 1) +"_2_2_0");
+
+
             UIHelper.toFeatherListDetailActivity(mContext,mBean.getId());
         });
     }

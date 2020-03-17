@@ -65,7 +65,7 @@
                                android:id="@+id/id_auther"
                                android:visibility="gone"
                                android:layout_marginLeft="8dp"
-                               android:src="@mipmap/icon_auther_shenfen"
+                               android:src="@mipmap/icon_author_shenfen"
                                android:layout_width="51dp"
                                android:layout_height="51dp" />
 

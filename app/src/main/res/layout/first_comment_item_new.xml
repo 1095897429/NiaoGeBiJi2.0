@@ -128,6 +128,7 @@
 
                             <ImageView
                                 android:id="@+id/iamge_priase"
+                                android:layout_centerVertical="true"
                                 android:src="@mipmap/icon_flash_priase_28v2"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp" />

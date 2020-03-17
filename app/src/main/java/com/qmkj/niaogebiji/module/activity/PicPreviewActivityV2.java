@@ -139,20 +139,24 @@ public class PicPreviewActivityV2 extends BaseActivity {
             isShowDown = intent.getBooleanExtra("isShowDown",true);
             imageList =  intent.getStringArrayListExtra("imageList");
 
-
-
-            for (int i = 0; i < imageList.size(); i++) {
-                mPicBean = new PicBean();
-                mPicBean.setScalePic(imageList.get(i));
-                mPicBean.setPic(imageList.get(i));
-                imagePicList.add(mPicBean);
-            }
-
+            //这个是从头像处过来的
             if("userinfo".equals(from)){
+                for (int i = 0; i < imageList.size(); i++) {
+                    mPicBean = new PicBean();
+                    mPicBean.setScalePic(imageList.get(i));
+                    mPicBean.setPic(imageList.get(i));
+                    imagePicList.add(mPicBean);
+                }
                 //封装新的对象
                 initLayoutByHead();
                 mPicPreViewItemAdapter.setNewData(imagePicList);
             }else{
+                for (int i = 0; i < imageList.size(); i++) {
+                    mPicBean = new PicBean();
+                    mPicBean.setScalePic(imageList.get(i) + Constant.scaleSize);
+                    mPicBean.setPic(imageList.get(i));
+                    imagePicList.add(mPicBean);
+                }
                 initLayout();
                 mImageBrowseAdapter.setNewData(imagePicList);
 

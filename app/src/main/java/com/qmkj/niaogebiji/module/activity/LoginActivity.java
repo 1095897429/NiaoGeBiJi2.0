@@ -205,6 +205,10 @@ public class LoginActivity extends BaseActivity {
                     KLog.e("tag",  "用户点击授权页返回： _code==" + code + "   _result==" + result);
                     return;
                 } else if (1000 == code) {
+
+                    MobclickAgentUtils.onEvent(UmengEvent.welcome_bindnew_2_2_0);
+
+
                     KLog.e("tag",  "用户点击登录获取token成功： _code==" + code + "   _result==" + result);
 
                     SyBean javaBean = JSON.parseObject(result, SyBean.class);

@@ -19,6 +19,7 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.TopicFocusBean;
@@ -66,9 +67,9 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
         //图片
         if(TextUtils.isEmpty(item.getIcon())){
             String url = "https://desk-fd.zol-img.com.cn/t_s2560x1440c5/g2/M00/05/09/ChMlWl1BAz-IcV0oADKEXBJ0ncgAAMP0gAAAAAAMoR0279.jpg";
-            ImageUtil.loadByDefaultHead(mContext,url, helper.getView(R.id.one_img));
+            ImageUtil.loadByCache(mContext,url, helper.getView(R.id.one_img));
         }else{
-            ImageUtil.loadByDefaultHead(mContext,item.getIcon(), helper.getView(R.id.one_img));
+            ImageUtil.loadByCache(mContext,item.getIcon(), helper.getView(R.id.one_img));
         }
 
 
@@ -78,6 +79,12 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
             if(StringUtil.isFastClick()){
                 return;
             }
+
+
+            if(helper.getAdapterPosition() <= 4){
+                MobclickAgentUtils.onEvent("quanzi_recommendlist_uflwedtopic_"+ (helper.getAdapterPosition()  + 1) +"_2_2_0");
+            }
+
             UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
         });
 

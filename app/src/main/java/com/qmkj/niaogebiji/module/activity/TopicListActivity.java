@@ -26,6 +26,8 @@ import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstFragmentAdapter;
 import com.qmkj.niaogebiji.module.adapter.TopicFocusAdapter;
@@ -384,6 +386,9 @@ public class TopicListActivity extends BaseActivity {
         @Override
         public void onClick(View v) {
             goods_pager.setCurrentItem(v.getId());
+
+            MobclickAgentUtils.onEvent(UmengEvent.quanzi_topiclist_bigtopic_2_2_0);
+
         }
     };
 

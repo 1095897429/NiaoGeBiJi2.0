@@ -39,6 +39,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.FirstItemNewAdapter;
 import com.qmkj.niaogebiji.module.bean.AuthorArticleBean;
@@ -501,6 +503,9 @@ public class AuthorDetailActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.iv_right_1:
+
+                MobclickAgentUtils.onEvent(UmengEvent.index_authordetail_share_2_2_0);
+
                 showShareDialog();
                 break;
             case R.id.focus:
@@ -540,14 +545,20 @@ public class AuthorDetailActivity extends BaseActivity {
 //                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
                         mHandler.sendEmptyMessage(0x111);
                     });
+                    MobclickAgentUtils.onEvent(UmengEvent.index_authordetail_share_moments_2_2_0);
+
                     break;
                 case 1:
                     mExecutorService.submit(() -> {
 //                        bitmap = StringUtil.getBitmap(mSchoolTest.getIcon());
                         mHandler.sendEmptyMessage(0x112);
                     });
+                    MobclickAgentUtils.onEvent(UmengEvent.index_authordetail_share_weixin_2_2_0);
+
                     break;
                 case 2:
+                    MobclickAgentUtils.onEvent(UmengEvent.index_authordetail_share_copy_2_2_0);
+
                     ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
                     ToastUtils.showShort("链接复制成功！");
                     StringUtil.copyLink(mAuthorDetail.getShare_title() + "\n" +  mAuthorDetail.getShare_url());

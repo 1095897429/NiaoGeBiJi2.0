@@ -280,8 +280,11 @@ public class MoreKnowYouActivity extends BaseActivity {
             @Override
             public void onAnimationEnd(Animator animator) {
                 KLog.d("tag","动画结束");
-                calcate_part.setVisibility(View.GONE);
-                complete_part.setVisibility(View.VISIBLE);
+                if(calcate_part != null && complete_part != null){
+                    calcate_part.setVisibility(View.GONE);
+                    complete_part.setVisibility(View.VISIBLE);
+                }
+
             }
 
             @Override

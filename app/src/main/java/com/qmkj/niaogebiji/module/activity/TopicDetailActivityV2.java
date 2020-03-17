@@ -3,6 +3,7 @@ package com.qmkj.niaogebiji.module.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
@@ -41,8 +44,11 @@ import com.qmkj.niaogebiji.module.event.ShowTopTopicEvent;
 import com.qmkj.niaogebiji.module.event.UpdapteListTopicEvent;
 import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
+import com.qmkj.niaogebiji.module.event.UserFeatherEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
+import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -123,6 +129,10 @@ public class TopicDetailActivityV2 extends BaseActivity {
     @BindView(R.id.ll_empty)
     LinearLayout ll_empty;
 
+    @BindView(R.id.smartRefreshLayout)
+    SmartRefreshLayout smartRefreshLayout;
+
+
     private String topicId;
     //排序方式 0默认，按排序值 1按时间
     private String sort_type = "0";
@@ -143,11 +153,28 @@ public class TopicDetailActivityV2 extends BaseActivity {
     }
 
 
+    private void initSamrtLayout() {
+        XnClassicsHeader header =  new XnClassicsHeader(this);
+        smartRefreshLayout.setRefreshHeader(header);
+        smartRefreshLayout.setDisableContentWhenRefresh(true);
+        smartRefreshLayout.setDisableContentWhenLoading(true);
+        smartRefreshLayout.setEnableLoadMore(false);
+
+        //下拉刷新
+        smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
+            getTopicDetail();
+            getListByTopicId();
+        });
+
+    }
+
+
     public static int solid_title_height;
+
     @Override
     public void initFirstData() {
 
-
+        initSamrtLayout();
 
         topicId = getIntent().getStringExtra("topicId");
 
@@ -184,6 +211,12 @@ public class TopicDetailActivityV2 extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<List<CircleBean>>>() {
                     @Override
                     public void onSuccess(HttpResponse<List<CircleBean>> response) {
+
+                        if(smartRefreshLayout != null){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
+
                         hideWaitingDialog();
 
 
@@ -276,6 +309,11 @@ public class TopicDetailActivityV2 extends BaseActivity {
                 .subscribe(new BaseObserver<HttpResponse<TopicBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<TopicBean> response) {
+
+                        if(smartRefreshLayout != null){
+                            smartRefreshLayout.finishRefresh();
+                        }
+
                         mTopicBean = response.getReturn_data();
                         tv_title.setText("#" + mTopicBean.getTitle());
                         setHeadData(mTopicBean);
@@ -291,6 +329,7 @@ public class TopicDetailActivityV2 extends BaseActivity {
         if(!TextUtils.isEmpty(bean.getIcon())){
             Glide.with(this).load(bean.getIcon())
                     .apply(bitmapTransform(new BlurTransformation(25)))
+                    .dontAnimate()
                     .into(bg_img);
             ImageUtil.loadByDefaultHead(this,bean.getIcon(),one_img);
         }else{
@@ -342,12 +381,16 @@ public class TopicDetailActivityV2 extends BaseActivity {
         alreadFocus.setOnClickListener(v -> {
             if(!mTopicBean.isIs_follow()){
                 followTopic(0,mTopicBean.getId() + "");
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_topicflow_follow_2_2_0);
             }else{
                 showCancelFocusDialog(0,mTopicBean.getId());
             }
         });
 
         send_choose.setOnClickListener(v -> {
+
+            MobclickAgentUtils.onEvent(UmengEvent.quanzi_topicflow_sift_2_2_0);
+
             CircleBean item = new CircleBean();
             showPopupWindow(item,send_choose);
             StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
@@ -433,6 +476,13 @@ public class TopicDetailActivityV2 extends BaseActivity {
 //                StringUtil.setBackgroundAlpha((Activity) mContext, 0.6f);
 //                break;
             case R.id.create_blog:
+
+                if(StringUtil.isFastClick()){
+                    return;
+                }
+
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_topicflow_pub_2_2_0);
+
                 UIHelper.toCircleMakeActivityV2(this,mTopicBean);
                 break;
             case R.id.iv_back:

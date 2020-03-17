@@ -32,6 +32,7 @@ import com.qmkj.niaogebiji.module.bean.NewPointTaskBean;
 import com.qmkj.niaogebiji.module.bean.NewUserTaskBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.FeatherEvent;
+import com.qmkj.niaogebiji.module.event.FeatherEventV2;
 import com.qmkj.niaogebiji.module.event.ShowSignRedPointEvent;
 import com.qmkj.niaogebiji.module.event.UserFeatherEvent;
 import com.socks.library.KLog;
@@ -366,15 +367,11 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
                         if(null != te){
                             getPoint = te.getPoint() + "";
 
-
-//                            getUserInfoToChangeFeahter();
-
-                            //TODO 3.16 手动设置状态
+                            //TODO 3.16 手动设置状态 -- 发现是后台问题，获取积分了，此状态还没改变以及用户的积分数也没有添加
                             mNewTaskAdapter.getData().get(position).setStatus("2");
                             mNewTaskAdapter.notifyDataSetChanged();
                             showFeatherNewTaskDialog(getPoint);
 
-                            EventBus.getDefault().post(new FeatherEvent(getPoint));
                         }
 
 
@@ -400,7 +397,7 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
 
         }).setNegativeButton("知道了", v -> {
 
-//            getUserInfoToChangeFeahter();
+            getUserInfoToChangeFeahter();
 
 
 

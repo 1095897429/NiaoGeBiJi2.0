@@ -27,6 +27,7 @@ import com.qmkj.niaogebiji.module.adapter.NewsFragmentAdapter;
 import com.qmkj.niaogebiji.module.bean.NewsChannelBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.FeatherEvent;
+import com.qmkj.niaogebiji.module.event.FeatherEventV2;
 import com.qmkj.niaogebiji.module.event.UserFeatherEvent;
 import com.qmkj.niaogebiji.module.fragment.FeatherItemFragment1;
 import com.qmkj.niaogebiji.module.fragment.FeatherItemFragment2;
@@ -438,7 +439,13 @@ public class FeatherActivity  extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventBus(FeatherEvent event){
-        my_feather.setText(userInfo.getPoint() + event.num);
+        my_feather.setText(event.num);
+    }
+
+    //有待测试
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFeatherEventV2(FeatherEventV2 event){
+        my_feather.setText((Integer.parseInt(event.num) + Integer.parseInt(event.num)) +"");
     }
 
     private void initSamrtLayout() {

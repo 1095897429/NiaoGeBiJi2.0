@@ -4,99 +4,109 @@
     android:orientation="vertical"
     android:paddingLeft="16dp"
     android:layout_width="match_parent"
-    android:layout_height="72.5dp">
+    android:layout_height="wrap_content">
 
 
-
-    <com.qmkj.niaogebiji.module.widget.RCImageView
-        android:layout_centerVertical="true"
-        android:id="@+id/one_img_imgs"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:scaleType="centerCrop"
-        app:round_as_circle="false"
-        app:round_corner="12dp" />
-
-
-    <LinearLayout
-        android:id="@+id/part2"
-        android:layout_toRightOf="@+id/one_img_imgs"
-        android:layout_toLeftOf="@+id/right_part"
-        android:layout_marginLeft="10dp"
-        android:layout_centerVertical="true"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/top_title"
-            android:text="#找资源找资源找资源找资源找资源找资找资源找资源找资源找资源找资源找资源源找资源"
-            android:textSize="17sp"
-            android:maxLines="2"
-            android:textColor="@color/text_first_color"
+
+        <com.qmkj.niaogebiji.module.widget.RCImageView
+            android:layout_marginTop="16dp"
+            android:id="@+id/one_img_imgs"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            app:round_as_circle="false"
+            app:round_corner="12dp" />
+
+
+        <LinearLayout
+            android:id="@+id/part2"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_toRightOf="@+id/one_img_imgs"
+            android:layout_toLeftOf="@+id/right_part"
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/top_title"
+                android:text="#找资源找资源找资源找资源找资源找
+            资找资源找资源找资源找资源找资源找资源源找资源
+找资源找资源找资源找资源找资源找资找资源找资源找资源找资源找资源找资源源找资源"
+                android:textSize="17sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:id="@+id/top_focus_num"
+                android:text="dddd"
+                android:layout_marginTop="8dp"
+                android:visibility="visible"
+                android:textSize="11sp"
+                android:textColor="@color/text_second_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_marginTop="18.5dp"
+            android:id="@+id/right_part"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
 
-        <TextView
-            android:id="@+id/top_focus_num"
-            android:text="dddd"
-            android:layout_marginTop="8dp"
-            android:visibility="visible"
-            android:textSize="11sp"
-            android:textColor="@color/text_second_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:id="@+id/right_part"
-        android:layout_marginRight="16dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-
-        <TextView
-            android:id="@+id/focus"
-            android:textColor="@color/text_news_title_color"
-            android:textSize="14sp"
-            android:visibility="visible"
-            android:text="关注"
-            android:gravity="center"
-            android:background="@drawable/bg_corners_8_yellow"
-            android:layout_width="64dp"
-            android:layout_height="32dp" />
+            <TextView
+                android:id="@+id/focus"
+                android:textColor="@color/text_news_title_color"
+                android:textSize="14sp"
+                android:visibility="visible"
+                android:text="关注"
+                android:gravity="center"
+                android:background="@drawable/bg_corners_8_yellow"
+                android:layout_width="64dp"
+                android:layout_height="32dp" />
 
 
 
-        <TextView
-            android:gravity="center"
-            android:id="@+id/focus_aleady"
-            android:textColor="#818386"
-            android:visibility="gone"
-            android:textSize="14sp"
-            android:text="已关注"
-            android:background="@drawable/bg_corners_8_gray"
-            android:layout_width="64dp"
-            android:layout_height="32dp" />
+            <TextView
+                android:gravity="center"
+                android:id="@+id/focus_aleady"
+                android:textColor="#818386"
+                android:visibility="gone"
+                android:textSize="14sp"
+                android:text="已关注"
+                android:background="@drawable/bg_corners_8_gray"
+                android:layout_width="64dp"
+                android:layout_height="32dp" />
 
-    </LinearLayout>
+        </LinearLayout>
 
 
 
 
 
-    <View
-        android:layout_alignLeft="@+id/part2"
-        android:layout_alignParentBottom="true"
-        android:background="@color/divider_line"
-        android:layout_width="match_parent"
-        android:layout_height="1px"/>
+        <View
+            android:layout_alignLeft="@+id/part2"
+            android:layout_alignParentBottom="true"
+            android:background="@color/divider_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+    </RelativeLayout>
+
+
 
 </RelativeLayout>

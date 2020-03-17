@@ -15,6 +15,7 @@ import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FouBBBB;
 import com.qmkj.niaogebiji.module.bean.History;
@@ -101,9 +102,15 @@ public class CircleTopicAdapter extends BaseQuickAdapter<TopicBean, BaseViewHold
                 //及时刷新
                 notifyItemChanged(helper.getAdapterPosition());
                 UIHelper.toTopicDetailActivity(mContext,item.getId()+"");
+
+                if(helper.getAdapterPosition() <= 4){
+                    MobclickAgentUtils.onEvent("quanzi_recommendlist_flwedtopic_"+ (helper.getAdapterPosition()  + 1) +"_2_2_0");
+                }
+
             }else{
                 if("1".equals(item.getType())){
                     UIHelper.toTopListActivity(mContext);
+                    MobclickAgentUtils.onEvent(UmengEvent.quanzi_recommendlist_flwedtopic_explore_2_2_0);
                 }else if("3".equals(item.getType())){
                     UIHelper.toTopListActivity(mContext);
                 }

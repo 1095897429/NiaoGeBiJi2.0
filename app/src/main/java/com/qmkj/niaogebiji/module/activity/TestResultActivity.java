@@ -199,20 +199,21 @@ public class TestResultActivity extends BaseActivity {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            bean.setBitmap(bitmap);
-            bean.setImg(mSchoolTest.getIcon());
-            bean.setLink(mSchoolTest.getShare_url());
-            bean.setContent(mSchoolTest.getShare_content());
-            if(msg.what == 0x111){
-                bean.setShareType("circle_link");
-                bean.setTitle(mSchoolTest.getMoments_share_title());
-            }else{
-                bean.setShareType("weixin_link");
-                bean.setTitle(mSchoolTest.getShare_title());
+            if(mSchoolTest != null){
+                bean.setBitmap(bitmap);
+                bean.setImg(mSchoolTest.getIcon());
+                bean.setLink(mSchoolTest.getShare_url());
+                bean.setContent(mSchoolTest.getShare_content());
+                if(msg.what == 0x111){
+                    bean.setShareType("circle_link");
+                    bean.setTitle(mSchoolTest.getMoments_share_title());
+                }else{
+                    bean.setShareType("weixin_link");
+                    bean.setTitle(mSchoolTest.getShare_title());
 
+                }
+                StringUtil.shareWxByWeb(TestResultActivity.this,bean);
             }
-            StringUtil.shareWxByWeb(TestResultActivity.this,bean);
-
         }
     };
 

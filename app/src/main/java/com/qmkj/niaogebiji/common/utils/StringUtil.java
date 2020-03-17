@@ -259,6 +259,9 @@ public class StringUtil {
         alertDialog.setOnDialogItemClickListener(position -> {
             switch (position) {
                 case 4:
+
+                    MobclickAgentUtils.onEvent(UmengEvent.index_detail_share_quanzi_2_2_0);
+
                     UIHelper.toCircleMakeActivityV2(activity,null,mNewsDetailBean);
                     break;
                 case 0:

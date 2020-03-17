@@ -12,6 +12,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
@@ -107,6 +108,12 @@ public class HotAuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseVi
             if(StringUtil.isFastClick()){
                 return;
             }
+
+            if(helper.getAdapterPosition() <= 4){
+                MobclickAgentUtils.onEvent("index_hot_hotauthor_"+ (helper.getAdapterPosition()  + 1) +"_2_2_0");
+            }
+
+
 
             UIHelper.toAuthorDetailActivity(mContext,item.getId());
         });

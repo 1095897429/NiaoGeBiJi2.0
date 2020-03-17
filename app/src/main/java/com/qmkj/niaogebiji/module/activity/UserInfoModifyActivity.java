@@ -13,13 +13,10 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -194,7 +191,10 @@ public class UserInfoModifyActivity extends BaseActivity {
             profession_name.setText("离职");
             mComanyOld = userInfo.getCompany_name();
 
-            mComanyOld = mComanyOld.substring(1);
+            if(!TextUtils.isEmpty(mComanyOld)){
+                mComanyOld = mComanyOld.substring(1);
+            }
+
             mPositionOld = userInfo.getPosition();
 
             company_name_old_text.setText(mComanyOld);
@@ -254,13 +254,17 @@ public class UserInfoModifyActivity extends BaseActivity {
         if("1".equals(stutus) || TextUtils.isEmpty(stutus)){
             ll_company.setVisibility(View.VISIBLE);
             profession_name_now.setVisibility(View.VISIBLE);
+            MobclickAgentUtils.onEvent(UmengEvent.i_edit_worksitua_ing_2_2_0);
         }else if("2".equals(stutus)){
             company_name_old.setVisibility(View.VISIBLE);
             profession_name_old.setVisibility(View.VISIBLE);
+            MobclickAgentUtils.onEvent(UmengEvent.i_edit_worksitua_quit_2_2_0);
         }else if("3".equals(stutus)){
             profession_other.setVisibility(View.VISIBLE);
+            MobclickAgentUtils.onEvent(UmengEvent.i_edit_worksitua_free_2_2_0);
         }else if("4".equals(stutus)){
             ll_school.setVisibility(View.VISIBLE);
+            MobclickAgentUtils.onEvent(UmengEvent.i_edit_worksitua_stud_2_2_0);
         }
 
     }
@@ -318,31 +322,45 @@ public class UserInfoModifyActivity extends BaseActivity {
 
             case R.id.company_name_now:
 
+                MobclickAgentUtils.onEvent(UmengEvent.i_edit_company_2_2_0);
+
+
                 UIHelper.toModifyUserInfo(this,"company",mCompany);
                 break;
 
             case R.id.profession_name_now:
 
+                MobclickAgentUtils.onEvent(UmengEvent.i_edit_position_2_2_0);
+
                 UIHelper.toModifyUserInfo(this,"profession",mPosition);
                 break;
 
             case R.id.profession_status:
+
+                MobclickAgentUtils.onEvent(UmengEvent.i_edit_worksitua_2_2_0);
+
                 getOptionData();
                 initOptionPicker();
 
                 break;
             case R.id.profile_info:
-                MobclickAgentUtils.onEvent(UmengEvent.i_setting_profile_2_0_0);
+//                MobclickAgentUtils.onEvent(UmengEvent.i_setting_profile_2_0_0);
+
+                MobclickAgentUtils.onEvent(UmengEvent.i_edit_profile_2_2_0);
 
                 UIHelper.toModifyUserInfo(this,"profile",mPro_summary);
                 break;
             case R.id.change_nickname:
-                MobclickAgentUtils.onEvent(UmengEvent._setting_nickname_2_0_0);
+//                MobclickAgentUtils.onEvent(UmengEvent._setting_nickname_2_0_0);
+
+                MobclickAgentUtils.onEvent(UmengEvent.i_edit_nickname_2_2_0);
 
                 UIHelper.toModifyUserInfo(this,"nickname",mNickname);
                 break;
             case R.id.change_head:
-                MobclickAgentUtils.onEvent(UmengEvent.i_setting_icon_2_0_0);
+//                MobclickAgentUtils.onEvent(UmengEvent.i_setting_icon_2_0_0);
+
+                MobclickAgentUtils.onEvent(UmengEvent.i_edit_icon_2_2_0);
                 showHeadDialog();
                 break;
             case R.id.submit:

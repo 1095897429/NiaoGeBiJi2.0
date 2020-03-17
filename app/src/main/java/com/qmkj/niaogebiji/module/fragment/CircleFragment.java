@@ -397,30 +397,48 @@ public class CircleFragment extends BaseLazyFragment {
                 changeData();
                 break;
             case R.id.search_part:
-            case R.id.icon_search:
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_searchbar_2_0_0);
 
                 UIHelper.toSearchActivity(getActivity());
                 break;
+            case R.id.icon_search:
+                //小搜索
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_searchlitt_2_2_0);
+
+                UIHelper.toSearchActivity(getActivity());
+                break;
             case R.id.rl_newmsg:
-            case R.id.rl_newmsg_2:
-                //TODO 测试布局移动
-
-//                Animation translateAnimation = AnimationUtils.loadAnimation(getActivity(),R.anim.trans);
-//                ll_circle_send.setAnimation(translateAnimation);
-//                ll_circle_send.startAnimation(translateAnimation);
-//                initAnim();
-
-
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_message_2_0_0);
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
 
                 break;
+            case R.id.rl_newmsg_2:
+                //小信息
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_messlitt_2_2_0);
+                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
+
+                break;
             case R.id.icon_send_msg:
+//                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_2_0_0); 之前用的
+
+
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_pub_topic_2_2_0);
+
+                //① 用getActivity方法发起调用，只有父Activity的onActivityResult会调用，Fragment中的onActivityResult不会被调用
+//                Intent intent = new Intent(getActivity(), CircleMakeActivityV2.class);
+//                startActivityForResult(intent,100);
+
+                UIHelper.toCircleMakeActivityV2(getActivity(),null);
+
+                //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                getActivity().overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                break;
+
             case R.id.icon_send:
 
-                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_2_0_0);
+//                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publish_2_0_0);之前用的
 
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_publitt_2_2_0);
 
                 //① 用getActivity方法发起调用，只有父Activity的onActivityResult会调用，Fragment中的onActivityResult不会被调用
 //                Intent intent = new Intent(getActivity(), CircleMakeActivityV2.class);

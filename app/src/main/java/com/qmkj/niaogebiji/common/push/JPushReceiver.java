@@ -43,6 +43,7 @@ import cn.jpush.android.service.JPushMessageReceiver;
  * 1.如果通过极光接入厂商，那么都会走这里； -- 统一了(华为的走这里 小米走这里)【前提是不需要在xml中注册单独的receiver】
  */
 public class JPushReceiver extends JPushMessageReceiver {
+
     private static final String TAG = "tag";
 
 
@@ -145,6 +146,12 @@ public class JPushReceiver extends JPushMessageReceiver {
                 KLog.e("tag"," 外链");
                 //外 link - ok
                 String link = jump_info;
+                i = new Intent(context, WebViewActivityWithLayout.class);
+                i.putExtra("link",link);
+                i.putExtra("fromWhere","");
+            }else if("2".equals(jump_type)){
+                KLog.e("tag","认证中心");
+                String link = StringUtil.getLink("certificatecenter/");
                 i = new Intent(context, WebViewActivityWithLayout.class);
                 i.putExtra("link",link);
                 i.putExtra("fromWhere","");

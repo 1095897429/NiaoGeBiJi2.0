@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
@@ -50,6 +51,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.CooperateToolAdapter;
@@ -66,6 +69,8 @@ import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.widget.AndroidBug5497Workaround;
+import com.qmkj.niaogebiji.module.widget.MyWebChromeClientByCamera;
+import com.qmkj.niaogebiji.module.widget.MyWebChromeClientJieTu;
 import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.socks.library.KLog;
@@ -122,6 +127,28 @@ public class CooperationActivity extends BaseActivity {
 
     String url;
 
+
+    private MyWebChromeClientByCamera mMyWebChromeClient;
+
+
+    //用于webview图片选择权限的回调
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+
+    //用于webview图片选择的回调
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mMyWebChromeClient != null) {
+            mMyWebChromeClient.onActivityResult(requestCode, resultCode, data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
     @Override
     public void initFirstData() {
 
@@ -139,29 +166,17 @@ public class CooperationActivity extends BaseActivity {
             url  = "http://apph5.xy860.com/qddp/index";
         }
 
+
+
+        //加了webview可图片上传功能
+        mMyWebChromeClient = new MyWebChromeClientByCamera(this,tv_title, () -> hideWaitingDialog());
+        mMyWebView.setWebChromeClient(mMyWebChromeClient);
+
         mMyWebView.loadUrl(url);
 
         //js交互 -- 给js调用app的方法，xnNative是协调的对象
         mMyWebView.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
 
-        mMyWebView.setWebChromeClient(new WebChromeClient(){
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
-                if(100 == newProgress){
-                    hideWaitingDialog();
-                }
-            }
-
-            @Override
-            public void onReceivedTitle(WebView view, String title) {
-                super.onReceivedTitle(view, title);
-                if(tv_title != null){
-                    tv_title.setText(title);
-                }
-            }
-
-        });
         mMyWebView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -216,6 +231,10 @@ public class CooperationActivity extends BaseActivity {
                 space_view.setVisibility(View.GONE);
             break;
             case R.id.icon_tool:
+
+                MobclickAgentUtils.onEvent(UmengEvent.tools_toollist_2_2_0);
+
+
                 //初始化列表布局
 
                 ll_tool.setVisibility(View.VISIBLE);
@@ -255,6 +274,10 @@ public class CooperationActivity extends BaseActivity {
 
                 break;
             case R.id.icon_cooperate_close:
+
+                MobclickAgentUtils.onEvent(UmengEvent.tools_close_2_0_0);
+
+
                 finish();
                 //参数一：Activity1进入动画，参数二：Activity2退出动画
                 overridePendingTransition(R.anim.activity_alpha_enter, R.anim.activity_exit_bottom);
@@ -318,6 +341,13 @@ public class CooperationActivity extends BaseActivity {
                     toJumpWX(appid);
                 }
             }
+
+            if(position <= 4){
+                MobclickAgentUtils.onEvent("tools_toollist_tool"+ (position  + 1) +"_2_2_0");
+            }
+
+
+
         });
 
     }
@@ -425,8 +455,6 @@ public class CooperationActivity extends BaseActivity {
                     String result = b.optString("type");
                     if("shareVip".equals(result)){
                         //VIP 个人分享
-//                        RegisterLoginBean.UserInfo userInfo = StringUtil.getUserInfoBean();
-//                        showShareVipDialog(userInfo);
                     }else if("toVipMember".equals(result)){
                         //去vip界面
                         String link = StringUtil.getLink("vipmember");

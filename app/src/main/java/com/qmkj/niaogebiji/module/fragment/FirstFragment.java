@@ -543,8 +543,10 @@ public class FirstFragment extends BaseLazyFragment {
                     MobclickAgentUtils.onEvent(UmengEvent.index_flow_index_tab_2_0_0);
 
                 }else if(position == 2){
-                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_activity_tab_2_0_0);
+                    MobclickAgentUtils.onEvent(UmengEvent.index_news_tab_2_2_0);
 
+                }else if(position == 3){
+                    MobclickAgentUtils.onEvent(UmengEvent.index_flow_activity_tab_2_0_0);
                 }
 
             }
@@ -629,8 +631,12 @@ public class FirstFragment extends BaseLazyFragment {
 
                 break;
             case R.id.search_part:
-            case R.id.icon_search:
                 MobclickAgentUtils.onEvent(UmengEvent.index_searchbar_2_0_0);
+
+                UIHelper.toSearchActivity(getActivity());
+                break;
+            case R.id.icon_search:
+                MobclickAgentUtils.onEvent(UmengEvent.index_searchlitt_2_2_0);
 
                 UIHelper.toSearchActivity(getActivity());
                 break;

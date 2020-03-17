@@ -370,12 +370,13 @@ public class NewsDetailActivity extends BaseActivity {
 
 
                 //判断是否关联作者，如果关联，则调到用户界面 author_uid ，没有，调到作者详情页 authoid
-                KLog.d("tag","author_uid " + mNewsDetailBean.getAuthor_uid());
-                if(mNewsDetailBean.getAuthor_uid().equals("0")){
-                    UIHelper.toAuthorDetailActivity(mContext,mNewsDetailBean.getAuthor_id());
-                }else{
-                    UIHelper.toUserInfoV2Activity(mContext,mNewsDetailBean.getAuthor_uid());
+                if(mNewsDetailBean != null ){
+                    if( mNewsDetailBean.getAuthor_uid().equals("0")){
+                        UIHelper.toAuthorDetailActivity(mContext,mNewsDetailBean.getAuthor_id());
+                    }else{
+                        UIHelper.toUserInfoV2Activity(mContext,mNewsDetailBean.getAuthor_uid());
 
+                    }
                 }
 
                 break;
@@ -386,7 +387,9 @@ public class NewsDetailActivity extends BaseActivity {
             case R.id.share:
                 MobclickAgentUtils.onEvent(UmengEvent.index_detail_downsharebtn_2_0_0);
 
-                StringUtil.showShareDialog(NewsDetailActivity.this,mNewsDetailBean);
+                if(mNewsDetailBean != null){
+                    StringUtil.showShareDialog(NewsDetailActivity.this,mNewsDetailBean);
+                }
                 break;
             case R.id.test_submit:
                 if(isQuestionClick){
@@ -1531,7 +1534,7 @@ public class NewsDetailActivity extends BaseActivity {
             imageView.setImageResource(R.mipmap.icon_flash_priase_28v2);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select_no));
         }else if("1".equals(is_good + "")){
-            imageView.setImageResource(R.mipmap.icon_flash_priase_select_28);
+            imageView.setImageResource(R.mipmap.icon_flash_priase_select);
             zan_num.setTextColor(mContext.getResources().getColor(R.color.zan_select));
         }
     }

@@ -333,6 +333,10 @@ public class HomeActivityV2 extends BaseActivity {
             }else if("70".equals(jump_type)){
                 String link = jump_info;
                 UIHelper.toWebViewActivityWithOnLayout(this,link,"");
+            }else if("2".equals(jump_type)){
+                KLog.e("tag","认证中心");
+                String link = StringUtil.getLink("certificatecenter");
+                UIHelper.toWebViewActivityWithOnLayout(this,link,"");
             }else{
 
             }
@@ -551,6 +555,8 @@ public class HomeActivityV2 extends BaseActivity {
                     if(StringUtil.isFastClick()){
                         return;
                     }
+
+                    MobclickAgentUtils.onEvent(UmengEvent.tools_tab_2_2_0);
                     UIHelper.toCooperationActivity(this,mToolBean.getUrl());
                 }
 

@@ -1,11 +1,13 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -47,6 +49,7 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.PicPreviewActivityV2;
 import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterMy;
 import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
@@ -327,6 +330,12 @@ public class MyFragment extends BaseLazyFragment {
                             ll_product.setVisibility(View.GONE);
                         }
                     }
+
+                    @Override
+                    public void onNetFail(String msg) {
+                        //其他错误也将其隐藏
+                        ll_product.setVisibility(View.GONE);
+                    }
                 });
     }
 
@@ -422,7 +431,9 @@ public class MyFragment extends BaseLazyFragment {
             }
 
 
-
+            //name_vertify 完善信息
+            //name_author_tag 公司 + 职位
+            //name_vertify_no 立即认证
             if(TextUtils.isEmpty(mUserInfo.getCompany_name()) &&
                     TextUtils.isEmpty(mUserInfo.getPosition()) ){
                 name_vertify.setVisibility(View.VISIBLE);
@@ -438,6 +449,9 @@ public class MyFragment extends BaseLazyFragment {
                     if(StringUtil.isFastClick()){
                         return;
                     }
+
+                    MobclickAgentUtils.onEvent(UmengEvent.i_complete_2_2_0);
+
 
                     UIHelper.toUserInfoModifyActivity(getActivity());
 
@@ -473,6 +487,8 @@ public class MyFragment extends BaseLazyFragment {
 //                        ToastUtils.showShort("去认证h5界面");
 //                        String rul = "http://192.168.14.41:8080/certificatecenter";
 
+                        MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_2_0);
+
                         UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
                     });
 
@@ -489,7 +505,7 @@ public class MyFragment extends BaseLazyFragment {
                 toVip.setVisibility(View.VISIBLE);
             }
 
-            ImageUtil.loadByDefaultHead(mContext,mUserInfo.getAvatar() + Constant.scaleSize,head_icon);
+            ImageUtil.loadByDefaultHead(mContext,mUserInfo.getAvatar(),head_icon);
 
 //            Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.bg_flash);
 //            Bitmap res = ImageUtils.addTextWatermark(bitmap,"靓仔",16,getResources().getColor(R.color.text_first_color),10,10);
@@ -599,6 +615,9 @@ public class MyFragment extends BaseLazyFragment {
 //                    String rul = "http://192.168.14.41:8080/certificatecenter";
 //                    UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),rul);
 
+                    MobclickAgentUtils.onEvent(UmengEvent.i_certcenter_2_2_0);
+
+
                     //这里涉及到返回上层， -- onLayout(重写了方法) -- webviewAll(js交互)
                     UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
 
@@ -632,7 +651,8 @@ public class MyFragment extends BaseLazyFragment {
                 R.id.toQue,R.id.advice_ll,
                 R.id.head_icon,
                 R.id.rl_newmsg,
-                R.id.part2222_2
+                R.id.part2222_2,
+                 R.id.toUserInfo
     })
     public void clicks(View view){
         if(StringUtil.isFastClick()){
@@ -652,10 +672,25 @@ public class MyFragment extends BaseLazyFragment {
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
 
                 break;
-            case R.id.head_icon:
+            case R.id.toUserInfo:
                 MobclickAgentUtils.onEvent(UmengEvent.i_icon_2_0_0);
 
                 UIHelper.toUserInfoV2Activity(getActivity(),mUserInfo.getUid());
+
+                break;
+            case R.id.head_icon:
+                ArrayList<String> pics = new ArrayList<>();
+                pics.add(mUserInfo.getAvatar());
+                //手动跳转
+                Intent intent = new Intent(mContext, PicPreviewActivityV2.class);
+                Bundle bundle = new Bundle ();
+                bundle.putStringArrayList ("imageList", pics);
+                bundle.putBoolean("fromNet",true);
+                bundle.putInt("index",0);
+                bundle.putString("from","userinfo");
+                bundle.putBoolean("isShowDown",true);
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
 
                 break;
             case R.id.advice_ll:
@@ -691,9 +726,13 @@ public class MyFragment extends BaseLazyFragment {
 
                 break;
             case R.id.toExchange:
-            case R.id.all_part1111:
                 MobclickAgentUtils.onEvent(UmengEvent.i_exchange_2_0_0);
                 KLog.d("tag","去羽毛商城");
+                UIHelper.toFeatherProductListActivity(getActivity());
+                break;
+            case R.id.all_part1111:
+                MobclickAgentUtils.onEvent(UmengEvent.i_exchange_more_2_2_0);
+                KLog.d("tag","更多好礼");
                 UIHelper.toFeatherProductListActivity(getActivity());
                 break;
             case R.id.part3333_3:

@@ -13,6 +13,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
@@ -95,6 +96,10 @@ public class HotNewsAdapterV2 extends BaseMultiItemQuickAdapter<MultiNewsBean, B
         helper.itemView.setOnClickListener(v -> {
             if(StringUtil.isFastClick()){
                 return;
+            }
+
+            if(helper.getAdapterPosition() <= 4){
+                MobclickAgentUtils.onEvent("index_hot_hotweek_"+ (helper.getAdapterPosition()  + 1) +"_2_2_0");
             }
 
             String aid = bean.getAid();

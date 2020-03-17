@@ -172,14 +172,14 @@ public class AboutUsActivity extends BaseActivity {
                 ToastUtils.showShort("已复制到剪贴板！请打开微信粘贴搜索   并直接打开微信");
                 break;
             case R.id.rl_version_code:
-//                checkupd();
-//                MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
+                checkupd();
+                MobclickAgentUtils.onEvent(UmengEvent.i_about_ver_2_0_0);
 
 
 
-                copy(mRegisterLoginBean.getAccess_token());
-
-                ToastUtils.showShort("已复制到剪贴板");
+//                copy(mRegisterLoginBean.getAccess_token()); 给测试用的
+//
+//                ToastUtils.showShort("已复制到剪贴板");
                 break;
             case R.id.iv_back:
                 finish();

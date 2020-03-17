@@ -19,6 +19,8 @@ import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
@@ -76,6 +78,14 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                 return;
             }
 
+            //在话题选择中的只有事件
+//            if("TopicListActivity".equals(mContext.getClass().getSimpleName())){
+//
+//            }
+
+            MobclickAgentUtils.onEvent(UmengEvent.quanzi_topiclist_littletopic_2_2_0);
+
+
             UIHelper.toTopicDetailActivity(mContext,item.getId() + "");
 
         });
@@ -131,6 +141,9 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
             TopicBean bean = mData.get(mPosition);
             if(!bean.isIs_follow()){
                 followTopic(mPosition,bean.getId() + "");
+
+                MobclickAgentUtils.onEvent(UmengEvent.quanzi_topiclist_follow_2_2_0);
+
             }else{
                 showCancelFocusDialog(mPosition,bean.getId());
             }

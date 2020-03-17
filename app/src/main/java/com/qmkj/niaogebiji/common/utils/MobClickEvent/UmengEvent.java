@@ -213,4 +213,107 @@ public interface UmengEvent {
 
 
 
+    //2.2版本
+    //闪验 ok
+    String welcome_bindnew_2_2_0 = "welcome_bindnew_2_2_0";
+
+    //热榜  - ok
+    String index_hot_hotweek_2_2_0 = "index_hot_hotweek_2_2_0";
+    String index_hot_hotweek_1_2_3_= "index_hot_hotweek_1_2_2_0";
+    String index_hot_hotauthor_2_2_0 = "index_hot_hotauthor_2_2_0";
+
+    //文章详情页 ok
+    String index_detail_share_quanzi_2_2_0 = "index_detail_share_quanzi_2_2_0";
+
+    //作者详情页 ok
+    String index_authordetail_share_2_2_0 = "index_authordetail_share_2_2_0";
+    String index_authordetail_share_weixin_2_2_0 = "index_authordetai l_share_weixin_2_2_0";
+    String index_authordetail_share_moments_2_2_0 = "index_authordetail_share_moments_2_2_0";
+    String index_authordetail_share_copy_2_2_0 = "index_authordetail_share_copy_2_2_0";
+
+    //快讯 ok
+    String index_news_tab_2_2_0 = "index_news_tab_2_2_0";
+    String index_news_sharelinks_weixin_2_2_0 = "index_news_sharelinks_weixin_2_2_0";
+    String index_news_sharelinks_moments_2_2_0 = "index_news_sharelinks_moments_2_2_0";
+
+    //小搜索 ok
+    String index_searchlitt_2_2_0 = "index_searchlitt_2_2_0";
+
+
+    //我的 ok
+    String i_complete_2_2_0 = "i_complete_2_2_0";
+    String i_auth_2_2_0 = "i_auth_2_2_0";
+    String i_certcenter_2_2_0 = "i_certcenter_2_2_0";
+
+
+
+
+    //我的 -- 羽毛商城 ok
+    String 	i_exchange_1_2_2_0 = "i_exchange_1_2_2_0";
+    String 	i_exchange_more_2_2_0 = "i_exchange_more_2_2_0";
+
+    //个人信息 ok
+    String 	i_inform_share_2_2_0 = "i_inform_share_2_2_0";
+    String 	i_inform_share_weixin_2_2_0 = "i_inform_share_weixin_2_2_0";
+    String 	i_inform_share_moments_2_2_0 = "i_inform_share_moments_2_2_0";
+    String 	i_inform_share_copy_2_2_0 = "i_inform_share_copy_2_2_0";
+
+    String 	i_inform_quanziflw_tab_2_2_0 = "i_inform_quanziflw_tab_2_2_0";
+    String 	i_inform_articletab_2_2_0 = "i_inform_articletab_2_2_0";
+
+    // 我的_个人信息_实名标_2_2_0    我的_个人信息_司职标_2_2_0
+    String 	i_inform_idnoauth_2_2_0 = "i_inform_idnoauth_2_2_0";
+    String 	i_inform_jobauth_2_2_0 = "i_inform_jobauth_2_2_0";
+
+
+    //编辑 ok
+    String 	i_edit_icon_2_2_0 = "i_edit_icon_2_2_0";
+    String 	i_edit_nickname_2_2_0 = "i_edit_nickname_2_2_0";
+    String 	i_edit_worksitua_2_2_0 = "i_edit_worksitua_2_2_0";
+    String 	i_edit_worksitua_ing_2_2_0 = "i_edit_worksitua_ing_2_2_0";
+    String 	i_edit_worksitua_quit_2_2_0 = "i_edit_worksitua_quit_2_2_0";
+    String 	i_edit_worksitua_free_2_2_0 = "i_edit_worksitua_free_2_2_0";
+    String 	i_edit_worksitua_stud_2_2_0 = "i_edit_worksitua_stud_2_2_0";
+    String 	i_edit_company_2_2_0 = "i_edit_company_2_2_0";
+    String 	i_edit_position_2_2_0 = "i_edit_position_2_2_0";
+    String 	i_edit_profile_2_2_0 = "i_edit_profile_2_2_0";
+
+
+    //圈子列表 话题 ok
+    String 	quanzi_recommendlist_flwedtopic_1_2_2_0 = "quanzi_recommendlist_flwedtopic_1_2_2_0";
+    String 	quanzi_recommendlist_flwedtopic_explore_2_2_0 = "quanzi_recommendlist_flwedtopic_explore_2_2_0";
+
+    String 	quanzi_recommendlist_uflwedtopic_1_2_2_0 = "quanzi_recommendlist_uflwedtopic_1_2_2_0";
+    String 	quanzi_recommendlist_uflwedtopic_more_2_2_0 = "quanzi_recommendlist_uflwedtopic_more_2_2_0";
+
+
+    //话题明细 ok
+    String 	quanzi_topicflow_follow_2_2_0 = "quanzi_topicflow_follow_2_2_0";
+    String 	quanzi_topicflow_sift_2_2_0 = "quanzi_topicflow_sift_2_2_0";
+    String 	quanzi_topicflow_pub_2_2_0 = "quanzi_topicflow_pub_2_2_0quanzi_topicflow_pub_2_2_0";
+
+
+    //圈子话题 ok
+    String 	quanzi_pub_topic_2_2_0 = "quanzi_pub_topic_2_2_0";
+    String 	quanzi_topiclist_bigtopic_2_2_0 = "quanzi_topiclist_bigtopic_2_2_0";
+    String 	quanzi_topiclist_littletopic_2_2_0 = "quanzi_topiclist_littletopic_2_2_0";
+    String 	quanzi_topiclist_follow_2_2_0 = "quanzi_topiclist_follow_2_2_0";
+
+
+    //圈子小发布 ok
+    String 	quanzi_searchlitt_2_2_0 = "quanzi_searchlitt_2_2_0";
+    String 	quanzi_publitt_2_2_0 = "quanzi_publitt_2_2_0";
+    String 	quanzi_messlitt_2_2_0 = "quanzi_messlitt_2_2_0";
+
+
+    //工具 ok
+    String 	tools_tab_2_2_0 = "tools_tab_2_2_0";
+    String 	tools_toollist_2_2_0 = "tools_toollist_2_2_0";
+    String 	tools_toollist_tool1_2_2_0 = "tools_toollist_tool1_2_2_0";
+    String 	tools_close_2_0_0 = "tools_close_2_0_0";
+
+
+
+
+
 }

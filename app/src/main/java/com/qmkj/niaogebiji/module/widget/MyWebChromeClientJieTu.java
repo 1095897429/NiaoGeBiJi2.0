@@ -18,8 +18,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.qmkj.niaogebiji.common.dialog.HeadAlertDialog;
 import com.socks.library.KLog;
 
 import static android.app.Activity.RESULT_OK;
@@ -31,7 +33,7 @@ import static android.app.Activity.RESULT_OK;
  * 描述:
  */
 public class MyWebChromeClientJieTu extends WebChromeClient {
-    //定义接受返回值
+    //定义接受返回值 5.0 上下使用
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadCallbackAboveL;
 
@@ -49,11 +51,29 @@ public class MyWebChromeClientJieTu extends WebChromeClient {
     }
 
 
+    //新增的
+    public MyWebChromeClientJieTu(@NonNull Activity mActivity, TextView tv_title,MyListener myListener) {
+        this.mActivity = mActivity;
+        this.mMyListener = myListener;
+        mTitle = tv_title;
+    }
+
+    public interface MyListener{
+        void listener();
+    }
+
+    private MyListener mMyListener;
+
+
     @Override
     public void onProgressChanged(WebView view, int newProgress) {
         if (newProgress == 100) {
             if(mProgressBar != null){
                 mProgressBar.setVisibility(View.GONE);
+            }
+
+            if(null != mMyListener){
+                mMyListener.listener();
             }
         } else {
             if(mProgressBar != null){
@@ -185,4 +205,10 @@ public class MyWebChromeClientJieTu extends WebChromeClient {
     private void openFileChooseProcess() {
         takePhoto();
     }
+
+
+
+
+
+
 }

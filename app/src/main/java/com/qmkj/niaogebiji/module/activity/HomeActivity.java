@@ -57,7 +57,6 @@ import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
-import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragmentV2;
 import com.qmkj.niaogebiji.module.fragment.MyFragment;
 import com.qmkj.niaogebiji.module.fragment.SchoolFragment;

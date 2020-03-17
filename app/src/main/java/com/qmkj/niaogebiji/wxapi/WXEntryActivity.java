@@ -25,7 +25,6 @@ import com.qmkj.niaogebiji.module.event.FlashShareEvent;
 import com.qmkj.niaogebiji.module.event.LoginErrEvent;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.event.LoginSyEvent;
-import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;

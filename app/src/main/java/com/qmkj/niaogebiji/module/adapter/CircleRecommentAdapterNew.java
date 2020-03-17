@@ -45,6 +45,7 @@ import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.GetTimeAgoUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
@@ -332,10 +333,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
     @Override
     protected void convert(BaseViewHolder helper, CircleBean item) {
 
-
         getCircleType(helper,item);
-
-        getIconType(helper,item);
 
         if(CircleRecommentAdapterNew.FOCUS_TOPIC == item.getCircleType()){
             //设置数据
@@ -344,6 +342,13 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                 return;
             }
         }
+
+
+
+
+        getIconType(helper,item);
+
+
 
 
         TextView msg = helper.getView(R.id.content);
@@ -914,6 +919,9 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
             if(StringUtil.isFastClick()){
                 return;
             }
+
+            MobclickAgentUtils.onEvent(UmengEvent.quanzi_recommendlist_uflwedtopic_more_2_2_0);
+
             UIHelper.toTopListActivity(mContext);
         });
 

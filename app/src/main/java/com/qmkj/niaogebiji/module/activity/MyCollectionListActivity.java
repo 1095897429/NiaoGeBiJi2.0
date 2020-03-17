@@ -20,7 +20,6 @@ import com.qmkj.niaogebiji.module.bean.ChannelBean;
 import com.qmkj.niaogebiji.module.fragment.ActionFragment;
 import com.qmkj.niaogebiji.module.fragment.ArcitleCollectionListFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstItemFragment;
-import com.qmkj.niaogebiji.module.fragment.FlashFragment;
 import com.qmkj.niaogebiji.module.fragment.FocusAuthorListFragment;
 import com.qmkj.niaogebiji.module.fragment.FocusFragment;
 import com.qmkj.niaogebiji.module.fragment.HotNewsFragment;

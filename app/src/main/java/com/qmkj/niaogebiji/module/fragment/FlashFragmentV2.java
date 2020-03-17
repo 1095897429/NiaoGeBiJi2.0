@@ -38,6 +38,7 @@ import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
+import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.common.utils.ZXingUtils;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
@@ -353,8 +354,6 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                 LinearLayoutManager linearManager = (LinearLayoutManager) layoutManager;
                 //获取第一个可见view的位置
                 int firstItemPosition = linearManager.findFirstVisibleItemPosition();
-                //获取最后一个可见view的位置
-                int lastItemPosition = linearManager.findLastVisibleItemPosition();
 
                 if(null != mBuilltinBeans){
                     FlashBulltinBean.BuilltinBean temmp = mFlashItemAdapter.getData().get(firstItemPosition);
@@ -419,17 +418,18 @@ public class FlashFragmentV2 extends BaseLazyFragment  {
                     flash_ll.removeAllViews();
                     initShareLayout();
                     bulletinShare();
-
                     break;
                 case 2:
                     KLog.d("tag","vx朋友");
                     sharePositon = 1;
                     bulletinShareByLink();
+                    MobclickAgentUtils.onEvent(UmengEvent.index_news_sharelinks_weixin_2_2_0);
                     break;
                 case 3:
                     KLog.d("tag","vx朋友圈");
                     sharePositon = 0;
                     bulletinShareByLink();
+                    MobclickAgentUtils.onEvent(UmengEvent.index_news_sharelinks_moments_2_2_0);
                     break;
                 default:
             }

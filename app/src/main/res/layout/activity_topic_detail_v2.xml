@@ -88,7 +88,7 @@
                                             android:textColor="@color/white"
                                             android:textSize="22sp"
                                             android:maxLength="20"
-                                            android:text="#我要找资源"
+                                            android:text=""
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content" />
 
@@ -101,8 +101,7 @@
                                             android:textColor="@color/white"
                                             android:textSize="11sp"
                                             android:lineSpacingExtra="4dp"
-                                            android:text="这里是找资源，找合作的话题专区，如果你有需求
-或者经验可以在此话题内发布求助或者观点，大家共同进步这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源这里是找资源"
+                                            android:text=""
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content" />
 
@@ -151,7 +150,7 @@
                                             android:layout_marginRight="20dp"
                                             android:layout_toLeftOf="@+id/ll_focus"
                                             android:layout_centerVertical="true"
-                                            android:text="11w人关注"
+                                            android:text=""
                                             android:textSize="11sp"
                                             android:textColor="@color/white"
                                             android:layout_width="wrap_content"

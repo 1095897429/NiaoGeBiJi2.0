@@ -802,7 +802,9 @@ public class UserInfoModifyActivity extends BaseActivity {
         String img_data = "data:image/png;base64,"  + Bitmap2StrByBase64(bitmap);
         mAvatar_base = img_data;
         type = 1;
-        alterinfo();
+        if(checkStaut()){
+            alterinfo();
+        }
     }
 
 

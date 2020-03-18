@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.qmkj.niaogebiji.module.activity.HomeActivity;
+import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.socks.library.KLog;
 
 import org.json.JSONException;
@@ -55,7 +55,7 @@ public class MyReceiver extends BroadcastReceiver {
 				Logger.d(TAG, "[MyReceiver] 用户点击打开了通知");
 
 				//打开自定义的Activity
-				Intent i = new Intent(context, HomeActivity.class);
+				Intent i = new Intent(context, HomeActivityV2.class);
 				i.putExtras(bundle);
 				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
 				context.startActivity(i);
@@ -108,16 +108,16 @@ public class MyReceiver extends BroadcastReceiver {
 	
 	//send msg to MainActivity
 	private void processCustomMessage(Context context, Bundle bundle) {
-		if (HomeActivity.isForeground) {
+		if (HomeActivityV2.isForeground) {
 			String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
 			String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
-			Intent msgIntent = new Intent(HomeActivity.MESSAGE_RECEIVED_ACTION);
-			msgIntent.putExtra(HomeActivity.KEY_MESSAGE, message);
+			Intent msgIntent = new Intent(HomeActivityV2.MESSAGE_RECEIVED_ACTION);
+			msgIntent.putExtra(HomeActivityV2.KEY_MESSAGE, message);
 			if (!ExampleUtil.isEmpty(extras)) {
 				try {
 					JSONObject extraJson = new JSONObject(extras);
 					if (extraJson.length() > 0) {
-						msgIntent.putExtra(HomeActivity.KEY_EXTRAS, extras);
+						msgIntent.putExtra(HomeActivityV2.KEY_EXTRAS, extras);
 					}
 				} catch (JSONException e) {
 

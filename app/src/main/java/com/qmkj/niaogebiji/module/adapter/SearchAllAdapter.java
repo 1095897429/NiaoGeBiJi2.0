@@ -260,13 +260,12 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
 
 
                 //关注事件 -- 获取uid
-//                mAuthorAdapter.setToActivityFocusListener(position -> {
-//
-//                   if(mToActivityFocusListenerUP != null){
-//                       //第一个是列表中的位置，第二个是列表的列表的位置
-//                       mToActivityFocusListenerUP.toAFocus(helper.getAdapterPosition(),position);
-//                   }
-//                });
+                mAuthorAdapter.setToActivityFocusListener(position -> {
+                   if(mToActivityFocusListenerUP != null){
+                       //第一个是列表中的位置，第二个是列表的列表的位置
+                       mToActivityFocusListenerUP.toAFocus(helper.getAdapterPosition(),position);
+                   }
+                });
 
                 break;
 

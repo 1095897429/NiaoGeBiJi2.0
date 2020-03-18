@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.media.Image;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,9 +33,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
+import com.google.gson.Gson;
+import com.huawei.hms.support.api.push.PushReceiver;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
@@ -51,6 +55,8 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
+import com.qmkj.niaogebiji.module.bean.MessageCooperationBean;
+import com.qmkj.niaogebiji.module.bean.PushBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
@@ -73,13 +79,18 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.helper.Logger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -245,9 +256,10 @@ public class HomeActivityV2 extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(null != getIntent().getExtras()){
-            mJPushBean = (JPushBean) getIntent().getExtras().getSerializable("jpushbean");
-        }
+        KLog.e("tag","Home onCreate");
+
+        //TODO 3.18 华为uri_activity
+        setNocation(getIntent());
 
         initService();
 
@@ -270,7 +282,7 @@ public class HomeActivityV2 extends BaseActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mSendBinder = (SendBinderService.MyBinder) service;
-            Log.e("tag", "Service与Activity已连接111111");
+//            Log.e("tag", "Service与Activity已连接111111");
             mService = ((SendBinderService.MyBinder) service).getService();
         }
 
@@ -302,7 +314,7 @@ public class HomeActivityV2 extends BaseActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mMyBinder = (MediaService.MyBinder) service;
-            Log.d("tag", "Service与Activity已连接");
+//            Log.d("tag", "Service与Activity已连接");
             mMediaService = ((MediaService.MyBinder) service).getInstance();
         }
 
@@ -328,7 +340,7 @@ public class HomeActivityV2 extends BaseActivity {
                 UIHelper.toCommentDetailActivity(this,jump_info);
             }else if("60".equals(jump_type)){
                 //wiki
-                String link = StringUtil.getLink("wikidetail/" + jump_info);
+                String link = StringUtil.getLink( "wikidetail/" + jump_info);
                 UIHelper.toWebViewActivityWithOnStep(this,link);
             }else if("70".equals(jump_type)){
                 String link = jump_info;
@@ -337,6 +349,7 @@ public class HomeActivityV2 extends BaseActivity {
                 KLog.e("tag","认证中心");
                 String link = StringUtil.getLink("certificatecenter");
                 UIHelper.toWebViewActivityWithOnLayout(this,link,"");
+
             }else{
 
             }
@@ -361,22 +374,26 @@ public class HomeActivityV2 extends BaseActivity {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 String result = "javascript:" +"localStorage.setItem('accessToken',\"" + token + "\")";
                 String re11 = "android";
-                String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";;
+                String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";
                 KLog.d("tag",result);
-                KLog.d("tag",result + "");
+                String version = "javascript:" +"localStorage.setItem('version',\"" + AppUtils.getAppVersionName() + "\")";
+                KLog.d("tag","version " + version);
                 if (mMyWebView != null){
                     //传递参数
                     mMyWebView.loadUrl(result);
                     mMyWebView.loadUrl(sss);
+                    mMyWebView.loadUrl(version);
                 }
             } else {//4.4以上 包括4.4
                 String result = "javascript:" +"localStorage.setItem('accessToken',\"" + token + "\")";
                 String re11 = "android";
-                String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";;
-//                KLog.d("tag",result);
+                String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";
+                String version = "javascript:" +"localStorage.setItem('version',\"" + AppUtils.getAppVersionName() + "\")";
+                KLog.d("tag","version " + version);
                 if (mMyWebView != null){
                     mMyWebView.evaluateJavascript(result, value -> {});
                     mMyWebView.evaluateJavascript(sss, value -> {});
+                    mMyWebView.evaluateJavascript(version, value -> {});
                 }
             }
         }
@@ -439,7 +456,7 @@ public class HomeActivityV2 extends BaseActivity {
 //            bottomClick(findViewById(R.id.index_my));
 //        }
 
-
+        //TODO 3.18 这里是普通的极光点击通知走这里
         if(mJPushBean !=  null){
             KLog.e("tag","mJPushBean 类型是 " + mJPushBean.getJump_type()
                     + "  参数 " + mJPushBean.getJump_info());
@@ -462,39 +479,39 @@ public class HomeActivityV2 extends BaseActivity {
 
     @SuppressLint("CheckResult")
     private void guideUser() {
-        RxView.clicks(oldguide)
-                //每1秒中只处理第一个元素
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .subscribe(object -> {
-                    ++count;
-                    KLog.d("tag","count = " + count);
-                    if(count == 2){
-                        guide_num.setText(count + "/4");
-                        guide_text.setText(string[0]);
-                        lp.setMargins(perWidth,0,0,0);
-                        guide_img.setLayoutParams(lp);
-                        guide_img.setImageResource(R.mipmap.bg_oldguide_2);
-                    }else if(count == 3){
-                        guide_num.setText(count + "/4");
-                        guide_text.setText(string[1]);
-                        lp.setMargins(perWidth * 2,0,0,0);
-                        guide_img.setLayoutParams(lp);
-                        guide_img.setImageResource(R.mipmap.bg_oldguide_3);
-                    }else if(count == 4){
-                        //这里对应最后一页
-                        skip.setText("立即体验");
-                        skip.setTextColor(getResources().getColor(R.color.text_first_color));
-                        skip.setBackgroundResource(R.drawable.bg_corners_22_yellow);
-                        guide_text.setText(string[2]);
-                        guide_num.setVisibility(View.GONE);
-                        lp.setMargins(perWidth * 3,0,0,0);
-                        guide_img.setLayoutParams(lp);
-                        guide_img.setImageResource(R.mipmap.bg_oldguide_4);
-                    }else{
-                        oldguide.setVisibility(View.GONE);
-                        SPUtils.getInstance().put("isFirstHomeGuide",true);
-                    }
-                });
+//        RxView.clicks(oldguide)
+//                //每1秒中只处理第一个元素
+//                .throttleFirst(500, TimeUnit.MILLISECONDS)
+//                .subscribe(object -> {
+//                    ++count;
+//                    KLog.d("tag","count = " + count);
+//                    if(count == 2){
+//                        guide_num.setText(count + "/4");
+//                        guide_text.setText(string[0]);
+//                        lp.setMargins(perWidth,0,0,0);
+//                        guide_img.setLayoutParams(lp);
+//                        guide_img.setImageResource(R.mipmap.bg_oldguide_2);
+//                    }else if(count == 3){
+//                        guide_num.setText(count + "/4");
+//                        guide_text.setText(string[1]);
+//                        lp.setMargins(perWidth * 2,0,0,0);
+//                        guide_img.setLayoutParams(lp);
+//                        guide_img.setImageResource(R.mipmap.bg_oldguide_3);
+//                    }else if(count == 4){
+//                        //这里对应最后一页
+//                        skip.setText("立即体验");
+//                        skip.setTextColor(getResources().getColor(R.color.text_first_color));
+//                        skip.setBackgroundResource(R.drawable.bg_corners_22_yellow);
+//                        guide_text.setText(string[2]);
+//                        guide_num.setVisibility(View.GONE);
+//                        lp.setMargins(perWidth * 3,0,0,0);
+//                        guide_img.setLayoutParams(lp);
+//                        guide_img.setImageResource(R.mipmap.bg_oldguide_4);
+//                    }else{
+//                        oldguide.setVisibility(View.GONE);
+//                        SPUtils.getInstance().put("isFirstHomeGuide",true);
+//                    }
+//                });
 
         RxView.clicks(skip)
                 //每1秒中只处理第一个元素
@@ -646,18 +663,85 @@ public class HomeActivityV2 extends BaseActivity {
 
 
 
+    // 打印所有的 intent extra 数据 -- 打印出来就3个
+    private static String printBundle(Bundle bundle) {
+        StringBuilder sb = new StringBuilder();
+        for (String key : bundle.keySet()) {
+            if (key.equals(JPushInterface.EXTRA_NOTIFICATION_ID)) {
+                sb.append("\nkey:" + key + ", value:" + bundle.getInt(key));
+            }else if(key.equals(JPushInterface.EXTRA_CONNECTION_CHANGE)){
+                sb.append("\nkey:" + key + ", value:" + bundle.getBoolean(key));
+            } else if (key.equals(JPushInterface.EXTRA_EXTRA)) {
+                if (TextUtils.isEmpty(bundle.getString(JPushInterface.EXTRA_EXTRA))) {
+                    KLog.e("tag", "This message has no Extra data");
+                    continue;
+                }
+
+                try {
+                    JSONObject json = new JSONObject(bundle.getString(JPushInterface.EXTRA_EXTRA));
+                    Iterator<String> it =  json.keys();
+
+                    while (it.hasNext()) {
+                        String myKey = it.next();
+                        sb.append("\nkey:" + key + ", value: [" +
+                                myKey + " - " +json.optString(myKey) + "]");
+                    }
+                } catch (JSONException e) {
+                    KLog.e("tag", "Get message extra JSON error!");
+                }
+
+            } else {
+                sb.append("\nkey:" + key + ", value:" + bundle.get(key));
+            }
+        }
+        return sb.toString();
+    }
+
+    //TODO 3.17 华为uri_activity + 小米
+    private void setNocation(Intent intent){
+        if(intent != null){
+            Uri uri = intent.getData();
+            if(uri != null ){
+                String json = uri.toString();
+                KLog.e("tag","json " + json);
+                PushBean javaBean = JSON.parseObject(json, PushBean.class);
+                if(javaBean != null){
+                    JPushBean bean = javaBean.getN_extras();
+                    toDiffer(bean);
+                }
+            }
+
+
+            //获取fcm、小米、oppo、vivo平台附带的jpush信息
+            if( intent.getExtras() != null){
+                String json = intent.getExtras().getString("JMessageExtra");
+                KLog.e("tag","json " + json);
+                PushBean javaBean = JSON.parseObject(json, PushBean.class);
+                if(javaBean != null){
+                    JPushBean bean = javaBean.getN_extras();
+                    toDiffer(bean);
+                }
+            }
+        }
+    }
+
+
     //下面是app在前台（已在首页）
     private int fromType;
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        KLog.e("tag","Home onNewIntent");
 
-        mJPushBean = (JPushBean)intent.getExtras().getSerializable("jpushbean");
-        if(mJPushBean !=  null){
-            KLog.e("tag","mJPushBean 类型是 " + mJPushBean.getJump_type()
-                    + "  参数 " + mJPushBean.getJump_info());
-            toDiffer(mJPushBean);
-        }
+        setNocation(intent);
+
+
+//        mJPushBean = (JPushBean)intent.getExtras().getSerializable("jpushbean");
+//        if(mJPushBean !=  null){
+//            KLog.e("tag","mJPushBean 类型是 " + mJPushBean.getJump_type()
+//                    + "  参数 " + mJPushBean.getJump_info());
+//            toDiffer(mJPushBean);
+//        }
 
         if(intent.getExtras() != null){
             fromType =  intent.getExtras().getInt("type");

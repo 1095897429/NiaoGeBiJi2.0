@@ -7,6 +7,7 @@
 
     <RelativeLayout
         android:gravity="center"
+        android:background="@drawable/bg_corners_12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -23,6 +24,11 @@
                 android:scaleType="centerCrop"
                 app:round_as_circle="false"
                 app:round_corner="12dp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_gray_black"></View>
 
 
             <TextView

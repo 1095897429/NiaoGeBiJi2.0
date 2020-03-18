@@ -1,5 +1,7 @@
 package com.qmkj.niaogebiji.common.constant;
 
+import com.qmkj.niaogebiji.module.bean.JPushBean;
+
 /**
  * @author zhouliang
  * 版本 1.0
@@ -71,8 +73,7 @@ public class Constant {
 //    public static final String scaleSize_big_20 = "?auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
 
 
-
-
+    public static final String JPushBean = "jPushBean";
 
 
 

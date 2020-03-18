@@ -432,8 +432,9 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 select_topic_text.setText("#" + mTopicBean.getTitle());
                 topic_delete.setVisibility(View.GONE);
                 ll_topic.setVisibility(View.VISIBLE);
-                topic.setEnabled(false);
                 topic_first.setVisibility(View.GONE);
+
+                topic.setEnabled(true);
             }
         }
 
@@ -545,9 +546,11 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 SPUtils.getInstance().put("isTopicIconClick",true);
                 topic_first.setVisibility(View.GONE);
                 break;
-//            case R.id.ll_topic:
-//                UIHelper.toTopicDetailActivity(this,topicId);
-//                break;
+            case R.id.ll_topic:
+                UIHelper.toTopicSelectivity(this,topicId);
+                //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                break;
             case R.id.topic_delete:
 
                 ll_topic.setVisibility(View.GONE);
@@ -555,8 +558,6 @@ public class CircleMakeActivityV2 extends BaseActivity {
                 topicName = "";
                 break;
             case R.id.topic:
-            case R.id.ll_topic:
-
                 UIHelper.toTopicSelectivity(this,topicId);
                 //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
                 overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
@@ -600,12 +601,12 @@ public class CircleMakeActivityV2 extends BaseActivity {
                     return;
                 }
 
-//                if(! NetworkUtils.isAvailable()){
-//                    ToastUtils.showShort("当前网络不可用");
-//                    return;
-//                }
-
-
+                NetworkUtils.isAvailableAsync(data -> {
+                    if(!data){
+                        ToastUtils.showShort("当前网络不可用");
+                        return;
+                    }
+                });
 
 
                 sendToService();
@@ -1019,7 +1020,6 @@ public class CircleMakeActivityV2 extends BaseActivity {
             topicName = data.getExtras().getString("topicName");
             topicId = data.getExtras().getString("topicId");
 
-//            select_topic_text.setText("#" + topicName + "  " +  topicId );
               select_topic_text.setText("#" + topicName);
         }
     }

@@ -902,23 +902,37 @@ public class CommentDetailActivityV2 extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.ll_topic:
-                UIHelper.toTopicDetailActivity(this,mCircleBean.getTopic_id());
+                if(mCircleBean != null){
+                    UIHelper.toTopicDetailActivity(this,mCircleBean.getTopic_id());
+                }
                 break;
             case R.id.part1111:
                 //头像跳转事件
-                UIHelper.toUserInfoActivity(this,mCircleBean.getUid());
+                if(mCircleBean != null){
+                    UIHelper.toUserInfoActivity(this,mCircleBean.getUid());
+                }
+
                 break;
             case R.id.part_yc_link:
                 //原创外链跳转事件
-                UIHelper.toWebViewActivity(this,mCircleBean.getLink());
+                if(mCircleBean != null){
+                    UIHelper.toWebViewActivity(this,mCircleBean.getLink());
+                }
+
                 break;
             case R.id.part_zf_link:
                 //转发外链点击事件
-                UIHelper.toWebViewActivity(this,mCircleBean.getP_blog().getLink());
+                if(mCircleBean != null){
+                    UIHelper.toWebViewActivity(this,mCircleBean.getP_blog().getLink());
+                }
+
                 break;
             case R.id.part_yc_acticle:
                 //原创文章跳转事件
-                UIHelper.toNewsDetailActivity(this,mCircleBean.getArticle_id());
+                if(mCircleBean != null){
+                    UIHelper.toNewsDetailActivity(this,mCircleBean.getArticle_id());
+                }
+
                 break;
             case R.id.iv_back:
                 finish();
@@ -930,7 +944,9 @@ public class CommentDetailActivityV2 extends BaseActivity {
             case R.id.circle_comment:
             case R.id.toBlogComment:
                 //评论圈子
-                ToBlogDialog(mCircleBean.getId(),"");
+                if(mCircleBean != null){
+                    ToBlogDialog(mCircleBean.getId(),"");
+                }
                 break;
             default:
         }

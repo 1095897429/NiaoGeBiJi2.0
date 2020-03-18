@@ -53,6 +53,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.adapter.CommentSecondAdapter;
 import com.qmkj.niaogebiji.module.bean.ActicleCommentHeadBean;
+import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentCircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
@@ -68,6 +69,7 @@ import com.qmkj.niaogebiji.module.bean.ShareBean;
 import com.qmkj.niaogebiji.module.bean.VipBean;
 import com.qmkj.niaogebiji.module.event.CompleInfoEvent;
 import com.qmkj.niaogebiji.module.event.EditChangeEvent;
+import com.qmkj.niaogebiji.module.event.ProfessionEvent;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.MyWebChromeClientByCamera;
 import com.qmkj.niaogebiji.module.widget.MyWebChromeClientJieTu;
@@ -79,6 +81,7 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -164,14 +167,6 @@ public class WebViewAllActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        for (int i = 0; i < grantResults.length; ++i) {
-
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                //用户勾选了不再提示，函数返回false
-            }
-        }
-
-
 
     }
 
@@ -208,6 +203,8 @@ public class WebViewAllActivity extends BaseActivity {
             iv_back.setVisibility(View.VISIBLE);
             iv_back.setColorFilter(Color.WHITE);
             tv_done.setVisibility(View.GONE);
+        }else if("myactivity".equals(fromWhere)){
+            tv_title.setText("我的发布");
         }
 
         if(TextUtils.isEmpty(link)){
@@ -575,13 +572,22 @@ public class WebViewAllActivity extends BaseActivity {
                         // - ok
                         Constant.isReLoad = true;
                         UIHelper.toTestListActivity(WebViewAllActivity.this);
+                    }else if("toArticleDetail".equals(result)){
+                        //去文章详情
+                        JSONObject object  = b.getJSONObject("params");
+                        String id = object.optString("id");
+                        UIHelper.toNewsDetailActivity(WebViewAllActivity.this,id);
                     }else if("toConfirmOk".equals(result)){
                         //职业认证成功页面 - ok
-                        finish();
+                        //之前的是finish
+//                        finish();
+                        JSONObject object  = b.getJSONObject("params");
+                        String id = object.optString("id");
+                        EventBus.getDefault().post(new ProfessionEvent("职业认证 or 审核认证",id));
                     }else if("toHome".equals(result)){
                         //去文章首页干货 -- ok
                         Constant.isReLoad = true;
-                        UIHelper.toHomeActivity(WebViewAllActivity.this,HomeActivity.H5_TO_ACTICLE);
+                        UIHelper.toHomeActivity(WebViewAllActivity.this,HomeActivityV2.H5_TO_ACTICLE);
                     }else if("toKnow".equals(result)){
                         //去更懂你 -- ok
                         Constant.isReLoad = true;
@@ -625,6 +631,76 @@ public class WebViewAllActivity extends BaseActivity {
                     }else if("resetAuthInfo".equals(result)){
                         //重置成功，请求用户信息数据
                         getUserInfo();
+                    }else if("toCommentDetail".equals(result)){
+                        //我的动态 评论 - 去详情
+                        JSONObject object  = b.getJSONObject("params");
+                        String comment = object.optString("comment");
+                        String created_at= object.optString("created_at");
+                        String good_num= object.optString("good_num");
+                        String type= object.optString("type");
+                        String relatedid= object.optString("relatedid");
+                        String post_title= object.optString("post_title");
+                        if(!TextUtils.isEmpty(type)){
+                            if("1".equals(type)){
+                                //去文章详情页
+                                UIHelper.toNewsDetailActivity(WebViewAllActivity.this,relatedid);
+                            }else if("2".equals(type)){
+                                UIHelper.toCommentDetailActivity(WebViewAllActivity.this,relatedid);
+                                //圈子一级评论
+                            }else if("3".equals(type)){
+                                //圈子二级评论
+                                UIHelper.toCommentDetailActivity(WebViewAllActivity.this,relatedid);
+                            }
+                        }
+                    }else if("toActivityDetail".equals(result)){
+                        JSONObject object  = b.getJSONObject("params");
+                        String id = object.optString("id");
+                        //发布 去圈子明细
+                        UIHelper.toCommentDetailActivity(WebViewAllActivity.this,id);
+
+                    }else if("shareActivity".equals(result)){
+                        JSONObject object  = b.getJSONObject("params");
+                        String id = object.optString("id");
+                        ArrayList<String> ins = new ArrayList<>();
+                        //发布 弹出分享框，这里加上自己的uid
+                        String uid = object.optString("uid");
+                        String blog = object.optString("blog");
+                        JSONArray images= object.getJSONArray("images");
+                        int size = images.length();
+                        if(size > 0){
+                            ins.add(images.optString(0));
+                        }
+                        String link= object.optString("link");
+                        String link_title= object.optString("link_title");
+                        String type= object.optString("type");
+                        String pid= object.optString("pid");
+                        String like_num = object.optString("like_num");
+                        String show_num= object.optString("show_num");
+                        String sort= object.optString("sort");
+                        String created_at= object.optString("created_at");
+                        String article_id= object.optString("article_id");
+                        String article_title= object.optString("article_title");
+                        String article_image= object.optString("article_image");
+                        String comment_num= object.optString("comment_num");
+                        String share_url= object.optString("share_url");
+                        int is_like = object.optInt("is_like");
+                        CircleBean item = new CircleBean();
+                        item.setId(id);
+                        item.setImages(ins);
+                        item.setLink(link);
+                        item.setLink_title(link_title);
+                        item.setType(type);
+                        item.setArticle_id(article_id);
+                        item.setArticle_image(article_image);
+                        item.setArticle_title(article_title);
+                        item.setIs_like(is_like);
+                        item.setComment(blog);
+                        item.setBlog(blog);
+                        item.setShare_url(share_url);
+
+                        showShareDialog(item);
+
+
                     }
 
                 } catch (JSONException e) {
@@ -634,6 +710,85 @@ public class WebViewAllActivity extends BaseActivity {
 
         }
     }
+
+
+
+    private void showShareDialog(CircleBean item) {
+        ShareWithLinkDialog alertDialog = new ShareWithLinkDialog(mContext).builder();
+        alertDialog.setShareDynamicView().setTitleGone();
+        alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setOnDialogItemClickListener(position -> {
+            switch (position) {
+                case 0:
+                    ShareBean bean1 = new ShareBean();
+                    bean1.setShareType("circle_link");
+                    bean1.setLink(item.getShare_url());
+                    String name1 = "";
+                    if( null != item.getUser_info()){
+                        name1 = item.getUser_info().getName();
+                    }else{
+                        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+                        if(!TextUtils.isEmpty(mUserInfo.getName())){
+                            name1 = mUserInfo.getName();
+                        }else{
+                            name1 = mUserInfo.getNickname();
+                        }
+                    }
+                    bean1.setTitle("分享一条" + name1 + "的营销圈动态");
+                    bean1.setContent(item.getBlog());
+                    String img ;
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img = item.getUser_info().getAvatar();
+                    }else{
+                        img = StringUtil.getUserInfoBean().getAvatar();
+                    }
+                    bean1.setImg(img);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean1);
+                    break;
+                case 1:
+                    KLog.d("tag","朋友 是链接");
+                    ShareBean bean = new ShareBean();
+                    bean.setShareType("weixin_link");
+                    bean.setLink(item.getShare_url());
+                    String name = "";
+                    if( null != item.getUser_info()){
+                        name = item.getUser_info().getName();
+                    }else{
+                        RegisterLoginBean.UserInfo mUserInfo = StringUtil.getUserInfoBean();
+                        if(!TextUtils.isEmpty(mUserInfo.getName())){
+                            name = mUserInfo.getName();
+                        }else{
+                            name = mUserInfo.getNickname();
+                        }
+                    }
+                    bean.setTitle("分享一条" + name + "的营销圈动态");
+                    bean.setContent(item.getBlog());
+                    String img2 ;
+                    if(item.getImages() != null &&  !item.getImages().isEmpty()){
+                        img2  = item.getImages().get(0);
+                    }else if(item.getUser_info() != null){
+                        img2 = item.getUser_info().getAvatar();
+                    }else{
+                        img2 = StringUtil.getUserInfoBean().getAvatar();
+                    }
+                    bean.setImg(img2);
+                    StringUtil.shareWxByWeb((Activity) mContext,bean);
+                    break;
+                case 4:
+                    KLog.d("tag", "转发到动态");
+                    UIHelper.toTranspondActivity(mContext,item);
+                    //参数一：目标Activity1进入动画，参数二：之前Activity2退出动画
+                    ((Activity)mContext).overridePendingTransition(R.anim.activity_enter_bottom, R.anim.activity_alpha_exit);
+                    break;
+                default:
+            }
+        });
+        alertDialog.show();
+    }
+
+
 
     /** --------------------------------- 圈子处    二级评论列表 及 点击事件 开始---------------------------------*/
     int secondPage = 1;

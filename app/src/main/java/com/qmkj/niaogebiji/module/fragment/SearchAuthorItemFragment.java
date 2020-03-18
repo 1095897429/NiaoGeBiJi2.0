@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qmkj.niaogebiji.R;
@@ -31,6 +32,8 @@ import com.qmkj.niaogebiji.module.bean.AuthorBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SearchAllAuthorBean;
 import com.qmkj.niaogebiji.module.event.SearchWordEvent;
+import com.qmkj.niaogebiji.module.event.UpdateHomeListEvent;
+import com.qmkj.niaogebiji.module.widget.RecyclerViewNoBugLinearLayoutManager;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
@@ -71,7 +74,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
     //适配器
     AuthorSearchAdapter mAuthorAdapter;
     //布局管理器
-    LinearLayoutManager mLinearLayoutManager;
+    RecyclerViewNoBugLinearLayoutManager mLinearLayoutManager;
 
     private List<AuthorBean.Author> mList = new ArrayList<>();
 
@@ -220,7 +223,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
 
 
     private void initLayout() {
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager = new RecyclerViewNoBugLinearLayoutManager(getActivity());
         //设置布局管理器
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         //设置适配器
@@ -228,6 +231,7 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
         mRecyclerView.setAdapter(mAuthorAdapter);
         //解决数据加载不完
         mRecyclerView.setNestedScrollingEnabled(true);
+        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         mRecyclerView.setHasFixedSize(true);
         initEvent();
     }
@@ -364,6 +368,20 @@ public class SearchAuthorItemFragment extends BaseLazyFragment {
             searchAuthor();
         }
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateHomeListEvent(UpdateHomeListEvent event) {
+       if(this != null){
+           mList.clear();
+           page = 1;
+           searchAuthor();
+        }
+    }
+
+
+
+
 
 
 }

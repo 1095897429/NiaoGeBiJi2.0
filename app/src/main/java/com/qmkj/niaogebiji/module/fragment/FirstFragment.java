@@ -2,24 +2,15 @@ package com.qmkj.niaogebiji.module.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -29,21 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.blankj.utilcode.util.ScreenUtils;
-import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.TimeUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
-import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
 import com.qmkj.niaogebiji.common.net.response.HttpResponse;
-import com.qmkj.niaogebiji.common.service.MediaService;
-import com.qmkj.niaogebiji.common.tab.TabLayoutComplex;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringToolKit;
@@ -63,15 +48,9 @@ import com.qmkj.niaogebiji.module.event.ShowSignRedPointEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toActionEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
-import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.widget.DynamicLine;
-import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
-import com.qmkj.niaogebiji.module.widget.MyLinearLayout;
-import com.qmkj.niaogebiji.module.widget.tab1.ViewPagerTitle;
-import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
 import com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3;
-import com.qmkj.niaogebiji.module.widget.tab4.ViewPagerTitleSlide4;
 import com.socks.library.KLog;
 import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -88,7 +67,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -142,8 +120,8 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.toVip)
     LinearLayout toVip;
 
-    @BindView(R.id.red_point)
-    FrameLayout red_point;
+//    @BindView(R.id.red_point)
+//    FrameLayout red_point;
 
     @BindView(R.id.appbarlayout)
     AppBarLayout appbarlayout;
@@ -199,6 +177,10 @@ public class FirstFragment extends BaseLazyFragment {
     @BindView(R.id.rl_sign_lottie)
     LottieAnimationView rl_sign_lottie;
 
+    @BindView(R.id.icon_sign)
+    ImageView icon_sign;
+
+
     public void showQianDaoDialog() {
         rl_sign_lottie.setImageAssetsFolder("images");
         rl_sign_lottie.setAnimation("images/qiandao.json");
@@ -224,20 +206,25 @@ public class FirstFragment extends BaseLazyFragment {
         RetrofitHelper.getApiService().getUserInfo(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
                     @Override
                     public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
 
                         StringUtil.setUserInfoBean(response.getReturn_data());
 
-                        //今天是否签到了：1-已签到，0-未签到
-                        //TODO 这个调用在HomeActivity之前，导致还没有请求就获取了值， 3.15号修改，不显示
-//                        if("1".equals(mUserInfo.getSigned_today())){
-//                            red_point.setVisibility(View.GONE);
-//                        }else{
-//                            red_point.setVisibility(View.VISIBLE);
-//                        }
+                        mUserInfo = response.getReturn_data();
+
+                        if(mUserInfo != null){
+                            //今天是否签到了：1-已签到，0-未签到
+                            //TODO 这个调用在HomeActivity之前，导致还没有请求就获取了值， 3.15号修改，不显示
+                            if("1".equals(mUserInfo.getSigned_today())){
+                                rl_sign_lottie.setVisibility(View.GONE);
+                                icon_sign.setVisibility(View.VISIBLE);
+                            }else{
+                                rl_sign_lottie.setVisibility(View.VISIBLE);
+                                icon_sign.setVisibility(View.GONE);
+                            }
+                        }
 
                         setVipHidden();
                     }
@@ -706,7 +693,8 @@ public class FirstFragment extends BaseLazyFragment {
     public void onShowSignRedPointEvent(ShowSignRedPointEvent event){
         if("1".equals(event.getIs_red())){
             //已签到，去掉红点
-            red_point.setVisibility(View.GONE);
+            rl_sign_lottie.setVisibility(View.GONE);
+            icon_sign.setVisibility(View.VISIBLE);
         }
     }
 
@@ -762,5 +750,7 @@ public class FirstFragment extends BaseLazyFragment {
            }
         }
     }
+
+
 
 }

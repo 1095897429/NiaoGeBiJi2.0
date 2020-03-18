@@ -350,6 +350,7 @@ public class NewsDetailActivity extends BaseActivity {
 
                 //TODO 弹框1
                 isSecondComment = false;
+                //TODO 3.18 新增hint
                 showTalkDialog(-1,"aimToActicle","");
                 break;
             case R.id.comment:
@@ -2314,7 +2315,7 @@ public class NewsDetailActivity extends BaseActivity {
                         }
 
                         //TODO 如果评论转发到圈子，则发送请求
-                        if("aimToActicle".equals(from) && isSendToCircle){
+                        if("aimToActicle".equals(from) && isSendToCircle && mNewsDetailBean != null){
                             article_id  = mNewsDetailBean.getAid();
                             article_title = mNewsDetailBean.getTitle();
                             article_image = mNewsDetailBean.getPic();

@@ -29,6 +29,7 @@ import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler;
@@ -79,6 +80,8 @@ import io.reactivex.schedulers.Schedulers;
  * 创建时间 2020.2.15
  * 描述:用户信息修改界面
  * 1.主要修改用户的职业选择，并没有实名认证
+ *
+ * 1.原始数据对比
  */
 public class UserInfoModifyActivity extends BaseActivity {
 
@@ -148,7 +151,6 @@ public class UserInfoModifyActivity extends BaseActivity {
     private RegisterLoginBean.UserInfo userInfo;
 
 
-    private boolean isOk;
 
     @Override
     protected int getLayoutId() {
@@ -228,9 +230,6 @@ public class UserInfoModifyActivity extends BaseActivity {
         mPro_summary = userInfo.getPro_summary() ;
         mBirthday =  userInfo.getBirthday();
 
-
-
-
         tv_title.setText("编辑资料");
 
 
@@ -246,7 +245,7 @@ public class UserInfoModifyActivity extends BaseActivity {
     }
 
     private void getStatePosition(String stutus) {
-        //职业状态
+        //默认职业状态 为null
         mPositionStatus = stutus;
 
         hideView();
@@ -364,11 +363,192 @@ public class UserInfoModifyActivity extends BaseActivity {
                 showHeadDialog();
                 break;
             case R.id.submit:
-               alterinfo();
+
+                //TODO 3.17 对比下
+//                if(状态){
+//                    没改变：判断所有字段 + 当前的状态下的必须字段
+//                    有改变： 当前的状态下的必须字段
+//                        有提交完-- 提交
+//                        没有提交完- -- return
+//                }
+
+
+               if(checkStaut()){
+                   alterinfo();
+               }
+
                 break;
             default:
         }
     }
+
+
+    private boolean checkStaut(){
+        //状态没有改变 -- 查看必填项
+        if(TextUtils.isEmpty(mPositionStatus) || mPositionStatus.equals("1")){
+            String com = company_name_now_text.getText().toString().trim();
+            String pro = profession_name_now_text.getText().toString().trim();
+            //先判断有没有修改过
+            if(compare(com,userInfo.getCompany_name()) && compare(pro,userInfo.getPosition())){
+                KLog.d("tag","值没有变化");
+                return true;
+            }
+
+            //用于判断第一次的空值
+            if(TextUtils.isEmpty(com)){
+                ToastUtils.showShort("请输入公司名称");
+                return false;
+            }
+
+            if(TextUtils.isEmpty(pro)){
+                ToastUtils.showShort("请输入职位名称");
+                return false;
+            }
+        }
+
+        if(mPositionStatus.equals("2")){
+            String com = company_name_old_text.getText().toString().trim();
+            String pro = profession_name_old_text.getText().toString().trim();
+
+
+            if(TextUtils.isEmpty(com)){
+                ToastUtils.showShort("请输入前公司名称");
+                return false;
+            }
+
+            if(TextUtils.isEmpty(pro)){
+                ToastUtils.showShort("请输入前公司名称");
+                return false;
+            }
+        }
+
+        if(mPositionStatus.equals("3")){
+            String com = profession_ohter_name.getText().toString().trim();
+
+            if(TextUtils.isEmpty(com)){
+                ToastUtils.showShort("请输入自由职业");
+                return false;
+            }
+
+        }
+
+        if(mPositionStatus.equals("4")){
+            String com = school_text.getText().toString().trim();
+
+            if(TextUtils.isEmpty(com)){
+                ToastUtils.showShort("请输入学习名称");
+                return false;
+            }
+        }
+
+
+        return true;
+    }
+
+
+    //只是赋值不一样
+    private void alterinfo() {
+        Map<String,String> map = new HashMap<>();
+        if(!TextUtils.isEmpty(mNickname)){
+            map.put("nickname",mNickname);
+        }
+        if(!TextUtils.isEmpty(mName)){
+            map.put("name",mName);
+        }
+
+        if("1".equals(mPositionStatus)){
+            if(!TextUtils.isEmpty(mCompany)){
+                map.put("company_name",mCompany);
+            }
+
+
+            if(!TextUtils.isEmpty(mPosition)){
+                map.put("position",mPosition);
+            }
+
+        }else if("2".equals(mPositionStatus)){
+            if(!TextUtils.isEmpty(mComanyOld)){
+                //TODO 在源头加，不然每个地方改的地方太多了：显示 前
+                map.put("company_name", "前" + mComanyOld);
+            }
+
+            if(!TextUtils.isEmpty(mPositionOld)){
+                map.put("position",mPositionOld);
+            }
+        }else if("3".equals(mPositionStatus)){
+
+            map.put("company_name","自由职业");
+
+            if(!TextUtils.isEmpty(mPositionOther)){
+                map.put("position",mPositionOther);
+            }
+
+        }else if("4".equals(mPositionStatus)){
+
+            if( !TextUtils.isEmpty(mSchool)){
+                map.put("company_name",mSchool);
+            }
+
+            map.put("position","学生");
+        }
+
+
+        if(!TextUtils.isEmpty(mPositionStatus)){
+            map.put("position_status",mPositionStatus);
+        }
+
+
+        if(!TextUtils.isEmpty(mGender)){
+            map.put("gender",mGender);
+        }
+
+
+        if(!TextUtils.isEmpty(mAvatar_base)){
+            map.put("avatar_base",mAvatar_base);
+        }
+        if(!TextUtils.isEmpty(mAvatar_ext)){
+            map.put("avatar_ext",mAvatar_ext);
+        }
+        if(!TextUtils.isEmpty(mPro_summary)){
+            map.put("pro_summary",mPro_summary);
+        }
+        if(!TextUtils.isEmpty(mBirthday)){
+            map.put("birthday",mBirthday);
+        }
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().alterinfo(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
+                    @Override
+                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
+                        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
+                        ToastUtils.showShort("修改成功");
+
+                        //TODO 发送事件，修改用户信息，这个在关注用户时，完善了信息，用户v2的界面没有及时刷新 -- 可以不用
+                        EventBus.getDefault().post(new CompleInfoEvent());
+
+                        getUserInfo();
+
+                        if(1 == type){
+                            ImageUtil.load(UserInfoModifyActivity.this,response.getReturn_data().getAvatar(),head_icon);
+                            type = 0;
+                        }
+                    }
+                });
+    }
+
+
+
+
+
+     // "" null 具体字符串    s1可能为""  s2是后台返回数据，可能会是null
+    private  boolean compare(String str1, String str2) {
+        str2 = StringUtils.null2Length0(str2);
+        return ((str1 == str2) || (str1 != null && str1.equals(str2)));
+    }
+
 
     private ArrayList<String> options1Items = new ArrayList<>();
     private OptionsPickerView pvOptions;
@@ -662,115 +842,6 @@ public class UserInfoModifyActivity extends BaseActivity {
     String mBirthday = "";
     //当点击修改图片时，type设置1，然后修改后设置归位
     int type = 0;
-
-    //只是赋值不一样
-    private void alterinfo() {
-        Map<String,String> map = new HashMap<>();
-        if(!TextUtils.isEmpty(mNickname)){
-            map.put("nickname",mNickname);
-        }
-        if(!TextUtils.isEmpty(mName)){
-            map.put("name",mName);
-        }
-
-        if("1".equals(mPositionStatus)){
-            if(!TextUtils.isEmpty(mCompany)){
-                map.put("company_name",mCompany);
-            }else{
-                ToastUtils.showShort("请输入公司名称");
-                return;
-            }
-
-            if(!TextUtils.isEmpty(mPosition)){
-                map.put("position",mPosition);
-            }else{
-                ToastUtils.showShort("请输入职位名称");
-                return;
-            }
-        }else if("2".equals(mPositionStatus)){
-            if(!TextUtils.isEmpty(mComanyOld)){
-                //TODO 在源头加，不然每个地方改的地方太多了：显示 前
-                map.put("company_name", "前" + mComanyOld);
-            }else{
-                ToastUtils.showShort("请输入前公司名称");
-                return;
-            }
-
-            if(!TextUtils.isEmpty(mPositionOld)){
-                map.put("position",mPositionOld);
-            }else{
-                ToastUtils.showShort("请输入前公司名称");
-                return;
-            }
-
-        }else if("3".equals(mPositionStatus)){
-
-            map.put("company_name","自由职业");
-
-            if(!TextUtils.isEmpty(mPositionOther)){
-                map.put("position",mPositionOther);
-            }else{
-                ToastUtils.showShort("请输入自由职业");
-                return;
-            }
-
-        }else if("4".equals(mPositionStatus)){
-
-            if( !TextUtils.isEmpty(mSchool)){
-                map.put("company_name",mSchool);
-            }else{
-                ToastUtils.showShort("请输入学习名称");
-                return;
-            }
-            map.put("position","学生");
-        }
-
-
-        if(!TextUtils.isEmpty(mPositionStatus)){
-            map.put("position_status",mPositionStatus);
-        }
-
-
-        if(!TextUtils.isEmpty(mGender)){
-            map.put("gender",mGender);
-        }
-
-
-        if(!TextUtils.isEmpty(mAvatar_base)){
-            map.put("avatar_base",mAvatar_base);
-        }
-        if(!TextUtils.isEmpty(mAvatar_ext)){
-            map.put("avatar_ext",mAvatar_ext);
-        }
-        if(!TextUtils.isEmpty(mPro_summary)){
-            map.put("pro_summary",mPro_summary);
-        }
-        if(!TextUtils.isEmpty(mBirthday)){
-            map.put("birthday",mBirthday);
-        }
-        String result = RetrofitHelper.commonParam(map);
-        RetrofitHelper.getApiService().alterinfo(result)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse<RegisterLoginBean.UserInfo>>() {
-                    @Override
-                    public void onSuccess(HttpResponse<RegisterLoginBean.UserInfo> response) {
-                        ToastUtils.setGravity(Gravity.BOTTOM,0, SizeUtils.dp2px(40));
-                        ToastUtils.showShort("修改成功");
-
-                        //TODO 发送事件，修改用户信息，这个在关注用户时，完善了信息，用户v2的界面没有及时刷新 -- 可以不用
-                        EventBus.getDefault().post(new CompleInfoEvent());
-
-                        getUserInfo();
-
-                        if(1 == type){
-                            ImageUtil.load(UserInfoModifyActivity.this,response.getReturn_data().getAvatar(),head_icon);
-                            type = 0;
-                        }
-                    }
-                });
-    }
 
 
 

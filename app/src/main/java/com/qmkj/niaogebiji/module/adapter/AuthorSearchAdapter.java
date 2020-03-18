@@ -119,21 +119,23 @@ public class AuthorSearchAdapter extends BaseQuickAdapter<AuthorBean.Author, Bas
             }
 
             AuthorBean.Author mAuthor = mData.get(helper.getAdapterPosition());
-            KLog.d("tag","点击的是 position " + helper.getAdapterPosition() );
-            String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
-            UIHelper.toWebViewActivity(mContext,link);
+//            KLog.d("tag","点击的是 position " + helper.getAdapterPosition() );
+//            String link =  StringUtil.getLink("authordetail/" + mAuthor.getId());
+//            UIHelper.toWebViewActivity(mContext,link);
 
 
 
             //判断是否关联作者，如果关联，则调到用户界面 author_uid ，没有，调到作者详情页 authoid
-//            KLog.d("tag","author_uid " + mAuthor.getUid());
-//            if(mAuthor.getUid().equals("0")){
-//                //测试数据 作者 id = 3854
-//                UIHelper.toAuthorDetailActivity(mContext,mAuthor.getId());
-//            }else{
-//                UIHelper.toUserInfoV2Activity(mContext,mAuthor.getUid());
-//
-//            }
+            if(null != mAuthor){
+                KLog.d("tag","author_uid " + mAuthor.getUid());
+                if(mAuthor.getUid().equals("0")){
+                    //测试数据 作者 id = 3854
+                    UIHelper.toAuthorDetailActivity(mContext,mAuthor.getId());
+                }else{
+                    UIHelper.toUserInfoV2Activity(mContext,mAuthor.getUid());
+
+                }
+            }
 
         });
 
@@ -159,16 +161,21 @@ public class AuthorSearchAdapter extends BaseQuickAdapter<AuthorBean.Author, Bas
             iosAlertDialog.show();
         }else{
             focus_type = "1";
-            followAuthor(position);
+//            followAuthor(position);
+
             //TODO  判断是否关联作者，如果关联，走关注流程 0未关注
-//            KLog.d("tag","author_uid " + uid);
-//            if(uid.equals("0")){
-//                followAuthor(position);
-//            }else {
-//                if(null != mToActivityFocusListener){
-//                    mToActivityFocusListener.toAFocus(position);
-//                }
-//            }
+            if(mAuthor != null){
+                uid = mAuthor.getUid();
+                KLog.d("tag","author_uid " + uid);
+                if(uid.equals("0")){
+                    followAuthor(position);
+                }else {
+                    if(null != mToActivityFocusListener){
+                        mToActivityFocusListener.toAFocus(position);
+                    }
+                }
+
+            }
 
 
         }

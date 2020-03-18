@@ -26,7 +26,7 @@
             android:layout_height="8dp" />
 
         <TextView
-            android:text="营销增长圈內事"
+            android:text="百万营销增长从业者的必备神器"
             android:textSize="18sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"

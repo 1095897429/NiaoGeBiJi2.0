@@ -230,9 +230,9 @@
                         app:round_as_circle="false"
                         app:round_corner="8dp" />
 
-                    <Space
-                        android:layout_width="6dp"
-                        android:layout_height="match_parent" />
+                    <!--<Space-->
+                        <!--android:layout_width="6dp"-->
+                        <!--android:layout_height="match_parent" />-->
 
 
                     <com.qmkj.niaogebiji.module.widget.RCImageView
@@ -246,9 +246,9 @@
                         app:round_as_circle="false"
                         app:round_corner="8dp" />
 
-                    <Space
-                        android:layout_width="6dp"
-                        android:layout_height="match_parent" />
+                    <!--<Space-->
+                        <!--android:layout_width="6dp"-->
+                        <!--android:layout_height="match_parent" />-->
 
 
                     <com.qmkj.niaogebiji.module.widget.RCImageView

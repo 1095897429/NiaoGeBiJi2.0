@@ -24,7 +24,7 @@
             android:layout_height="8dp" />
 
         <TextView
-            android:text="上百课程任你学，专业机构测试认证"
+            android:text="各个岗位专业测评，自测自检学无止境"
             android:textSize="18sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
@@ -32,15 +32,12 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="11dp" />
 
     <ImageView
         android:src="@mipmap/welcome3"
         android:layout_marginLeft="27dp"
         android:layout_marginRight="27dp"
         android:layout_width="match_parent"
-        android:layout_height="445dp" />
+        android:layout_height="469dp" />
 
 </LinearLayout>

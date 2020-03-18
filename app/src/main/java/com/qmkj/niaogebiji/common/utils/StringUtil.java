@@ -64,6 +64,7 @@ import com.qmkj.niaogebiji.module.adapter.CircleRecommentAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.CircleSearchAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
+import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.MultiCircleNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
@@ -116,6 +117,34 @@ import static com.umeng.socialize.utils.ContextUtil.getPackageName;
 public class StringUtil {
 
     private static final Object sInstanceSync = new Object();
+
+
+    private static JPushBean jPushMessage;
+
+    public static void setJPushMessage(JPushBean jPushMessage) {
+        removeJPushMessage();
+        SPUtils.getInstance().put(Constant.JPushBean, new Gson().toJson(jPushMessage));
+    }
+
+    public static JPushBean getJPushMessage() {
+        synchronized (sInstanceSync) {
+            if (jPushMessage == null) {
+                //存到sp中是json字符串
+                String string = SPUtils.getInstance().getString(Constant.JPushBean);
+                if (!TextUtils.isEmpty(string)) {
+                    Gson gson = new Gson();
+                    jPushMessage = gson.fromJson(string, JPushBean.class);
+                }
+            }
+        }
+        return jPushMessage;
+    }
+
+    public static void removeJPushMessage() {
+        jPushMessage = null;
+        SPUtils.getInstance().remove(Constant.JPushBean);
+    }
+
 
 
     /** --------------------------------- 用户信息  ---------------------------------*/

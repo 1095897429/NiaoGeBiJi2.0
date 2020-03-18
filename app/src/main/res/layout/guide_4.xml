@@ -32,15 +32,12 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="11dp" />
 
     <ImageView
         android:src="@mipmap/welcome4"
         android:layout_marginLeft="27dp"
         android:layout_marginRight="27dp"
         android:layout_width="match_parent"
-        android:layout_height="445dp" />
+        android:layout_height="469dp" />
 
 </LinearLayout>

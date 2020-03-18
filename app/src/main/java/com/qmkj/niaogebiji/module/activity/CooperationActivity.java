@@ -22,6 +22,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -29,6 +30,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.widget.PopupWindowCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -83,6 +85,8 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,8 +153,66 @@ public class CooperationActivity extends BaseActivity {
     }
 
 
+    private void initSetting() {
+        WebSettings webSettings = mMyWebView.getSettings();
+        if(null == webSettings){
+            return;
+        }
+        //开启 js交互功能
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setDefaultTextEncodingName("utf-8");
+        webSettings.setAllowContentAccess(true);
+        webSettings.setAllowFileAccess(true);
+        //跨域
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            MyWebView.setWebContentsDebuggingEnabled(true);
+        }
+        //不因手机修改字体变化
+        webSettings.setTextZoom(100);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+        //开启 database storage API 功能
+        webSettings.setDatabaseEnabled(true);
+
+        //开启DomStorage缓存
+        webSettings.setDomStorageEnabled(true);
+        //开启 H5缓存 功能
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setGeolocationEnabled(true);
+        //兼容所有的手机界面,使网页始终按照webview宽度设定(如果设置为true,此项功能为失效,导致部分手机网页如淘宝显示为PC样式,但能完整显示PC网页)
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+
+        //加快内容加载速度
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        //阻止图片网络加载
+        webSettings.setBlockNetworkImage(false);
+        mMyWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        //势焦点
+        mMyWebView.requestFocusFromTouch();
+        //视频播放需要
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+
+        //在安卓5.0之后，默认不允许加载http与https混合内容，需要设置webview允许其加载混合网络协议内容
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        if (Build.VERSION.SDK_INT >= 19) {
+            mMyWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            mMyWebView.setLayerType(View.LAYER_TYPE_NONE, null);
+        }
+    }
+
+
+
+
     @Override
     public void initFirstData() {
+
 
         AndroidBug5497Workaround.assistActivity(this);
 
@@ -162,17 +224,45 @@ public class CooperationActivity extends BaseActivity {
         KLog.d("tag","加载的url " + url);
         showWaitingDialog();
 //        String  url = "http://apph5.xy860.com/cooperatehome";
+
         if(TextUtils.isEmpty(url)){
-            url  = "http://apph5.xy860.com/qddp/index";
+            return;
         }
 
+        //TODO 3.18 换下域名测试下
+//        url = "http://preapph5.niaogebiji.com/cooperatehome";
+
+
+        initSetting();
 
 
         //加了webview可图片上传功能
         mMyWebChromeClient = new MyWebChromeClientByCamera(this,tv_title, () -> hideWaitingDialog());
         mMyWebView.setWebChromeClient(mMyWebChromeClient);
 
+        //跨域操作
+        try {
+            if (Build.VERSION.SDK_INT >= 16) {
+                Class<?> clazz = mMyWebView.getSettings().getClass();
+                Method method = clazz.getMethod(
+                        "setAllowUniversalAccessFromFileURLs", boolean.class);//利用反射机制去修改设置对象
+                if (method != null) {
+                    method.invoke(mMyWebView.getSettings(), true);//修改设置
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
         mMyWebView.loadUrl(url);
+
+
 
         //js交互 -- 给js调用app的方法，xnNative是协调的对象
         mMyWebView.addJavascriptInterface(new AndroidtoJs(), "ngbjNative");
@@ -445,6 +535,25 @@ public class CooperationActivity extends BaseActivity {
 
     @SuppressLint("JavascriptInterface")
     public class AndroidtoJs extends Object {
+
+        //TODO 3.17 晚测试发现忘记加了
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @JavascriptInterface
+        public void getToken() {
+            KLog.d("heihei", "JS调用了Android的我的方法告诉我 它需要token,重新发起初始化界面，给与token");
+            // 因为该方法在 Android 4.4 版本才可使用，所以使用时需进行版本判断
+            if ( Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                String value = "传递字符串";
+                String result = "javascript:" + "xyApplication.getAppToken(\"" + value + "\")";
+                mMyWebView.loadUrl(result);
+            } else {
+                String value = "传递字符串";
+                String result = "javascript:" + "xyApplication.getAppToken(\"" + value + "\")";
+                KLog.d("tag",result);
+                mMyWebView.evaluateJavascript(result, null);
+            }
+        }
+
         //通用方法
         @JavascriptInterface
         public void sendMessage(String param) {
@@ -475,6 +584,8 @@ public class CooperationActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
+
+
 
         }
     }

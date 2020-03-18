@@ -74,7 +74,7 @@ public class ImageUtil {
         }
 
         //0.1f显示原图大小的10%
-        Glide.with(context).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).thumbnail(0.1f).into(imageView);
+        Glide.with(context).load(url).diskCacheStrategy(DiskCacheStrategy.RESOURCE).thumbnail(0.1f).into(imageView);
     }
 
 

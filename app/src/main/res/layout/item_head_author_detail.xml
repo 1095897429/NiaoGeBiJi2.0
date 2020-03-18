@@ -341,7 +341,7 @@
             <ImageView
                 android:visibility="visible"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/icon_author_detail_img"
+                android:src="@mipmap/icon_author_detail"
                 android:layout_width="match_parent"
                 android:layout_height="30dp">
 

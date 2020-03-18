@@ -113,20 +113,20 @@ public class HotNewsAdapterV2 extends BaseMultiItemQuickAdapter<MultiNewsBean, B
         switch (helper.getItemViewType()) {
             case RIGHT_IMG_TYPE:
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic(),helper.getView(R.id.one_img_imgs));
                 }
                 break;
             case THREE_IMG_TYPE:
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
-                    ImageUtil.load(mContext,bean.getPic2() + Constant.scaleSize,helper.getView(R.id.two_img_imgs));
-                    ImageUtil.load(mContext,bean.getPic3() + Constant.scaleSize,helper.getView(R.id.three_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() ,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic2() ,helper.getView(R.id.two_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic3() ,helper.getView(R.id.three_img_imgs));
                 }
 
                 break;
             case LONG_IMG_TYPE:
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.long_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() ,helper.getView(R.id.long_img_imgs));
                 }
                 break;
                 default:

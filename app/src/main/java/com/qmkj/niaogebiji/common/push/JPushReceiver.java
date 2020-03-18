@@ -10,18 +10,16 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.CommentDetailActivity;
-import com.qmkj.niaogebiji.module.activity.HomeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.SplashActivity;
-import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityWithLayout;
 import com.qmkj.niaogebiji.module.activity.WebViewActivityWithStep;
-import com.qmkj.niaogebiji.module.activity.WebViewAllActivity;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.socks.library.KLog;
 
@@ -41,19 +39,70 @@ import cn.jpush.android.service.JPushMessageReceiver;
  * 创建时间 2019-12-30
  * 描述:极光接收器
  * 1.如果通过极光接入厂商，那么都会走这里； -- 统一了(华为的走这里 小米走这里)【前提是不需要在xml中注册单独的receiver】
+ *
+ *
+ * 1.app存活，没有启动
+ * 2.app存活，启动了
+ * 3.app不存活，
  */
 public class JPushReceiver extends JPushMessageReceiver {
 
     private static final String TAG = "tag";
 
 
+
+
     @Override
     public void onNotifyMessageOpened(Context context, NotificationMessage message) {
+        KLog.e("tag"," onNotifyMessageOpened");
         String json = message.notificationExtras;
         KLog.e("tag","json = " + json);
+
         if(!TextUtils.isEmpty(json)){
             JPushBean javaBean = JSON.parseObject(json, JPushBean.class);
+
+
+            StringUtil.setJPushMessage(javaBean);
+
             //判断app是否启动，没有启动就启动 -- 经测试都走第一条
+
+//           if(AppUtils.isAppRunning( AppUtils.getAppPackageName())){
+//               StringUtil.setJPushMessage(javaBean);
+//               KLog.e("tag","json = " + StringUtil.getJPushMessage().getJump_type());
+//               KLog.e("tag","running");
+//
+//               Intent mainIntent;
+//               if(StringUtil.isExsitMianActivity(context, HomeActivityV2.class)){
+//                   mainIntent= new Intent(context, HomeActivityV2.class);
+//                   mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//
+//                   context.startActivity(mainIntent);
+//               }
+//
+//
+//               //将MainAtivity的launchMode设置成SingleTask, 或者在下面flag中加上Intent.FLAG_CLEAR_TOP,
+//               //如果Task栈中有MainActivity的实例，就会把它移到栈顶，把在它之上的Activity都清理出栈，
+//               //如果Task栈不存在MainActivity实例，则在栈顶创建
+//
+////               Bundle bundle = new Bundle();
+////               bundle.putSerializable("jpushbean",javaBean);
+////               mainIntent.putExtras(bundle);
+//
+//
+//           }else{
+//               KLog.e("tag","not running");
+//
+//               Intent mainIntent;
+//               mainIntent = new Intent(context, SplashActivity.class);
+//               Bundle bundle = new Bundle();
+//               bundle.putSerializable("jpushbean",javaBean);
+//               mainIntent.putExtras(bundle);
+//
+//               mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//
+//               context.startActivity(mainIntent);
+//           }
+
             if(StringUtil.isAppAlive(context, AppUtils.getAppPackageName())){
                 //如果存活的话，就直接启动DetailActivity，但要考虑一种情况，就是app的进程虽然仍然在
                 //但Task栈已经空了，比如用户点击Back键退出应用，但进程还没有被系统回收，如果直接启动
@@ -203,27 +252,27 @@ public class JPushReceiver extends JPushMessageReceiver {
 
     @Override
     public void onNotifyMessageArrived(Context context, NotificationMessage message) {
-        Log.e(TAG,"[onNotifyMessageArrived] "+message);
+        Log.e("tag","[onNotifyMessageArrived] "+message);
     }
 
     @Override
     public void onNotifyMessageDismiss(Context context, NotificationMessage message) {
-        Log.e(TAG,"[onNotifyMessageDismiss] "+message);
+        Log.e("tag","[onNotifyMessageDismiss] "+message);
     }
 
     @Override
     public void onRegister(Context context, String registrationId) {
-        Log.e(TAG,"[onRegister] "+registrationId);
+        Log.e("tag","[onRegister] "+registrationId);
     }
 
     @Override
     public void onConnected(Context context, boolean isConnected) {
-        Log.e(TAG,"[onConnected] "+isConnected);
+        Log.e("tag","[onConnected] "+isConnected);
     }
 
     @Override
     public void onCommandResult(Context context, CmdMessage cmdMessage) {
-        Log.e(TAG,"[onCommandResult] "+cmdMessage);
+        Log.e("tag","[onCommandResult] "+cmdMessage);
     }
 
     @Override
@@ -273,7 +322,7 @@ public class JPushReceiver extends JPushMessageReceiver {
     @Override
     public void onNotificationSettingsCheck(Context context, boolean isOn, int source) {
         super.onNotificationSettingsCheck(context, isOn, source);
-        Log.e(TAG,"[onNotificationSettingsCheck] isOn:"+isOn+",source:"+source);
+        Log.e("tag","[onNotificationSettingsCheck] isOn:"+isOn+",source:"+source);
     }
 
 

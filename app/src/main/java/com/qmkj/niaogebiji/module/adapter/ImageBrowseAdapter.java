@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,18 +38,31 @@ import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.jakewharton.disklrucache.DiskLruCache;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.TestResultFailActivity;
 import com.qmkj.niaogebiji.module.bean.PicBean;
 import com.qmkj.niaogebiji.module.widget.BitmapCache;
 import com.socks.library.KLog;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import cn.udesk.photoselect.PreviewActivity;
 
 /**
  * @author zhouliang
@@ -58,10 +72,9 @@ import java.util.concurrent.Executors;
  */
 public class ImageBrowseAdapter extends PagerAdapter {
 
-
     private Activity activity;
     private ArrayList<PicBean> imageList;
-    private Bitmap bitmap =  null;
+
     private ExecutorService mExecutorService;
 
     private RequestManager mRequestManager;
@@ -69,13 +82,31 @@ public class ImageBrowseAdapter extends PagerAdapter {
     private static final int MAX_SIZE = 4096;
     private static final int MAX_SCALE = 8;
 
+    private DiskLruCache mDiskLruCache;
+    private static final long DISK_CACHE_SIZE = 1024*1024*10;
 
 
     public ImageBrowseAdapter(Activity activity,ArrayList<PicBean> imageList){
         this.activity = activity;
         this.imageList = imageList;
-        mExecutorService = Executors.newFixedThreadPool(2);
+        mExecutorService = Executors.newFixedThreadPool(5);
+        diskLruCache(activity);
     }
+
+
+    private void diskLruCache(Context context){
+        File diskCacheDir=new File(context.getCacheDir().getPath()+"/bitmap");
+        if(!diskCacheDir.exists()){
+            diskCacheDir.mkdirs();
+        }
+        try {
+            mDiskLruCache = DiskLruCache.open(diskCacheDir,1,1,DISK_CACHE_SIZE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     @Override
     public int getCount() {
@@ -90,9 +121,33 @@ public class ImageBrowseAdapter extends PagerAdapter {
 
     @Override
     public int getItemPosition(@NonNull Object object) {
+        KLog.d("tag","getItemPosition ");
         return POSITION_NONE;
     }
 
+    private String bytesToHexString(byte[] bytes){
+        StringBuilder stringBuilder=new StringBuilder();
+        for(int i=0,length=bytes.length;i<length;i++){
+            String hex=Integer.toHexString(0xFF&bytes[i]);
+            if(hex.length()==1){
+                stringBuilder.append('0');
+            }
+            stringBuilder.append(hex);
+        }
+        return stringBuilder.toString();
+    }
+
+    private String hashKeyFormUrl(String url){
+        String cacheKey;
+        try {
+            final MessageDigest messageDigest= MessageDigest.getInstance("MD5");
+            messageDigest.update(url.getBytes());
+            cacheKey=bytesToHexString(messageDigest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            cacheKey=String.valueOf(url.hashCode());
+        }
+        return cacheKey;
+    }
 
 
     @NonNull
@@ -100,107 +155,128 @@ public class ImageBrowseAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
 
         final Context cxt = container.getContext();
-
-
-
         View view = LayoutInflater.from(cxt).inflate(R.layout.pict_pager_item_view,null);
         final PhotoView photoView = view.findViewById(R.id.photoView);
         final SubsamplingScaleImageView scaleImageView = view.findViewById(R.id.sub_imageview);
         final TextView pic_look = view.findViewById(R.id.pic_look);
-        photoView.setVisibility(View.VISIBLE);
-        scaleImageView.setVisibility(View.GONE);
-        scaleImageView.setMaxScale(10.0F);
+        final ProgressBar progressBar = view.findViewById(R.id.progressBar);
+        final ImageView img_loading = view.findViewById(R.id.img_loading);
 
 
-        bitmap = BitmapCache.getInstance().getBitmap(imageList.get(position).getPic());
-        if(bitmap == null){
-            pic_look.setVisibility(View.VISIBLE);
-        }else{
-            pic_look.setVisibility(View.GONE);
-        }
+        PicBean item = imageList.get(position);
 
-        mRequestManager = Glide.with(cxt);
-        mRequestManager.load(imageList.get(position).getPic() )
-                .dontAnimate()
-                .dontTransform()
-                .into(new SimpleTarget<Drawable>() {
-                    @SuppressLint("CheckResult")
-                    @Override
-                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                        int h = resource.getIntrinsicHeight();
-                        int w = resource.getIntrinsicWidth();
+        //点击时间
+        pic_look.setOnClickListener(v -> {
 
-                        if(h >= MAX_SIZE || h/w > MAX_SCALE) {
-                            photoView.setVisibility(View.GONE);
-                            scaleImageView.setVisibility(View.VISIBLE);
+            if(StringUtil.isFastClick()){
+                return;
+            }
 
-                            mRequestManager.load(imageList.get(position).getPic())
-                                    .downloadOnly(new SimpleTarget<File>() {
-                                        @Override
-                                        public void onResourceReady(@NonNull File resource, @Nullable Transition<? super File> transition) {
-                                            float scale = getImageScale(cxt,resource.getAbsolutePath());
-                                            scaleImageView.setImage(ImageSource.uri(resource.getAbsolutePath()),
-                                                    new ImageViewState(scale, new PointF(0, 0), 0));
-                                        }
-                                    });
-
+            mExecutorService.submit(() -> {
+                //图片的路径 -- 转移 -- 创建Editor
+                String imgUrl = item.getPic();
+                String key = hashKeyFormUrl(imgUrl);
+                try {
+                    DiskLruCache.Editor editor = mDiskLruCache.edit(key);
+                    if (editor != null) {
+                        OutputStream outputStream = editor.newOutputStream(0);
+                        if (downloadUrlToStream(imgUrl, outputStream,position,progressBar,pic_look,container)) {
+                            editor.commit();
+                            //更新视图
+                            doLoadOldData(item,img_loading,photoView,scaleImageView);
                         } else {
-                            KLog.d("tag",imageList.get(position).getPic() );
-                            Glide.with(activity)
-                                .load(imageList.get(position).getPic() )
-                                .placeholder(R.mipmap.img_loading)
-                                .into(photoView);
-                            //开启图片缩放功能
-                            photoView.enable();
-                            //设置缩放级别
-                            photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                            //设置最大缩放倍数
-                            photoView.setMaxScale(2.5f);
-                            //点击事件，返回
-                            photoView.setOnClickListener(v -> {
-                                photoView.disenable();
-                                KLog.d("tag","单击");
-                            });
+                            editor.abort();
                         }
                     }
-                });
+                    mDiskLruCache.flush();
 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+            });
+        });
+        //每次都创建一个
+        Bitmap bitmap =  null;
+        try {
+            String imageUrl = item.getPic();
+            String key = hashKeyFormUrl(imageUrl);
+            KLog.d("tag","imageUrl " + imageUrl + "  key " + key);
+            DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
+            if (snapShot != null) {
+                KLog.d("tag","加载的是磁盘缓存  " );
+                InputStream is = snapShot.getInputStream(0);
+                bitmap = BitmapFactory.decodeStream(is);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //内存 磁盘 都没有
+        if(bitmap == null){
+            pic_look.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            img_loading.setVisibility(View.VISIBLE);
+            mRequestManager = Glide.with(activity);
+            mRequestManager.load(item.getScalePic())
+                    .dontAnimate()
+                    .dontTransform()
+                    .placeholder(R.mipmap.img_loading)
+                    .into(new SimpleTarget<Drawable>() {
+                        @SuppressLint("CheckResult")
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            int h = resource.getIntrinsicHeight();
+                            int w = resource.getIntrinsicWidth();
 
-//        final PhotoView photoView = new PhotoView(activity);
-//        //开启图片缩放功能
-//        photoView.enable();
-//        //设置缩放级别
-//        photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-//        //设置最大缩放倍数
-//        photoView.setMaxScale(2.5f);
-//
-//        //加载图片
-//        Glide.with(activity)
-//                .load(imageList.get(position))
-//                .placeholder(R.mipmap.img_loading)
-//                .into(photoView);
-//        //点击事件，返回
-//        photoView.setOnClickListener(v -> {
-//            photoView.disenable();
-//            KLog.d("tag","单击");
-//        });
+                            if(h >= MAX_SIZE || h/w > MAX_SCALE) {
+                                photoView.setVisibility(View.GONE);
+                                scaleImageView.setVisibility(View.VISIBLE);
+                                scaleImageView.setMaxScale(10.0F);
+                                mRequestManager.load(item.getScalePic() )
+                                        .placeholder(R.mipmap.img_loading)
+                                        .downloadOnly(new SimpleTarget<File>() {
+                                            @Override
+                                            public void onResourceReady(@NonNull File resource, @Nullable Transition<? super File> transition) {
+                                                float scale = getImageScale(activity,resource.getAbsolutePath());
+                                                scaleImageView.setImage(ImageSource.uri(resource.getAbsolutePath()),
+                                                        new ImageViewState(scale, new PointF(0, 0), 0));
+                                                //隐藏加载图
+                                                img_loading.setVisibility(View.GONE);
+                                            }
+                                        });
 
-        //长按事件 下载
-//        photoView.setOnLongClickListener(view -> {
-//            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-//            } else {
-//                mExecutorService.submit(() -> {
-//                    bitmap =  StringUtil.getBitmap(imageList.get(position));
-//                    mHandler.sendEmptyMessage(0x113);
-//                });
-//            }
-//
-//            return false;
-//        });
+                            } else {
+                                photoView.setVisibility(View.VISIBLE);
+                                scaleImageView.setVisibility(View.GONE);
+                                img_loading.setVisibility(View.GONE);
+                                Glide.with(activity)
+                                        .load(item.getScalePic() )
+                                        .dontAnimate()
+                                        .dontTransform()
+                                        .placeholder(R.mipmap.img_loading)
+                                        .into(photoView);
+                                //开启图片缩放功能
+                                photoView.enable();
+                                //设置缩放级别
+                                photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                                //设置最大缩放倍数
+                                photoView.setMaxScale(2.5f);
+                                //点击事件，返回
+                                photoView.setOnClickListener(v -> {
+                                    photoView.disenable();
+                                    KLog.d("tag","单击");
+                                });
+                            }
+                        }
+                    });
+        }else{
+            pic_look.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            doLoadOldData(item,img_loading,photoView,scaleImageView);
+        }
 
+        //设置tag
+        view.setTag(R.id.account, position);
         container.addView(view);
         return view;
     }
@@ -285,6 +361,146 @@ public class ImageBrowseAdapter extends PagerAdapter {
         drawable.draw(canvas);
         return bitmap;
     }
+
+
+
+    //下载文件的长度
+    private int contentLength;
+    //当前进度
+    private int progress;
+    //之前的进度
+    private int oldProgress;
+
+    private boolean downloadUrlToStream(String urlString, OutputStream outputStream, int position, final ProgressBar progressBar, final TextView pic_look, ViewGroup container) {
+        HttpURLConnection urlConnection = null;
+        BufferedOutputStream out = null;
+        BufferedInputStream in = null;
+        try {
+            final URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            contentLength = urlConnection.getContentLength();
+
+            in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
+            out = new BufferedOutputStream(outputStream, 8 * 1024);
+
+            int count = 0;
+            byte [] bytes = new byte[8* 1024];
+            int len;
+            while ((len = in.read(bytes)) != -1) {
+                out.write(bytes,0,len);
+                count += len;
+                progress = (int) (count * 100L / contentLength);
+                //如果进度与之前进度相等，这不更新，如果更新太频繁，造成界面卡顿
+                if(oldProgress != progress){
+                    progressBar.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            KLog.d("tag","当前进度是 " + progress);
+                            if(progressBar != null){
+                                progressBar.setProgress(progress);
+                                pic_look.setText(progress + "%");
+
+                                if(progressBar != null && progressBar.getProgress() == 100){
+                                    KLog.d("tag","更新完毕");
+                                    //重新加载
+                                    activity.runOnUiThread(() -> {
+                                        pic_look.setVisibility(View.GONE);
+                                        progressBar.setVisibility(View.GONE);
+
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+                oldProgress = progress;
+
+
+            }
+            return true;
+        } catch (final IOException e) {
+            e.printStackTrace();
+        } finally {
+
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+
+
+    private void doLoadOldData(PicBean item,ImageView img_loading,PhotoView photoView,SubsamplingScaleImageView scaleImageView) {
+
+        mRequestManager = Glide.with(activity);
+        mRequestManager.load(item.getPic())
+                .dontAnimate()
+                .dontTransform()
+                .into(new SimpleTarget<Drawable>() {
+                    @SuppressLint("CheckResult")
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        int h = resource.getIntrinsicHeight();
+                        int w = resource.getIntrinsicWidth();
+
+                        if(h >= MAX_SIZE || h/w > MAX_SCALE) {
+                            photoView.setVisibility(View.GONE);
+                            scaleImageView.setVisibility(View.VISIBLE);
+                            //隐藏加载图
+                            img_loading.setVisibility(View.VISIBLE);
+                            mRequestManager.load(item.getPic() )
+                                    .downloadOnly(new SimpleTarget<File>() {
+                                        @Override
+                                        public void onResourceReady(@NonNull File resource, @Nullable Transition<? super File> transition) {
+                                            float scale = getImageScale(activity,resource.getAbsolutePath());
+                                            scaleImageView.setImage(ImageSource.uri(resource.getAbsolutePath()),
+                                                    new ImageViewState(scale, new PointF(0, 0), 0));
+                                            img_loading.setVisibility(View.GONE);
+                                        }
+                                    });
+
+                        } else {
+                            photoView.setVisibility(View.VISIBLE);
+                            scaleImageView.setVisibility(View.GONE);
+                            img_loading.setVisibility(View.GONE);
+                            Glide.with(activity)
+                                    .load(item.getPic())
+                                    .dontAnimate()
+                                    .placeholder(R.mipmap.img_loading)
+                                    .dontTransform()
+                                    .into(photoView);
+                            //开启图片缩放功能
+                            photoView.enable();
+                            //设置缩放级别
+                            photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            //设置最大缩放倍数
+                            photoView.setMaxScale(2.5f);
+                            //点击事件，返回
+                            photoView.setOnClickListener(v -> {
+//                                photoView.disenable();
+                                KLog.d("tag","单击");
+                            });
+
+
+                        }
+                    }
+                });
+    }
+
+
+
 
 
 }

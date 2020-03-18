@@ -53,9 +53,9 @@ import butterknife.OnClick;
  * @author zhouliang
  * 版本 1.0
  * 创建时间 2019-11-13
- * 描述:快讯图片预览界面 -- recyclerView
+ * 描述:
  *
- * 1.查看原图，
+ * 1.头像查看
  */
 public class PicPreviewActivityV2 extends BaseActivity {
 
@@ -128,6 +128,8 @@ public class PicPreviewActivityV2 extends BaseActivity {
 
 //    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!50p";
 //    String scaleSize = "?imageMogr2/auto-orient/format/jpg/ignore-error/1/thumbnail/!40p/imageslim";
+
+
 
 
     private void loadData(){

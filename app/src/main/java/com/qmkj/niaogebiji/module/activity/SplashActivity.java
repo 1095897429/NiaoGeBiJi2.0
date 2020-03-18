@@ -149,8 +149,6 @@ public class SplashActivity extends BaseActivity {
         String s = "ABC";
         KLog.d("tag","截取的字符串是【利用fastSubstring】 " +  s.substring(1));
 
-        LogUtils.json("tag","LogUtils的json " + " 我是LogUtils的json");
-        LogUtils.eTag("tag","LogUtils的json " + " 我是LogUtils的json");
 
 
         KLog.d("tag","网络是否连接 " +  NetworkUtils.isConnected());
@@ -589,7 +587,9 @@ public class SplashActivity extends BaseActivity {
                     bundle.putInt("type",0);
                     bundle.putSerializable("jpushbean",mJPushBean);
                     intent.putExtras(bundle);
+
                     startActivity(intent);
+
                 }else{
                     UIHelper.toLoginActivity(SplashActivity.this);
                 }

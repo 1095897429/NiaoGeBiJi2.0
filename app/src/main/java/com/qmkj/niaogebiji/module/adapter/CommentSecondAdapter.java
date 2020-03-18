@@ -117,8 +117,6 @@ public class CommentSecondAdapter extends BaseMultiItemQuickAdapter<MulSecondCom
                 }
 
 
-
-
                 ImageUtil.loadByDefaultHead(mContext,item.getAvatar(),helper.getView(R.id.head_icon));
 
                 getReplyonActicle(helper,item);

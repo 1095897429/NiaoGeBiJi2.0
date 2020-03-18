@@ -92,6 +92,10 @@ android {
             buildConfigField("String","URL","\"http://ngtest.xy860.com/\"")
             buildConfigField("String","H5URL","\"http://apph5.xy860.com/\"")
 
+//            buildConfigField("String","URL","\"http://pre.niaogebiji.com/\"")
+//            buildConfigField("String","H5URL","\"http://preapph5.niaogebiji.com/\"")
+
+
 //            buildConfigField("String", "URL", "\"http://www.niaogebiji.com/\"")
 //            buildConfigField("String","H5URL","\"http://apph5.niaogebiji.com/\"")
 

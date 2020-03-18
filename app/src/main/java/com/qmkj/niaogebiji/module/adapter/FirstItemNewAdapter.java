@@ -107,7 +107,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
 
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.loadByCache(mContext,bean.getPic() ,helper.getView(R.id.one_img_imgs));
                 }
 
                 break;
@@ -137,9 +137,9 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
 
                 if(!TextUtils.isEmpty(bean3.getPic())){
-                    ImageUtil.load(mContext,bean3.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
-                    ImageUtil.load(mContext,bean3.getPic2() + Constant.scaleSize,helper.getView(R.id.two_img_imgs));
-                    ImageUtil.load(mContext,bean3.getPic3() + Constant.scaleSize,helper.getView(R.id.three_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic() ,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic2() ,helper.getView(R.id.two_img_imgs));
+                    ImageUtil.load(mContext,bean3.getPic3() ,helper.getView(R.id.three_img_imgs));
                 }
 
                 break;
@@ -155,7 +155,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 }
 
                 if(!TextUtils.isEmpty(beanLong.getPic())){
-                    ImageUtil.load(mContext,beanLong.getPic() + Constant.scaleSize,helper.getView(R.id.long_img_imgs));
+                    ImageUtil.load(mContext,beanLong.getPic() ,helper.getView(R.id.long_img_imgs));
                 }
 
                 int act_state3= beanLong.getAct_state();
@@ -204,7 +204,7 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 FristActionBean t = item.getFristActionBean();
 
                 if(t.getActivity() != null && !TextUtils.isEmpty(t.getActivity().getPic())){
-                    ImageUtil.load(mContext,t.getActivity().getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,t.getActivity().getPic() ,helper.getView(R.id.one_img_imgs));
 
                 }
 

@@ -37,6 +37,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -88,6 +90,7 @@ import com.qmkj.niaogebiji.module.bean.WxShareBean;
 import com.qmkj.niaogebiji.module.event.AudioEvent;
 import com.qmkj.niaogebiji.module.event.SendEvent;
 import com.qmkj.niaogebiji.module.event.SendOkCircleEvent;
+import com.qmkj.niaogebiji.module.widget.MyWebView;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -1544,6 +1547,61 @@ public abstract class BaseActivity extends AppCompatActivity  {
         iosAlertDialog.show();
     }
 
+
+
+
+    //① 统一设置setting
+    public void initSetting(WebView webview) {
+        WebSettings webSettings = webview.getSettings();
+        if(null == webSettings){
+            return;
+        }
+        //开启 js交互功能
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setDefaultTextEncodingName("utf-8");
+        webSettings.setAllowContentAccess(true);
+        webSettings.setAllowFileAccess(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            MyWebView.setWebContentsDebuggingEnabled(true);
+        }
+        //不因手机修改字体变化
+        webSettings.setTextZoom(100);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+        //开启 database storage API 功能
+        webSettings.setDatabaseEnabled(true);
+
+        //开启DomStorage缓存
+        webSettings.setDomStorageEnabled(true);
+        //开启 H5缓存 功能
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setGeolocationEnabled(true);
+        //兼容所有的手机界面,使网页始终按照webview宽度设定(如果设置为true,此项功能为失效,导致部分手机网页如淘宝显示为PC样式,但能完整显示PC网页)
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+
+        //加快内容加载速度
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        //阻止图片网络加载
+        webSettings.setBlockNetworkImage(false);
+        webview.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        //势焦点
+        webview.requestFocusFromTouch();
+        //视频播放需要
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+
+        //在安卓5.0之后，默认不允许加载http与https混合内容，需要设置webview允许其加载混合网络协议内容
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        if (Build.VERSION.SDK_INT >= 19) {
+            webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            webview.setLayerType(View.LAYER_TYPE_NONE, null);
+        }
+    }
 
 
 

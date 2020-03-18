@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:text="干货快讯"
+            android:text="每日干货"
             android:textSize="40sp"
             android:textColor="@color/text_first_color"
             android:layout_width="wrap_content"
@@ -23,12 +23,30 @@
             android:layout_width="match_parent"
             android:layout_height="8dp" />
 
-        <TextView
-            android:text="每日精选干货文章，及时播报全网快讯"
-            android:textSize="18sp"
-            android:textColor="@color/text_first_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:src="@mipmap/welcome2"
+                android:layout_marginLeft="27dp"
+                android:layout_marginRight="27dp"
+                android:layout_width="match_parent"
+                android:layout_height="499dp" />
+
+            <TextView
+                android:layout_centerHorizontal="true"
+                android:text="人工精选圈内干货，摆脱冗余同质信息"
+                android:textSize="18sp"
+                android:textColor="@color/text_first_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </RelativeLayout>
+
+
+
 
     </LinearLayout>
 
@@ -36,11 +54,6 @@
         android:layout_width="match_parent"
         android:layout_height="11dp" />
 
-    <ImageView
-        android:src="@mipmap/welcome2"
-        android:layout_marginLeft="27dp"
-        android:layout_marginRight="27dp"
-        android:layout_width="match_parent"
-        android:layout_height="445dp" />
+
 
 </LinearLayout>

@@ -136,41 +136,44 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 
 
     private void setTextLine(TextView msg, String content, CircleBean item){
-        //获取文字的总宽度
-        float text_with = msg.getPaint().measureText(content);
-        //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
-        int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
-        //总长度除了textview长度，得到行数
-        float lines_float = text_with/tv_width;
-        //向上取整
-        int lines = (int)Math.ceil(lines_float);
-        item.setLines(lines);
-//        KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
-        if(StringUtil.getCounts(content) > 140  && lines >= 5) {
-            KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
-
-            int perSize = (int) (content.length() / (lines * 1.0f));
-            KLog.d("tag","每行显示的字数是 " + perSize);
-
-            item.setPerSize(perSize);
-        }else{
-//            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
-        }
-
-        if(StringUtil.getCounts(content) > 140 && lines >= 5){
-            item.setLines(5);
-        }else{
+        if(msg != null && !TextUtils.isEmpty(content)){
+            //获取文字的总宽度
+            float text_with = msg.getPaint().measureText(content);
+            //根据自己的布局获取textview的总宽度，我的textview距离两边分别是10dp
+            int tv_width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+            //总长度除了textview长度，得到行数
+            float lines_float = text_with/tv_width;
+            //向上取整
+            int lines = (int)Math.ceil(lines_float);
             item.setLines(lines);
+//        KLog.d("tag","文本的长度是 " + StringUtil.getCounts(content));
+            if(StringUtil.getCounts(content) > 140  && lines >= 5) {
+                KLog.d("tag", "行数大于5行  " + " 行数是 " + lines);
+
+                int perSize = (int) (content.length() / (lines * 1.0f));
+                KLog.d("tag","每行显示的字数是 " + perSize);
+
+                item.setPerSize(perSize);
+            }else{
+//            KLog.d("tag", "行数小于5行  " + " 行数是 " + lines);
+            }
+
+            if(StringUtil.getCounts(content) > 140 && lines >= 5){
+                item.setLines(5);
+            }else{
+                item.setLines(lines);
+            }
         }
     }
 
     private void setTextOrigin(TextView msg, String content,CircleBean circleBean){
 
-        //这里获取到绘制过程中的textview行数
-        int lineCount = circleBean.getLines();
-        //此处根据你想设置的最大行数进行判断
-        if (StringUtil.getCounts(content) > 140 && lineCount >= 5) {
-            //4是索引 5是行数
+        if(msg != null && !TextUtils.isEmpty(content)){
+            //这里获取到绘制过程中的textview行数
+            int lineCount = circleBean.getLines();
+            //此处根据你想设置的最大行数进行判断
+            if (StringUtil.getCounts(content) > 140 && lineCount >= 5) {
+                //4是索引 5是行数
 //            msg.setLines(5);
 //            String text = content.substring(0, circleBean.getPerSize() * 5) +"...全文";
 
@@ -180,42 +183,44 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
 //            }
 
 
-            //取出第一行 0
-            //取出第五行 4
-            int width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
-            Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
-            float spacingMultiplier = 1;
-            float spacingAddition = 0;
-            boolean includePadding = false;
+                //取出第一行 0
+                //取出第五行 4
+                int width = ScreenUtils.getScreenWidth()- SizeUtils.dp2px(16 * 2);
+                Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+                float spacingMultiplier = 1;
+                float spacingAddition = 0;
+                boolean includePadding = false;
 
-            StaticLayout myStaticLayout = new StaticLayout(content, msg.getPaint(), width, alignment, spacingMultiplier, spacingAddition, includePadding);
+                StaticLayout myStaticLayout = new StaticLayout(content, msg.getPaint(), width, alignment, spacingMultiplier, spacingAddition, includePadding);
 
-            String firstLineText =  content.substring(0,myStaticLayout.getLineEnd(4));
+                String firstLineText =  content.substring(0,myStaticLayout.getLineEnd(4));
 //            KLog.d("tag", "text1111  " + firstLineText);
 
 
-            //减 3 意味着 ...占一个字数
-            String text = firstLineText.substring(0,firstLineText.length() - 3) + "...全文";
+                //减 3 意味着 ...占一个字数
+                String text = firstLineText.substring(0,firstLineText.length() - 3) + "...全文";
 //            String text = firstLineText;
 
 
 //            KLog.d("tag", "text  " + text);
-            SpannableString spannableString = new SpannableString(text);
-            spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                SpannableString spannableString = new SpannableString(text);
+                spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
-                @Override
-                public void onClick(View widget) {
-                    UIHelper.toCommentDetailActivity(mContext,circleBean.getId());
-                }
-            };
-            spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            msg.setText(spannableString);
-            msg.setMovementMethod(LinkMovementMethod.getInstance());
-        }else{
+                NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        UIHelper.toCommentDetailActivity(mContext,circleBean.getId());
+                    }
+                };
+                spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                msg.setText(spannableString);
+                msg.setMovementMethod(LinkMovementMethod.getInstance());
+            }else{
 //            msg.setLines(lineCount);
-            msg.setText(content);
+                msg.setText(content);
+            }
         }
+
 
 
 //        //获取文字的总宽度
@@ -744,7 +749,11 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                         return;
                     }
                     if(!item.getImages().isEmpty()){
-                        UIHelper.toPicPreViewActivity(mContext,  item.getImages(),position,true);
+
+                        //TODO 测试
+                        UIHelper.toPicPreViewActivityOld(mContext,  item.getImages(),position,true);
+
+
                     }
                 });
 

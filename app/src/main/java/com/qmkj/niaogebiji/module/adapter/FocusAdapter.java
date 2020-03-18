@@ -73,7 +73,7 @@ public class FocusAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean, BaseV
                 }
 
                 if(!TextUtils.isEmpty(bean.getPic())){
-                    ImageUtil.load(mContext,bean.getPic() + Constant.scaleSize,helper.getView(R.id.one_img_imgs));
+                    ImageUtil.load(mContext,bean.getPic() ,helper.getView(R.id.one_img_imgs));
                 }
 
                 break;

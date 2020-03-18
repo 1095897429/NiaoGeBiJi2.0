@@ -14,6 +14,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivityV2;
+import com.qmkj.niaogebiji.module.activity.UserInfoV2Activity;
 import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterMy;
 import com.qmkj.niaogebiji.module.adapter.FeatherItemAdapterNew;
 import com.qmkj.niaogebiji.module.adapter.MyItemAdapter;
@@ -64,6 +66,7 @@ import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.event.ShowRedPointEvent;
 import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
+import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
@@ -174,7 +177,7 @@ public class MyFragment extends BaseLazyFragment {
             R.mipmap.icon_my_feather,R.mipmap.icon_my_vertify,R.mipmap.icon_my_invite
            };
 
-    private String [] names = new String[]{"我的发布","我的勋章","我的收藏","我的关注","我的羽毛","认证中心","邀请好友"};
+    private String [] names = new String[]{"我的发布","我的徽章","我的收藏","我的关注","我的羽毛","认证中心","邀请好友"};
 
     public static MyFragment getInstance() {
         return new MyFragment();
@@ -473,24 +476,56 @@ public class MyFragment extends BaseLazyFragment {
 
 
                 }else{
+//                    name_author_tag.setVisibility(View.VISIBLE);
+//                    name_vertify_no.setVisibility(View.VISIBLE);
+//                    //下划线
+//                    name_vertify_no.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+//                    //抗锯齿
+//                    name_vertify_no.getPaint().setAntiAlias(true);
+//                    name_vertify.setVisibility(View.GONE);
+//                    name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) + " " +
+//                            (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
+//
+//                    name_vertify_no.setOnClickListener(v ->{
+//
+//                        MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_2_0);
+//
+//                        UIHelper.toNewWebView(getActivity(),StringUtil.getLink("certificatecenter"));
+//                    });
+
+
+                    //立即认证放在文字后面
                     name_author_tag.setVisibility(View.VISIBLE);
-                    name_vertify_no.setVisibility(View.VISIBLE);
-                    //下划线
-                    name_vertify_no.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-                    //抗锯齿
-                    name_vertify_no.getPaint().setAntiAlias(true);
                     name_vertify.setVisibility(View.GONE);
+                    name_vertify_no.setVisibility(View.GONE);
                     name_author_tag.setText( (TextUtils.isEmpty(mUserInfo.getCompany_name())?"":mUserInfo.getCompany_name()) + " " +
                             (TextUtils.isEmpty(mUserInfo.getPosition())?"":mUserInfo.getPosition()));
 
-                    name_vertify_no.setOnClickListener(v ->{
-//                        ToastUtils.showShort("去认证h5界面");
-//                        String rul = "http://192.168.14.41:8080/certificatecenter";
+                    NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            if(StringUtil.isFastClick()){
+                                return;
+                            }
+                            UIHelper.toNewWebView(getActivity(),StringUtil.getLink("certificatecenter"));
+                        }
 
-                        MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_2_0);
+                        @Override
+                        public void updateDrawState(TextPaint ds) {  //设置样式
+                            super.updateDrawState(ds);
+                            ds.setColor(mContext.getResources().getColor(R.color.zan_select));  //字体颜色
+                            ds.setUnderlineText(true);      //下划线
+                        }
+                    };
 
-                        UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
-                    });
+                    ForegroundColorSpan fCs2 = new ForegroundColorSpan(mContext.getResources().getColor(R.color.zan_select));
+                    //居中对齐imageSpan
+                    SpannableString spanString2 = new SpannableString("  立即认证");
+                    spanString2.setSpan(fCs2, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanString2.setSpan(clickableSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    name_author_tag.append(spanString2);
+                    //能点击相应事件
+                    name_author_tag.setMovementMethod(LinkMovementMethod.getInstance());
 
                 }
             }
@@ -582,9 +617,9 @@ public class MyFragment extends BaseLazyFragment {
                 case 0:
 
                     MobclickAgentUtils.onEvent(UmengEvent.i_dynamic_2_0_0);
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myactivity"),"");
+                    //  后面添加标题
+                    UIHelper.toNewWebView(getActivity(),StringUtil.getLink("myactivity"),"我的发布");
 
-//                    UIHelper.toWebViewActivity(getActivity(),StringUtil.getLink("myactivity"));
                     break;
                 case 1:
 
@@ -603,7 +638,9 @@ public class MyFragment extends BaseLazyFragment {
                 case 3:
                     MobclickAgentUtils.onEvent(UmengEvent.i_quanzifollow_2_0_0);
 
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("myconcern"),"");
+                    UIHelper.toNewWebView(getActivity(),StringUtil.getLink("myconcern"),"我的关注");
+
+
                     break;
                 case 4:
                     MobclickAgentUtils.onEvent(UmengEvent.i_task_2_0_0);
@@ -611,15 +648,10 @@ public class MyFragment extends BaseLazyFragment {
                     UIHelper.toFeatherctivity(getActivity());
                     break;
                 case 5:
-//                    ToastUtils.showShort("去认证h5界面");
-//                    String rul = "http://192.168.14.41:8080/certificatecenter";
-//                    UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(),rul);
 
                     MobclickAgentUtils.onEvent(UmengEvent.i_certcenter_2_2_0);
 
-
-                    //这里涉及到返回上层， -- onLayout(重写了方法) -- webviewAll(js交互)
-                    UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("certificatecenter"),"");
+                    UIHelper.toNewWebView(getActivity(),StringUtil.getLink("certificatecenter"));
 
                     break;
                 case 6:
@@ -671,6 +703,7 @@ public class MyFragment extends BaseLazyFragment {
 
                 UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("messagecenter"),"显示一键已读消息");
 
+
                 break;
             case R.id.toUserInfo:
                 MobclickAgentUtils.onEvent(UmengEvent.i_icon_2_0_0);
@@ -696,16 +729,14 @@ public class MyFragment extends BaseLazyFragment {
             case R.id.advice_ll:
                 MobclickAgentUtils.onEvent(UmengEvent.i_feedback_2_0_0);
 
-//                toUDesk();
-
                 //TODO 改为链接
-                UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(), Constant.ADVICE);
-
+                UIHelper.toNewWebView(getActivity(),Constant.ADVICE);
                 break;
             case R.id.toQue:
                 MobclickAgentUtils.onEvent(UmengEvent.i_question_2_0_0);
 
-                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("questions"),"questions");
+                UIHelper.toNewWebView(getActivity(),StringUtil.getLink("questions"));
+//                UIHelper.toWebViewActivityWithOnLayout(getActivity(),StringUtil.getLink("questions"),"questions");
                 break;
             case R.id.about_ll:
                 MobclickAgentUtils.onEvent(UmengEvent.i_about_2_0_0);
@@ -806,7 +837,7 @@ public class MyFragment extends BaseLazyFragment {
                         mOfficialBean = response.getReturn_data();
                         if(null != mOfficialBean){
                             advice_url = mOfficialBean.getQuestion_url();
-                            UIHelper.toWebViewActivity(getActivity(),advice_url);
+//                            UIHelper.toWebViewActivity(getActivity(),advice_url);
                         }
                     }
 

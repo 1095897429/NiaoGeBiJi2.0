@@ -20,9 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.Utils;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.qmkj.niaogebiji.R;
@@ -344,21 +347,12 @@ public class TopicDetailActivityV2 extends BaseActivity {
 
         topic_desc.setText(bean.getDesc());
 
-        //关注数 x>=10000，展示1w+
+        //临时数据
         if(!TextUtils.isEmpty(bean.getFollow_num())){
-            long count = Long.parseLong(bean.getFollow_num());
-            if(count < 100000 ){
-                focus_num.setText(bean.getFollow_num() + "人关注");
-            }else{
-                double temp = count  ;
-                //1.将数字转换成以万为单位的数字
-                double num = temp / 10000;
-                BigDecimal b = new BigDecimal(num);
-                //2.转换后的数字四舍五入保留小数点后一位;
-                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                focus_num.setText(f1 + " w+" + "人关注");
-            }
+            myFollowNum = Long.parseLong(bean.getFollow_num());
         }
+
+        setNumTheme(bean.getFollow_num());
 
         //是否关注 注：1-关注，0-取消关注
         if(!bean.isIs_follow()){
@@ -371,6 +365,20 @@ public class TopicDetailActivityV2 extends BaseActivity {
 
 
         focus.setOnClickListener(v -> {
+
+            //判断网络是否连接 检测链接的网络能否上网[子线程中]
+            if(!NetworkUtils.isConnected() ){
+                ToastUtils.showShort("无网络连接");
+                return;
+            }
+
+            NetworkUtils.isAvailableAsync(data -> {
+                if(!data){
+                    ToastUtils.showShort("当前网络不可用");
+                    return;
+                }
+            });
+
             if(!mTopicBean.isIs_follow()){
                 followTopic(0,mTopicBean.getId() + "");
             }else{
@@ -379,6 +387,20 @@ public class TopicDetailActivityV2 extends BaseActivity {
         });
 
         alreadFocus.setOnClickListener(v -> {
+
+            //判断网络是否连接 检测链接的网络能否上网[子线程中]
+            if(!NetworkUtils.isConnected() ){
+                ToastUtils.showShort("无网络连接");
+                return;
+            }
+
+            NetworkUtils.isAvailableAsync(data -> {
+                if(!data){
+                    ToastUtils.showShort("当前网络不可用");
+                    return;
+                }
+            });
+
             if(!mTopicBean.isIs_follow()){
                 followTopic(0,mTopicBean.getId() + "");
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_topicflow_follow_2_2_0);
@@ -411,6 +433,26 @@ public class TopicDetailActivityV2 extends BaseActivity {
     }
 
 
+    private long myFollowNum;
+
+    //关注
+    private void setNumTheme(String  follow_num){
+        //关注数 x>=10000，展示1w+
+        if(!TextUtils.isEmpty(follow_num)){
+            long count = Long.parseLong(follow_num);
+            if(count < 100000 ){
+                focus_num.setText(follow_num + "人关注");
+            }else{
+                double temp = count  ;
+                //1.将数字转换成以万为单位的数字
+                double num = temp / 10000;
+                BigDecimal b = new BigDecimal(num);
+                //2.转换后的数字四舍五入保留小数点后一位;
+                double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
+                focus_num.setText(f1 + " w+" + "人关注");
+            }
+        }
+    }
 
     public void showCancelFocusDialog(int position, long topic_id){
         final FocusAlertDialog iosAlertDialog = new FocusAlertDialog(mContext).builder();
@@ -525,8 +567,13 @@ public class TopicDetailActivityV2 extends BaseActivity {
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
 //                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
 
+
                         //列表中的数据
                         EventBus.getDefault().post(new UpdapteListTopicEvent());
+
+                        //手动添加 后台没有操作
+                        KLog.d("tag","数据 " + myFollowNum);
+                        setNumTheme((++myFollowNum) + "");
                     }
 
                     @Override
@@ -559,6 +606,10 @@ public class TopicDetailActivityV2 extends BaseActivity {
 
                         //列表中的数据
                         EventBus.getDefault().post(new UpdapteListTopicEvent());
+
+                        //手动添加 后台自动减了
+                        KLog.d("tag","数据 " + myFollowNum);
+                        setNumTheme((--myFollowNum) + "");
                     }
 
                     @Override

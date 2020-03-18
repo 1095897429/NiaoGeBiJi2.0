@@ -25,6 +25,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
+import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.FlashBulltinBean;
 import com.qmkj.niaogebiji.module.widget.CenterAlignImageSpan;
 import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
@@ -125,7 +126,12 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             ImageUtil.load(mContext,mBean.getPic()  ,helper.getView(R.id.one_img));
             ArrayList<String> onePics = new ArrayList<>();
             onePics.add(mBean.getPic());
-            helper.getView(R.id.one_img).setOnClickListener(v -> UIHelper.toPicPreViewActivity(mContext, onePics, 0,true));
+            helper.getView(R.id.one_img).setOnClickListener(v -> {
+
+//                UIHelper.toPicPreViewActivity(mContext, onePics, 0,true);
+
+                UIHelper.toPicPreViewActivityOld(mContext,  onePics,0,true);
+            });
         }else if("2".equals(pic_type) || "3".equals(pic_type)) {
             ArrayList<String> mPics = new ArrayList<>();
             if (!TextUtils.isEmpty(mBean.getPic3())) {
@@ -137,7 +143,7 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
                 mPics.add(mBean.getPic2() );
             }
             //二级评论布局
-            GridLayoutManager layoutManager = new GridLayoutManager(mContext, 3);
+            GridLayoutManager layoutManager = new GridLayoutManager(mContext, mPics.size());
             RecyclerView recyclerView = helper.getView(R.id.pic_recyler);
             recyclerView.setLayoutManager(layoutManager);
 
@@ -163,7 +169,10 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
             mCirclePicAdapter.setOnItemClickListener((adapter, view, position) -> {
                 KLog.d("tag", "点击预览");
                 if(mPics != null && !mPics.isEmpty()){
-                    UIHelper.toPicPreViewActivity(mContext, mPics, position,true);
+
+//                    UIHelper.toPicPreViewActivity(mContext, mPics, position,true);
+
+                    UIHelper.toPicPreViewActivityOld(mContext,  mPics,position,true);
                 }
             });
 
@@ -177,6 +186,9 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
                 public void onClick(View widget) {
                     KLog.d("tag","点击了快讯link " + mBean.getLink());
                     UIHelper.toWebViewActivityWithOnLayout(mContext,mBean.getLink(),"");
+
+//                    UIHelper.toNewWebView(mContext, mBean.getLink());
+
                 }
             };
             Drawable drawableLink = mContext.getResources().getDrawable(R.mipmap.icon_flash_link_pic);

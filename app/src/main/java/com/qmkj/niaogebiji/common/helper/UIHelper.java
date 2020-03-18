@@ -33,10 +33,12 @@ import com.qmkj.niaogebiji.module.activity.ModifyUserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.MoreKnowYouActivity;
 import com.qmkj.niaogebiji.module.activity.MoringNewsListActivity;
 import com.qmkj.niaogebiji.module.activity.MyCollectionListActivity;
+import com.qmkj.niaogebiji.module.activity.MyWebViewOnBackActivity;
 import com.qmkj.niaogebiji.module.activity.NewsDetailActivity;
 import com.qmkj.niaogebiji.module.activity.NewsThingDetailActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputActivity;
 import com.qmkj.niaogebiji.module.activity.PhoneInputV2Activity;
+import com.qmkj.niaogebiji.module.activity.PicPreviewActivity;
 import com.qmkj.niaogebiji.module.activity.PicPreviewActivityV2;
 import com.qmkj.niaogebiji.module.activity.SearchActivity;
 import com.qmkj.niaogebiji.module.activity.SecretActivity;
@@ -169,6 +171,18 @@ public class UIHelper {
     /** 打开图片预览界面 */
     public static void toPicPreViewActivity(Context ctx,ArrayList<String> photos,int position,boolean isShowDown) {
         Intent intent = new Intent(ctx, PicPreviewActivityV2.class);
+        Bundle bundle = new Bundle ();
+        bundle.putStringArrayList ("imageList", photos);
+        bundle.putBoolean("fromNet",true);
+        bundle.putInt("index",position);
+        bundle.putBoolean("isShowDown",isShowDown);
+        intent.putExtras(bundle);
+        ctx.startActivity(intent);
+    }
+
+
+    public static void toPicPreViewActivityOld(Context ctx,ArrayList<String> photos,int position,boolean isShowDown) {
+        Intent intent = new Intent(ctx, PicPreviewActivity.class);
         Bundle bundle = new Bundle ();
         bundle.putStringArrayList ("imageList", photos);
         bundle.putBoolean("fromNet",true);
@@ -588,5 +602,21 @@ public class UIHelper {
         intent.putExtra("link",link);
         ctx.startActivity(intent);
     }
+
+
+    public static void toNewWebView(Context ctx, String link) {
+        Intent intent = new Intent(ctx, MyWebViewOnBackActivity.class);
+        intent.putExtra("link",link);
+        ctx.startActivity(intent);
+    }
+
+    public static void toNewWebView(Context ctx, String link,String title) {
+        Intent intent = new Intent(ctx, MyWebViewOnBackActivity.class);
+        intent.putExtra("link",link);
+        intent.putExtra("title",title);
+        ctx.startActivity(intent);
+    }
+
+
 
 }

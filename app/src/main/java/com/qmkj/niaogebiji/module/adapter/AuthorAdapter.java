@@ -107,7 +107,7 @@ public class AuthorAdapter extends BaseQuickAdapter<AuthorBean.Author, BaseViewH
 
         //图片
         if(!TextUtils.isEmpty(item.getImg())){
-            ImageUtil.loadByDefaultHead(mContext,item.getImg() + Constant.scaleSize,helper.getView(R.id.head_icon));
+            ImageUtil.loadByDefaultHead(mContext,item.getImg() ,helper.getView(R.id.head_icon));
 
         }
 

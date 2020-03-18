@@ -123,6 +123,8 @@ public class TopicFocusFragment extends BaseLazyFragment {
                         mTopicBeanList = response.getReturn_data();
                         if(null != mTopicBeanList && !mTopicBeanList.isEmpty()){
                             mTopicFocusAdapter.setNewData(mTopicBeanList);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            ll_empty.setVisibility(View.GONE);
                         }else{
                             mRecyclerView.setVisibility(View.GONE);
                             ll_empty.setVisibility(View.VISIBLE);

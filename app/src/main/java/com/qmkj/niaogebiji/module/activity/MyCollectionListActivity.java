@@ -60,7 +60,7 @@ public class MyCollectionListActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        tv_title.setText("干货收藏");
+        tv_title.setText("我的收藏");
 
         mChannelBeanList = new ArrayList<>();
         ChannelBean bean ;

@@ -84,7 +84,7 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
 
     public PicPreViewItemAdapter(@Nullable List<PicBean> data,Context context) {
         super(R.layout.pict_pager_item_view,data);
-        mExecutorService = Executors.newFixedThreadPool(2);
+        mExecutorService = Executors.newFixedThreadPool(1);
         diskLruCache(context);
     }
 
@@ -140,8 +140,6 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
 
     }
 
-    Bitmap temp;
-
     //下载文件的长度
     private int contentLength;
     //当前进度
@@ -157,8 +155,6 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
             final URL url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
 
-            temp = BitmapFactory.decodeStream(in);
-
             contentLength = urlConnection.getContentLength();
 
             in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
@@ -169,32 +165,27 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
             int len;
             while ((len = in.read(bytes)) != -1) {
                 out.write(bytes,0,len);
-//                count += len;
-//                progress = (int) (count * 100L / contentLength);
-//                //如果进度与之前进度相等，这不更新，如果更新太频繁，造成界面卡顿
-//                if(oldProgress != progress){
-//                    progressBar.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            progressBar.setProgress(progress);
-//                            pic_look.setText(progress + "%");
-//                        }
-//                    });
-//                }
-//                oldProgress = progress;
+                count += len;
+                progress = (int) (count * 100L / contentLength);
+                //如果进度与之前进度相等，这不更新，如果更新太频繁，造成界面卡顿
+                if(oldProgress != progress){
+                    progressBar.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            KLog.d("tag","当前进度是 " + progress);
+                            if(progressBar != null){
+                                progressBar.setProgress(progress);
+                                pic_look.setText(progress + "%");
+                            }
+                        }
+                    });
+                }
+                oldProgress = progress;
             }
             return true;
         } catch (final IOException e) {
             e.printStackTrace();
         } finally {
-
-//            progressBar.setVisibility(View.GONE);
-//            progressBar.setProgress(0);
-//            pic_look.setVisibility(View.GONE);
-
-            if(temp != null ){
-                BitmapCache.getInstance().addBitmapToMemoryCache(hashKeyFormUrl(urlString),temp);
-            }
 
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -249,55 +240,55 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
         final TextView pic_look = helper.getView(R.id.pic_look);
         final ProgressBar progressBar = helper.getView(R.id.progressBar);
 
-        pic_look.setOnClickListener(v -> mExecutorService.submit(() -> {
 
-//            progressBar.setVisibility(View.VISIBLE);
 
-            //图片的路径 -- 转移 -- 创建Editor
-            String imgUrl = item.getPic();
-            String key = hashKeyFormUrl(imgUrl);
-            try {
-                DiskLruCache.Editor editor = mDiskLruCache.edit(key);
-                if (editor != null) {
-                    OutputStream outputStream = editor.newOutputStream(0);
-                     if (downloadUrlToStream(imgUrl, outputStream,helper.getAdapterPosition(),progressBar,pic_look)) {
-                        editor.commit();
-                    } else {
-                        editor.abort();
+        pic_look.setOnClickListener(v -> {
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+
+            mExecutorService.submit(() -> {
+                //图片的路径 -- 转移 -- 创建Editor
+                String imgUrl = item.getPic();
+                String key = hashKeyFormUrl(imgUrl);
+                try {
+                    DiskLruCache.Editor editor = mDiskLruCache.edit(key);
+                    if (editor != null) {
+                        OutputStream outputStream = editor.newOutputStream(0);
+                        if (downloadUrlToStream(imgUrl, outputStream,helper.getAdapterPosition(),progressBar,pic_look)) {
+                            editor.commit();
+                        } else {
+                            editor.abort();
+                        }
                     }
+                    mDiskLruCache.flush();
+                    //更新数据
+                    KLog.d("tag","");
+                    int pos = helper.getAdapterPosition();
+                    mData.get(pos).setNoShowLook(true);
+                    notifyItemChanged(pos);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                mDiskLruCache.flush();
-                notifyItemChanged(helper.getAdapterPosition());
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            });
+        });
+
+
+        try {
+            String imageUrl = item.getPic();
+            KLog.d("tag","imageUrl " + imageUrl);
+            String key = hashKeyFormUrl(imageUrl);
+            DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
+            if (snapShot != null) {
+                KLog.d("tag","加载的是磁盘缓存  " );
+                InputStream is = snapShot.getInputStream(0);
+                bitmap = BitmapFactory.decodeStream(is);
             }
-
-            //网络线程
-//            Bitmap temp = GetImageInputStream(item.getPic());
-//            if(temp != null ){
-//                BitmapCache.getInstance().addBitmapToMemoryCache(hashKeyFormUrl(item.getPic()),temp);
-//                notifyItemChanged(helper.getAdapterPosition());
-//            }
-        }));
-
-
-        //加载图片
-        String ur11 = hashKeyFormUrl(item.getPic());
-        bitmap = BitmapCache.getInstance().getBitmap(ur11);
-        if(bitmap == null){
-            try {
-                String imageUrl = item.getPic();
-                String key = hashKeyFormUrl(imageUrl);
-                DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
-                if (snapShot != null) {
-                    KLog.d("tag","加载的是磁盘缓存  " );
-                    InputStream is = snapShot.getInputStream(0);
-                    bitmap = BitmapFactory.decodeStream(is);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
             //内存 磁盘 都没有
             if(bitmap == null){
                 pic_look.setVisibility(View.VISIBLE);
@@ -353,16 +344,12 @@ public class PicPreViewItemAdapter extends BaseQuickAdapter<PicBean, BaseViewHol
                             }
                         });
             }else{
+                pic_look.setVisibility(View.GONE);
                 doLoadOldData(item,pic_look,photoView,scaleImageView);
             }
-        }else{
-            KLog.d("tag","加载的是内存缓存  " );
-            doLoadOldData(item,pic_look,photoView,scaleImageView);
-        }
     }
 
     private void doLoadOldData(PicBean item,TextView pic_look,PhotoView photoView,SubsamplingScaleImageView scaleImageView) {
-        pic_look.setVisibility(View.GONE);
 
         mRequestManager = Glide.with(mContext);
         mRequestManager.load(item.getPic())

@@ -48,6 +48,13 @@ public class MyWebChromeClientByCamera extends WebChromeClient {
     private ProgressBar mProgressBar;
 
     //新增的
+    public MyWebChromeClientByCamera(@NonNull Activity mActivity, TextView tv_title) {
+        this.mActivity = mActivity;
+        mTitle = tv_title;
+    }
+
+
+    //新增的
     public MyWebChromeClientByCamera(@NonNull Activity mActivity, TextView tv_title, MyListener myListener) {
         this.mActivity = mActivity;
         this.mMyListener = myListener;
@@ -92,7 +99,10 @@ public class MyWebChromeClientByCamera extends WebChromeClient {
     @Override
     public void onReceivedTitle(WebView view, String title) {
         super.onReceivedTitle(view, title);
-        mTitle.setText(title);
+        if(mTitle != null){
+            mTitle.setText(title);
+        }
+
     }
 
 

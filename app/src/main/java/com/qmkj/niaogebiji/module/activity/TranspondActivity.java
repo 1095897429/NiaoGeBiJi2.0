@@ -220,16 +220,19 @@ public class TranspondActivity extends BaseActivity {
     public void initData() {
         mCircleBean = (CircleBean) getIntent().getExtras().getSerializable("circle");
 
-        //只判断img字段 没有的话是转发，传头像即可；如果有，就用图片的第一张
-        if(mCircleBean.getImages() != null && !mCircleBean.getImages().isEmpty()){
-            ImageUtil.load(this,mCircleBean.getImages().get(0),logo);
-        }else if(mCircleBean.getUser_info() != null){
-            ImageUtil.load(this,mCircleBean.getUser_info().getAvatar(),logo);
-        }else{
-            ImageUtil.load(this, StringUtil.getUserInfoBean().getAvatar(),logo);
+        if(mCircleBean != null){
+            //只判断img字段 没有的话是转发，传头像即可；如果有，就用图片的第一张
+            if(mCircleBean.getImages() != null && !mCircleBean.getImages().isEmpty()){
+                ImageUtil.load(this,mCircleBean.getImages().get(0),logo);
+            }else if(mCircleBean.getUser_info() != null){
+                ImageUtil.load(this,mCircleBean.getUser_info().getAvatar(),logo);
+            }else{
+                ImageUtil.load(this, StringUtil.getUserInfoBean().getAvatar(),logo);
+            }
+
+            acticle_title.setText(mCircleBean.getBlog());
         }
 
-        acticle_title.setText(mCircleBean.getBlog());
     }
 
 

@@ -530,15 +530,4 @@ public class TopicListActivity extends BaseActivity {
     }
 
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdapteListTopicEvent(UpdapteListTopicEvent event) {
-        if(null != this){
-            searchTopic(myTopicKey);
-        }
-    }
-
-
-
-
 }

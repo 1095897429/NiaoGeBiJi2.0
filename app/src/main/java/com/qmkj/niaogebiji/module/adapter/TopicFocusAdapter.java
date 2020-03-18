@@ -23,6 +23,7 @@ import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.TopicBean;
+import com.qmkj.niaogebiji.module.event.UpdapteListTopicEvent;
 import com.qmkj.niaogebiji.module.event.UpdateCircleRecommendEvent;
 import com.qmkj.niaogebiji.module.event.UpdateRecommendTopicFocusListEvent;
 import com.qmkj.niaogebiji.module.event.UpdateTopicEvent;
@@ -78,11 +79,6 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                 return;
             }
 
-            //在话题选择中的只有事件
-//            if("TopicListActivity".equals(mContext.getClass().getSimpleName())){
-//
-//            }
-
             MobclickAgentUtils.onEvent(UmengEvent.quanzi_topiclist_littletopic_2_2_0);
 
 
@@ -91,14 +87,13 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
         });
 
 
-        //测试数据  -- 显示12.5w+
-//        item.setFollow_num("99999"); -- ok
-//        item.setFollow_num("124999");
+
+        TextView textView = helper.getView(R.id.top_focus_num);
         //关注数 x>=100000，展示10w+
         if(!TextUtils.isEmpty(item.getFollow_num())){
             long count = Long.parseLong(item.getFollow_num());
             if(count < 100000 ){
-                helper.setText(R.id.top_focus_num,   item.getFollow_num() + "人关注");
+                textView.setText(item.getFollow_num() + "人关注");
             }else{
                 double temp = count  ;
                 //1.将数字转换成以万为单位的数字
@@ -106,11 +101,11 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                 BigDecimal b = new BigDecimal(num);
                 //2.转换后的数字四舍五入保留小数点后一位;
                 double f1 = b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-                helper.setText(R.id.top_focus_num,f1 + "w+" + "人关注");
+                textView.setText(f1 + "w+" + "人关注");
             }
         }else{
-            helper.setText(R.id.top_focus_num,    "0人关注");
-        }
+            textView.setText("0人关注");
+        };
 
         //是否关注 注：1-关注，0-取消关注
         if(!item.isIs_follow()){
@@ -178,9 +173,16 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                         KLog.d("tag","关注成功，改变状态");
                         ToastUtils.showShort("关注成功");
                         mData.get(mPosition).setIs_follow(true);
+
+                        //手动添加 后台没有操作
+                        String re = mData.get(mPosition).getFollow_num();
+                        mData.get(mPosition).setFollow_num((Long.parseLong(re) + 1) + "");
+
                         notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+
+                        EventBus.getDefault().post(new UpdapteListTopicEvent());
+
                     }
 
                     @Override
@@ -204,9 +206,16 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
                     public void onSuccess(HttpResponse<String> response) {
                         KLog.d("tag","取关成功，改变状态");
                         mData.get(mPosition).setIs_follow(false);
+
+                        //手动添加 后台没有操作
+                        String re = mData.get(mPosition).getFollow_num();
+                        mData.get(mPosition).setFollow_num((Long.parseLong(re) - 1) + "");
+
                         notifyItemChanged(mPosition);
                         EventBus.getDefault().post(new UpdateRecommendTopicFocusListEvent());
-//                        EventBus.getDefault().post(new UpdateCircleRecommendEvent());
+
+
+                        EventBus.getDefault().post(new UpdapteListTopicEvent());
                     }
 
                     @Override

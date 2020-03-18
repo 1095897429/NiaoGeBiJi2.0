@@ -20,6 +20,17 @@ public class PicBean extends BaseBean {
     //bitmap
     private Bitmap mBitmap;
 
+    //是否展示查看原图
+    private boolean isNoShowLook;
+
+    public boolean isNoShowLook() {
+        return isNoShowLook;
+    }
+
+    public void setNoShowLook(boolean noShowLook) {
+        isNoShowLook = noShowLook;
+    }
+
     public Bitmap getBitmap() {
         return mBitmap;
     }

@@ -117,17 +117,17 @@ public class PicPreviewActivity extends BaseActivity {
             imageList =  intent.getStringArrayListExtra("imageList");
 
             //封装新的对象
-
             for (int i = 0; i < imageList.size(); i++) {
                 mPicBean = new PicBean();
-                mPicBean.setPic(imageList.get(i) + Constant.scaleSize);
-                mPicBean.setYuanTu(false);
+                mPicBean.setScalePic(imageList.get(i) + Constant.scaleSize);
+                mPicBean.setPic(imageList.get(i));
                 imagePicList.add(mPicBean);
             }
 
             mImageBrowseAdapter = new ImageBrowseAdapter (PicPreviewActivity.this,imagePicList);
             imageBrowseViewPager.setAdapter (mImageBrowseAdapter);
             imageBrowseViewPager.setCurrentItem (currentIndex);
+            imageBrowseViewPager.setOffscreenPageLimit(4);
 
 
             if(!isShowDown){
@@ -148,6 +148,7 @@ public class PicPreviewActivity extends BaseActivity {
             }
             @Override
             public void onPageSelected (int position) {
+                myPosition = position;
                 updateBottomIndex(position + 1);
             }
             @Override
@@ -162,6 +163,9 @@ public class PicPreviewActivity extends BaseActivity {
             updateBottomIndex(currentIndex + 1);
         }
     }
+
+
+    private int myPosition;
 
     //底部数字索引
     private void updateBottomIndex(int count){
@@ -227,4 +231,8 @@ public class PicPreviewActivity extends BaseActivity {
     };
 
 
+
+    public int getCurrentPagerIdx(){
+        return myPosition;
+    }
 }

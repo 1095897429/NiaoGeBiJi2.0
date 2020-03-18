@@ -36,13 +36,12 @@
                     android:paddingLeft="10dp"
                     android:textColor="@color/text_second_color"
                     android:gravity="center|left"
-                    android:text="想说就说，不吐不快"
+                    android:text="我思故我在"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     />
 
             </LinearLayout>
-
 
 
 
@@ -76,7 +75,7 @@
                     android:layout_toRightOf="@+id/comment_img"
                     android:id="@+id/comment_num"
                     android:text="78"
-                    android:textColor="@color/text_first_color"
+                    android:textColor="@color/text_red"
                     android:textSize="11sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

@@ -38,7 +38,7 @@ public class FirstAuthorAdapter extends BaseQuickAdapter<IndexFocusBean.Auther_l
         //设置子View点击事件
         helper.addOnClickListener(R.id.focus).addOnClickListener(R.id.focus_aleady);
 
-        ImageUtil.load(mContext,item.getImg() + Constant.scaleSize,helper.getView(R.id.head_icon));
+        ImageUtil.load(mContext,item.getImg() ,helper.getView(R.id.head_icon));
 
         helper.setText(R.id.name,item.getName());
 

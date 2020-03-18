@@ -828,9 +828,9 @@ public class UserInfoV2Activity extends BaseActivity {
             //身份认证通过 或者 职业认证通过
             if("1".equals(temp.getAuth_idno_status()) || ("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status()))){
                 if(myUid.equals(otherUid)){
-                    UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("certificatecenter"),"");
+                    UIHelper.toNewWebView(UserInfoV2Activity.this,StringUtil.getLink("certificatecenter"));
                 }else{
-                    UIHelper.toWebViewActivityWithOnLayout(UserInfoV2Activity.this,StringUtil.getLink("certificatecenterothers/" + otherUid),"");
+                    UIHelper.toNewWebView(UserInfoV2Activity.this,StringUtil.getLink("certificatecenterothers/" + otherUid));
                 }
 
                 MobclickAgentUtils.onEvent(UmengEvent.i_inform_idnoauth_2_2_0);
@@ -925,10 +925,10 @@ public class UserInfoV2Activity extends BaseActivity {
                             (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
 
                     sender_not_verticity.setOnClickListener(v -> {
-//                        ToastUtils.showShort("去认证h5界面");
 
 
-                        UIHelper.toWebViewActivityWithOnLayout(this,StringUtil.getLink("certificatecenter"),"");
+                        UIHelper.toNewWebView(UserInfoV2Activity.this,StringUtil.getLink("certificatecenter"));
+
                     });
 
                 }

@@ -125,7 +125,7 @@ public class BaseApp extends Application {
     private void initShanyanSDK(Context context) {
         OneKeyLoginManager.getInstance().init(context, Constant.SY_APP_ID, (code, result) -> {
             //闪验SDK初始化结果回调 code为1022:成功；其他：失败
-            KLog.e("tag", "初始化： code ==" + code + "   result==" + result);
+//            KLog.e("tag", "初始化： code ==" + code + "   result==" + result);
         });
     }
 
@@ -142,8 +142,6 @@ public class BaseApp extends Application {
         }
         return false;
     }
-
-
 
 
     private void initJPush() {

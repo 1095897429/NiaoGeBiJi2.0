@@ -37,6 +37,7 @@ import com.xiaomi.mipush.sdk.MiPushClient;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import cn.jiguang.jmlinksdk.api.JMLinkAPI;
 import cn.jpush.android.api.JPushInterface;
 import cn.udesk.UdeskSDKManager;
 
@@ -105,6 +106,10 @@ public class BaseApp extends Application {
         initSY();
 
         initCrash();
+
+        JMLinkAPI.getInstance().init(this);
+        JMLinkAPI.getInstance().setDebugMode(true);
+        JMLinkAPI.getInstance().registerWithAnnotation();//开启注解绑定
     }
 
     //在app崩溃的时候记录信息到文件中去cache目录下

@@ -125,6 +125,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.jessyan.autosize.AutoSizeCompat;
 
 
 /**
@@ -160,6 +161,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
     //ButterKnife
     private Unbinder mUnbinder;
     //全局常量
+    private static String audioTitle;
     private static int currentProgress;
     private static int maxProgress;
     private static long audiotime;
@@ -341,8 +343,9 @@ public abstract class BaseActivity extends AppCompatActivity  {
                     hideState();
                     cleanData();
                     removeTempMsg();
-                    HomeActivityV2.mService.cancelRequest();
-
+                    if(HomeActivityV2.mService != null){
+                        HomeActivityV2.mService.cancelRequest();
+                    }
                 });
 
         //重新发送
@@ -350,7 +353,9 @@ public abstract class BaseActivity extends AppCompatActivity  {
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(object -> {
                    hideState();
-                   HomeActivityV2.mService.sendRequest();
+                   if(HomeActivityV2.mService != null){
+                       HomeActivityV2.mService.sendRequest();
+                   }
                 });
 
     }
@@ -981,6 +986,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
         }
         part_audio.setVisibility(View.VISIBLE);
         audio_title.setText("今日早报｜" + event.getTitle());
+        audioTitle =  event.getTitle();
         isAudaioShow = true;
 
 
@@ -1167,6 +1173,11 @@ public abstract class BaseActivity extends AppCompatActivity  {
             }
         }
         return res;
+
+        //需要升级到 v1.1.2 及以上版本才能使用 AutoSizeCompat
+//        AutoSizeCompat.autoConvertDensityOfGlobal((super.getResources()));//如果没有自定义需求用这个方法
+//        AutoSizeCompat.autoConvertDensity((super.getResources()), 667, false);//如果有自定义需求就用这个方法
+//        return super.getResources();
     }
 
 
@@ -1267,6 +1278,7 @@ public abstract class BaseActivity extends AppCompatActivity  {
             //全局 设置界面进度
             seekbar.setMax(maxProgress);
             seekbar.setProgress(currentProgress);
+            audio_title.setText(audioTitle);
             //设置当时时间
             time.setText(timeParse(currenttime) + "");
             //视频正在播放

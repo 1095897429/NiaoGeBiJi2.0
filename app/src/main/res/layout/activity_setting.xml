@@ -272,10 +272,36 @@
             </LinearLayout>
 
 
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/divider_line"/>
+
+
+
+            <LinearLayout
+                android:id="@+id/change_icon"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:gravity="center_vertical"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|left"
+                    android:text="动态改换桌面icon"
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="16dp" />
+
+                    android:layout_height="match_parent" />
+
+
+
+
+            </LinearLayout>
 
         </LinearLayout>
 

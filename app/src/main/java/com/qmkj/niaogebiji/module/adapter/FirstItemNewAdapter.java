@@ -81,11 +81,17 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
 
     @Override
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
+
+
+
         switch (helper.getItemViewType()){
             case RIGHT_IMG_TYPE:
                 RecommendBean.Article_list bean = item.getNewsActicleList();
-                helper.setText(R.id.one_img_title,bean.getTitle());
                 helper.setText(R.id.one_img_auth,bean.getAuthor());
+
+                TextView title = helper.getView(R.id.one_img_title);
+                title.getPaint().setFakeBoldText(true);
+                title.setText(bean.getTitle());
 
                 //发布时间
                 if(StringUtil.checkNull(bean.getPublished_at())){
@@ -114,8 +120,13 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
             case THREE_IMG_TYPE:
 
                 RecommendBean.Article_list bean3 = item.getNewsActicleList();
-                helper.setText(R.id.one_img_title,bean3.getTitle());
                 helper.setText(R.id.one_img_auth,bean3.getAuthor());
+
+
+                TextView title3 = helper.getView(R.id.one_img_title);
+                title3.getPaint().setFakeBoldText(true);
+                title3.setText(bean3.getTitle());
+
 
                 //发布时间
                 if(StringUtil.checkNull(bean3.getPublished_at())){
@@ -145,8 +156,11 @@ public class FirstItemNewAdapter extends BaseMultiItemQuickAdapter<MultiNewsBean
                 break;
             case LONG_IMG_TYPE:
                 RecommendBean.Article_list beanLong = item.getNewsActicleList();
-                helper.setText(R.id.one_img_title,beanLong.getTitle());
                 helper.setText(R.id.one_img_auth,beanLong.getAuthor());
+
+                TextView titleLong = helper.getView(R.id.one_img_title);
+                titleLong.getPaint().setFakeBoldText(true);
+                titleLong.setText(beanLong.getTitle());
 
                 //发布时间
                 if(StringUtil.checkNull(beanLong.getPublished_at())){

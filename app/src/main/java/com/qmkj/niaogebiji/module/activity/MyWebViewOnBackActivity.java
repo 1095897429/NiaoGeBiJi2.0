@@ -2,11 +2,16 @@ package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -93,6 +98,45 @@ public class MyWebViewOnBackActivity extends BaseActivity {
 
 
         webview.setWebChromeClient(mMyWebChromeClientByCamera);
+
+
+        webview.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                KLog.d("tag","---- " + url);
+                if (url == null) {
+                    return false;
+                }
+                try{
+                    if(!url.startsWith("http://") && !url.startsWith("https://")){
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+                        return true;
+                    }
+                }catch (Exception e){//防止crash (如果手机上没有安装处理某个scheme开头的url的APP, 会导致crash)
+                    KLog.e("tag", "ActivityNotFoundException: " + e.getLocalizedMessage());
+                    return true;//没有安装该app时，返回true，表示拦截自定义链接，但不跳转，避免弹出上面的错误页面
+                }
+
+                return false;
+            }
+
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed(); // 接受所有网站的证书
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
 
 
         //js交互

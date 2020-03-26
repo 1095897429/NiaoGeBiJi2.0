@@ -55,6 +55,7 @@ import com.blankj.utilcode.util.Utils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
 import com.chuanglan.shanyan_sdk.listener.GetPhoneInfoListener;
+import com.google.gson.Gson;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
@@ -69,15 +70,25 @@ import com.qmkj.niaogebiji.common.utils.ChannelUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.socks.library.KLog;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 import butterknife.BindView;
+import cn.jiguang.jmlinksdk.api.JMLinkAPI;
+import cn.jiguang.jmlinksdk.api.JMLinkCallback;
+import cn.magicwindow.MWConfiguration;
+import cn.magicwindow.MagicWindowSDK;
 
 /**
  * @author zhouliang
@@ -117,8 +128,72 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     public void initFirstData() {
+
+
+//        getStartInfo();
+
+        String s = "i love china";
+        char[] arrys = s.toCharArray();
+        KLog.d("tag",arrys[0]);
+        String s2 = "我是个好人";
+        char[] arrys2 = s2.toCharArray();
+        KLog.d("tag",arrys2[0]);
+
+        KLog.d("tag",md5(s));
+        KLog.d("tag",md5(s2));
+
+        TreeSet<String> set = new TreeSet();
+        set.add("sss");
+        set.add("222");
+        for (String sss : set) {
+            KLog.d("tag","ssss " + sss);
+        }
+
+
+//        Gson gson = new Gson();
+//        String jsonString = "{\"name\":\"sunny\",\"age\":24}";
+//        RegisterLoginBean user = gson.fromJson(jsonString, RegisterLoginBean.class);
+
+
+
+
+//        JMLinkAPI.getInstance().register("open_article", new JMLinkCallback() {
+//            @Override
+//            public void execute(Map<String, String> map, Uri uri) {
+//                KLog.e("tag","数据 map " + map);
+//            }
+//        });
+    }
+
+
+    public static String md5(String string) {
+        if (TextUtils.isEmpty(string)) {
+            return "";
+        }
+        MessageDigest md5 = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = md5.digest(string.getBytes());
+            String result = "";
+            for (byte b : bytes) {
+                String temp = Integer.toHexString(b & 0xff);
+                if (temp.length() == 1) {
+                    temp = "0" + temp;
+                }
+                result += temp;
+            }
+            return result;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private void getStartInfo() {
+
         KLog.d("tag","应用的Id  " + AppUtils.getAppUid());
         KLog.d("tag","应用的签名MD5  " + AppUtils.getAppSignatureMD5());
+        KLog.d("tag","应用的签名SHA1 [方法获取||cd .android + keytool -list -v -keystore xxx.keystore获取] " + AppUtils.getAppSignatureSHA1());
         KLog.d("tag","应用的签名SHA256  " + AppUtils.getAppSignatureSHA256());
         KLog.d("tag","状态栏的高度  " + BarUtils.getStatusBarHeight());
         KLog.d("tag","内部缓存路径  " + Utils.getApp().getCacheDir().getAbsolutePath());
@@ -147,7 +222,7 @@ public class SplashActivity extends BaseActivity {
 
 
         String s = "ABC";
-        KLog.d("tag","截取的字符串是【利用fastSubstring】 " +  s.substring(1));
+        KLog.d("tag","截取的字符串是【利用fastSubstring】, 从索引处开始截取 " +  s.substring(1));
 
 
 
@@ -243,7 +318,6 @@ public class SplashActivity extends BaseActivity {
         KLog.d("tag","CUP的数量  " + Runtime.getRuntime().availableProcessors());
 
         KLog.d("tag","线程池 ExecutorSercvice  " + "的创建方式有两种 1.一种是工厂方法 Executors.newFixedThreadPool  2.一种是直接创建 new ThreadPoolExecutor" );
-
 
     }
 

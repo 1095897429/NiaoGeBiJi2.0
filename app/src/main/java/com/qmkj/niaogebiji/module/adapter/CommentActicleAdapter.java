@@ -132,7 +132,7 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
 
                 KLog.d("tag", "text  " + text);
                 SpannableString spannableString = new SpannableString(text);
-                spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.text_blue)), text.length() - 2 < 0 ? 0 : text.length() - 2, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 NoLineCllikcSpan clickableSpan = new NoLineCllikcSpan() {
                     @Override
@@ -142,7 +142,7 @@ public class CommentActicleAdapter extends BaseQuickAdapter<CommentBean.FirstCom
                         }
                     }
                 };
-                spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(clickableSpan, text.length() - 2 < 0 ? 0 : text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 msg.setText(spannableString);
                 msg.setMovementMethod(LinkMovementMethod.getInstance());
             }else{

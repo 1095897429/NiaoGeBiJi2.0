@@ -37,6 +37,13 @@ public class ToolItemAdapter extends BaseQuickAdapter<ToollndexBean, BaseViewHol
     @Override
     protected void convert(BaseViewHolder helper, ToollndexBean item) {
 
+//        if(helper.getAdapterPosition() == 0){
+//            helper.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.roseEnd));
+//        }else if(helper.getAdapterPosition() == 3){
+//            helper.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.blueStart));
+//
+//        }
+
         if(!TextUtils.isEmpty(item.getIcon())){
             ImageUtil.load(mContext,item.getIcon(),helper.getView(R.id.baidu_icon));
         }

@@ -125,18 +125,21 @@ public class SecretAlertDialog {
                 @Override
                 public void updateDrawState(TextPaint ds) {
                     ds.setUnderlineText(false);
+                    ds.clearShadowLayer();
                 }
             };
             ClickableSpan secret_ll = new ClickableSpan() {
                 @Override
                 public void onClick(@NonNull View view) {
+
                     ((TextView)view).setHighlightColor(mContext.getResources().getColor(android.R.color.transparent));
                     UIHelper.toSecretActivity(mContext);
                 }
                 @Override
                 public void updateDrawState(TextPaint ds) {
-                    //设置颜色
+                    //设置没有下划线
                     ds.setUnderlineText(false);
+                    ds.clearShadowLayer();
 
                 }
             };
@@ -154,6 +157,7 @@ public class SecretAlertDialog {
 
         return this;
     }
+
 
 
     public SecretAlertDialog setMsg2(String msg){

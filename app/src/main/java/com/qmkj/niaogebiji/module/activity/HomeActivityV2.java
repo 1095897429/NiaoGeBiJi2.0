@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -62,6 +63,7 @@ import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.VersionBean;
 import com.qmkj.niaogebiji.module.event.LoginGoodEvent;
 import com.qmkj.niaogebiji.module.event.toActicleEvent;
+import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshCooperateEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
@@ -89,11 +91,11 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.jiguang.jmlinksdk.api.annotation.JMLinkDefaultRouter;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.helper.Logger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-
 
 public class HomeActivityV2 extends BaseActivity {
 
@@ -335,7 +337,9 @@ public class HomeActivityV2 extends BaseActivity {
                 KLog.d("tag","文章");
                 UIHelper.toNewsDetailActivity(this,jump_info);
             }else if("31".equals(jump_type)){
-                bottomClick(findViewById(R.id.index_flash));
+                KLog.d("tag","快讯");
+                bottomClick(findViewById(R.id.index_first));
+                new Handler().postDelayed(() -> EventBus.getDefault().post(new toFlashEvent("去快讯信息流")),1000);
             }else if("50".equals(jump_type)){
                 UIHelper.toCommentDetailActivity(this,jump_info);
             }else if("60".equals(jump_type)){
@@ -389,7 +393,7 @@ public class HomeActivityV2 extends BaseActivity {
                 String re11 = "android";
                 String sss = "javascript:" +"localStorage.setItem('client',\"" + re11 + "\")";
                 String version = "javascript:" +"localStorage.setItem('version',\"" + AppUtils.getAppVersionName() + "\")";
-                KLog.d("tag","version " + version);
+//                KLog.d("tag","version " + version);
                 if (mMyWebView != null){
                     mMyWebView.evaluateJavascript(result, value -> {});
                     mMyWebView.evaluateJavascript(sss, value -> {});
@@ -703,11 +707,13 @@ public class HomeActivityV2 extends BaseActivity {
             Uri uri = intent.getData();
             if(uri != null ){
                 String json = uri.toString();
-                KLog.e("tag","json " + json);
+                KLog.e("tag","华为渠道 json " + json);
                 PushBean javaBean = JSON.parseObject(json, PushBean.class);
                 if(javaBean != null){
                     JPushBean bean = javaBean.getN_extras();
                     toDiffer(bean);
+                    //通知点击上报  {"n_extras":{"jump_type":"1"},"msg_id":67554045891218792,"rom_type":2,"n_content":"lkjkljlj","n_title":"kjjjk"}
+                    JPushInterface.reportNotificationOpened(this,javaBean.getMsg_id() + "" , (byte) javaBean.getRom_type());
                 }
             }
 
@@ -715,11 +721,12 @@ public class HomeActivityV2 extends BaseActivity {
             //获取fcm、小米、oppo、vivo平台附带的jpush信息
             if( intent.getExtras() != null){
                 String json = intent.getExtras().getString("JMessageExtra");
-                KLog.e("tag","json " + json);
+                KLog.e("tag","其他渠道 json " + json);
                 PushBean javaBean = JSON.parseObject(json, PushBean.class);
                 if(javaBean != null){
                     JPushBean bean = javaBean.getN_extras();
                     toDiffer(bean);
+                    JPushInterface.reportNotificationOpened(this,javaBean.getMsg_id() + "" , (byte) javaBean.getRom_type());
                 }
             }
         }

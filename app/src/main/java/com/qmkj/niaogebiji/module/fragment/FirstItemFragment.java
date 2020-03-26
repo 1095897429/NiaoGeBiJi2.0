@@ -398,7 +398,6 @@ public class FirstItemFragment extends BaseLazyFragment {
         RetrofitHelper.getApiService().getIndexBulltin(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(new BaseObserver<HttpResponse<IndexBulltin>>() {
                     @Override
                     public void onSuccess(HttpResponse<IndexBulltin> response) {

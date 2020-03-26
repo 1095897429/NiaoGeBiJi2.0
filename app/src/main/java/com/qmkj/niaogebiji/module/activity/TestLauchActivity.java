@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
 import com.qmkj.niaogebiji.common.dialog.CleanHistoryDialog;
@@ -41,6 +42,7 @@ import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.bean.TestAllBean;
 import com.qmkj.niaogebiji.module.bean.TestBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
+import com.qmkj.niaogebiji.module.bean.TestSubmitBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.event.TestListEvent;
 import com.socks.library.KLog;
@@ -195,8 +197,12 @@ public class TestLauchActivity extends BaseActivity {
         mAllList.clear();
 
         String title = list.get(currentNum - 1).getQuestion();
-        test_title.setText(title);
-//        test_title.setText(title + "(" + (list.get(currentNum-1).getAnswer()) +")");
+        if(BuildConfig.DEBUG){
+            test_title.setText(title + "(" + (list.get(currentNum-1).getAnswer()) +")");
+
+        }else{
+            test_title.setText(title);
+        }
 
         TestBean bean1 ;
         List<String> options = list.get(currentNum - 1).getOption();
@@ -338,11 +344,20 @@ public class TestLauchActivity extends BaseActivity {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(new BaseObserver<HttpResponse>() {
+                .subscribe(new BaseObserver<HttpResponse<TestSubmitBean>>() {
                     @Override
-                    public void onSuccess(HttpResponse httpResponse) {
+                    public void onSuccess(HttpResponse<TestSubmitBean> httpResponse) {
                         KLog.d("tag","及格分数是 " + mSchoolTest.getPass_score() );
                         mSchoolTest.setMyScore(currentScore + "");
+
+                        //TODO 3.20 后台返回分享数据，更新下原始即可
+                        TestSubmitBean temp = httpResponse.getReturn_data();
+                        if(temp != null){
+                            mSchoolTest.setShare_title(temp.getShare_title());
+                            mSchoolTest.setShare_content(temp.getShare_content());
+                            mSchoolTest.setMoments_share_title(temp.getMoments_share_title());
+                        }
+
                         //判断分数
                         if(currentScore < Integer.parseInt(pass_score)){
                             UIHelper.toTestResultFailActivity(TestLauchActivity.this,mSchoolTest);

@@ -53,6 +53,7 @@ import com.qmkj.niaogebiji.module.bean.TopicBean;
 import com.qmkj.niaogebiji.module.bean.User_info;
 import com.qmkj.niaogebiji.module.widget.CustomImageSpan;
 import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecoration;
+import com.qmkj.niaogebiji.module.widget.HorizontalSpacesDecorationV2;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
 import com.qmkj.niaogebiji.module.widget.NoLineCllikcSpan;
 import com.socks.library.KLog;
@@ -212,7 +213,7 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                         UIHelper.toCommentDetailActivity(mContext,circleBean.getId());
                     }
                 };
-                spannableString.setSpan(clickableSpan, text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(clickableSpan, text.length() - 2 < 0 ? 0 : text.length() - 2,   text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 msg.setText(spannableString);
                 msg.setMovementMethod(LinkMovementMethod.getInstance());
             }else{
@@ -735,6 +736,10 @@ public class CircleRecommentAdapterNew extends BaseQuickAdapter<CircleBean, Base
                     recyclerView.addItemDecoration(spacesDecoration);
 
                 }
+
+                //TODO 3.26新测试
+//                HorizontalSpacesDecorationV2 spacesDecoration = new HorizontalSpacesDecorationV2();
+//                recyclerView.addItemDecoration(spacesDecoration);
 
                 mCirclePicAdapter = new CirclePicAdapter(mPics);
                 mCirclePicAdapter.setTotalSize(item.getImages().size());

@@ -664,10 +664,14 @@ public class FirstFragment extends BaseLazyFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFlashThread(toFlashEvent event){
-        if("去活动信息流".equals(event.getContent())){
-            mViewPager.setCurrentItem(3);
-        }else if("去快讯信息流".equals(event.getContent())){
-            mViewPager.setCurrentItem(2);
+        KLog.d("tag","发送到了");
+        if(this != null){
+            KLog.d("tag","界面已完成");
+            if("去活动信息流".equals(event.getContent())){
+                mViewPager.setCurrentItem(3);
+            }else if("去快讯信息流".equals(event.getContent())){
+                mViewPager.setCurrentItem(2);
+            }
         }
     }
 

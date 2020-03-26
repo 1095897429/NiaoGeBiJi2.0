@@ -13,7 +13,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="20dp"
-        android:paddingBottom="12dp"
+        android:paddingBottom="6dp"
         android:layout_height="wrap_content">
 
     <RelativeLayout
@@ -152,16 +152,14 @@
         <TextView
             android:visibility="visible"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:layout_gravity="center|left"
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:lineSpacingExtra="2dp"
             android:text=""
             android:textColor="@color/text_first_color"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <LinearLayout
             android:id="@+id/transfer_yc_ll"
@@ -174,7 +172,6 @@
                 android:id="@+id/part_yc_pic"
                 android:visibility="gone"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:orientation="vertical"
                 android:layout_below="@+id/content"
                 android:layout_width="match_parent"
@@ -202,11 +199,10 @@
             <LinearLayout
                 android:id="@+id/part_yc_link"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:visibility="gone"
                 android:layout_below="@+id/content"
                 android:layout_width="match_parent"
-                android:layout_height="60dp">
+                android:layout_height="70dp">
 
                 <RelativeLayout
                     android:background="@drawable/bg_corners_8_gray"
@@ -229,6 +225,7 @@
                     <LinearLayout
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="8dp"
+                        android:layout_alignTop="@+id/link_img"
                         android:layout_toRightOf="@+id/link_img"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -240,7 +237,7 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:lineSpacingExtra="1dp"
-                            android:maxLines="1"
+                            android:maxLines="2"
                             android:text="链接标题"
                             android:textColor="@color/text_first_color"
                             android:textSize="14sp" />
@@ -267,7 +264,6 @@
             <LinearLayout
                 android:id="@+id/part_yc_acticle"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="60dp">
@@ -303,8 +299,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:lineSpacingExtra="1dp"
-                            android:maxLines="1"
-                            android:text="格力电器公告拟修订公司章程，其中，经…"
+                            android:maxLines="2"
+                            android:text="格力电器公告拟修订公司章程"
                             android:textColor="@color/text_first_color"
                             android:textSize="14sp" />
 
@@ -318,14 +314,11 @@
         </LinearLayout>
 
 
-
-
         <!-- 转发 -->
         <LinearLayout
             android:visibility="gone"
             android:id="@+id/transfer_zf_ll"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/bg_corners_8_gray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -357,7 +350,6 @@
                     android:visibility="visible"
                     android:id="@+id/transfer_zf_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -389,7 +381,6 @@
                 <LinearLayout
                     android:id="@+id/part_zf_link"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -460,7 +451,6 @@
                 <LinearLayout
                     android:id="@+id/part_zf_article"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -530,7 +520,9 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_marginTop="16dp"
         android:id="@+id/ll_topic"
+        android:visibility="visible"
         android:layout_below="@+id/all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -538,7 +530,7 @@
 
         <TextView
             android:id="@+id/select_topic_text"
-            android:background="@drawable/bg_corners_6_gray"
+            android:background="@drawable/bg_corners_6_gray_with_topic"
             android:text="#我要找资源"
             android:textSize="11sp"
             android:paddingLeft="12dp"
@@ -555,6 +547,7 @@
 
     <!-- 底部part -->
     <LinearLayout
+        android:layout_marginTop="6dp"
         android:id="@+id/partbottom"
         android:layout_below="@+id/ll_topic"
         android:layout_width="match_parent"
@@ -681,6 +674,15 @@
     </LinearLayout>
 
 </RelativeLayout>
+
+    <View
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="visible"
+        android:layout_alignParentBottom="true"
+        android:background="@color/divider_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
 
 
     <include layout="@layout/topic_focus_recommend"/>

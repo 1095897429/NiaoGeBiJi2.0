@@ -83,6 +83,7 @@ public class RCImageView extends AppCompatImageView implements Checkable, RCAttr
         mPaint.setAntiAlias(true);
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+            //目标图片 -- 网络图片
             mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
             canvas.drawPath(mRCHelper.mClipPath, mPaint);
         } else {

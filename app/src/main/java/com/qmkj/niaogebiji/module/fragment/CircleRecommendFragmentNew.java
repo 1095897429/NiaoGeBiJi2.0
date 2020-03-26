@@ -400,6 +400,7 @@ public class CircleRecommendFragmentNew extends BaseLazyFragment {
     @SuppressLint("CheckResult")
     private void initEvent() {
         mCircleRecommentAdapterNew.setOnLoadMoreListener(() -> {
+            KLog.d("tag","加载更多");
             ++page;
             recommendBlogList();
         }, mRecyclerView);

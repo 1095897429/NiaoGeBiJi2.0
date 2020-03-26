@@ -83,7 +83,7 @@ public class ImageBrowseAdapter extends PagerAdapter {
     private static final int MAX_SCALE = 8;
 
     private DiskLruCache mDiskLruCache;
-    private static final long DISK_CACHE_SIZE = 1024*1024*10;
+    private static final long DISK_CACHE_SIZE = 1024*1024*10;//可缓存字节数据 10M
 
 
     public ImageBrowseAdapter(Activity activity,ArrayList<PicBean> imageList){

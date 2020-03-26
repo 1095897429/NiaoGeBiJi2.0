@@ -121,20 +121,30 @@ public class TopicFocusAdapter extends BaseQuickAdapter<TopicBean, BaseViewHolde
 
         //关注
         helper.getView(R.id.focus).setOnClickListener(view ->{
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+
             int mPosition = helper.getAdapterPosition();
             //手动修改
             TopicBean bean = mData.get(mPosition);
-            if(!bean.isIs_follow()){
+            if(bean != null && !bean.isIs_follow()){
                 followTopic(mPosition,bean.getId() + "");
             }
 
         });
         //取关
         helper.getView(R.id.focus_aleady).setOnClickListener(view ->{
+
+            if(StringUtil.isFastClick()){
+                return;
+            }
+
             int mPosition = helper.getAdapterPosition();
             //手动修改
             TopicBean bean = mData.get(mPosition);
-            if(!bean.isIs_follow()){
+            if(bean != null && !bean.isIs_follow()){
                 followTopic(mPosition,bean.getId() + "");
 
                 MobclickAgentUtils.onEvent(UmengEvent.quanzi_topiclist_follow_2_2_0);

@@ -516,3 +516,7 @@ public static java.lang.String TABLENAME;
 -keep class com.cmic.sso.sdk.**{*;}
 -keep class com.sdk.** { *;}
 -keep class cn.com.chinatelecom.account.api.**{*;}
+
+#极光魔链
+-dontwarn cn.magicwindow.**
+-keep class cn.magicwindow.** {*;}

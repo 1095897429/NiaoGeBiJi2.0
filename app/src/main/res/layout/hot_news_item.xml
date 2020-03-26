@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    android:layout_height="127dp">
+    android:paddingLeft="12dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:layout_height="wrap_content">
 
     <FrameLayout
         android:layout_marginRight="16dp"
         android:id="@+id/part1111"
         android:layout_alignParentRight="true"
-        android:layout_width="110dp"
+        android:layout_width="100dp"
         android:layout_height="84dp"
         android:layout_marginLeft="9dp">
 
@@ -29,6 +30,7 @@
 
     <LinearLayout
         android:id="@+id/part2222"
+        android:layout_alignTop="@+id/part1111"
         android:layout_toRightOf="@+id/rank"
         android:layout_toLeftOf="@+id/part1111"
         android:layout_alignBottom="@+id/part1111"
@@ -47,11 +49,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:lineSpacingExtra="1dp"
                 android:maxLines="3"
                 android:text="@string/test"
                 android:textColor="@color/text_news_title_color"
-                android:textSize="17sp" />
+                android:textSize="16sp" />
 
 
         </RelativeLayout>
@@ -107,7 +108,7 @@
         android:id="@+id/rank"
         android:visibility="visible"
         android:layout_marginTop="14dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="10dp"
         android:layout_width="27dp"
         android:gravity="center"
         android:layout_height="wrap_content"
@@ -117,6 +118,7 @@
 
     <View
         android:layout_marginLeft="34dp"
+        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:background="@color/divider_line"
         android:layout_width="match_parent"

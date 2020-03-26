@@ -92,6 +92,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
@@ -731,7 +732,37 @@ public class StringUtil {
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
+
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+
                     String li = item.getPcLinks().get(finalW);
+                    KLog.d("tag","link是 " + li);
+                    //TODO 3.25 如果link是文章，则跳转到文章
+                    // http://ngtest.xy860.com/article-24700-1.html
+                    // http://apph5.niaogebiji.com/articledetail/25853?src=app&iv=DrIzvqHq1zsI2D2I
+                    if(!TextUtils.isEmpty(li) && getHost(li).contains(BuildConfig.DEBUG ? "ngtest.xy860.com" : "www.niaogebiji.com")){
+                        if(li.contains("articledetail") && li.contains("?")){
+                            int first = li.lastIndexOf("articledetail");
+                            int lash = li.lastIndexOf("?");
+                            String arId = li.substring(first + 13 + 1,lash);
+                            KLog.d("tag","arId " + arId);
+                            UIHelper.toNewsDetailActivity(activity,arId);
+
+                            return;
+                        }
+                    }
+
+                    if(li.contains("article-") && getHost(li).contains(BuildConfig.DEBUG ? "ngtest.xy860.com" : "www.niaogebiji.com")){
+                        int first = li.lastIndexOf("article-");
+                        int lash = li.lastIndexOf("-1");
+                        String arId = li.substring(first + 8 ,lash);
+                        KLog.d("tag","arId " + arId);
+                        UIHelper.toNewsDetailActivity(activity,arId);
+                        return;
+                    }
+
                     UIHelper.toWebViewActivity(activity,li);
                 }
             };
@@ -949,7 +980,7 @@ public class StringUtil {
 
         int length = count_abc + count_num;
 
-        //1/2 = 0(1个数字) = 2 - 0 = 2      2/2 = 1(2个数字) = 3-1 = 2
+        //1/2 = 0(1个数字)         2/2 = 1(2个数字) = 3-1 = 2
         length = length / 2;
 
         int result = (string.length() - length);
@@ -964,6 +995,17 @@ public class StringUtil {
     }
 
 
+
+    public static String getHost(String link) {
+        URL url;
+        String host = "";
+        try {
+            url = new URL(link);
+            host = url.getHost();
+        } catch (MalformedURLException e) {
+        }
+        return host;
+    }
 
 
 }

@@ -11,7 +11,7 @@ import com.qmkj.niaogebiji.common.base.BaseBean;
 public class PushBean extends BaseBean {
 
     private long msg_id;
-    private String rom_type;
+    private int rom_type;
     private String n_content;
     private String n_title;
     private JPushBean n_extras;
@@ -32,11 +32,11 @@ public class PushBean extends BaseBean {
         this.msg_id = msg_id;
     }
 
-    public String getRom_type() {
+    public int getRom_type() {
         return rom_type;
     }
 
-    public void setRom_type(String rom_type) {
+    public void setRom_type(int rom_type) {
         this.rom_type = rom_type;
     }
 

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -50,6 +52,7 @@ import com.qmkj.niaogebiji.common.utils.FormatUtil;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.NotificationUtil;
+import com.qmkj.niaogebiji.common.utils.PackageManagerUtil;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.widget.ImageUtil;
@@ -233,16 +236,52 @@ public class SettingActivity extends BaseActivity {
 
     }
 
+
+    //默认组件
+    private ComponentName componentNameDefault;
+    private ComponentName componentName1;
+    private ComponentName componentName2;
+    private PackageManagerUtil packageManagerUtil;
+
+
+    @Override
+    public void initData() {
+        //获取到包管理类实例
+        packageManagerUtil = new PackageManagerUtil(getPackageManager());
+        //得到此activity的全限定名
+        componentNameDefault = getComponentName();
+        //根据全限定名创建一个组件，即activity-alias 节点下的name：IconType_1 对应的组件
+        componentName1 = new ComponentName(getBaseContext(), AppUtils.getAppPackageName() + ".IconType_1");
+        componentName2 = new ComponentName(getBaseContext(), AppUtils.getAppPackageName() + ".IconType_2");
+    }
+
+
+    /**
+     * 设置第icon1图标生效
+     */
+    private void enableComponentName1() {
+        packageManagerUtil.disableComponent(componentNameDefault);
+        packageManagerUtil.disableComponent(componentName2);
+        packageManagerUtil.enableComponent(componentName1);
+    }
+
+
     @OnClick({R.id.iv_back,R.id.change_head,
             R.id.exit_ll,
             R.id.open_push,
             R.id.change_cache,
             R.id.change_resetData,
             R.id.change_nickname,
-            R.id.profile_info
+            R.id.profile_info,
+            R.id.change_icon
     })
     public void clicks(View view){
         switch (view.getId()){
+            case R.id.change_icon:
+                //TODO 3.24 动态icon测试
+                enableComponentName1();
+                Toast.makeText(mContext, "图标替换成功！", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.profile_info:
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_profile_2_0_0);
 

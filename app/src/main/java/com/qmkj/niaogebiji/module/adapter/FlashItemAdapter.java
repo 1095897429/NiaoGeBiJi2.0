@@ -81,8 +81,30 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         }
 
 
-        //标题
-        helper.setText(R.id.title,mBean.getTitle());
+
+        //头条 || 顶置
+//        if("1".equals(mBean.getTop())){
+//            helper.setVisible(R.id.dingzhi,true);
+//        }else{
+//            helper.setVisible(R.id.dingzhi,false);
+//        }
+//
+//        helper.setText(R.id.title,mBean.getTitle());
+
+
+
+        //TODO 3.24 修改icon  头条 || 顶置
+        if("1".equals(mBean.getTop())){
+            //居中对齐imageSpan
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_flash_dingzhi,2);
+            SpannableString spanString2 = new SpannableString("icon  " + mBean.getTitle());
+            spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            helper.setText(R.id.title,spanString2);
+        }else{
+            //标题
+            helper.setText(R.id.title,mBean.getTitle());
+        }
+
 
 
         //showTime --几月几号 目前后台返回的是 12/25 的形式
@@ -205,12 +227,6 @@ public class FlashItemAdapter extends BaseQuickAdapter<FlashBulltinBean.Builltin
         }
 
 
-        //头条 || 顶置
-        if("1".equals(mBean.getTop())){
-            helper.setVisible(R.id.dingzhi,true);
-        }else{
-            helper.setVisible(R.id.dingzhi,false);
-        }
 
 
         //时间

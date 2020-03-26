@@ -52,6 +52,7 @@ import com.qmkj.niaogebiji.module.bean.SearchBean;
 import com.qmkj.niaogebiji.module.bean.SearchResultBean;
 import com.qmkj.niaogebiji.module.bean.TestNewBean;
 import com.qmkj.niaogebiji.module.bean.TestOkBean;
+import com.qmkj.niaogebiji.module.bean.TestSubmitBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
 import com.qmkj.niaogebiji.module.bean.ToollndexBean;
 import com.qmkj.niaogebiji.module.bean.TopicAllBean;
@@ -306,7 +307,7 @@ public interface ApiEncryptService{
     /* 2019.12.13 学院测试交卷 */
     @FormUrlEncoded
     @POST("app/academy/recordTest")
-    Observable<HttpResponse> recordTest(@Field("params") String param);
+    Observable<HttpResponse<TestSubmitBean>> recordTest(@Field("params") String param);
 
     /* 2019.12.13 学院预约考试 */
     @FormUrlEncoded

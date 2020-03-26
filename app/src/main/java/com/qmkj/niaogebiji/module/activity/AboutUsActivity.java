@@ -156,7 +156,7 @@ public class AboutUsActivity extends BaseActivity {
     public void clicks(View view){
         switch (view.getId()){
             case R.id.rl_hezuo:
-                if(!TextUtils.isEmpty(initDataBean.getWechat_business_target_id())){
+                if(initDataBean != null && !TextUtils.isEmpty(initDataBean.getWechat_business_target_id())){
                     copy(initDataBean.getWechat_business_target_id());
                     MobclickAgentUtils.onEvent(UmengEvent.i_about_coop_2_0_0);
 
@@ -168,7 +168,7 @@ public class AboutUsActivity extends BaseActivity {
             case R.id.rl_weixin:
                 MobclickAgentUtils.onEvent(UmengEvent.i_about_wx_2_0_0);
 
-                if(!TextUtils.isEmpty(initDataBean.getWechat_service_id())){
+                if(initDataBean != null && !TextUtils.isEmpty(initDataBean.getWechat_service_id())){
                     copy(initDataBean.getWechat_service_id());
                     getWechatApi();
                     ToastUtils.showShort("已复制到剪贴板！请打开微信粘贴搜索   并直接打开微信");

@@ -19,7 +19,8 @@
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
 
-
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="android.permission.GET_TASKS" />
     <!-- the following 2 com.xiaomi.mipushdemo should be changed to your package name -->
@@ -101,11 +102,45 @@
 
 
         <activity android:name=".module.activity.SplashNewActivity">
-
-
-
-
         </activity>
+
+
+            <!-- 动态更换桌面icon -->
+            <!--<activity-alias-->
+                <!--android:name=".IconType_1"-->
+                <!--android:targetActivity=".module.activity.HomeActivityV2"-->
+                <!--android:enabled="true"-->
+                <!--android:label="icon_1"-->
+                <!--android:icon="@mipmap/bg_poster">-->
+
+                <!--<intent-filter>-->
+                    <!--<action android:name="android.intent.action.MAIN" />-->
+
+                    <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <!--</intent-filter>-->
+
+            <!--</activity-alias>-->
+
+            <!--<activity-alias-->
+                <!--android:name=".IconType_2"-->
+                <!--android:targetActivity=".module.activity.HomeActivityV2"-->
+                <!--android:enabled="false"-->
+                <!--android:label="icon_2"-->
+                <!--android:icon="@mipmap/bg_poster">-->
+
+                <!--<intent-filter>-->
+                    <!--<action android:name="android.intent.action.MAIN" />-->
+
+                    <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <!--</intent-filter>-->
+
+            <!--</activity-alias>-->
+
+
+
+
+
+
 
         <activity android:name=".module.activity.WebViewActivityWithLayout"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
@@ -118,6 +153,8 @@
 
         <activity android:name=".module.activity.SplashActivity"
             android:launchMode="singleTask">
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -225,6 +262,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
 
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -254,6 +292,16 @@
 
         <activity android:name=".module.activity.NewsDetailActivity"
             android:screenOrientation="portrait">
+
+            <intent-filter>
+                <data android:scheme="niaogebiji"/>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+
+            </intent-filter>
+
         </activity>
 
 

@@ -269,6 +269,21 @@ public class UserInfoV2Activity extends BaseActivity {
 
     private void initUserInfo() {
 
+        myUid = StringUtil.getMyUid();
+
+        otherUid = getIntent().getStringExtra("uid");
+        KLog.d("tag","用户的uid是 " + otherUid );
+
+        //动态h5跳转过来，uid是不带的，那么肯定是自己
+        if(TextUtils.isEmpty(otherUid)){
+            otherUid = myUid;
+        }
+
+        //用户信息
+        mUserInfo = StringUtil.getUserInfoBean();
+        iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
+
+        getUserInfoV2();
     }
 
 
@@ -308,26 +323,167 @@ public class UserInfoV2Activity extends BaseActivity {
 
     }
 
+    //TODO 3.20 安培提出来的如果点击里面的图片，返回会刷新 -- 要求不要刷新
     @Override
     protected void onResume() {
         super.onResume();
 
-        myUid = StringUtil.getMyUid();
+        getOnlyUserInfoV2();
 
-        otherUid = getIntent().getStringExtra("uid");
-        KLog.d("tag","用户的uid是 " + otherUid );
+    }
 
-        //动态h5跳转过来，uid是不带的，那么肯定是自己
-        if(TextUtils.isEmpty(otherUid)){
-            otherUid = myUid;
+    //这里只刷新头部信息
+    private void getOnlyUserInfoV2() {
+        Map<String,String> map = new HashMap<>();
+        map.put("uid",otherUid);
+        String result = RetrofitHelper.commonParam(map);
+        RetrofitHelper.getApiService().getUserInfoV2(result)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(new BaseObserver<HttpResponse<PersonUserInfoBean>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onSuccess(HttpResponse<PersonUserInfoBean> response) {
+                        temp = response.getReturn_data();
+                        if(temp != null){
+                            setOnlyHeadData();
+                        }
+                    }
+                });
+    }
+
+
+    private void setOnlyHeadData() {
+        //设置逻辑
+        initOnlyDifferLogic();
+
+
+        if(temp != null){
+            user_des.setText(temp.getPro_summary());
+            setFans_Follow();
+            ImageUtil.loadByDefaultHead(this,temp.getAvatar(),head_icon);
+
+            //小头像
+            ImageUtil.loadByDefaultHead(this,temp.getAvatar(),small_head_icon);
+            //小作者
+            tv_title.setText(temp.getName());
+
+            //徽章
+            if(temp.getBadge() != null && !temp.getBadge().isEmpty()){
+                ll_badge.setVisibility(View.VISIBLE);
+                ll_badge.removeAllViews();
+                for (int i = 0; i < temp.getBadge().size(); i++) {
+                    ImageView imageView = new ImageView(mContext);
+                    String icon = temp.getBadge().get(i).getIcon();
+                    if(!TextUtils.isEmpty(icon)){
+                        ImageUtil.load(mContext,icon,imageView);
+                    }
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.width = SizeUtils.dp2px(14);
+                    lp.height = SizeUtils.dp2px(14);
+                    lp.gravity = Gravity.CENTER;
+                    lp.setMargins(0,0,SizeUtils.dp2px(7),0);
+                    imageView.setLayoutParams(lp);
+                    ll_badge.addView(imageView);
+                }
+            }else {
+                ll_badge.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void initOnlyDifferLogic() {
+
+        sender_name.setText(temp.getNickname());
+        //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
+        if("1".equals(temp.getAuth_idno_status())){
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_author_shenfen,2);
+            SpannableString spanString2 = new SpannableString("  icon");
+            spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sender_name.append(spanString2);
         }
 
-        //用户信息
-        mUserInfo = StringUtil.getUserInfoBean();
-        iv_right.setImageResource(R.mipmap.icon_userinfo_other_1);
+        //是否认证通过
+        if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+            //居中对齐imageSpan
+            CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
+            SpannableString spanString2 = new SpannableString("  icon");
+            spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sender_name.append(spanString2);
+        }
 
-        getUserInfoV2();
+        //自己
+        if(myUid.equals(otherUid)){
+            self_view.setVisibility(View.VISIBLE);
+
+            fans_text.setText("关注我的");
+            follow_text.setText("我关注的");
+
+            if(TextUtils.isEmpty(temp.getCompany_name()) &&
+                    TextUtils.isEmpty(temp.getPosition()) ){
+                name_author_tag.setVisibility(View.GONE);
+                sender_not_verticity.setVisibility(View.GONE);
+                name_vertify.setVisibility(View.VISIBLE);
+                //下划线
+                name_vertify.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                //抗锯齿
+                name_vertify.getPaint().setAntiAlias(true);
+                name_vertify.setOnClickListener(v -> {
+                    MobclickAgentUtils.onEvent(UmengEvent.i_auth_2_0_0);
+                    if(StringUtil.isFastClick()){
+                        return;
+                    }
+                    UIHelper.toUserInfoModifyActivity(this);
+                });
+            }else{
+                //认证是否通过 -- 这里不用改(不用显示用户名在认证的情况下)
+                if("1".equals(temp.getAuth_email_status()) || "1".equals(temp.getAuth_card_status())){
+                    name_vertify.setVisibility(View.GONE);
+                    name_author_tag.setVisibility(View.VISIBLE);
+                    name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+                }else{
+                    name_vertify.setVisibility(View.GONE);
+                    name_author_tag.setVisibility(View.VISIBLE);
+                    sender_not_verticity.setVisibility(View.VISIBLE);
+                    //下划线
+                    sender_not_verticity.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                    //抗锯齿
+                    sender_not_verticity.getPaint().setAntiAlias(true);
+                    name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
+                            (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+
+                    sender_not_verticity.setOnClickListener(v -> {
+
+
+                        UIHelper.toNewWebView(UserInfoV2Activity.this,StringUtil.getLink("certificatecenter"));
+
+                    });
+
+                }
+            }
+
+
+        }else{
+
+            if(TextUtils.isEmpty(temp.getCompany_name()) &&
+                    TextUtils.isEmpty(temp.getPosition()) ){
+                name_author_tag.setVisibility(View.VISIBLE);
+                name_author_tag.setText("TA还没有完善信息");
+            }else{
+                name_author_tag.setVisibility(View.VISIBLE);
+                name_author_tag.setText( (TextUtils.isEmpty(temp.getCompany_name())?"":temp.getCompany_name()) + " " +
+                        (TextUtils.isEmpty(temp.getPosition())?"":temp.getPosition()));
+            }
+            showStateByFollow(temp.getFollow_status());
+            other_view.setVisibility(View.VISIBLE);
+            part3333.setVisibility(View.VISIBLE);
+        }
     }
+
+
 
 
 

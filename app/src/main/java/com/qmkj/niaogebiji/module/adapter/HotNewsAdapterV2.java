@@ -53,6 +53,9 @@ public class HotNewsAdapterV2 extends BaseMultiItemQuickAdapter<MultiNewsBean, B
     protected void convert(BaseViewHolder helper, MultiNewsBean item) {
         RecommendBean.Article_list bean = item.getNewsActicleList();
 
+        TextView title = helper.getView(R.id.one_img_title);
+        title.getPaint().setFakeBoldText(true);
+
         //标题
         helper.setText(R.id.one_img_title,bean.getTitle());
 

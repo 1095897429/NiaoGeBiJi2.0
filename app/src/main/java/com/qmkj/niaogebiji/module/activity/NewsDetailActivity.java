@@ -100,6 +100,9 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.jiguang.jmlinksdk.api.JMLinkAPI;
+import cn.jiguang.jmlinksdk.api.JMLinkCallback;
+import cn.jiguang.jmlinksdk.api.annotation.JMLinkRouter;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -132,6 +135,8 @@ import io.reactivex.schedulers.Schedulers;
  * 1.转发到圈子 -- 圈子发布页
  * 2.转发到动态 -- 转发页
  */
+//注册路由，当下发的jmlink key与此处的“jmlink_key”一致时，跳转到此页面。checkYYB状态后，应用宝可通过此方法获取参数信息
+@JMLinkRouter(keys = "open_article")
 public class NewsDetailActivity extends BaseActivity {
 
     @BindView(R.id.scrollView)
@@ -298,12 +303,27 @@ public class NewsDetailActivity extends BaseActivity {
         return R.layout.activity_news_detail;
     }
 
+    Intent mIntent;
     @Override
     protected void initView() {
 
+        //通过intent方式获取动态参数值
+        mIntent = getIntent();
+        if (mIntent != null) {
+            Uri uri = mIntent.getData();
+            //uri不为null，表示应用是从scheme拉起
+            if (uri != null) {
+                String id = uri.getQueryParameter("articleid");
+                KLog.e("tag","数据 id " + id);
+                newsId = id;
+            }else{
+                newsId = getIntent().getStringExtra("newsId");
+            }
+        }
+
         KLog.e("tag","NewsDetailActivity ----  initData");
         showWaitingDialog();
-        newsId = getIntent().getStringExtra("newsId");
+
         initTestLayout();
         initCommentListLayout();
         getCommentData();
@@ -314,6 +334,7 @@ public class NewsDetailActivity extends BaseActivity {
         initRxTime();
 
         mMyWebView.setActivity(h -> solid_webview_height = h);
+
 
     }
 
@@ -421,7 +442,14 @@ public class NewsDetailActivity extends BaseActivity {
                 }
                 break;
             case R.id.iv_back:
-                finish();
+                if(mIntent != null){
+                    Intent i = new Intent(this, HomeActivityV2.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                    startActivity(i);
+                }else{
+                    finish();
+                }
+
                 break;
             case R.id.love:
                 MobclickAgentUtils.onEvent(UmengEvent.index_detail_collectbtn_2_0_0);
@@ -1933,10 +1961,12 @@ public class NewsDetailActivity extends BaseActivity {
 
             MobclickAgentUtils.onEvent("index_detail_comment_comment"+ (position  + 1) +"_2_0_0");
 
-
-            oneComment = mCommentAdapter.getData().get(position);
-            KLog.d("tag","点击此评论的id 为  " + oneComment.getCid());
-            showTalkDialogSecondComment(position,oneComment);
+            //TODO 3.20 没加判断出现 java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
+            if(mCommentAdapter.getData() != null && mCommentAdapter.getData().size() > 0){
+                oneComment = mCommentAdapter.getData().get(position);
+                KLog.d("tag","点击此评论的id 为  " + oneComment.getCid());
+                showTalkDialogSecondComment(position,oneComment);
+            }
 //            showTalkDialogFirstComment(position, oneComment);
         });
 

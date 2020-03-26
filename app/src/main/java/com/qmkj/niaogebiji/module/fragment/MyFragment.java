@@ -470,8 +470,8 @@ public class MyFragment extends BaseLazyFragment {
 
                     //居中对齐imageSpan
                     CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_authen_company1,2);
-                    SpannableString spanString2 = new SpannableString("icon");
-                    spanString2.setSpan(imageSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    SpannableString spanString2 = new SpannableString("  icon");
+                    spanString2.setSpan(imageSpan, 2, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     name_author_tag.append(spanString2);
 
 
@@ -731,6 +731,9 @@ public class MyFragment extends BaseLazyFragment {
 
                 //TODO 改为链接
                 UIHelper.toNewWebView(getActivity(),Constant.ADVICE);
+
+//                UIHelper.toWebViewWithLayoutOnlyActivity(getActivity(), Constant.ADVICE);
+
                 break;
             case R.id.toQue:
                 MobclickAgentUtils.onEvent(UmengEvent.i_question_2_0_0);

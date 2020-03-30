@@ -27,6 +27,7 @@ import com.qmkj.niaogebiji.module.activity.FeatherListDetailActivity;
 import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.activity.InviteActivity;
+import com.qmkj.niaogebiji.module.activity.LiveHouseActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
 import com.qmkj.niaogebiji.module.activity.MessageDetailActivity;
 import com.qmkj.niaogebiji.module.activity.ModifyUserInfoActivity;
@@ -618,5 +619,11 @@ public class UIHelper {
     }
 
 
+
+    /** 打开直播界面*/
+    public static void toLiveHouseActivity(Context ctx,String authorId) {
+        Intent intent = new Intent(ctx, LiveHouseActivity.class);
+        ctx.startActivity(intent);
+    }
 
 }

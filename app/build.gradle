@@ -179,8 +179,8 @@ dependencies {
     //黄油刀
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
-    //EventBus
-    implementation 'org.greenrobot:eventbus:3.1.1'
+//    //EventBus
+//    implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'androidx.multidex:multidex:2.0.1'
     //log
     implementation 'com.github.zhaokaiqiang.klog:library:1.6.0'
@@ -190,8 +190,8 @@ dependencies {
 
     //rxjava2
     implementation 'io.reactivex.rxjava2:rxjava:2.0.8'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    //rxbinding
+//    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //rxbindingio.reactivex.rxjava2:rxandroid
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
     //network
     implementation 'com.squareup.okhttp3:okhttp:3.7.0'
@@ -210,7 +210,7 @@ dependencies {
     //adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.16'
     //glide
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
+//    implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //管理生命周期
     implementation 'com.uber.autodispose:autodispose-android:0.8.0'
@@ -301,4 +301,6 @@ dependencies {
 
     implementation 'cn.jiguang.sdk:jmlink:1.0.1'  // 此处以JMlink 1.0.1 版本为例。
 
+
+    implementation project(':uilibs')
 }

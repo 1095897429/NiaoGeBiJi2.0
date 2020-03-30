@@ -520,3 +520,11 @@ public static java.lang.String TABLENAME;
 #极光魔链
 -dontwarn cn.magicwindow.**
 -keep class cn.magicwindow.** {*;}
+
+
+#微吼
+-dontwarn com.vhall.** -keep class com.vhall.** {*;}
+-dontwarn vhall.com.vss.** -keep class vhall.com.vss.** {*;}
+
+#微吼互动用户需添加
+-dontwarn org.webrtc.** -keep class org.webrtc.** {*;}

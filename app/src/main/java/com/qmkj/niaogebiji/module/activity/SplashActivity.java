@@ -56,6 +56,13 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.chuanglan.shanyan_sdk.OneKeyLoginManager;
 import com.chuanglan.shanyan_sdk.listener.GetPhoneInfoListener;
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.internal.Primitives;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.qmkj.niaogebiji.BuildConfig;
 import com.qmkj.niaogebiji.R;
@@ -73,12 +80,17 @@ import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.socks.library.KLog;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +142,7 @@ public class SplashActivity extends BaseActivity {
     public void initFirstData() {
 
 
-//        getStartInfo();
+        getStartInfo();
 
         String s = "i love china";
         char[] arrys = s.toCharArray();
@@ -150,10 +162,11 @@ public class SplashActivity extends BaseActivity {
         }
 
 
+
 //        Gson gson = new Gson();
 //        String jsonString = "{\"name\":\"sunny\",\"age\":24}";
-//        RegisterLoginBean user = gson.fromJson(jsonString, RegisterLoginBean.class);
-
+//        String jsonString2 = "{\"name\": \"zhangsan\", \"age\": 15,\"grade\": [ 95, 98] }";
+//        RegisterLoginBean user = fromJson(jsonString2, RegisterLoginBean.class);
 
 
 
@@ -164,6 +177,80 @@ public class SplashActivity extends BaseActivity {
 //            }
 //        });
     }
+
+
+
+
+    public <T> T fromJson(String json, Class<T> classOfT) throws JsonSyntaxException {
+        Object object = fromJson(json, (Type) classOfT);
+        return Primitives.wrap(classOfT).cast(object);
+    }
+
+
+    public <T> T fromJson(String json, Type typeOfT) throws JsonSyntaxException {
+        if (json == null) {
+            return null;
+        }
+        StringReader reader = new StringReader(json);
+        T target = (T) fromJson(reader, typeOfT);
+        return target;
+    }
+
+
+    public <T> T fromJson(Reader json, Type typeOfT) throws JsonIOException, JsonSyntaxException {
+        JsonReader jsonReader = newJsonReader(json);
+        T object = (T) fromJson(jsonReader, typeOfT);
+        return object;
+    }
+
+
+    public <T> T fromJson(JsonReader reader, Type typeOfT) throws JsonIOException, JsonSyntaxException {
+        boolean isEmpty = true;
+        boolean oldLenient = reader.isLenient();
+        reader.setLenient(true);
+        try {
+            reader.peek();
+            isEmpty = false;
+            //typeOfT class com.qmkj.niaogebiji.module.bean.RegisterLoginBean
+            TypeToken<T> typeToken = (TypeToken<T>) TypeToken.get(typeOfT);
+            KLog.e("tag","typeOfT " + typeToken.getType());
+            KLog.e("tag","rawType " + typeToken.getRawType());
+            TypeAdapter<T> typeAdapter = getAdapter(typeToken);
+            T object = typeAdapter.read(reader);
+            return object;
+        } catch (EOFException e) {
+            /*
+             * For compatibility with JSON 1.5 and earlier, we return null for empty
+             * documents instead of throwing.
+             */
+            if (isEmpty) {
+                return null;
+            }
+            throw new JsonSyntaxException(e);
+        } catch (IllegalStateException e) {
+            throw new JsonSyntaxException(e);
+        } catch (IOException e) {
+            // TODO(inder): Figure out whether it is indeed right to rethrow this as JsonSyntaxException
+            throw new JsonSyntaxException(e);
+        } finally {
+            reader.setLenient(oldLenient);
+        }
+    }
+
+
+    public <T> TypeAdapter<T> getAdapter(TypeToken<T> type) {
+
+        return null;
+    }
+
+
+
+    public JsonReader newJsonReader(Reader reader) {
+        JsonReader jsonReader = new JsonReader(reader);
+        jsonReader.setLenient(false);
+        return jsonReader;
+    }
+
 
 
     public static String md5(String string) {
@@ -190,6 +277,8 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void getStartInfo() {
+
+
 
         KLog.d("tag","应用的Id  " + AppUtils.getAppUid());
         KLog.d("tag","应用的签名MD5  " + AppUtils.getAppSignatureMD5());
@@ -220,9 +309,6 @@ public class SplashActivity extends BaseActivity {
         KLog.d("tag","解码url [NoWrap 略去所有的换行符  NoPadding 略去编码字符串最后的“=”]" +  EncodeUtils.urlDecode(EncodeUtils.urlEncode("中文")));
 
 
-
-        String s = "ABC";
-        KLog.d("tag","截取的字符串是【利用fastSubstring】, 从索引处开始截取 " +  s.substring(1));
 
 
 

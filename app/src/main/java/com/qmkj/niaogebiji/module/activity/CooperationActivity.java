@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Size;
@@ -21,6 +22,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -239,6 +241,13 @@ public class CooperationActivity extends BaseActivity {
         //加了webview可图片上传功能
         mMyWebChromeClient = new MyWebChromeClientByCamera(this,tv_title, () -> hideWaitingDialog());
         mMyWebView.setWebChromeClient(mMyWebChromeClient);
+
+        //https支持
+        mMyWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            }
+        });
 
         //跨域操作
         try {
@@ -577,8 +586,12 @@ public class CooperationActivity extends BaseActivity {
                         if(bean != null){
                             showShareCooperateDialog(bean);
                         }
-
-
+                    }else if("tolink".equals(result)){
+                        //工具中的跳转 2.2.0 忘记加了 跳转链接
+                        MessageLinkBean javaBean = JSON.parseObject(param, MessageLinkBean.class);
+                        MessageLinkBean.MessageLink bean = javaBean.getParams();
+                        String link =  bean.getLink();
+                        UIHelper.toNewWebView(CooperationActivity.this,link);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

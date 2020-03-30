@@ -32,6 +32,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.google.gson.Gson;
 import com.huawei.android.hms.agent.HMSAgent;
 import com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler;
 import com.jakewharton.disklrucache.DiskLruCache;
@@ -247,12 +248,15 @@ public class SettingActivity extends BaseActivity {
     @Override
     public void initData() {
         //获取到包管理类实例
-        packageManagerUtil = new PackageManagerUtil(getPackageManager());
-        //得到此activity的全限定名
-        componentNameDefault = getComponentName();
-        //根据全限定名创建一个组件，即activity-alias 节点下的name：IconType_1 对应的组件
-        componentName1 = new ComponentName(getBaseContext(), AppUtils.getAppPackageName() + ".IconType_1");
-        componentName2 = new ComponentName(getBaseContext(), AppUtils.getAppPackageName() + ".IconType_2");
+//        packageManagerUtil = new PackageManagerUtil(getPackageManager());
+//        //得到此activity的全限定名
+//        componentNameDefault = getComponentName();
+//        //根据全限定名创建一个组件，即activity-alias 节点下的name：IconType_1 对应的组件
+//        componentName1 = new ComponentName(getBaseContext(), AppUtils.getAppPackageName() + ".IconType_1");
+//        componentName2 = new ComponentName(getBaseContext(), AppUtils.getAppPackageName() + ".IconType_2");
+
+
+
     }
 
 
@@ -279,8 +283,9 @@ public class SettingActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.change_icon:
                 //TODO 3.24 动态icon测试
-                enableComponentName1();
-                Toast.makeText(mContext, "图标替换成功！", Toast.LENGTH_SHORT).show();
+//                enableComponentName1();
+//                Toast.makeText(mContext, "图标替换成功！", Toast.LENGTH_SHORT).show();
+
                 break;
             case R.id.profile_info:
                 MobclickAgentUtils.onEvent(UmengEvent.i_setting_profile_2_0_0);

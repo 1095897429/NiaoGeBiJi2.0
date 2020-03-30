@@ -75,6 +75,9 @@ public class Constant {
 
     public static final String JPushBean = "jPushBean";
 
+    public static final String WHAPPKey = "05cd2d05129e85039636bf2d81a29fe3";
+    public static final String WHAppSecretKey = "e40c1832f5716b3d3bf4200f011d8cc8";
+
 
 
 

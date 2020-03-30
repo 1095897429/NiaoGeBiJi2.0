@@ -168,6 +168,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".module.activity.LiveHouseActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+
 
         <activity android:name=".module.activity.TopicListActivity"
             android:screenOrientation="portrait">

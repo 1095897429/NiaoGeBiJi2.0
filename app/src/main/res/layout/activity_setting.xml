@@ -296,7 +296,6 @@
                     android:textColor="@color/text_news_title_color"
                     android:textSize="16dp" />
 
-                    android:layout_height="match_parent" />
 
 
 

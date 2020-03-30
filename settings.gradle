@@ -1,1 +1,1 @@
-include ':app', ':UdeskSDKUI', ':imagepicker', ':lib-mgson'
+include ':app', ':UdeskSDKUI', ':imagepicker', ':lib-mgson', ':uilibs'

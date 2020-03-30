@@ -26,6 +26,10 @@ allprojects {
         maven { url "https://jitpack.io" }
         //huawei
         maven {url 'http://developer.huawei.com/repo/'}
+        //微吼
+        maven {
+            url 'http://4thline.org/m2'
+        }
     }
 }
 

@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
@@ -28,6 +29,9 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
+import com.vhall.business.VhallSDK;
+import com.vhall.push.VHLivePushFormat;
+import com.vhall.uilibs.Param;
 import com.vivo.push.IPushActionListener;
 import com.vivo.push.PushClient;
 import com.xiaomi.channel.commonutils.logger.LoggerInterface;
@@ -40,6 +44,7 @@ import java.util.List;
 import cn.jiguang.jmlinksdk.api.JMLinkAPI;
 import cn.jpush.android.api.JPushInterface;
 import cn.udesk.UdeskSDKManager;
+import vhall.com.vss.VssSdk;
 
 
 /**
@@ -110,7 +115,46 @@ public class BaseApp extends Application {
         JMLinkAPI.getInstance().init(this);
         JMLinkAPI.getInstance().setDebugMode(true);
         JMLinkAPI.getInstance().registerWithAnnotation();//开启注解绑定
+
+
+        initWH();
     }
+
+    private void initWH() {
+        getParam();
+        VhallSDK.setLogEnable(true);
+        VhallSDK.init(this, Constant.WHAPPKey, Constant.WHAppSecretKey);
+        VssSdk.getInstance().init(getApplicationContext(), VhallSDK.getUserId());
+    }
+
+    public static Param param;
+    public Param getParam() {
+        if (param == null) {
+            param = new Param();
+            SharedPreferences sp = this.getSharedPreferences("set", MODE_PRIVATE);
+
+            //发直播，直播间ID
+            param.broId = sp.getString("broid", "465735486");
+            //发直播token
+            param.broToken = sp.getString("brotoken", "8734e1c56b8b5b6f1f4ce1b1c072121a");
+            //直播分辨率类型
+            param.pixel_type = sp.getInt("pixeltype", VHLivePushFormat.PUSH_MODE_HD);
+            //发直播视频码率
+            param.videoBitrate = sp.getInt("videobitrate", 500);
+            //发直播视频帧率
+            param.videoFrameRate = sp.getInt("videoframerate", 15);
+            //看直播，直播间ID
+            param.watchId = sp.getString("watchid", "653840595");
+            //直播间密码
+            param.key = sp.getString("key", "");
+            //缓冲时长
+            param.bufferSecond = sp.getInt("buffersecond", 6);
+        }
+        return param;
+    }
+
+
+
 
     //在app崩溃的时候记录信息到文件中去cache目录下
     private void initCrash() {

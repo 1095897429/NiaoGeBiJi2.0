@@ -406,6 +406,9 @@ public class MyFragment extends BaseLazyFragment {
                 name.setText(mUserInfo.getName());
             }
 
+
+
+
 //            if(没有认证显示去认证 -- 名字是否为空判断){ ok
 //                显示：立即完善信息，建立人脉(下划线)
 //                点击：编辑名片信息

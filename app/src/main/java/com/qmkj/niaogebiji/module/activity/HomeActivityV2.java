@@ -450,6 +450,9 @@ public class HomeActivityV2 extends BaseActivity {
     @Override
     public void initData() {
 
+
+
+
 //        registerMessageReceiver();  // used for receive msg
 
         checkupd();

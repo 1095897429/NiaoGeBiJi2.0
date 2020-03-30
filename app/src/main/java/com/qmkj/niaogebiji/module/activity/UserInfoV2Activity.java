@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,7 @@ import android.os.Message;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -128,8 +130,6 @@ public class UserInfoV2Activity extends BaseActivity {
 
     @BindView(R.id.follow_text)
     TextView follow_text;
-
-
 
 
     @BindView(R.id.head_icon)
@@ -397,6 +397,7 @@ public class UserInfoV2Activity extends BaseActivity {
     private void initOnlyDifferLogic() {
 
         sender_name.setText(temp.getNickname());
+
         //身份证认证状态：1-正常，2-未提交，3-审核中，4-未通过
         if("1".equals(temp.getAuth_idno_status())){
             CustomImageSpan imageSpan = new CustomImageSpan(BaseApp.getApplication(),R.mipmap.icon_author_shenfen,2);

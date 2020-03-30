@@ -139,7 +139,10 @@ public class ViewPagerTitleFeather extends LinearLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        viewPager.removeOnPageChangeListener(onPageChangeListener);
+        if(viewPager != null){
+            viewPager.removeOnPageChangeListener(onPageChangeListener);
+        }
+
     }
 
     //返回textview控件

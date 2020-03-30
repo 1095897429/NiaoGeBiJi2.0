@@ -1,10 +1,12 @@
 package com.qmkj.niaogebiji.module.fragment;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -15,6 +17,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qmkj.niaogebiji.R;
+import com.qmkj.niaogebiji.common.BaseApp;
 import com.qmkj.niaogebiji.common.base.BaseLazyFragment;
 import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
@@ -24,11 +27,13 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
+import com.qmkj.niaogebiji.module.activity.LiveHouseActivity;
 import com.qmkj.niaogebiji.module.adapter.SchoolBaiduAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolBookAdapter;
 import com.qmkj.niaogebiji.module.adapter.SchoolTestAdapter;
 import com.qmkj.niaogebiji.module.adapter.ToolItemAdapter;
 import com.qmkj.niaogebiji.module.bean.CircleBean;
+import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.SchoolBean;
 import com.qmkj.niaogebiji.module.event.TestListEvent;
 import com.qmkj.niaogebiji.module.widget.header.XnClassicsHeader;
@@ -36,6 +41,9 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.socks.library.KLog;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+import com.vhall.uilibs.Param;
+import com.vhall.uilibs.util.VhallUtil;
+import com.vhall.uilibs.watch.WatchActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -294,18 +302,39 @@ public class SchoolFragment extends BaseLazyFragment {
             }
 
 
-            if(position <= 9){
-                MobclickAgentUtils.onEvent("academy_newcourse_" + (position + 1) +"_2_0_0");
+            //TODO 3.30 去直播
+
+            //注册登录
+            if(position == 0){
+                Param param = BaseApp.param;
+                Intent intent = new Intent(getActivity(), WatchActivity.class);
+                intent.putExtra("param", param);
+                intent.putExtra("type", VhallUtil.WATCH_LIVE);
+                startActivity(intent);
+
+            }else{
+                Param param = BaseApp.param;
+                Intent intent = new Intent(getActivity(), WatchActivity.class);
+                intent.putExtra("param", param);
+                intent.putExtra("type", VhallUtil.WATCH_PLAYBACK);
+                startActivity(intent);
+
             }
 
 
-            SchoolBean.SchoolBook book = mSchoolBookAdapter.getData().get(position);
-            recordCourse(book.getId());
 
-            String link = book.getLink();
-            if(!TextUtils.isEmpty(link)){
-                UIHelper.toWebViewActivity(getActivity(),link);
-            }
+//            if(position <= 9){
+//                MobclickAgentUtils.onEvent("academy_newcourse_" + (position + 1) +"_2_0_0");
+//            }
+//
+//
+//            SchoolBean.SchoolBook book = mSchoolBookAdapter.getData().get(position);
+//            recordCourse(book.getId());
+//
+//            String link = book.getLink();
+//            if(!TextUtils.isEmpty(link)){
+//                UIHelper.toWebViewActivity(getActivity(),link);
+//            }
 
         });
     }

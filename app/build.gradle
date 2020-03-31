@@ -182,8 +182,8 @@ dependencies {
 //    //EventBus
 //    implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'androidx.multidex:multidex:2.0.1'
-    //log
-    implementation 'com.github.zhaokaiqiang.klog:library:1.6.0'
+//    //log
+//    implementation 'com.github.zhaokaiqiang.klog:library:1.6.0'
     //微信
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 
@@ -224,7 +224,7 @@ dependencies {
     //图片预览控件
     implementation 'com.bm.photoview:library:1.4.1'
     //圆形头像
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
+//    implementation 'de.hdodenhof:circleimageview:2.2.0'
     //lottie 2.7.0 -- 3.0.7
     implementation 'com.airbnb.android:lottie:3.0.7'
     //html解析器

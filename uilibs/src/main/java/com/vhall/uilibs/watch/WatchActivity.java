@@ -1,10 +1,13 @@
 package com.vhall.uilibs.watch;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +15,12 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -26,12 +32,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.socks.library.KLog;
 import com.vhall.business.VhallSDK;
 import com.vhall.business.data.Survey;
 import com.vhall.business.data.WebinarInfo;
 import com.vhall.business.data.source.WebinarInfoDataSource;
 import com.vhall.uilibs.closeDocumentListener;
+import com.vhall.uilibs.event.ChangeEvent;
+import com.vhall.uilibs.event.ChatorAskEvent;
 import com.vhall.uilibs.interactive.InteractiveActivity;
 import com.vhall.uilibs.util.ActivityUtils;
 import com.vhall.uilibs.Param;
@@ -52,6 +62,10 @@ import com.vhall.uilibs.util.emoji.InputUser;
 import com.vhall.uilibs.util.emoji.InputView;
 import com.vhall.uilibs.util.emoji.KeyBoardManager;
 import com.vhall.uilibs.util.handler.WeakHandler;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import vhall.com.vss.module.room.VssRoomManger;
 import vhall.com.vss.module.rtc.VssRtcManger;
@@ -77,6 +91,16 @@ import static com.vhall.uilibs.util.SurveyView.EVENT_PAGE_LOADED;
 
 /**
  * 观看页的Activity
+ *
+ * 1.在各自的fragment中不要写死大小
+ *
+ * 竖屏：
+ * 1.如果没有文档，加载live布局，此布局是60 + 210 的布局
+ * 2.如果有文档，加载live布局，此布局是60布局 ；加载文档布局，此布局是210布局
+ *
+ * 横屏：
+ * 1.
+ *
  */
 public class WatchActivity extends FragmentActivity implements WatchContract.WatchView {
 
@@ -113,13 +137,66 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
 
     private boolean ishasDocument;
 
+    private LinearLayout has_course_watch_part,no_course_watch_part,no_course_watch_land_part;
+    private LinearLayout all;
+
+    private RelativeLayout rl_common_title;
+    private LinearLayout chat_part;
+    private ImageView live_chat_to_fullscreen;
+    private ImageView live_chat_to_small;
+
+    public int getStatusTopColor() {
+        return Color.TRANSPARENT;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        EventBus.getDefault().register(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            //使用默认的白色系,这里需要用此方式切换
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getStatusTopColor());
+        }
+
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.watch_activity);
+
+        has_course_watch_part = findViewById(R.id.has_course_watch_part);
+        no_course_watch_part = findViewById(R.id.no_course_watch_part);
+        no_course_watch_land_part = findViewById(R.id.no_course_watch_land_part);
+        all = findViewById(R.id.all);
+        rl_common_title = findViewById(R.id.rl_common_title);
+        live_chat_to_fullscreen = findViewById(R.id.live_chat_to_fullscreen);
+        live_chat_to_fullscreen.setTag("live_chat_to_fullscreen");
+        chat_part = findViewById(R.id.chat_part);
+        live_chat_to_fullscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if("live_chat_to_fullscreen".equals(v.getTag())){
+                    live_chat_to_fullscreen.setTag("live_chat_to_small");
+                    all.setVisibility(View.GONE);
+                    live_chat_to_fullscreen.setImageResource(R.mipmap.live_chat_to_small);
+                }else if("live_chat_to_small".equals(v.getTag())){
+                    live_chat_to_fullscreen.setTag("live_chat_to_fullscreen");
+                    all.setVisibility(View.VISIBLE);
+                    live_chat_to_fullscreen.setImageResource(R.mipmap.live_chat_to_full);
+                }
+
+
+            }
+        });
+
         fragmentManager = getSupportFragmentManager();
         param = (Param) getIntent().getSerializableExtra("param");
         type = getIntent().getIntExtra("type", VhallUtil.WATCH_LIVE);
@@ -160,6 +237,23 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
 //                Context.BIND_AUTO_CREATE
 //        );
 
+    }
+
+    private void startTransform() {
+
+
+//
+//        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) contentChat.getLayoutParams();
+//        lp.height = 0;
+//        lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
+//        lp.weight = 1;
+//        contentChat.setLayoutParams(lp);
+//
+//        ObjectAnimator translationY = ObjectAnimator.ofFloat(chat_part,"translationY",0,- SizeUtils.dp2px(270f));
+//        AnimatorSet animatorSet = new AnimatorSet();  //组合动画
+//        animatorSet.playTogether(translationY); //设置动画
+//        animatorSet.setDuration(3000);  //设置动画时间
+//        animatorSet.start(); //启动
     }
 
 
@@ -219,22 +313,29 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
                             @Override
                             public void openOrClose(String type) {
                                 if (type.equals(TYPE_SWITCHOFF)) {
-                                    Log.d("tag","关闭文档,隐藏布局");
-                                    contentDoc.setVisibility(View.GONE);
+                                    Log.d("tag","关闭文档监听");
                                     ishasDocument = false;
-                                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentVideo.getLayoutParams();
-                                    lp.height = SizeUtils.dp2px(270f);
-                                    contentVideo.setLayoutParams(lp);
+                                    //这里必须手动设置！！ -- 走具体的view的210dp
+                                    RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) contentVideo.getLayoutParams();
+                                    lp2.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                                    lp2.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                                    contentVideo.setLayoutParams(lp2);
+
                                 } else {
-                                    Log.d("tag","打开文档");
-                                    contentDoc.setVisibility(View.VISIBLE);
+                                    Log.d("tag","打开文档监听");
                                     ishasDocument = true;
 
+                                    //这里必须手动设置！！
                                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentVideo.getLayoutParams();
                                     lp.height = SizeUtils.dp2px(60f);
+                                    lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
                                     contentVideo.setLayoutParams(lp);
-                                }
 
+                                    RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) contentDoc.getLayoutParams();
+                                    lp2.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                                    lp2.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                                    contentDoc.setLayoutParams(lp2);
+                                }
 
                             }
                         });
@@ -471,35 +572,53 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
     public int changeOrientation() {
         //如果当前是竖直的，设为水平
         if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            rl_common_title.setVisibility(View.GONE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            ll_detail.setVisibility(View.GONE);
-
             if(ishasDocument){
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentDoc.getLayoutParams();
+                Log.d("tag","竖屏 切 横屏  有文档");
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) all.getLayoutParams();
                 lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
-                contentDoc.setLayoutParams(lp);
-            }else{
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentVideo.getLayoutParams();
                 lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
-                contentVideo.setLayoutParams(lp);
-            }
+                all.setLayoutParams(lp);
 
+                RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) contentDoc.getLayoutParams();
+                lp2.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp2.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                contentDoc.setLayoutParams(lp2);
+            }else{
+                Log.d("tag","竖屏 切 横屏  无文档, 让具体的view的高度决定 ");
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) all.getLayoutParams();
+                lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                all.setLayoutParams(lp);
+            }
 
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//            ll_detail.setVisibility(View.VISIBLE);
-
+            rl_common_title.setVisibility(View.VISIBLE);
             if(ishasDocument){
+
+                LinearLayout.LayoutParams lp2 = (LinearLayout.LayoutParams) all.getLayoutParams();
+                lp2.height = SizeUtils.dp2px(270f);
+                lp2.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                all.setLayoutParams(lp2);
+
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentDoc.getLayoutParams();
-                lp.height = SizeUtils.dp2px(210f);
+                lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
                 contentDoc.setLayoutParams(lp);
             }else{
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentVideo.getLayoutParams();
-                lp.height = SizeUtils.dp2px(210f);
-                contentVideo.setLayoutParams(lp);
+                Log.d("tag","横屏 切 竖屏  无文档 -- 给予all 为 270的高度");
+                KLog.d("tag","宽 " +  ScreenUtils.getScreenWidth() + " 高 " + ScreenUtils.getScreenHeight());
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) all.getLayoutParams();
+                lp.height = SizeUtils.dp2px(270f);
+                lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                all.setLayoutParams(lp);
             }
-
         }
+
+        EventBus.getDefault().post(new ChangeEvent());
+
         return getRequestedOrientation();
     }
 
@@ -622,6 +741,9 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
         super.onDestroy();
         VssRtcManger.leaveRoom();
         VssRoomManger.leaveRoom();
+
+        EventBus.getDefault().unregister(this);
+
 
 
 //        if (upnpService != null) {
@@ -784,4 +906,17 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO
     };
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChatorAskEvent(ChatorAskEvent event){
+
+        if(this != null){
+            chatEvent = event.getChatEvent();
+        }
+
+    }
+
+
 }

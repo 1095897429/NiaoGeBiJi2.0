@@ -1,6 +1,7 @@
 package com.vhall.uilibs.watch;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -24,10 +25,13 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.vhall.business.utils.LogManager;
 import com.vhall.business.widget.ContainerLayout;
 import com.vhall.player.Constants;
 import com.vhall.uilibs.R;
+import com.vhall.uilibs.event.ChangeEvent;
 import com.vhall.uilibs.event.DocumentCloseEvent;
 import com.vhall.uilibs.util.emoji.EmojiUtils;
 
@@ -78,8 +82,6 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
 
     private ImageView iv_dlna;
 
-    private LinearLayout all;
-
 
 
 
@@ -116,8 +118,6 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
 
         //注册事件
         EventBus.getDefault().register(this);
-
-        all =  (LinearLayout) root.findViewById(R.id.all);
 
         iv_dlna = (ImageView) root.findViewById(R.id.iv_dlna);
         iv_dlna.setOnClickListener(this);
@@ -235,7 +235,9 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
         if (i == R.id.click_rtmp_watch) {
             mPresenter.onWatchBtnClick();
         } else if (i == R.id.click_rtmp_orientation) {
+            //全屏 | 缩小
             mPresenter.changeOriention();
+
         } else if (i == R.id.btn_change_scaletype) {
             mPresenter.setScaleType();
         } else if (i == R.id.btn_headtracker) {
@@ -476,12 +478,14 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
     }
 
 
-    //这个最后才执行，设置没问题
+    private boolean hasDoc ;
+    //这个最后才执行，设置没问题 -- 事件监听有无文档，发送事件 ①
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDocumentCloseEvent(DocumentCloseEvent event){
+    public void onDocumentCloseEvent(DocumentCloseEvent event) {
         String type = event.getType();
         if (type.equals(TYPE_SWITCHOFF)) {
-            Log.d("tag","关闭文档111");
+            Log.d("tag", "关闭文档111，在播放fragment中有一些操作");
+            hasDoc = false;
             has_course_part.setVisibility(View.GONE);
             no_course_part.setVisibility(View.VISIBLE);
 
@@ -491,20 +495,55 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
             clickOrientation.setOnClickListener(this);
             mContainerLayout = (RelativeLayout) no_course_part.findViewById(R.id.rl_container);
 
+
             mPresenter.startWatch();
         } else {
-            Log.d("tag","打开文档111");
+            Log.d("tag", "打开文档111，在播放fragment中有一些操作");
+            hasDoc = true;
             has_course_part.setVisibility(View.VISIBLE);
             no_course_part.setVisibility(View.GONE);
-             clickStart = (ImageView) has_course_part.findViewById(R.id.click_rtmp_watch);
-             clickStart.setOnClickListener(this);
-             clickOrientation = (ImageView) has_course_part.findViewById(R.id.click_rtmp_orientation);
-             clickOrientation.setOnClickListener(this);
-             mContainerLayout = (RelativeLayout) has_course_part.findViewById(R.id.rl_container);
-             mPresenter.startWatch();
+            clickStart = (ImageView) has_course_part.findViewById(R.id.click_rtmp_watch);
+            clickStart.setOnClickListener(this);
+            clickOrientation = (ImageView) has_course_part.findViewById(R.id.click_rtmp_orientation);
+            clickOrientation.setOnClickListener(this);
+            mContainerLayout = (RelativeLayout) has_course_part.findViewById(R.id.rl_container);
+            mPresenter.startWatch();
+
         }
 
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangeEvent(ChangeEvent event){
+
+        if(!hasDoc){
+            if(getActivity().getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+
+                clickOrientation.setImageResource(R.mipmap.live_to_fullscreen);
+
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mContainerLayout.getLayoutParams();
+                lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp.setMargins(0,SizeUtils.dp2px(60f),0,0);
+                mContainerLayout.setLayoutParams(lp);
+
+            }else if(getActivity().getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+
+                clickOrientation.setImageResource(R.mipmap.live_to_small_screen);
+
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mContainerLayout.getLayoutParams();
+                lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                lp.setMargins(0,0,0,0);
+                mContainerLayout.setLayoutParams(lp);
+            }
+
+        }
+
+    }
+
+
 
 
 }

@@ -61,6 +61,11 @@ dependencies {
 
     //工具类
     implementation 'com.blankj:utilcodex:1.24.7'
+
+    //log
+    api 'com.github.zhaokaiqiang.klog:library:1.6.0'
+
+    api 'de.hdodenhof:circleimageview:2.2.0'
 }
 repositories {
     mavenCentral()

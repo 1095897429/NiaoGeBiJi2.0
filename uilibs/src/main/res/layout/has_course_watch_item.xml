@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/has_course_watch_part"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/contentVideo"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_below="@+id/contentVideo"
+            android:id="@+id/contentDoc"
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:visibility="visible">
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

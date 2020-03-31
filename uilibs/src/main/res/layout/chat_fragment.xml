@@ -4,8 +4,73 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <LinearLayout
+        android:layout_alignParentBottom="true"
         android:id="@+id/chat_view"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="82dp">
+
+        <ImageView
+            android:src="@mipmap/icon_down_shadow_111"
+            android:layout_width="match_parent"
+            android:layout_height="18dp" />
+
+        <RelativeLayout
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_toLeftOf="@+id/part_options"
+                android:gravity="center|left"
+                android:id="@+id/text_chat_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:textSize="16sp"
+                android:hint="我来说几句"/>
+
+
+            <LinearLayout
+                android:id="@+id/part_options"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+
+                <LinearLayout
+                    android:layout_width="64dp"
+                    android:layout_height="28dp"
+                    android:gravity="center"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_corners_14_f6f7f9_111">
+
+                    <CheckBox
+                        android:id="@+id/checkbox"
+                        android:text="提问"
+                        android:paddingLeft="2dp"
+                        android:textColor="@color/text_second_color111"
+                        android:button="@mipmap/live_no_question_111"
+                        android:layout_width="64dp"
+                        android:layout_height="28dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -14,7 +79,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/text_chat_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -27,6 +91,7 @@
             android:textSize="15dp" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/test_send_custom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,6 +106,8 @@
 
     <ListView
         android:id="@+id/lv_chat"
+        android:divider="@null"
+        android:listSelector="#00000000"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/chat_view"

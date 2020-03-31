@@ -32,6 +32,7 @@ import com.vhall.uilibs.chat.ChatContract;
 import com.vhall.uilibs.chat.ChatFragment;
 import com.vhall.uilibs.chat.MessageChatData;
 import com.vhall.uilibs.closeDocumentListener;
+import com.vhall.uilibs.event.ChangeEvent;
 import com.vhall.uilibs.event.DocumentCloseEvent;
 import com.vhall.uilibs.util.MessageLotteryData;
 import com.vhall.uilibs.util.emoji.InputUser;
@@ -107,6 +108,8 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
     private Param params;
     private boolean isBroadcast = false;
 
+    //是不是第一次进入
+    private boolean isFirst = false;
 
     public WatchLivePresenterVss(WatchContract.LiveView liveView, WatchContract.DocumentViewVss documentView, ChatContract.ChatView chatView, ChatContract.ChatView questionView, final WatchContract.WatchView watchView, Param param) {
         this.params = param;
@@ -152,6 +155,9 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
                     }
                     watchView.showToast("还没开始直播");
                 }
+
+                isFirst = true;
+
                 VssRoomManger.getInstance().setVssMessageLister(new MyLister(), IVssMessageLister.MESSAGE_SERVICE_TYPE_ALL);
                 VssRoomManger.getInstance().setVssCallBackLister(new MyCallback());
                 roomId = result.getRoom_id();
@@ -247,6 +253,9 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
                 .listener(new MyListener())
                 .build();
 
+        //设置缩放模式
+        mPlayer.setDrawMode(1);
+
         return mPlayer;
     }
 
@@ -274,10 +283,15 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
             }
         }
 
-//        else{
-//            //没有播放时，但是选择有关的文档，也会导致其播放
-//            getPlayer().start(roomId, accessToken);
-//        }
+        else{
+            //没有播放时，但是选择有关的文档，也会导致其播放
+            if(isFirst){
+                Log.e("tag","第一次进入");
+                getPlayer().start(roomId, accessToken);
+                isFirst = false;
+            }
+
+        }
     }
 
 
@@ -438,7 +452,7 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
 
     @Override
     public int setScaleType() {
-        scaleType = scaleTypes[(++currentPos) % scaleTypes.length];
+        scaleType = scaleTypes[1];
         getPlayer().setDrawMode(scaleType);
         liveView.setScaleButtonText(scaleType);
         return scaleType;
@@ -485,6 +499,7 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
     @Override
     public int getScaleType() {
         //todo getScaleType
+
         return -1;
     }
 
@@ -506,12 +521,7 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
         }
         chatView.clearChatData();
         getChatHistory();
-
-        //TODO 3.30晚 自动吊起播放 -- 手动去操作
-//        onWatchBtnClick();
-
-
-
+        setScaleType();
     }
 
 
@@ -695,7 +705,7 @@ public class WatchLivePresenterVss implements WatchContract.LivePresenter, ChatC
                     break;
                 case com.vhall.player.Constants.Event.EVENT_DPI_CHANGED:
                     //分辨率切换
-                    Log.i(TAG, msg);
+                    Log.e("tag", msg);
                     onSwitchPixel(msg);
                     break;
                 case com.vhall.player.Constants.Event.EVENT_DPI_LIST:

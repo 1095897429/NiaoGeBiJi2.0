@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,9 +24,11 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.vhall.business.ChatServer;
 import com.vhall.uilibs.R;
+import com.vhall.uilibs.event.ChatorAskEvent;
 import com.vhall.uilibs.util.VhallUtil;
 import com.vhall.uilibs.util.emoji.EmojiUtils;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +57,8 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
 
     TextView test_send_custom;
     private Activity mActivity;
+
+    private CheckBox checkbox;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -95,6 +101,20 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         lv_chat = getView().findViewById(R.id.lv_chat);
+        checkbox = getView().findViewById(R.id.checkbox);
+
+        //点击checkBox
+        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    EventBus.getDefault().post(new ChatorAskEvent(CHAT_EVENT_QUESTION));
+                }else{
+                    EventBus.getDefault().post(new ChatorAskEvent(CHAT_EVENT_CHAT));
+                }
+            }
+        });
+
         test_send_custom = getView().findViewById(R.id.test_send_custom);
         test_send_custom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,6 +242,7 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
         mPresenter = presenter;
     }
 
+    //聊天的布局
     class ChatAdapter extends BaseAdapter {
 
         @Override
@@ -261,7 +282,7 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
             switch (getItemViewType(position)) {
                 case CHAT_NORMAL:
                     if (convertView == null) {
-                        convertView = View.inflate(getActivity(), R.layout.chat_item, null);
+                        convertView = View.inflate(getActivity(), R.layout.chat_item_v2, null);
                         viewHolder = new ViewHolder();
                         viewHolder.iv_chat_avatar = (ImageView) convertView.findViewById(R.id.iv_chat_avatar);
                         viewHolder.tv_chat_content = (TextView) convertView.findViewById(R.id.tv_chat_content);

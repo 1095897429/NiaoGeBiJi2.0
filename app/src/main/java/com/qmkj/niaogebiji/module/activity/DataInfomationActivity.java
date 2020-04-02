@@ -202,13 +202,24 @@ public class DataInfomationActivity extends BaseActivity {
             String needPoint = mNewsDetailBean.getDl_point();
             KLog.d("tag","myPoint " + myPoint + " needPoint " + needPoint);
 
-            int result = myPoint.compareTo(needPoint);
-            if(result < 0){
+            //string -- long
+            long myPointLong = Long.parseLong(myPoint);
+            long needPointLong = Long.parseLong(needPoint);
+
+            if(myPointLong < needPointLong){
                 //表明我的积分不够
                 showDownNotEnoughDialog();
             }else{
                 toPayPoint();
             }
+
+//            int result = myPoint.compareTo(needPoint);
+//            if(result < 0){
+//                //表明我的积分不够
+//                showDownNotEnoughDialog();
+//            }else{
+//                toPayPoint();
+//            }
         }
     }
 

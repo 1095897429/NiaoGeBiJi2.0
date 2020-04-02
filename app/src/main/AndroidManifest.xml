@@ -137,11 +137,6 @@
             <!--</activity-alias>-->
 
 
-
-
-
-
-
         <activity android:name=".module.activity.WebViewActivityWithLayout"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
         </activity>
@@ -167,11 +162,6 @@
         <activity android:name=".module.activity.TopSelectActivity"
             android:screenOrientation="portrait">
         </activity>
-
-        <activity android:name=".module.activity.LiveHouseActivity"
-            android:screenOrientation="portrait">
-        </activity>
-
 
 
         <activity android:name=".module.activity.TopicListActivity"

@@ -64,7 +64,6 @@
             </RelativeLayout>
 
 
-
             <!-- 默认总的给270 ，如果有文档，动态设置高度为60 -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,8 +88,25 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="visible">
-
                     </FrameLayout>
+
+                    <HorizontalScrollView
+                        android:layout_below="@+id/contentVideo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+
+
+                        </RelativeLayout>
+
+
+
+                    </HorizontalScrollView>
+
 
                 </RelativeLayout>
 
@@ -137,10 +153,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="44dp">
 
+                    <TextView
+                        android:id="@+id/live_statue"
+                        android:text="已结束"
+                        android:gravity="center|left"
+                        android:textColor="@color/send_color_default111"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
 
                     <TextView
+                        android:layout_toRightOf="@+id/live_statue"
+                        android:layout_marginLeft="10dp"
                         android:id="@+id/live_people_num"
-                        android:text="已结束   2000人次"
+                        android:text=""
                         android:gravity="center|left"
                         android:textColor="@color/send_color_default111"
                         android:textSize="13sp"

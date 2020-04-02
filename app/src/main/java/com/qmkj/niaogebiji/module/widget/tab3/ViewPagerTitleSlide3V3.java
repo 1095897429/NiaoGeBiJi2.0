@@ -1,15 +1,12 @@
 package com.qmkj.niaogebiji.module.widget.tab3;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -19,13 +16,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
-import com.qmkj.niaogebiji.module.widget.tab1.DynamicLineNoRadiu;
 import com.socks.library.KLog;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * @author zhouliang
@@ -33,7 +26,7 @@ import java.util.HashMap;
  * 创建时间 2019-10-10
  * 描述: 固定标题的指示器 -- 可滑动
  */
-public class ViewPagerTitleSlide3 extends LinearLayout {
+public class ViewPagerTitleSlide3V3 extends LinearLayout {
 
     //标题
     private String[] titles;
@@ -46,7 +39,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
     private DynamicLineNoRadiu3 dynamicLine;
     private ViewPager viewPager;
-    private MyOnPageChangeListener3 onPageChangeListener;
+    private MyOnPageChangeListener3V3 onPageChangeListener;
     private Context mContext;
 
     private int myDefault;
@@ -54,15 +47,15 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
     private  LinearLayout textViewLl;
 
-    public ViewPagerTitleSlide3(Context context) {
+    public ViewPagerTitleSlide3V3(Context context) {
         this(context, null);
     }
 
-    public ViewPagerTitleSlide3(Context context, AttributeSet attrs) {
+    public ViewPagerTitleSlide3V3(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ViewPagerTitleSlide3(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ViewPagerTitleSlide3V3(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         init();
@@ -90,7 +83,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
         setCurrentItem(defaultIndex);
         //添加传递进来vp的滑动事件
-        onPageChangeListener = new MyOnPageChangeListener3(getContext(), viewPager, dynamicLine, this,defaultIndex);
+        onPageChangeListener = new MyOnPageChangeListener3V3(getContext(), viewPager, dynamicLine, this,defaultIndex);
         viewPager.addOnPageChangeListener(onPageChangeListener);
 
         //关闭硬件加速
@@ -178,7 +171,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
         for (int i = 0; i < titles.length; i++) {
 
-            if(i == titles.length - 1){
+            if(i == titles.length - 2){
                 ImageView imageView = new ImageView(getContext());
                 imageView.setImageResource(R.mipmap.icon_first_hot_default);
                 imageView.setLayoutParams(params);
@@ -186,7 +179,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
                 imageView.setOnClickListener(onClickListener);
                 textViewLl.addView(imageView);
                 textViews.add(imageView);
-                break;
+                continue;
             }
 
 
@@ -196,8 +189,28 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
             textView.setTextSize(16);
             textView.setId(i);
 
-            if(i == 4){
-                textView.setBackgroundColor(getResources().getColor(R.color.green2));
+//            if(i == 0){
+//                textView.setBackgroundColor(getResources().getColor(R.color.badge_color));
+//            }
+//            if(i == 1){
+//                textView.setBackgroundColor(getResources().getColor(R.color.green2));
+//            }
+//            if(i == 2){
+//                textView.setBackgroundColor(getResources().getColor(R.color.roseEnd));
+//            }
+//            if(i == 3){
+//                textView.setBackgroundColor(getResources().getColor(R.color.green2));
+//            }
+
+            if(i == titles.length - 1){
+                LayoutParams  params2 = new LayoutParams(SizeUtils.dp2px(60) ,ViewGroup.LayoutParams.WRAP_CONTENT);
+                params2.setMargins(SizeUtils.dp2px(16),0,0,0);
+                textView.setLayoutParams(params2);
+                textView.setOnClickListener(onClickListener);
+                textView.setTag(i);
+                textViews.add(textView);
+                textViewLl.addView(textView);
+                break;
             }
 
             textView.setLayoutParams(params);
@@ -276,7 +289,7 @@ public class ViewPagerTitleSlide3 extends LinearLayout {
 
                     if(textViews.get(i) instanceof ImageView){
                         ImageView imageView = (ImageView) textViews.get(i);
-                        LinearLayout.LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
+                        LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
                         lp.height = LayoutParams.WRAP_CONTENT;
                         imageView.setImageResource(R.mipmap.icon_first_hot_default);
                         imageView.setLayoutParams(lp);

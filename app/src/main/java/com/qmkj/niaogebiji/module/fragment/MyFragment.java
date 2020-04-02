@@ -715,18 +715,20 @@ public class MyFragment extends BaseLazyFragment {
 
                 break;
             case R.id.head_icon:
-                ArrayList<String> pics = new ArrayList<>();
-                pics.add(mUserInfo.getAvatar());
-                //手动跳转
-                Intent intent = new Intent(mContext, PicPreviewActivityV2.class);
-                Bundle bundle = new Bundle ();
-                bundle.putStringArrayList ("imageList", pics);
-                bundle.putBoolean("fromNet",true);
-                bundle.putInt("index",0);
-                bundle.putString("from","userinfo");
-                bundle.putBoolean("isShowDown",true);
-                intent.putExtras(bundle);
-                mContext.startActivity(intent);
+
+                UIHelper.toUserInfoV2Activity(getActivity(),mUserInfo.getUid());
+//                ArrayList<String> pics = new ArrayList<>();
+//                pics.add(mUserInfo.getAvatar());
+//                //手动跳转
+//                Intent intent = new Intent(mContext, PicPreviewActivityV2.class);
+//                Bundle bundle = new Bundle ();
+//                bundle.putStringArrayList ("imageList", pics);
+//                bundle.putBoolean("fromNet",true);
+//                bundle.putInt("index",0);
+//                bundle.putString("from","userinfo");
+//                bundle.putBoolean("isShowDown",true);
+//                intent.putExtras(bundle);
+//                mContext.startActivity(intent);
 
                 break;
             case R.id.advice_ll:

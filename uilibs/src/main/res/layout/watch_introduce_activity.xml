@@ -55,7 +55,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -68,184 +68,184 @@
             android:layout_height="match_parent">
 
 
-        <!-- AppBarLayout控件便具备顶部固定的功能 -->
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appbarlayout"
-            android:background="@color/white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            <!-- AppBarLayout控件便具备顶部固定的功能 -->
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbarlayout"
+                android:background="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/collapsing_tool_bar_test_ctl"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                app:contentScrim="@color/transparent"
-                app:expandedTitleMarginEnd="64dp"
-                app:expandedTitleMarginStart="48dp"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
-
-                <LinearLayout
-                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:id="@+id/collapsing_tool_bar_test_ctl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    app:contentScrim="@color/transparent"
+                    app:expandedTitleMarginEnd="64dp"
+                    app:expandedTitleMarginStart="48dp"
+                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
                     <LinearLayout
+                        app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-
-                        <ImageView
-                            android:id="@+id/no_live_image"
-                            android:src="@mipmap/bg_poster"
-                            android:scaleType="centerCrop"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="210dp" />
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-                        <RelativeLayout
+
+                            <ImageView
+                                android:id="@+id/no_live_image"
+                                android:src="@mipmap/bg_poster"
+                                android:scaleType="centerCrop"
+                                android:layout_width="match_parent"
+                                android:layout_height="210dp" />
+
+                            <RelativeLayout
+                                android:paddingLeft="16dp"
+                                android:paddingRight="16dp"
+                                android:background="#404040"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp">
+
+                                <TextView
+                                    android:id="@+id/no_live_count_down"
+                                    android:text="开播倒计时 7天 20:20:30"
+                                    android:gravity="center|left"
+                                    android:textColor="@color/white"
+                                    android:textSize="13sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent" />
+
+                                <TextView
+                                    android:id="@+id/live_remind"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/bg_corners_8_white"
+                                    android:text="开播提醒"
+                                    android:gravity="center"
+                                    android:textColor="@color/text_first_color"
+                                    android:textSize="13sp"
+                                    android:layout_width="70dp"
+                                    android:layout_height="34dp" />
+
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:paddingTop="16dp"
                             android:paddingLeft="16dp"
                             android:paddingRight="16dp"
-                            android:background="#404040"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/no_live_count_down"
-                                android:text="开播倒计时 7天 20:20:30"
-                                android:gravity="center|left"
-                                android:textColor="@color/white"
-                                android:textSize="13sp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent" />
-
-                            <TextView
-                                android:id="@+id/live_remind"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:background="@drawable/bg_corners_8_white"
-                                android:text="开播提醒"
-                                android:gravity="center"
+                                android:id="@+id/live_title"
+                                android:textSize="17sp"
                                 android:textColor="@color/text_first_color"
-                                android:textSize="13sp"
-                                android:layout_width="70dp"
-                                android:layout_height="34dp" />
-
-                        </RelativeLayout>
-
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:paddingTop="16dp"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/live_title"
-                            android:textSize="17sp"
-                            android:textColor="@color/text_first_color"
-                            android:text="管理启航——新任管理者成长训练营"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-
-                        <RelativeLayout
-                            android:background="@color/white"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <TextView
-                                android:id="@+id/num_feather"
-                                android:textSize="30sp"
-                                android:textColor="#FF5040"
-                                android:layout_centerVertical="true"
-                                android:text="300"
+                                android:text="管理启航——新任管理者成长训练营"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
 
+
+                            <RelativeLayout
+                                android:background="@color/white"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <TextView
+                                    android:id="@+id/num_feather"
+                                    android:textSize="30sp"
+                                    android:textColor="#FF5040"
+                                    android:layout_centerVertical="true"
+                                    android:text="300"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <TextView
+                                    android:id="@+id/num_feather_text"
+                                    android:layout_toRightOf="@+id/num_feather"
+                                    android:layout_centerVertical="true"
+                                    android:textSize="14sp"
+                                    android:textColor="#FF5040"
+                                    android:layout_marginLeft="4dp"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="鸟币"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+
+                                <TextView
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_toRightOf="@+id/num_feather_text"
+                                    android:id="@+id/down_res"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:gravity="center"
+                                    android:text="100人已报名"
+                                    android:textColor="@color/text_news_title_color"
+                                    android:textSize="16sp"
+                                    android:textStyle="normal" />
+
+                            </RelativeLayout>
+
                             <TextView
-                                android:id="@+id/num_feather_text"
-                                android:layout_toRightOf="@+id/num_feather"
-                                android:layout_centerVertical="true"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:id="@+id/content"
                                 android:textSize="14sp"
-                                android:textColor="#FF5040"
-                                android:layout_marginLeft="4dp"
-                                android:layout_marginBottom="4dp"
-                                android:text="鸟币"
+                                android:lineSpacingExtra="2dp"
+                                android:textColor="@color/send_color_default"
+                                android:text="管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练航——新任管理者成长训练"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:id="@+id/sponsor"
+                                android:textSize="14sp"
+                                android:textColor="@color/send_color_default"
+                                android:text="主办 鸟哥笔记"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
 
 
-                            <TextView
-                                android:layout_marginLeft="10dp"
-                                android:layout_toRightOf="@+id/num_feather_text"
-                                android:id="@+id/down_res"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:gravity="center"
-                                android:text="100人已报名"
-                                android:textColor="@color/text_news_title_color"
-                                android:textSize="16sp"
-                                android:textStyle="normal" />
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:id="@+id/content"
-                            android:textSize="14sp"
-                            android:lineSpacingExtra="2dp"
-                            android:textColor="@color/send_color_default"
-                            android:text="管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练航——新任管理者成长训练"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:id="@+id/sponsor"
-                            android:textSize="14sp"
-                            android:textColor="@color/send_color_default"
-                            android:text="主办 鸟哥笔记"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                        </LinearLayout>
 
 
                     </LinearLayout>
+
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_center"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="vertical">
+
+
+                    <com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather
+                        android:id="@+id/pager_title"
+                        android:visibility="visible"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp">
+
+                    </com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather>
+
 
 
                 </LinearLayout>
 
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_center"
-                android:visibility="visible"
-                android:background="@color/bg_color"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="vertical">
-
-
-                <com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather
-                    android:id="@+id/pager_title"
-                    android:visibility="visible"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp">
-
-                </com.qmkj.niaogebiji.module.widget.ViewPagerTitleFeather>
-
-
-
-            </LinearLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
 
 
@@ -559,32 +559,32 @@
                             android:hint="我来说几句"/>
 
 
-                      <LinearLayout
-                          android:layout_alignParentRight="true"
-                          android:layout_centerVertical="true"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
 
 
-                          <LinearLayout
-                              android:layout_width="64dp"
-                              android:layout_height="28dp"
-                              android:gravity="center"
-                              android:layout_centerVertical="true"
-                              android:background="@drawable/bg_corners_14_f6f7f9">
+                            <LinearLayout
+                                android:layout_width="64dp"
+                                android:layout_height="28dp"
+                                android:gravity="center"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/bg_corners_14_f6f7f9">
 
-                              <CheckBox
-                                  android:id="@+id/checkbox"
-                                  android:text="提问"
-                                  android:paddingLeft="2dp"
-                                  android:textColor="@color/text_second_color"
-                                  android:button="@mipmap/live_no_question"
-                                  android:layout_width="wrap_content"
-                                  android:layout_height="wrap_content" />
+                                <CheckBox
+                                    android:id="@+id/checkbox"
+                                    android:text="提问"
+                                    android:paddingLeft="2dp"
+                                    android:textColor="@color/text_second_color"
+                                    android:button="@mipmap/live_no_question"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
 
-                          </LinearLayout>
+                            </LinearLayout>
 
-                      </LinearLayout>
+                        </LinearLayout>
 
                     </RelativeLayout>
 

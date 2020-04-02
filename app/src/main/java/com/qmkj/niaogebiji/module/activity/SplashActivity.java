@@ -163,10 +163,10 @@ public class SplashActivity extends BaseActivity {
 
 
 
-//        Gson gson = new Gson();
-//        String jsonString = "{\"name\":\"sunny\",\"age\":24}";
-//        String jsonString2 = "{\"name\": \"zhangsan\", \"age\": 15,\"grade\": [ 95, 98] }";
-//        RegisterLoginBean user = fromJson(jsonString2, RegisterLoginBean.class);
+        Gson gson = new Gson();
+        String jsonString = "{\"name\":\"sunny\",\"age\":24}";
+        String jsonString2 = "{\"name\": \"zhangsan\", \"age\": 15,\"grade\": [ 95, 98] }";
+        RegisterLoginBean user = gson.fromJson(jsonString2, RegisterLoginBean.class);
 
 
 

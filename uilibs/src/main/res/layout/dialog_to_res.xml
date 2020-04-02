@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:background="@drawable/bg_corners_left_24_right"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <ImageView
+            android:id="@+id/icon_delete"
+            android:layout_width="16dp"
+            android:layout_height="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/live_title"
+                android:textSize="17sp"
+                android:textColor="@color/text_news_title_color111"
+                android:text="管理启航——新任管理者成长训练营"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <RelativeLayout
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/num_feather"
+                    android:textSize="30sp"
+                    android:textColor="#FF5040"
+                    android:layout_centerVertical="true"
+                    android:text="300"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/num_feather_text"
+                    android:layout_toRightOf="@+id/num_feather"
+                    android:layout_centerVertical="true"
+                    android:textSize="14sp"
+                    android:textColor="#FF5040"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="鸟币"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/num_feather_text"
+                    android:id="@+id/down_res"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="100人已报名"
+                    android:textColor="@color/text_second_color111"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/content"
+                android:textSize="14sp"
+                android:lineSpacingExtra="2dp"
+                android:textColor="@color/send_color_default111"
+                android:text="管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练航——新任管理者成长训练"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/sponsor"
+                android:textSize="14sp"
+                android:textColor="@color/send_color_default111"
+                android:text="主办 鸟哥笔记"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_center"
+        android:visibility="visible"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical">
+
+
+        <com.vhall.uilibs.widget.ViewPagerTitleFeather
+            android:id="@+id/pager_title"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+        </com.vhall.uilibs.widget.ViewPagerTitleFeather>
+
+    </LinearLayout>
+
+
+</LinearLayout>

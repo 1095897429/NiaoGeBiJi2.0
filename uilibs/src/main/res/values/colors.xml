@@ -22,4 +22,7 @@
     <color name="text_news_title_color111">#242629</color>
     <color name="send_color_default111">#A0A0A0</color>
     <color name="text_second_color111">#818386</color>
+
+    <color name="yellow111">#FFDC00</color>
+    <color name="text_news_tag_color111">#BFC1C3</color>
 </resources>

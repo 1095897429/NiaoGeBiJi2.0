@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -1348,13 +1349,29 @@ public class NewsDetailActivity extends BaseActivity {
             String needPoint = mNewsDetailBean.getDl_point();
             KLog.d("tag","myPoint " + myPoint + " needPoint " + needPoint);
 
-            int result = myPoint.compareTo(needPoint);
-            if(result < 0){
+
+            //string -- long
+            long myPointLong = Long.parseLong(myPoint);
+            long needPointLong = Long.parseLong(needPoint);
+
+            if(myPointLong < needPointLong){
                 //表明我的积分不够
                 showDownNotEnoughDialog();
             }else{
                 toPayPoint();
             }
+
+
+            //下面判断149 50 返回的是-4，卧槽
+//            int result = myPoint.compareTo(needPoint);
+//            if(result < 0){
+//                //表明我的积分不够
+//                showDownNotEnoughDialog();
+//            }else{
+//                toPayPoint();
+//            }
+
+
 
 //            if(!TextUtils.isEmpty(myPoint) && !TextUtils.isEmpty(needPoint)){
 //                int mPoint = Integer.parseInt(myPoint);

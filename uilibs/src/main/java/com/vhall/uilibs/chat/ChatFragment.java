@@ -22,9 +22,11 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.socks.library.KLog;
 import com.vhall.business.ChatServer;
 import com.vhall.uilibs.R;
 import com.vhall.uilibs.event.ChatorAskEvent;
+import com.vhall.uilibs.event.DanMuEvent;
 import com.vhall.uilibs.util.VhallUtil;
 import com.vhall.uilibs.util.emoji.EmojiUtils;
 
@@ -59,6 +61,7 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
     private Activity mActivity;
 
     private CheckBox checkbox;
+    private TextView danmu;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -102,6 +105,14 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
         super.onActivityCreated(savedInstanceState);
         lv_chat = getView().findViewById(R.id.lv_chat);
         checkbox = getView().findViewById(R.id.checkbox);
+        danmu = getView().findViewById(R.id.danmu);
+
+        danmu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new DanMuEvent(true));
+            }
+        });
 
         //点击checkBox
         checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -159,8 +170,15 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
         if (chatInfoList.size() > 10) {
             chatInfoList.remove(0);
         }
+
         chatInfoList.add(data);
         chatAdapter.notifyDataSetChanged();
+
+        if(chatInfoList != null && chatInfoList.size() != 0){
+            for (MessageChatData chatData: chatInfoList) {
+                KLog.d("tag","消息内容 " + chatData.getText_content() + "");
+            }
+        }
     }
 
     @Override
@@ -176,6 +194,13 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
     public void notifyDataChangedChat(int type, List<MessageChatData> list) {
         chatInfoList.addAll(list);
         chatAdapter.notifyDataSetChanged();
+
+
+        if(chatInfoList != null && chatInfoList.size() != 0){
+            for (MessageChatData chatData: chatInfoList) {
+                KLog.d("tag","消息内容 type " + chatData.getText_content() + "");
+            }
+        }
     }
 
     @Override
@@ -307,7 +332,9 @@ public class ChatFragment extends Fragment implements ChatContract.ChatView {
                                     viewHolder.tv_chat_content.setText(String.format("收到%d张图片", data.getImage_urls().size()));
                                 }
                             } else {
-                                viewHolder.tv_chat_content.setText(EmojiUtils.getEmojiText(mActivity, data.getText_content()), TextView.BufferType.SPANNABLE);
+                                if(!TextUtils.isEmpty( data.getText_content())){
+                                    viewHolder.tv_chat_content.setText(EmojiUtils.getEmojiText(mActivity, data.getText_content()), TextView.BufferType.SPANNABLE);
+                                }
                             }
                             viewHolder.tv_chat_content.setVisibility(View.VISIBLE);
                             viewHolder.tv_chat_name.setText(data.getNickname());

@@ -447,34 +447,42 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
             return;
         }
 
-        String sharepic = "";
-        String shareurl = mUserInfo.getInvite_url();
-        String title = "好友送你运营干货礼包，速来领取！";
-        String summary = "造烛求明，学习求理，鸟哥笔记在等你～";
-        SHARE_MEDIA platform;
-        platform = SHARE_MEDIA.WEIXIN;
 
-        UMImage thumb;
-        if (TextUtils.isEmpty(sharepic)) {
-            thumb = new UMImage(getActivity(), R.mipmap.icon_fenxiang);
-        } else {
-            thumb = new UMImage(getActivity(), sharepic);
+        NewUserTaskBean.ShareInfo bean = mNewUserTaskBean.getShare_info();
+
+        if(bean != null){
+
+            String sharepic = bean.getShare_pic();
+            String shareurl = mUserInfo.getInvite_url();
+            String title = bean.getShare_title();
+            String summary = bean.getShare_summary();
+            SHARE_MEDIA platform;
+            platform = SHARE_MEDIA.WEIXIN;
+
+            UMImage thumb;
+            if (TextUtils.isEmpty(sharepic)) {
+                thumb = new UMImage(getActivity(), R.mipmap.icon_fenxiang);
+            } else {
+                thumb = new UMImage(getActivity(), sharepic);
+            }
+
+
+            UMWeb web = new UMWeb(shareurl);
+            //标题
+            web.setTitle(title);
+            //缩略图
+            web.setThumb(thumb);
+            //描述
+            web.setDescription(summary);
+
+            //传入平台
+            new ShareAction(getActivity())
+                    .setPlatform(platform)
+                    .withMedia(web)
+                    .share();
         }
 
 
-        UMWeb web = new UMWeb(shareurl);
-        //标题
-        web.setTitle(title);
-        //缩略图
-        web.setThumb(thumb);
-        //描述
-        web.setDescription(summary);
-
-        //传入平台
-        new ShareAction(getActivity())
-                .setPlatform(platform)
-                .withMedia(web)
-                .share();
     }
 
 
@@ -486,35 +494,38 @@ public class FeatherItemFragment1 extends BaseLazyFragment {
             return;
         }
 
-        String sharepic = "";
-        String shareurl = mUserInfo.getInvite_url();
-        String title = "好友送你运营干货礼包，速来领取！";
-        String summary = "造烛求明，学习求理，鸟哥笔记在等你～";
-        SHARE_MEDIA platform;
-        platform = SHARE_MEDIA.WEIXIN_CIRCLE;
+        NewUserTaskBean.ShareInfo bean = mNewUserTaskBean.getShare_info();
 
-        UMImage thumb;
-        if (TextUtils.isEmpty(sharepic)) {
-            thumb = new UMImage(getActivity(), R.mipmap.icon_fenxiang);
-        } else {
-            thumb = new UMImage(getActivity(), sharepic);
+        if(bean != null){
+
+            String sharepic = bean.getShare_pic();
+            String shareurl = mUserInfo.getInvite_url();
+            String title = bean.getShare_title();
+            String summary = bean.getShare_summary();
+            SHARE_MEDIA platform;
+            platform = SHARE_MEDIA.WEIXIN_CIRCLE;
+
+            UMImage thumb;
+            if (TextUtils.isEmpty(sharepic)) {
+                thumb = new UMImage(getActivity(), R.mipmap.icon_fenxiang);
+            } else {
+                thumb = new UMImage(getActivity(), sharepic);
+            }
+
+            UMWeb web = new UMWeb(shareurl);
+            //标题
+            web.setTitle(title);
+            //缩略图
+            web.setThumb(thumb);
+            //描述
+            web.setDescription(summary);
+
+            //传入平台
+            new ShareAction(getActivity())
+                    .setPlatform(platform)
+                    .withMedia(web)
+                    .share();
         }
-
-
-        UMWeb web = new UMWeb(shareurl);
-        //标题
-        web.setTitle(title);
-        //缩略图
-        web.setThumb(thumb);
-        //描述
-        web.setDescription(summary);
-
-        //传入平台
-        new ShareAction(getActivity())
-                .setPlatform(platform)
-                .withMedia(web)
-                .share();
-
     }
 
 

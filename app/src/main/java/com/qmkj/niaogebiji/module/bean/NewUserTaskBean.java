@@ -15,6 +15,16 @@ public class NewUserTaskBean extends BaseBean {
     private int is_hide;
     private List<NewTaskBean> list;
 
+    private ShareInfo share_info;
+
+    public ShareInfo getShare_info() {
+        return share_info;
+    }
+
+    public void setShare_info(ShareInfo share_info) {
+        this.share_info = share_info;
+    }
+
     public int getIs_hide() {
         return is_hide;
     }
@@ -95,6 +105,37 @@ public class NewUserTaskBean extends BaseBean {
 
         public void setStatus(String status) {
             this.status = status;
+        }
+    }
+
+    public static class ShareInfo extends BaseBean{
+        private String share_title;
+        private String share_summary;
+        private String share_pic;
+
+
+        public String getShare_title() {
+            return share_title;
+        }
+
+        public void setShare_title(String share_title) {
+            this.share_title = share_title;
+        }
+
+        public String getShare_summary() {
+            return share_summary;
+        }
+
+        public void setShare_summary(String share_summary) {
+            this.share_summary = share_summary;
+        }
+
+        public String getShare_pic() {
+            return share_pic;
+        }
+
+        public void setShare_pic(String share_pic) {
+            this.share_pic = share_pic;
         }
     }
 }

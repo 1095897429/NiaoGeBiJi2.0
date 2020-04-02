@@ -83,7 +83,7 @@ import io.reactivex.schedulers.Schedulers;
  * 描述：首页Fragment
  * 准备资源 -- 播放视频(进度条会前进)   暂停视频
  */
-public class FirstFragment extends BaseLazyFragment {
+public class FirstFragmentV3 extends BaseLazyFragment {
 
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
@@ -157,8 +157,8 @@ public class FirstFragment extends BaseLazyFragment {
         return true;
     }
 
-    public static FirstFragment getInstance() {
-        return new FirstFragment();
+    public static FirstFragmentV3 getInstance() {
+        return new FirstFragmentV3();
     }
 
 
@@ -268,7 +268,7 @@ public class FirstFragment extends BaseLazyFragment {
             }
         });
 
-        String [] titile = new String[]{"关注","干货","快讯","活动","热榜"};
+        String [] titile = new String[]{"关注","推荐","热榜","快讯"};
 
         getUserInfo();
 
@@ -277,7 +277,7 @@ public class FirstFragment extends BaseLazyFragment {
 
         initEvent();
 
-        toolindex();
+//        toolindex();
 
         initToolLayout();
 
@@ -327,14 +327,15 @@ public class FirstFragment extends BaseLazyFragment {
         ChannelBean bean ;
         bean = new ChannelBean("0","关注");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("1","干货");
+        bean = new ChannelBean("1","推荐");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("2","快讯");
+        bean = new ChannelBean("2","热榜");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("3","活动");
+        bean = new ChannelBean("3","快讯");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("4","热榜");
-        mChannelBeanList.add(bean);
+
+//        bean = new ChannelBean("4","热榜");
+//        mChannelBeanList.add(bean);
 
         if(null != mChannelBeanList){
             setUpAdater();
@@ -499,16 +500,19 @@ public class FirstFragment extends BaseLazyFragment {
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(newsItemFragment);
             } else if(i == 2){
-                FlashFragmentV2 actionFragment = FlashFragmentV2.getInstance();
-                mFragmentList.add(actionFragment);
-            }else if(i == 3){
-               ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
-               mChannelBeanList.get(i).getChaname());
-               mFragmentList.add(actionFragment);
-            }else if(i == 4){
+
                 HotFragment hotNewsFragment = HotFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(hotNewsFragment);
+            }else if(i == 3){
+
+                FlashFragmentV2 actionFragment = FlashFragmentV2.getInstance();
+                mFragmentList.add(actionFragment);
+
+            }else if(i == 4){
+               ActionFragment actionFragment = ActionFragment.getInstance(mChannelBeanList.get(i).getChaid(),
+               mChannelBeanList.get(i).getChaname());
+               mFragmentList.add(actionFragment);
             }
 
             mTitls.add(StringToolKit.dealNullOrEmpty(mChannelBeanList.get(i).getChaname()));
@@ -672,14 +676,23 @@ public class FirstFragment extends BaseLazyFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFlashThread(toFlashEvent event){
+
+//        if("去快讯信息流".equals(event.getContent())){
+//            if(mViewPager != null){
+//                mViewPager.setCurrentItem(3);
+//            }
+//        }
         KLog.d("tag","发送到了");
         if(this != null){
             KLog.d("tag","界面已完成");
-            if("去活动信息流".equals(event.getContent())){
+            if("去快讯信息流".equals(event.getContent())){
                 mViewPager.setCurrentItem(3);
-            }else if("去快讯信息流".equals(event.getContent())){
-                mViewPager.setCurrentItem(2);
             }
+//            if("去活动信息流".equals(event.getContent())){
+//                mViewPager.setCurrentItem(3);
+//            }else if("去快讯信息流".equals(event.getContent())){
+//                mViewPager.setCurrentItem(3);
+//            }
         }
     }
 
@@ -695,7 +708,7 @@ public class FirstFragment extends BaseLazyFragment {
         if(getUserVisibleHint()){
             KLog.d("tag","我是First界面，请求早报接口 和 顶部工具");
             getTopPost();
-            toolindex();
+//            toolindex();
         }
 
     }

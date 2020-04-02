@@ -40,6 +40,7 @@
                 android:id="@+id/part_options"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -48,17 +49,44 @@
                     android:layout_width="64dp"
                     android:layout_height="28dp"
                     android:gravity="center"
-                    android:layout_centerVertical="true"
                     android:background="@drawable/bg_corners_14_f6f7f9_111">
 
                     <CheckBox
                         android:id="@+id/checkbox"
+                        android:checked="false"
+                        android:background="@drawable/check_box_selector111"
+                        android:button="@null"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp" />
+
+                    <Space
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:textSize="13sp"
+                        android:gravity="center|left"
+                        android:id="@+id/user_text"
                         android:text="提问"
-                        android:paddingLeft="2dp"
-                        android:textColor="@color/text_second_color111"
-                        android:button="@mipmap/live_no_question_111"
-                        android:layout_width="64dp"
-                        android:layout_height="28dp" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:layout_width="64dp"
+                    android:layout_height="28dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/danmu"
+                        android:text="弹"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
 
                 </LinearLayout>
 

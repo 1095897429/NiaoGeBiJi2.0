@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_common_title"
+        android:layout_width="match_parent"
+        android:layout_marginTop="25dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="44dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@mipmap/icon_back"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="管理启航——新任管理…"
+            android:maxLength="13"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="18sp"
+            android:textColor="@color/text_news_title_color"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_love"
+            android:layout_toLeftOf="@+id/iv_right_1"
+            android:layout_marginRight="16dp"
+            android:src="@mipmap/icon_news_love_1"
+            android:tint="@color/black"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_right_1"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/icon_news_share"
+            android:tint="@color/black"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:visibility="visible" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:orientation="vertical"
+            android:id="@+id/coordinator"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <!-- AppBarLayout控件便具备顶部固定的功能 -->
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbarlayout"
+                android:background="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:id="@+id/collapsing_tool_bar_test_ctl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    app:contentScrim="@color/transparent"
+                    app:expandedTitleMarginEnd="64dp"
+                    app:expandedTitleMarginStart="48dp"
+                    app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+
+                    <LinearLayout
+                        app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="260dp"
+                            android:orientation="vertical">
+
+
+                            <ImageView
+                                android:id="@+id/no_live_image"
+                                android:src="@mipmap/bg_poster"
+                                android:scaleType="centerCrop"
+                                android:layout_width="match_parent"
+                                android:layout_height="260dp" />
+
+                            <RelativeLayout
+                                android:paddingLeft="16dp"
+                                android:paddingRight="16dp"
+                                android:background="#44404040"
+                                android:layout_alignParentBottom="true"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp">
+
+                                <TextView
+                                    android:id="@+id/no_live_count_down"
+                                    android:text="开播倒计时 7天 20:20:30"
+                                    android:gravity="center|left"
+                                    android:textColor="@color/white"
+                                    android:textSize="13sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent" />
+
+                                <TextView
+                                    android:id="@+id/live_remind"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="@drawable/bg_corners_8_white"
+                                    android:text="开播提醒"
+                                    android:gravity="center"
+                                    android:textColor="@color/text_first_color"
+                                    android:textSize="13sp"
+                                    android:layout_width="70dp"
+                                    android:layout_height="34dp" />
+
+                            </RelativeLayout>
+
+
+                        </RelativeLayout>
+
+
+                        <LinearLayout
+                            android:paddingTop="16dp"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/live_title"
+                                android:textSize="17sp"
+                                android:textColor="@color/text_first_color"
+                                android:text="管理启航——新任管理者成长训练营"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+
+                            <RelativeLayout
+                                android:background="@color/white"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <TextView
+                                    android:id="@+id/num_feather"
+                                    android:textSize="30sp"
+                                    android:textColor="#FF5040"
+                                    android:layout_centerVertical="true"
+                                    android:text="300"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <TextView
+                                    android:id="@+id/num_feather_text"
+                                    android:layout_toRightOf="@+id/num_feather"
+                                    android:layout_centerVertical="true"
+                                    android:textSize="14sp"
+                                    android:textColor="#FF5040"
+                                    android:layout_marginLeft="4dp"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="鸟币"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+
+                                <TextView
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_toRightOf="@+id/num_feather_text"
+                                    android:id="@+id/down_res"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:gravity="center"
+                                    android:text="100人已报名"
+                                    android:textColor="@color/text_news_title_color"
+                                    android:textSize="16sp"
+                                    android:textStyle="normal" />
+
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:id="@+id/content"
+                                android:textSize="14sp"
+                                android:lineSpacingExtra="2dp"
+                                android:textColor="@color/send_color_default"
+                                android:text="管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练营     管理启航——新任管理者成长训练航——新任管理者成长训练"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:id="@+id/sponsor"
+                                android:textSize="14sp"
+                                android:textColor="@color/send_color_default"
+                                android:text="主办 鸟哥笔记"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_center"
+                    android:visibility="visible"
+                    android:background="@color/bg_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="vertical">
+
+
+                    <com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3
+                        android:id="@+id/pager_title"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="0dp">
+                    </com.qmkj.niaogebiji.module.widget.tab3.ViewPagerTitleSlide3>
+
+                    <com.qmkj.niaogebiji.common.tab.TabLayout
+                        android:background="@color/white"
+                        android:id="@+id/tabLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp">
+                    </com.qmkj.niaogebiji.common.tab.TabLayout>
+
+
+                </LinearLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+
+
+            <com.qmkj.niaogebiji.module.widget.CustomViewPager
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:id="@+id/viewpager"
+                android:overScrollMode="never"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </com.qmkj.niaogebiji.module.widget.CustomViewPager>
+
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:id="@+id/bottom_part"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="82dp">
+
+            <ImageView
+                android:src="@mipmap/icon_down_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="18dp" />
+
+            <RelativeLayout
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <TextView
+                    android:id="@+id/togift"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/apply"
+                    android:layout_width="120dp"
+                    android:layout_height="46dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_corners_10_gray"
+                    android:gravity="center"
+                    android:text="送礼"
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:id="@+id/apply"
+                    android:layout_width="120dp"
+                    android:layout_height="46dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_corners_10_yellow"
+                    android:gravity="center"
+                    android:text="立即报名"
+                    android:textColor="@color/text_news_title_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <!-- 有课件时 -->
+            <LinearLayout
+                android:id="@+id/has_course_part"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+
+                <RelativeLayout
+                    android:paddingRight="16dp"
+                    android:background="#404040"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp">
+
+                    <!-- 这里并不显示view -->
+                    <ImageView
+                        android:id="@+id/live_camera_image"
+                        android:src="@mipmap/bg_poster"
+                        android:visibility="gone"
+                        android:scaleType="centerCrop"
+                        android:layout_width="106dp"
+                        android:layout_height="match_parent" />
+
+                    <FrameLayout
+                        android:id="@+id/contentVideo"
+                        android:layout_width="106dp"
+                        android:layout_height="match_parent">
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_toRightOf="@+id/contentVideo"
+                        android:layout_marginLeft="20dp"
+                        android:id="@+id/live_count_down"
+                        android:text="已开播 20:20:30"
+                        android:gravity="center|left"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+
+
+                    <LinearLayout
+                        android:id="@+id/live_play_part"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/live_to_pause"
+                            android:src="@mipmap/live_to_pause"
+                            android:visibility="gone"
+                            android:scaleType="centerCrop"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
+
+                        <ImageView
+                            android:id="@+id/live_to_play"
+                            android:src="@mipmap/live_to_play"
+                            android:scaleType="centerCrop"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
+
+                        <Space
+                            android:layout_width="16dp"
+                            android:layout_height="match_parent" />
+
+
+                        <ImageView
+                            android:id="@+id/live_to_fullscreen"
+                            android:src="@mipmap/live_to_fullscreen"
+                            android:scaleType="centerCrop"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp" />
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/live_course_image"
+                        android:src="@mipmap/bg_poster"
+                        android:visibility="gone"
+                        android:scaleType="centerCrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="210dp" />
+
+
+                    <FrameLayout
+                        android:id="@+id/contentDoc"
+                        android:layout_width="match_parent"
+                        android:layout_height="210dp"
+                        android:visibility="visible"></FrameLayout>
+
+                </RelativeLayout>
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_below="@+id/part1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:background="#F2F6FE"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+
+                    <TextView
+                        android:id="@+id/live_people_num"
+                        android:text="已结束   2000人次"
+                        android:gravity="center|left"
+                        android:textColor="@color/send_color_default"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+
+
+                    <LinearLayout
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:id="@+id/course_content"
+                            android:layout_width="76dp"
+                            android:layout_height="26dp"
+                            android:background="@drawable/bg_corners_6_white"
+                            android:gravity="center"
+                            android:text="课程信息"
+                            android:textColor="@color/text_news_title_color"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+
+
+                        <Space
+                            android:layout_width="12dp"
+                            android:layout_height="match_parent" />
+
+
+                        <LinearLayout
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_white_point"
+                            android:orientation="vertical">
+
+
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:background="@color/bg_color"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <FrameLayout
+                    android:id="@+id/contentChat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"></FrameLayout>
+
+                <LinearLayout
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/chat_view"
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="82dp">
+
+                    <ImageView
+                        android:src="@mipmap/icon_down_shadow"
+                        android:layout_width="match_parent"
+                        android:layout_height="18dp" />
+
+                    <RelativeLayout
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:background="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:textSize="16sp"
+                            android:hint="我来说几句"/>
+
+
+                        <LinearLayout
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+
+                            <LinearLayout
+                                android:layout_width="64dp"
+                                android:layout_height="28dp"
+                                android:gravity="center"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/bg_corners_14_f6f7f9">
+
+                                <CheckBox
+                                    android:id="@+id/checkbox"
+                                    android:text="提问"
+                                    android:paddingLeft="2dp"
+                                    android:textColor="@color/text_second_color"
+                                    android:button="@mipmap/live_no_question"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/lv_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/chat_view"
+                    android:transcriptMode="alwaysScroll">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+
+
+
+</LinearLayout>

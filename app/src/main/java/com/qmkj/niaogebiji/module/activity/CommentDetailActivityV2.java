@@ -465,10 +465,10 @@ public class CommentDetailActivityV2 extends BaseActivity {
                     }
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    lp.width = SizeUtils.dp2px(22);
-                    lp.height = SizeUtils.dp2px(22);
+                    lp.width = SizeUtils.dp2px(18);
+                    lp.height = SizeUtils.dp2px(18);
                     lp.gravity = Gravity.CENTER;
-                    lp.setMargins(0,0,SizeUtils.dp2px(8),0);
+                    lp.setMargins(0,0,4,0);
                     imageView.setLayoutParams(lp);
                     ll_badge.addView(imageView);
                 }

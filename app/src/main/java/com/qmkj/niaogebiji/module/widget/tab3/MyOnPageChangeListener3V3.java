@@ -11,12 +11,8 @@ import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
-import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.qmkj.niaogebiji.R;
-import com.qmkj.niaogebiji.module.widget.tab1.DynamicLineNoRadiu;
-import com.qmkj.niaogebiji.module.widget.tab2.ViewPagerTitleSlide;
-import com.socks.library.KLog;
 
 import java.util.ArrayList;
 
@@ -26,12 +22,12 @@ import java.util.ArrayList;
  * 创建时间 2019-10-10
  * 描述:页面切换监听器 可共用一套
  */
-public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
+public class MyOnPageChangeListener3V3 implements ViewPager.OnPageChangeListener {
 
 
     private ViewPager pager;
 
-    private ViewPagerTitleSlide3 viewPagerTitle;
+    private ViewPagerTitleSlide3V3 viewPagerTitle;
 
     private DynamicLineNoRadiu3 dynamicLine;
 
@@ -71,8 +67,8 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
         viewPagerTitle.setCurrentItem(position);
 
 
-        if(textViews.get(position) instanceof ImageView){
-            dynamicLine.updateView(0,0);
+        if (textViews.get(position) instanceof ImageView) {
+            dynamicLine.updateView(0, 0);
             ImageView imageView = (ImageView) textViews.get(position);
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
             lp.width = SizeUtils.dp2px(50);
@@ -80,18 +76,22 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
             lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
             imageView.setLayoutParams(lp);
             imageView.setImageResource(R.mipmap.icon_first_hot);
-        }else{
-                dynamicLine.updateView(lastPosition * everyLength + dis,dis + lineWidth + (position )*everyLength);
+        } else {
+            if (position == textViews.size() - 1) {
+                dynamicLine.updateView(SizeUtils.dp2px(16) + lastPosition * everyLength + dis, SizeUtils.dp2px(16) + dis + lineWidth + (position) * everyLength);
+            } else {
+                dynamicLine.updateView(lastPosition * everyLength + dis, dis + lineWidth + (position) * everyLength);
 
-            ImageView imageView = (ImageView) textViews.get(textViews.size() - 1);
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
-            lp.width = SizeUtils.dp2px(50);
-            lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            imageView.setImageResource(R.mipmap.icon_first_hot_default);
-            imageView.setLayoutParams(lp);
+                ImageView imageView = (ImageView) textViews.get(textViews.size() - 1);
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+                lp.width = SizeUtils.dp2px(50);
+                lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                imageView.setImageResource(R.mipmap.icon_first_hot_default);
+                imageView.setLayoutParams(lp);
+            }
+
+
         }
-
-
 
     }
 
@@ -108,7 +108,7 @@ public class MyOnPageChangeListener3 implements ViewPager.OnPageChangeListener {
 
 
 
-    public MyOnPageChangeListener3(Context context, ViewPager viewPager, DynamicLineNoRadiu3 dynamicLine, ViewPagerTitleSlide3 viewPagerTitle, int defaultIndex) {
+    public MyOnPageChangeListener3V3(Context context, ViewPager viewPager, DynamicLineNoRadiu3 dynamicLine, ViewPagerTitleSlide3V3 viewPagerTitle, int defaultIndex) {
         this.pager = viewPager;
         this.viewPagerTitle = viewPagerTitle;
         this.dynamicLine = dynamicLine;

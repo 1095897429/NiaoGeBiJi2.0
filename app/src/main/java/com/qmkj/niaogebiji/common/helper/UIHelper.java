@@ -27,7 +27,6 @@ import com.qmkj.niaogebiji.module.activity.FeatherListDetailActivity;
 import com.qmkj.niaogebiji.module.activity.HelloMakeActivity;
 import com.qmkj.niaogebiji.module.activity.HomeActivityV2;
 import com.qmkj.niaogebiji.module.activity.InviteActivity;
-import com.qmkj.niaogebiji.module.activity.LiveHouseActivity;
 import com.qmkj.niaogebiji.module.activity.LoginActivity;
 import com.qmkj.niaogebiji.module.activity.MessageDetailActivity;
 import com.qmkj.niaogebiji.module.activity.ModifyUserInfoActivity;
@@ -56,7 +55,6 @@ import com.qmkj.niaogebiji.module.activity.TopicListActivity;
 import com.qmkj.niaogebiji.module.activity.TopSelectActivity;
 import com.qmkj.niaogebiji.module.activity.TranspondActivity;
 import com.qmkj.niaogebiji.module.activity.UserAgreeActivity;
-import com.qmkj.niaogebiji.module.activity.UserInfoActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoModifyActivity;
 import com.qmkj.niaogebiji.module.activity.UserInfoV2Activity;
 import com.qmkj.niaogebiji.module.activity.VertifyCodeActivity;
@@ -618,12 +616,5 @@ public class UIHelper {
         ctx.startActivity(intent);
     }
 
-
-
-    /** 打开直播界面*/
-    public static void toLiveHouseActivity(Context ctx,String authorId) {
-        Intent intent = new Intent(ctx, LiveHouseActivity.class);
-        ctx.startActivity(intent);
-    }
 
 }

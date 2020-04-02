@@ -1,8 +1,6 @@
 package com.vhall.uilibs.watch;
 
 import android.Manifest;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -15,7 +13,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,15 +36,17 @@ import com.vhall.business.VhallSDK;
 import com.vhall.business.data.Survey;
 import com.vhall.business.data.WebinarInfo;
 import com.vhall.business.data.source.WebinarInfoDataSource;
+import com.vhall.uilibs.Param;
+import com.vhall.uilibs.R;
+import com.vhall.uilibs.chat.ChatFragment;
 import com.vhall.uilibs.closeDocumentListener;
+import com.vhall.uilibs.dialog.ShowResDialog;
 import com.vhall.uilibs.event.ChangeEvent;
 import com.vhall.uilibs.event.ChatorAskEvent;
 import com.vhall.uilibs.interactive.InteractiveActivity;
 import com.vhall.uilibs.util.ActivityUtils;
-import com.vhall.uilibs.Param;
-import com.vhall.uilibs.R;
-
 import com.vhall.uilibs.util.CircleView;
+import com.vhall.uilibs.util.ExtendTextView;
 import com.vhall.uilibs.util.InvitedDialog;
 import com.vhall.uilibs.util.MessageLotteryData;
 import com.vhall.uilibs.util.ShowLotteryDialog;
@@ -56,8 +55,6 @@ import com.vhall.uilibs.util.SurveyPopu;
 import com.vhall.uilibs.util.SurveyPopuVss;
 import com.vhall.uilibs.util.SurveyView;
 import com.vhall.uilibs.util.VhallUtil;
-import com.vhall.uilibs.chat.ChatFragment;
-import com.vhall.uilibs.util.ExtendTextView;
 import com.vhall.uilibs.util.emoji.InputUser;
 import com.vhall.uilibs.util.emoji.InputView;
 import com.vhall.uilibs.util.emoji.KeyBoardManager;
@@ -143,7 +140,10 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
     private RelativeLayout rl_common_title;
     private LinearLayout chat_part;
     private ImageView live_chat_to_fullscreen;
-    private ImageView live_chat_to_small;
+    private TextView course_content;
+
+    private ImageView iv_right_1;
+    private TextView live_people_num;
 
     public int getStatusTopColor() {
         return Color.TRANSPARENT;
@@ -175,6 +175,8 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
         no_course_watch_part = findViewById(R.id.no_course_watch_part);
         no_course_watch_land_part = findViewById(R.id.no_course_watch_land_part);
         all = findViewById(R.id.all);
+        live_people_num = findViewById(R.id.live_people_num);
+        course_content = findViewById(R.id.course_content);
         rl_common_title = findViewById(R.id.rl_common_title);
         live_chat_to_fullscreen = findViewById(R.id.live_chat_to_fullscreen);
         live_chat_to_fullscreen.setTag("live_chat_to_fullscreen");
@@ -192,8 +194,22 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
                     all.setVisibility(View.VISIBLE);
                     live_chat_to_fullscreen.setImageResource(R.mipmap.live_chat_to_full);
                 }
+            }
+        });
 
+        iv_right_1 =  findViewById(R.id.iv_right_1);
+        iv_right_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeOrientation();
+            }
+        });
 
+        course_content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //弹框
+                toShareDialog();
             }
         });
 
@@ -237,6 +253,11 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
 //                Context.BIND_AUTO_CREATE
 //        );
 
+    }
+
+    private void toShareDialog() {
+        final ShowResDialog talkAlertDialog = new ShowResDialog(this).builder();
+        talkAlertDialog.show();
     }
 
     private void startTransform() {
@@ -325,6 +346,9 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
                                     Log.d("tag","打开文档监听");
                                     ishasDocument = true;
 
+//                                    contentVideo.setVisibility(View.GONE);
+//                                    chat_part.setVisibility(View.GONE);
+
                                     //这里必须手动设置！！
                                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) contentVideo.getLayoutParams();
                                     lp.height = SizeUtils.dp2px(60f);
@@ -393,9 +417,14 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
             @Override
             public void onSendClick(String msg, InputUser user) {
                 if (chatFragment != null && chatEvent == ChatFragment.CHAT_EVENT_CHAT) {
-                    chatFragment.performSend(msg, chatEvent);
+                    if(!TextUtils.isEmpty(msg.trim())){
+                        chatFragment.performSend(msg, chatEvent);
+                    }
                 } else if (questionFragment != null && chatEvent == ChatFragment.CHAT_EVENT_QUESTION) {
-                    questionFragment.performSend(msg, chatEvent);
+
+                    if(!TextUtils.isEmpty(msg.trim())){
+                        questionFragment.performSend(msg, chatEvent);
+                    }
                 }
             }
         });
@@ -576,15 +605,17 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             if(ishasDocument){
                 Log.d("tag","竖屏 切 横屏  有文档");
-                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) all.getLayoutParams();
+                LinearLayout. LayoutParams lp = (LinearLayout.LayoutParams) all.getLayoutParams();
                 lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
                 lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 all.setLayoutParams(lp);
+
 
                 RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) contentDoc.getLayoutParams();
                 lp2.height = LinearLayout.LayoutParams.MATCH_PARENT;
                 lp2.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 contentDoc.setLayoutParams(lp2);
+
             }else{
                 Log.d("tag","竖屏 切 横屏  无文档, 让具体的view的高度决定 ");
                 LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) all.getLayoutParams();
@@ -696,6 +727,8 @@ public class WatchActivity extends FragmentActivity implements WatchContract.Wat
     @Override
     public void setOnlineNum(int onlineNum) {
         tvOnlineNum.setText("在线人数：" + onlineNum);
+        KLog.d("tag","在线人数：" + onlineNum);
+        live_people_num.setText("在线人数：" + onlineNum + "人次");
     }
 
 

@@ -1,16 +1,13 @@
 package com.qmkj.niaogebiji.module.activity;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -18,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
@@ -38,12 +34,9 @@ import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
-import com.google.gson.Gson;
-import com.huawei.hms.support.api.push.PushReceiver;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.qmkj.niaogebiji.R;
 import com.qmkj.niaogebiji.common.base.BaseActivity;
-import com.qmkj.niaogebiji.common.constant.Constant;
 import com.qmkj.niaogebiji.common.helper.UIHelper;
 import com.qmkj.niaogebiji.common.net.base.BaseObserver;
 import com.qmkj.niaogebiji.common.net.helper.RetrofitHelper;
@@ -51,13 +44,11 @@ import com.qmkj.niaogebiji.common.net.response.HttpResponse;
 import com.qmkj.niaogebiji.common.push.JPushReceiver;
 import com.qmkj.niaogebiji.common.service.MediaService;
 import com.qmkj.niaogebiji.common.service.SendBinderService;
-import com.qmkj.niaogebiji.common.service.SendService;
 import com.qmkj.niaogebiji.common.utils.AppUpdateUtilNew;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.MobclickAgentUtils;
 import com.qmkj.niaogebiji.common.utils.MobClickEvent.UmengEvent;
 import com.qmkj.niaogebiji.common.utils.StringUtil;
 import com.qmkj.niaogebiji.module.bean.JPushBean;
-import com.qmkj.niaogebiji.module.bean.MessageCooperationBean;
 import com.qmkj.niaogebiji.module.bean.PushBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ToolBean;
@@ -67,7 +58,6 @@ import com.qmkj.niaogebiji.module.event.toActicleEvent;
 import com.qmkj.niaogebiji.module.event.toFlashEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshCooperateEvent;
 import com.qmkj.niaogebiji.module.event.toRefreshEvent;
-import com.qmkj.niaogebiji.module.event.toRefreshMoringEvent;
 import com.qmkj.niaogebiji.module.fragment.CircleFragment;
 import com.qmkj.niaogebiji.module.fragment.FirstFragment;
 import com.qmkj.niaogebiji.module.fragment.FlashFragmentV2;
@@ -92,13 +82,11 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.jiguang.jmlinksdk.api.annotation.JMLinkDefaultRouter;
 import cn.jpush.android.api.JPushInterface;
-import cn.jpush.android.helper.Logger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class HomeActivityV2 extends BaseActivity {
+public class HomeActivityV3 extends BaseActivity {
 
     public static final int FLASH = 1;
     public static final int H5_TO_ACTICLE = 5;
@@ -242,7 +230,7 @@ public class HomeActivityV2 extends BaseActivity {
                         //temp空对象 表示没有
                         if(null != mToolBean){
                             index_dynamic.setVisibility(View.VISIBLE);
-                            ImageUtil.loadToolDefault(HomeActivityV2.this,mToolBean.getTab_icon(),index_dynamic_icon);
+                            ImageUtil.loadToolDefault(HomeActivityV3.this,mToolBean.getTab_icon(),index_dynamic_icon);
                             index_dynamic_text.setText(mToolBean.getTitle());
 
                         }else{
@@ -671,7 +659,7 @@ public class HomeActivityV2 extends BaseActivity {
         if (System.currentTimeMillis() - firstPressedTime < 2000) {
             super.onBackPressed();
         } else {
-            Toast.makeText(HomeActivityV2.this, "再按一次退出", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivityV3.this, "再按一次退出", Toast.LENGTH_SHORT).show();
             firstPressedTime = System.currentTimeMillis();
         }
     }
@@ -893,7 +881,7 @@ public class HomeActivityV2 extends BaseActivity {
 
 
     private void showUpdateDialog(boolean isForce) {
-        AppUpdateUtilNew updateUtil = new AppUpdateUtilNew(HomeActivityV2.this,apkUrl);
+        AppUpdateUtilNew updateUtil = new AppUpdateUtilNew(HomeActivityV3.this,apkUrl);
         updateUtil.showUpdateDialog(note,isForce);
 
     }

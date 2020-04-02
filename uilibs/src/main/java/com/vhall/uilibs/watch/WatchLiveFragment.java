@@ -32,6 +32,7 @@ import com.vhall.business.widget.ContainerLayout;
 import com.vhall.player.Constants;
 import com.vhall.uilibs.R;
 import com.vhall.uilibs.event.ChangeEvent;
+import com.vhall.uilibs.event.DanMuEvent;
 import com.vhall.uilibs.event.DocumentCloseEvent;
 import com.vhall.uilibs.util.emoji.EmojiUtils;
 
@@ -354,7 +355,8 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
         }
         Spannable spannable = EmojiUtils.getEmojiText(context, danmu);
         danmaku.text = spannable;
-        danmaku.padding = 5;
+        //设置相应的边距，这个设置的是四周的边距
+        danmaku.padding = SizeUtils.dp2px(60f);
         danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
         danmaku.isLive = true;
         danmaku.setTime(mDanmakuView.getCurrentTime() + 1200);
@@ -539,6 +541,24 @@ public class WatchLiveFragment extends Fragment implements WatchContract.LiveVie
                 mContainerLayout.setLayoutParams(lp);
             }
 
+        }
+
+    }
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDanMuEvent(DanMuEvent event){
+
+        if (mDanmakuView == null || !mDanmakuView.isPrepared()){
+            return;
+        }
+        if (mDanmakuView.isShown()) {
+            mDanmakuView.hide();
+            btn_danmaku.setImageResource(R.drawable.vhall_icon_danmaku_close);
+        } else {
+            mDanmakuView.show();
+            btn_danmaku.setImageResource(R.drawable.vhall_icon_danmaku_open);
         }
 
     }

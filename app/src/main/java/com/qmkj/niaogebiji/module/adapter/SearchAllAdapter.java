@@ -205,7 +205,7 @@ public class SearchAllAdapter extends BaseMultiItemQuickAdapter<MultSearchBean, 
                 break;
 
             case  SEACHER_DYNAMIC:
-                helper.setText(R.id.text_name,"动态");
+                helper.setText(R.id.text_name,"圈子");
                 List<CircleBean> circleBeans = item.getCircleBeanList();
                 if(circleBeans.size() >= 3){
                     circleBeans = circleBeans.subList(0,3);

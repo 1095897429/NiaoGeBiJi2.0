@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -68,9 +69,11 @@ import com.qmkj.niaogebiji.module.bean.ActiclePointBean;
 import com.qmkj.niaogebiji.module.bean.CommentBean;
 import com.qmkj.niaogebiji.module.bean.CommentOkBean;
 import com.qmkj.niaogebiji.module.bean.IndexFocusBean;
+import com.qmkj.niaogebiji.module.bean.JPushBean;
 import com.qmkj.niaogebiji.module.bean.MulSecondCommentBean;
 import com.qmkj.niaogebiji.module.bean.MultiNewsBean;
 import com.qmkj.niaogebiji.module.bean.NewsDetailBean;
+import com.qmkj.niaogebiji.module.bean.PushBean;
 import com.qmkj.niaogebiji.module.bean.RecommendBean;
 import com.qmkj.niaogebiji.module.bean.RegisterLoginBean;
 import com.qmkj.niaogebiji.module.bean.ShareBean;
@@ -104,6 +107,7 @@ import butterknife.OnClick;
 import cn.jiguang.jmlinksdk.api.JMLinkAPI;
 import cn.jiguang.jmlinksdk.api.JMLinkCallback;
 import cn.jiguang.jmlinksdk.api.annotation.JMLinkRouter;
+import cn.jpush.android.api.JPushInterface;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -304,27 +308,29 @@ public class NewsDetailActivity extends BaseActivity {
         return R.layout.activity_news_detail;
     }
 
+
     Intent mIntent;
     @Override
     protected void initView() {
 
-        //通过intent方式获取动态参数值
-        mIntent = getIntent();
-        if (mIntent != null) {
-            Uri uri = mIntent.getData();
-            //uri不为null，表示应用是从scheme拉起
-            if (uri != null) {
-                String id = uri.getQueryParameter("articleid");
-                KLog.e("tag","数据 id " + id);
-                newsId = id;
-            }else{
-                newsId = getIntent().getStringExtra("newsId");
-            }
-        }
+
+        //Todo 4.3 不加魔链  通过intent方式获取动态参数值
+//        mIntent = getIntent();
+//        if (mIntent != null) {
+//            Uri uri = mIntent.getData();
+//            //uri不为null，表示应用是从scheme拉起
+//            if (uri != null) {
+//                String id = uri.getQueryParameter("articleid");
+//                KLog.e("tag","数据 id " + id);
+//                newsId = id;
+//            }else{
+//                newsId = getIntent().getStringExtra("newsId");
+//            }
+//        }
 
         KLog.e("tag","NewsDetailActivity ----  initData");
         showWaitingDialog();
-
+        newsId = getIntent().getStringExtra("newsId");
         initTestLayout();
         initCommentListLayout();
         getCommentData();

@@ -98,6 +98,10 @@ import cn.jpush.android.helper.Logger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+/***
+ * 2.3.0版本
+ * 1.如果在文字明细页，打开了推送，返回了就到主界面【效果不佳】
+ */
 public class HomeActivityV2 extends BaseActivity {
 
     public static final int FLASH = 1;
@@ -234,7 +238,6 @@ public class HomeActivityV2 extends BaseActivity {
         RetrofitHelper.getApiService().getRecommendTool(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this)))
                 .subscribe(new BaseObserver<HttpResponse<ToolBean>>() {
                     @Override
                     public void onSuccess(HttpResponse<ToolBean> response) {

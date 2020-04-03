@@ -34,7 +34,6 @@
             <TextView
                 android:id="@+id/topic_titile"
                 android:layout_above="@+id/ll_focus"
-                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="#我要找资源"
                 android:maxLines="2"
@@ -48,16 +47,17 @@
             <LinearLayout
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="8dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="8dp"
                 android:id="@+id/ll_focus"
                 android:visibility="visible"
                 android:gravity="center"
                 android:layout_width="52dp"
-                android:layout_height="22dp"
-                android:orientation="horizontal">
+                android:layout_height="32dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/focus"
+                    android:layout_marginBottom="10dp"
                     android:visibility="gone"
                     android:textColor="@color/white"
                     android:textSize="11sp"
@@ -69,8 +69,9 @@
 
                 <TextView
                     android:id="@+id/focus_aleady"
+                    android:layout_marginBottom="10dp"
                     android:text="已关注"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:gravity="center"
                     android:textSize="11sp"
                     android:background="@drawable/bg_corners_12_40_white"

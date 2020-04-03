@@ -334,7 +334,9 @@ public class SchoolFragment extends BaseLazyFragment {
 
             String link = book.getLink();
             if(!TextUtils.isEmpty(link)){
-                UIHelper.toWebViewActivity(getActivity(),link);
+//                UIHelper.toWebViewActivity(getActivity(),link);
+
+                UIHelper.toNewWebView(getActivity(),link);
             }
 
         });

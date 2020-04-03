@@ -70,6 +70,9 @@ import io.reactivex.schedulers.Schedulers;
  * 版本 1.0
  * 创建时间 2019-11-11
  * 描述:搜索界面
+ *
+ * 1.2.3.2版本
+ * 1.将动态名称改为圈子
  */
 public class SearchActivity extends BaseActivity {
 
@@ -380,7 +383,7 @@ public class SearchActivity extends BaseActivity {
     //适配器
     private FirstFragmentAdapter mFirstFragmentAdapter;
 
-    String [] titile = new String[]{"全部","干货","人脉","动态","百科","资料","作者"};
+    String [] titile = new String[]{"全部","干货","人脉","圈子","百科","资料","作者"};
 
 
     private void initPartData2(){
@@ -392,7 +395,7 @@ public class SearchActivity extends BaseActivity {
         mChannelBeanList.add(bean);
         bean = new ChannelBean("2","人脉");
         mChannelBeanList.add(bean);
-        bean = new ChannelBean("3","动态");
+        bean = new ChannelBean("3","圈子");
         mChannelBeanList.add(bean);
         bean = new ChannelBean("4","百科");
         mChannelBeanList.add(bean);
@@ -425,7 +428,7 @@ public class SearchActivity extends BaseActivity {
                 SearchPeopleItemFragment actionFragment = SearchPeopleItemFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(actionFragment);
-            }else if(mChannelBeanList.get(i).getChaname().equals("动态")){
+            }else if(mChannelBeanList.get(i).getChaname().equals("圈子")){
                 SearchCircleFragment flashFragment = SearchCircleFragment.getInstance(mChannelBeanList.get(i).getChaid(),
                         mChannelBeanList.get(i).getChaname());
                 mFragmentList.add(flashFragment);

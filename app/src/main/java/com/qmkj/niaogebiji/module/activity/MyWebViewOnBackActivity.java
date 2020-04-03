@@ -90,10 +90,13 @@ public class MyWebViewOnBackActivity extends BaseActivity {
         if(!TextUtils.isEmpty(mTitle)){
             tv_title.setText(mTitle);
             mMyWebChromeClientByCamera = new MyWebChromeClientByCamera(this, null);
-
         }else{
             //加了webview可图片上传功能
-            mMyWebChromeClientByCamera = new MyWebChromeClientByCamera(this, tv_title);
+//            mMyWebChromeClientByCamera = new MyWebChromeClientByCamera(this, tv_title);
+
+            //4.3 带有进度条
+            mMyWebChromeClientByCamera = new MyWebChromeClientByCamera(this,progressBar,tv_title);
+
         }
 
 

@@ -156,8 +156,15 @@ public class Limit2ReplyCircleAdapter extends BaseQuickAdapter<CommentCircleBean
             }
         };
 
-        int userNamelength = userInfo.getName().length();
-        int authorNamelength = p_userInfo.getName().length();
+        int userNamelength = 0;
+        if(!TextUtils.isEmpty(userInfo.getName())){
+            userNamelength =  userInfo.getName().length();
+        }
+        int authorNamelength = 0;
+        if(!TextUtils.isEmpty(p_userInfo.getName())){
+            authorNamelength =  p_userInfo.getName().length();
+        }
+
         spannableString = new SpannableString(sb.toString());
         spannableString.setSpan(clickableSpan1, 0, userNamelength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 

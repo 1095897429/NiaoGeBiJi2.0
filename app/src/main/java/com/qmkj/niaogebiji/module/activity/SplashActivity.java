@@ -142,31 +142,31 @@ public class SplashActivity extends BaseActivity {
     public void initFirstData() {
 
 
-        getStartInfo();
-
-        String s = "i love china";
-        char[] arrys = s.toCharArray();
-        KLog.d("tag",arrys[0]);
-        String s2 = "我是个好人";
-        char[] arrys2 = s2.toCharArray();
-        KLog.d("tag",arrys2[0]);
-
-        KLog.d("tag",md5(s));
-        KLog.d("tag",md5(s2));
-
-        TreeSet<String> set = new TreeSet();
-        set.add("sss");
-        set.add("222");
-        for (String sss : set) {
-            KLog.d("tag","ssss " + sss);
-        }
-
-
-
-        Gson gson = new Gson();
-        String jsonString = "{\"name\":\"sunny\",\"age\":24}";
-        String jsonString2 = "{\"name\": \"zhangsan\", \"age\": 15,\"grade\": [ 95, 98] }";
-        RegisterLoginBean user = gson.fromJson(jsonString2, RegisterLoginBean.class);
+//        getStartInfo();
+//
+//        String s = "i love china";
+//        char[] arrys = s.toCharArray();
+//        KLog.d("tag",arrys[0]);
+//        String s2 = "我是个好人";
+//        char[] arrys2 = s2.toCharArray();
+//        KLog.d("tag",arrys2[0]);
+//
+//        KLog.d("tag",md5(s));
+//        KLog.d("tag",md5(s2));
+//
+//        TreeSet<String> set = new TreeSet();
+//        set.add("sss");
+//        set.add("222");
+//        for (String sss : set) {
+//            KLog.d("tag","ssss " + sss);
+//        }
+//
+//
+//
+//        Gson gson = new Gson();
+//        String jsonString = "{\"name\":\"sunny\",\"age\":24}";
+//        String jsonString2 = "{\"name\": \"zhangsan\", \"age\": 15,\"grade\": [ 95, 98] }";
+//        RegisterLoginBean user = gson.fromJson(jsonString2, RegisterLoginBean.class);
 
 
 

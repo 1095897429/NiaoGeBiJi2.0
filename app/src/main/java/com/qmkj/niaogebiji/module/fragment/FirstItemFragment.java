@@ -152,7 +152,6 @@ public class FirstItemFragment extends BaseLazyFragment {
         RetrofitHelper.getApiService().recommendActivity(result)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from((LifecycleOwner) mContext)))
                 .subscribe(new BaseObserver<HttpResponse<FristActionBean>>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override

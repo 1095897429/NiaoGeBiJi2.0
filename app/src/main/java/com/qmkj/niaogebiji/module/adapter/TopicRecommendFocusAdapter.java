@@ -62,7 +62,7 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
         TextView chineseTv = helper.getView(R.id.topic_titile);
         TextPaint paint = chineseTv.getPaint();
         paint.setFakeBoldText(true);
-        chineseTv.setText("#" + item.getTitle());
+        chineseTv.setText("#" + item.getTitle().trim());
 
         //图片
         if(TextUtils.isEmpty(item.getIcon())){
@@ -115,11 +115,11 @@ public class TopicRecommendFocusAdapter extends BaseQuickAdapter<TopicBean, Base
 
         //是否选择 注：true-关注
         if(!item.isIs_follow()){
-            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_12_40_white);
+//            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_12_40_white);
             helper.setVisible(R.id.focus,true);
             helper.setVisible(R.id.focus_aleady,false);
         }else{
-            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_12_40_white);
+//            helper.setBackgroundRes(R.id.focus,R.drawable.bg_corners_12_40_white);
             helper.setVisible(R.id.focus,false);
             helper.setVisible(R.id.focus_aleady,true);
         }

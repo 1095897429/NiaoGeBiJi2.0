@@ -576,35 +576,38 @@ public class StringUtil {
 
     /** 保存图片到 /storage/emulated/0/DCIM/pipi/ */
     public static void saveImageToGallery(Bitmap bitmap, BaseApp activity) {
-        // 首先保存图片
-        File file = null;
-        String fileName = System.currentTimeMillis() + ".jpg";
-        File root = FileHelper.getOutputImgDirFile(activity);
-        KLog.d("tag", "路径是：" + root);
-        File dir = new File(root, "ngbj");
-        KLog.d("tag", "路径是：" + dir);
-        if (dir.mkdirs() || dir.isDirectory()) {
-            file = new File(dir, fileName);
+        if(bitmap != null){
+            // 首先保存图片
+            File file = null;
+            String fileName = System.currentTimeMillis() + ".jpg";
+            File root = FileHelper.getOutputImgDirFile(activity);
+            KLog.d("tag", "路径是：" + root);
+            File dir = new File(root, "ngbj");
+            KLog.d("tag", "路径是：" + dir);
+            if (dir.mkdirs() || dir.isDirectory()) {
+                file = new File(dir, fileName);
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+                ToastUtils.showShort("保存成功");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+                ToastUtils.showShort("保存失败");
+            }
+            //其次把文件插入到系统图库
+            try {
+                MediaStore.Images.Media.insertImage(activity.getContentResolver(),
+                        file.getAbsolutePath(), fileName, null);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-            ToastUtils.showShort("保存成功");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            ToastUtils.showShort("保存失败");
-        }
-        //其次把文件插入到系统图库
-        try {
-            MediaStore.Images.Media.insertImage(activity.getContentResolver(),
-                    file.getAbsolutePath(), fileName, null);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
         // 通知图库更新
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //            MediaScannerConnection.scanFile(activity, new String[]{file.getAbsolutePath()}, null,
